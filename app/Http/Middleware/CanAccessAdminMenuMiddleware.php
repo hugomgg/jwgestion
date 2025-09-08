@@ -1,0 +1,66 @@
+<?php
+
+namespace App\Http\Middleware;
+
+use Closure;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
+
+class CanAccessAdminMenuMiddleware
+{
+    /**
+     * Handle an incoming request.
+     *
+     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     */
+    public function handle(Request $request, Closure $next): Response
+    {
+        // Verificar si el usuario está autenticado
+        if (!auth()->check()) {
+            return redirect()->route('login')->with('error', 'Debe iniciar sesión para acceder.');
+        }
+
+        $user = auth()->user();
+        
+        // Permitir acceso a usuarios con perfil 1 (admin), 2 (supervisor) y 3 (coordinador)
+        if (!$user->canAccessAdminMenu() && !$user->canAccessPeopleManagementMenu()) {
+            return redirect()->route('home')->with('error', 'No tiene permisos para acceder a esta sección.');
+        }
+
+        // Para usuarios con perfil = 2 (Supervisor), permitir lectura y supervisión
+        if ($user->isSupervisor()) {
+            $method = $request->method();
+            
+            // Solo permitir métodos GET (lectura) para el perfil Supervisor
+            if (!in_array($method, ['GET', 'HEAD'])) {
+                return redirect()->back()->with('error', 'No tiene permisos para realizar esta acción. Solo puede supervisar y ver la información.');
+            }
+        }
+        
+        // Para usuarios con perfil = 3 (Coordinador), permitir gestión de usuarios y programas
+        if ($user->isCoordinator()) {
+            $method = $request->method();
+            $path = $request->path();
+            
+            // Solo permitir operaciones en rutas de usuarios, programas y partes-programa
+            if (!str_starts_with($path, 'usuarios') && !str_starts_with($path, 'programas') && !str_starts_with($path, 'partes-programa')) {
+                // Si no es ruta de usuarios, programas o partes-programa, solo permitir GET
+                if (!in_array($method, ['GET', 'HEAD'])) {
+                    return redirect()->back()->with('error', 'No tiene permisos para realizar esta acción en esta sección.');
+                }
+            }
+        }
+        
+        // Para usuarios con perfiles de solo lectura (Publicador y Estudiante)
+        if ($user->isReadOnly()) {
+            $method = $request->method();
+            
+            // Solo permitir métodos GET (lectura)
+            if (!in_array($method, ['GET', 'HEAD'])) {
+                return redirect()->back()->with('error', 'No tiene permisos para realizar esta acción. Solo puede ver la información.');
+            }
+        }
+
+        return $next($request);
+    }
+}

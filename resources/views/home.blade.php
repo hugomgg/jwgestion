@@ -1,0 +1,157 @@
+@extends('layouts.app')
+
+@section('content')
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+
+        @if (session('status'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('status') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
+
+        @if (session('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
+
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-tachometer-alt me-2"></i>Panel de Opciones
+                </h5>
+            </div>
+
+            <div class="card-body">
+                <div class="row">
+                    @if(Auth::user()->canAccessAdminMenu())
+                        <!-- Dashboard para Usuarios con Acceso al Menú -->
+                        <div class="col-md-4">
+                            <div class="card border-primary">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-users fa-3x text-primary mb-3"></i>
+                                    <h5>Gestión de Usuarios</h5>
+                                    <p class="text-muted">
+                                        @if(Auth::user()->isAdmin())
+                                            Crear, editar y administrar usuarios del sistema
+                                        @else
+                                            Ver y consultar listado de usuarios del sistema
+                                        @endif
+                                    </p>
+                                    <a href="{{ route('users.index') }}" class="btn btn-primary">
+                                        <i class="fas fa-arrow-right me-2"></i>Acceder
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="card border-info">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-user-tag fa-3x text-info mb-3"></i>
+                                    <h5>Gestión de Perfiles</h5>
+                                    <p class="text-muted">Crear, editar y administrar perfiles de usuario</p>
+                                    <a href="{{ route('perfiles.index') }}" class="btn btn-info">
+                                        <i class="fas fa-arrow-right me-2"></i>Acceder
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="card border-warning">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-tasks fa-3x text-warning mb-3"></i>
+                                    <h5>Gestión de Asignaciones</h5>
+                                    <p class="text-muted">Crear, editar y administrar asignaciones del sistema</p>
+                                    <a href="{{ route('asignaciones.index') }}" class="btn btn-warning">
+                                        <i class="fas fa-arrow-right me-2"></i>Acceder
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="col-md-4">
+                            <div class="card border-dark">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-award fa-3x text-dark mb-3"></i>
+                                    <h5>Gestión de Nombramientos</h5>
+                                    <p class="text-muted">
+                                        @if(Auth::user()->isAdmin())
+                                            Crear, editar y administrar nombramientos congregacionales
+                                        @else
+                                            Ver y consultar listado de nombramientos congregacionales
+                                        @endif
+                                    </p>
+                                    <a href="{{ route('nombramiento.index') }}" class="btn btn-dark">
+                                        <i class="fas fa-arrow-right me-2"></i>Acceder
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 mt-3">
+                            @if(Auth::user()->isAdmin())
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Bienvenido, {{ Auth::user()->name }}!</strong>
+                                <span class="badge bg-primary ms-2">{{ Auth::user()->role_name }}</span>
+                                <br><small>Como {{ Auth::user()->role_name }}, tienes acceso completo a todas las funcionalidades del sistema.</small>
+                            </div>
+                            @else
+                            <div class="alert alert-warning">
+                                <i class="fas fa-eye me-2"></i>
+                                <strong>Bienvenido, {{ Auth::user()->name }}!</strong>
+                                <span class="badge bg-warning ms-2">{{ Auth::user()->role_name }}</span>
+                                <br><small>Como {{ Auth::user()->role_name }}, tienes acceso de visualización a los módulos del sistema.</small>
+                            </div>
+                            @endif
+                        </div>
+                    @else
+                        <!-- Dashboard para Estudiantes -->
+                        <div class="col-md-6">
+                            <div class="card border-info">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-book fa-3x text-info mb-3"></i>
+                                    <h5>Mis Cursos</h5>
+                                    <p class="text-muted">Accede a tus cursos y materiales</p>
+                                    <button class="btn btn-info" disabled>
+                                        <i class="fas fa-clock me-2"></i>Próximamente
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="card border-warning">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-tasks fa-3x text-warning mb-3"></i>
+                                    <h5>Mis Tareas</h5>
+                                    <p class="text-muted">Revisa tus tareas pendientes</p>
+                                    <button class="btn btn-warning" disabled>
+                                        <i class="fas fa-clock me-2"></i>Próximamente
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 mt-3">
+                            <div class="alert alert-success">
+                                <i class="fas fa-graduation-cap me-2"></i>
+                                <strong>Bienvenido, {{ Auth::user()->name }}!</strong>
+                                <span class="badge bg-success ms-2">{{ Auth::user()->role_name }}</span>
+                                <br><small>Como {{ Auth::user()->role_name }}, accede a tus cursos y recursos de aprendizaje desde este panel.</small>
+                            </div>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
