@@ -21,16 +21,16 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="card-body">
                     <!-- Contenedor para alertas -->
                     <div id="alert-container"></div>
-                    
+
                     <form id="editProgramaForm">
                         @csrf
                         @method('PUT')
                         <input type="hidden" id="programa_id" name="programa_id" value="{{ $programa->id }}">
-                        
+
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
@@ -69,7 +69,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
@@ -125,7 +125,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <!-- Sección de Partes del Programa -->
                         <div class="row">
                             <div class="col-12">
@@ -140,7 +140,7 @@
                                             <div class="col-md-6">
                                                 <div class="d-flex justify-content-end">
                                                     <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#parteProgramaModal" onclick="openCreateParteModal()">
-                                                        <i class="fas fa-plus me-2"></i>Nueva Parte TB
+                                                        <i class="fas fa-plus me-2"></i>Nueva Asignación TB
                                                     </button>
                                                 </div>
                                             </div>
@@ -186,7 +186,7 @@
                                             <div class="col-md-6">
                                                 <div class="d-flex justify-content-end">
                                                     <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#parteProgramaSegundaSeccionModal" onclick="openCreateParteSegundaSeccionModal()">
-                                                        <i class="fas fa-plus me-2"></i>Nueva Parte SP
+                                                        <i class="fas fa-plus me-2"></i>Nueva Asignación SP
                                                     </button>
                                                 </div>
                                             </div>
@@ -225,7 +225,7 @@
                                 </h6>
                                 <div>
                                     <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#parteProgramaTerceraSeccionModal" onclick="openCreateParteTerceraSeccionModal()">
-                                        <i class="fas fa-plus me-2"></i>Nueva Parte SMM
+                                        <i class="fas fa-plus me-2"></i>Nueva Asignación SMM
                                     </button>
                                 </div>
                             </div>
@@ -301,7 +301,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
@@ -343,7 +343,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="row">
                             <div class="col-12">
                                 <div class="d-flex justify-content-end gap-2">
@@ -367,7 +367,7 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="parteProgramaModalLabel">Nueva Parte de {{ $seccionReunion ? $seccionReunion->nombre : 'Primera Sección' }}</h5>
+                <h5 class="modal-title" id="parteProgramaModalLabel">Nueva Asignación de {{ $seccionReunion ? $seccionReunion->nombre : 'Primera Sección' }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form id="parteProgramaForm">
@@ -375,11 +375,11 @@
                     @csrf
                     <input type="hidden" id="parte_programa_id" name="parte_programa_id">
                     <input type="hidden" id="programa_id_parte" name="programa_id" value="{{ $programa->id }}">
-                    
+
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="parte_id" class="form-label">Parte de la Sección *</label>
+                                <label for="parte_id" class="form-label">Asignación <span class="text-danger">*</span></label>
                                 <select class="form-select" id="parte_id" name="parte_id" required>
                                     <option value="">Cargando...</option>
                                 </select>
@@ -390,23 +390,23 @@
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="tiempo_parte" class="form-label">Tiempo (minutos)</label>
-                                <input type="number" class="form-control" id="tiempo_parte" name="tiempo" min="1" max="60">
+                                <label for="tiempo_parte" class="form-label">Tiempo (minutos) <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="tiempo_parte" name="tiempo" min="1" max="60" required>
                                 <div class="invalid-feedback"></div>
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="mb-3">
                         <label for="tema_parte" class="form-label">Tema</label>
                         <textarea class="form-control" id="tema_parte" name="tema" rows="2" maxlength="500"></textarea>
                         <div class="invalid-feedback"></div>
                     </div>
-                    
+
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="encargado_id" class="form-label">Encargado *</label>
+                                <label for="encargado_id" class="form-label">Encargado <span class="text-danger">*</span></label>
                                 @if(Auth::user()->perfil == 3)
                                     <div class="input-group">
                                         <input type="text" class="form-control" id="encargado_display" name="encargado_display"
@@ -452,8 +452,8 @@
                         @if(!Auth::user()->isCoordinator())
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="leccion_parte" class="form-label">Lección</label>
-                                <input type="text" class="form-control" id="leccion_parte" name="leccion" maxlength="500">
+                                <label for="leccion_parte" class="form-label">Lección <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="leccion_parte" name="leccion" maxlength="500" required>
                                 <div class="invalid-feedback"></div>
                             </div>
                         </div>
@@ -478,23 +478,23 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="parteProgramaSegundaSeccionModalLabel">Nueva Parte de la Segunda Sección</h5>
+                <h5 class="modal-title" id="parteProgramaSegundaSeccionModalLabel">Nueva Asignación (Sala Principal)</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form id="parteProgramaSegundaSeccionForm">
                 <div class="modal-body">
                     <!-- Contenedor de alertas del modal -->
                     <div id="modal-alert-container-segunda-seccion"></div>
-                    
+
                     @csrf
                     <input type="hidden" id="parte_programa_segunda_seccion_id" name="parte_programa_id">
                     <input type="hidden" id="programa_id_segunda_seccion" name="programa_id" value="{{ $programa->id }}">
                     <input type="hidden" name="sala_id" value="1">
-                    
+
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="parte_id_segunda_seccion" class="form-label">Parte de la Sección *</label>
+                                <label for="parte_id_segunda_seccion" class="form-label">Asignación <span class="text-danger">*</span></label>
                                 <select class="form-select" id="parte_id_segunda_seccion" name="parte_id" required>
                                     <option value="">Cargando...</option>
                                 </select>
@@ -503,24 +503,27 @@
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="tiempo_segunda_seccion" class="form-label">Tiempo (minutos)</label>
-                                <input type="number" class="form-control" id="tiempo_segunda_seccion" name="tiempo" min="1" max="60">
+                                <label for="tiempo_segunda_seccion" class="form-label">Tiempo (minutos) <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="tiempo_segunda_seccion" name="tiempo" min="1" max="60" required>
                                 <div class="invalid-feedback"></div>
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="encargado_display_segunda_seccion" class="form-label">Encargado *</label>
+                                <label for="encargado_display_segunda_seccion" class="form-label">Encargado <span class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <input type="text" class="form-control" id="encargado_display_segunda_seccion" name="encargado_display" placeholder="Seleccionar una parte primero..." disabled>
                                     <button type="button" class="btn btn-outline-primary" id="btn-buscar-encargado-segunda" onclick="buscarEncargadoSegundaSeccion()" title="Buscar Encargado">
                                         <i class="fas fa-search"></i>
                                     </button>
-                                    
+
                                     <button type="button" class="btn btn-outline-success" id="btn-agregar-encargado-reemplazado-segunda" onclick="agregarEncargadoReemplazado()" title="Agregar Encargado como Reemplazado" disabled style="display: none;">
+                                        <i class="fas fa-user-plus"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-outline-success" id="btn-encargado-reemplazado-segunda" onclick="manejarEncargadoReemplazado()" title="Encargado reemplazado" disabled>
                                         <i class="fas fa-user-plus"></i>
                                     </button>
                                 </div>
@@ -536,8 +539,11 @@
                                     <button type="button" class="btn btn-outline-primary" id="btn-buscar-ayudante-segunda" onclick="buscarAyudanteSegundaSeccion()" title="Buscar Ayudante">
                                         <i class="fas fa-search"></i>
                                     </button>
-                                    
+
                                     <button type="button" class="btn btn-outline-success" id="btn-agregar-ayudante-reemplazado-segunda" onclick="agregarAyudanteReemplazado()" title="Agregar Ayudante como Reemplazado" disabled style="display: none;">
+                                        <i class="fas fa-user-plus"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-outline-success" id="btn-ayudante-reemplazado-segunda" onclick="manejarAyudanteReemplazado()" title="Ayudante reemplazado" disabled>
                                         <i class="fas fa-user-plus"></i>
                                     </button>
                                 </div>
@@ -546,7 +552,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Campos de Reemplazados -->
                     <div class="row" id="campos-reemplazados-segunda-seccion" style="display: none;">
                         <div class="col-md-6">
@@ -576,10 +582,10 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="mb-3">
-                        <label for="leccion_segunda_seccion" class="form-label">Lección</label>
-                        <input type="text" class="form-control" id="leccion_segunda_seccion" name="leccion" maxlength="500">
+                        <label for="leccion_segunda_seccion" class="form-label">Lección <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="leccion_segunda_seccion" name="leccion" maxlength="500" required>
                         <div class="invalid-feedback"></div>
                     </div>
                 </div>
@@ -602,23 +608,23 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="parteProgramaTerceraSeccionModalLabel">Nueva Parte de Seamos Mejores Maestros</h5>
+                <h5 class="modal-title" id="parteProgramaTerceraSeccionModalLabel">Nueva Asignación de Seamos Mejores Maestros</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form id="parteProgramaTerceraSeccionForm">
                 <div class="modal-body">
                     <!-- Contenedor de alertas del modal -->
                     <div id="modal-alert-container-tercera-seccion"></div>
-                    
+
                     @csrf
                     <input type="hidden" id="parte_programa_tercera_seccion_id" name="parte_programa_id">
                     <input type="hidden" id="programa_id_tercera_seccion" name="programa_id" value="{{ $programa->id }}">
                     <input type="hidden" name="sala_id" value="2">
-                    
+
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="parte_id_tercera_seccion" class="form-label">Parte de la Sección *</label>
+                                <label for="parte_id_tercera_seccion" class="form-label">Asignación <span class="text-danger">*</span></label>
                                 <select class="form-select" id="parte_id_tercera_seccion" name="parte_id" required>
                                     <option value="">Cargando...</option>
                                 </select>
@@ -627,17 +633,17 @@
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="tiempo_tercera_seccion" class="form-label">Tiempo (minutos)</label>
-                                <input type="number" class="form-control" id="tiempo_tercera_seccion" name="tiempo" min="1" max="60">
+                                <label for="tiempo_tercera_seccion" class="form-label">Tiempo (minutos) <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="tiempo_tercera_seccion" name="tiempo" min="1" max="60" required>
                                 <div class="invalid-feedback"></div>
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="encargado_id_tercera_seccion" class="form-label">Encargado *</label>
+                                <label for="encargado_id_tercera_seccion" class="form-label">Encargado <span class="text-danger">*</span></label>
                                 <div class="d-flex">
                                     <button type="button" class="btn btn-outline-primary me-2" id="btn-agregar-encargado-reemplazado-tercera" onclick="agregarEncargadoReemplazadoTercera()" title="Agregar como encargado reemplazado" style="display: none;">
                                         <i class="fas fa-user-plus"></i>
@@ -664,7 +670,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Campos de Reemplazados -->
                     <div class="row" id="campos-reemplazados-tercera-seccion">
                         <div class="col-md-6">
@@ -694,10 +700,10 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="mb-3">
-                        <label for="leccion_tercera_seccion" class="form-label">Lección</label>
-                        <input type="text" class="form-control" id="leccion_tercera_seccion" name="leccion" maxlength="500">
+                        <label for="leccion_tercera_seccion" class="form-label">Lección <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="leccion_tercera_seccion" name="leccion" maxlength="500" required>
                         <div class="invalid-feedback"></div>
                     </div>
                 </div>
@@ -1044,7 +1050,7 @@
                     </select>
                     <small class="form-text text-muted">Usuarios que han participado como encargado o ayudante en partes_programa, ordenados por fecha más reciente. Formato: fecha - parte - nombre (tipo)</small>
                 </div>
-                
+
                 <div class="mb-3">
                     <label for="select_historial_encargado_segunda_seccion" class="form-label">Historial del Encargado</label>
                     <select class="form-select" id="select_historial_encargado_segunda_seccion" style="width: 100%;" disabled>
@@ -1081,7 +1087,7 @@
                     </select>
                     <small class="form-text text-muted">Usuarios que han participado como ayudante en partes_programa, ordenados por fecha más reciente. Formato: fecha - parte - nombre (tipo)</small>
                 </div>
-                
+
                 <div class="mb-3">
                     <label for="select_historial_ayudante_segunda_seccion" class="form-label">Historial del Ayudante</label>
                     <select class="form-select" id="select_historial_ayudante_segunda_seccion" style="width: 100%;" disabled>
@@ -1211,10 +1217,10 @@ $(document).ready(function() {
         }
     });
     @endif
-    
+
     // Inicializar DataTable para partes del programa
     initPartesDataTable();
-    
+
     // Cargar partes del programa
     loadPartesPrograma();
 
@@ -1222,7 +1228,7 @@ $(document).ready(function() {
     @if(Auth::user()->perfil == 3)
     initPartesSegundaSeccionDataTable();
     initPartesTerceraSeccionDataTable();
-    
+
     // Cargar partes de la segunda sección
     loadPartesSegundaSeccion();
     // Cargar partes de la tercera sección
@@ -1240,16 +1246,16 @@ $(document).ready(function() {
         const selectedOption = $(this).find('option:selected');
         const tiempo = selectedOption.data('tiempo');
         const parteId = $(this).val();
-        
-        
-        
+
+
+
         // Autocompletar tiempo
         if (tiempo) {
             $('#tiempo_parte').val(tiempo);
         } else {
             $('#tiempo_parte').val('');
         }
-        
+
         // Manejar campos de encargado según el perfil del usuario
         if (userIsCoordinator) {
             // Para coordinadores, habilitar/deshabilitar botón de buscar encargado
@@ -1277,20 +1283,20 @@ $(document).ready(function() {
     // Manejar envío del formulario de editar programa
     $('#editProgramaForm').submit(function(e) {
         e.preventDefault();
-        
+
         const programaId = $('#programa_id').val();
         const submitBtn = $('#updateProgramaBtn');
         const spinner = submitBtn.find('.spinner-border');
-        
+
         // Deshabilitar botón y mostrar spinner
         submitBtn.prop('disabled', true);
         spinner.removeClass('d-none');
-        
+
         // Limpiar errores previos
         $('.is-invalid').removeClass('is-invalid');
         $('.invalid-feedback').text('');
         $('#alert-container').empty();
-        
+
         $.ajax({
             url: `/programas/${programaId}`,
             method: 'PUT',
@@ -1323,7 +1329,7 @@ $(document).ready(function() {
             }
         });
     });
-    
+
     // Función para mostrar alertas
     function showAlert(container, type, message) {
         const alertHtml = `
@@ -1361,7 +1367,7 @@ $(document).ready(function() {
             searching: false
         });
     }
-    
+
     function initPartesTerceraSeccionDataTable() {
         partesTerceraSeccionTable = $('#partesTerceraSeccionTable').DataTable({
             language: {
@@ -1378,18 +1384,18 @@ $(document).ready(function() {
 
     function loadPartesSegundaSeccion() {
         const programaId = $('#programa_id').val();
-        
+
         $.ajax({
             url: `/programas/${programaId}/partes-segunda-seccion`,
             method: 'GET',
             success: function(response) {
                 if (response.success) {
                     partesSegundaSeccionTable.clear();
-                    
+
                     response.data.forEach(function(parte) {
                         const upDisabled = parte.es_primero ? 'disabled' : '';
                         const downDisabled = parte.es_ultimo ? 'disabled' : '';
-                        
+
                         let acciones = `
                             <div class="btn-group" role="group">
                                 <button type="button" class="btn btn-sm btn-outline-secondary" onclick="moveParteSegundaSeccionUp(${parte.id})" title="Subir" ${upDisabled}>
@@ -1406,7 +1412,7 @@ $(document).ready(function() {
                                 </button>
                             </div>
                         `;
-                        
+
                         let rowData = [
                             parte.tiempo || '-',
                             parte.parte_abreviacion || '-',
@@ -1415,10 +1421,10 @@ $(document).ready(function() {
                             parte.leccion || '-',
                             acciones
                         ];
-                        
+
                         partesSegundaSeccionTable.row.add(rowData);
                     });
-                    
+
                     partesSegundaSeccionTable.draw();
                 } else {
                     console.error('Error al cargar las partes de la segunda sección:', response.message);
@@ -1429,10 +1435,10 @@ $(document).ready(function() {
             }
         });
     }
-    
+
     function loadPartesTerceraSeccion() {
         const programaId = $('#programa_id').val();
-        
+
         $.ajax({
             url: `/programas/${programaId}/partes-tercera-seccion`,
             method: 'GET',
@@ -1440,11 +1446,11 @@ $(document).ready(function() {
                 if (response.success) {
                     // Limpiar la tabla
                     partesTerceraSeccionTable.clear();
-                    
+
                     response.data.forEach(function(parte) {
                         const upDisabled = parte.es_primero ? 'disabled' : '';
                         const downDisabled = parte.es_ultimo ? 'disabled' : '';
-                        
+
                         let acciones = `
                             <div class="btn-group" role="group">
                                 <button type="button" class="btn btn-sm btn-outline-secondary" onclick="moveParteTerceraSeccionUp(${parte.id})" title="Subir" ${upDisabled}>
@@ -1461,7 +1467,7 @@ $(document).ready(function() {
                                 </button>
                             </div>
                         `;
-                        
+
                         let rowData = [
                             parte.tiempo || '-',
                             parte.parte_abreviacion || '-',
@@ -1470,10 +1476,10 @@ $(document).ready(function() {
                             parte.leccion || '-',
                             acciones
                         ];
-                        
+
                         partesTerceraSeccionTable.row.add(rowData);
                     });
-                    
+
                     // Dibujar la tabla
                     partesTerceraSeccionTable.draw();
                 } else {
@@ -1489,23 +1495,23 @@ $(document).ready(function() {
 
     function loadPartesPrograma() {
         const programaId = $('#programa_id').val();
-        
+
         $.ajax({
             url: `/programas/${programaId}/partes`,
             method: 'GET',
             success: function(response) {
                 if (response.success) {
                     partesTable.clear();
-                    
+
                     response.data.forEach(function(parte) {
                         let acciones = `
                             <div class="btn-group" role="group">
                         `;
-                        
+
                         if (userIsCoordinator) {
                             const upDisabled = parte.es_primero ? 'disabled' : '';
                             const downDisabled = parte.es_ultimo ? 'disabled' : '';
-                            
+
                             acciones += `
                                 <button type="button" class="btn btn-sm btn-outline-secondary" onclick="moveParteUp(${parte.id})" title="Subir" ${upDisabled}>
                                     <i class="fas fa-chevron-up"></i>
@@ -1515,13 +1521,13 @@ $(document).ready(function() {
                                 </button>
                             `;
                         }
-                        
+
                         acciones += `
                                 <button type="button" class="btn btn-sm btn-outline-primary" onclick="editParte(${parte.id})" title="Editar">
                                     <i class="fas fa-edit"></i>
                                 </button>
                         `;
-                        
+
                         if (userIsCoordinator) {
                             acciones += `
                                 <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteParte(${parte.id})" title="Eliminar">
@@ -1529,28 +1535,28 @@ $(document).ready(function() {
                                 </button>
                             `;
                         }
-                        
+
                         acciones += `
                             </div>
                         `;
-                        
+
                         let rowData = [
                             parte.tiempo || '-',
                             parte.parte_abreviacion || '-',
                             parte.encargado_nombre || '-',
                             parte.tema || '-'
                         ];
-                        
+
                         // Solo agregar la columna de lección si no es coordinador
                         if (!userIsCoordinator) {
                             rowData.push(parte.leccion || '-');
                         }
-                        
+
                         rowData.push(acciones);
-                        
+
                         partesTable.row.add(rowData);
                     });
-                    
+
                     partesTable.draw();
                 }
             },
@@ -1563,25 +1569,25 @@ $(document).ready(function() {
     function openCreateParteModal() {
         isEditMode = false;
         const seccionNombre = '{{ $seccionReunion ? $seccionReunion->nombre : "Primera Sección" }}';
-        $('#parteProgramaModalLabel').text('Nueva Parte de ' + seccionNombre);
+        $('#parteProgramaModalLabel').text('Nueva Asignación de ' + seccionNombre);
         $('#saveParteBtn').text('Guardar Parte');
         $('#parteProgramaForm')[0].reset();
-        
-        // Mostrar select y ocultar input de texto para "Parte de la Sección" en modo "nuevo"
+
+        // Mostrar select y ocultar input de texto para "Asignación" en modo "nuevo"
         $('#parte_id').show();
         $('#parte_display').hide();
-        
+
         // Ocultar campo y botón de encargado reemplazado en modo "nuevo"
         if (userIsCoordinator) {
             $('#encargado_reemplazado_display').closest('.col-md-6').hide();
             $('#btn-agregar-reemplazado').hide();
         }
         $('#parte_programa_id').val('');
-        
+
         // Limpiar errores previos
         $('.is-invalid').removeClass('is-invalid');
         $('.invalid-feedback').text('');
-        
+
         // Restablecer campos de encargado según el perfil del usuario
         if (userIsCoordinator) {
             // Para coordinadores, limpiar los campos de texto e input hidden
@@ -1598,32 +1604,32 @@ $(document).ready(function() {
             // Para otros perfiles, restablecer el select de encargados
             $('#encargado_id').empty().append('<option value="">Seleccionar una parte primero...</option>').trigger('change');
         }
-        
+
         // Cargar partes de sección disponibles con Ajax
         loadPartesSecciones();
-        
+
         $('#parteProgramaModal').modal('show');
     }
 
     function editParte(id) {
         isEditMode = true;
-        $('#parteProgramaModalLabel').text('Editar Parte del Programa');
+        $('#parteProgramaModalLabel').text('Editar Asignación del Programa');
         $('#saveParteBtn').text('Actualizar Parte');
-        
-        // Ocultar select y mostrar input de texto para "Parte de la Sección" en modo "editar"
+
+        // Ocultar select y mostrar input de texto para "Asignación" en modo "editar"
         $('#parte_id').hide();
         $('#parte_display').show();
-        
+
         // Mostrar campo y botón de encargado reemplazado en modo "editar"
         if (userIsCoordinator) {
             $('#encargado_reemplazado_display').closest('.col-md-6').show();
             $('#btn-agregar-reemplazado').show();
         }
-        
+
         // Limpiar errores previos
         $('.is-invalid').removeClass('is-invalid');
         $('.invalid-feedback').text('');
-        
+
         $.ajax({
             url: `/partes-programa/${id}`,
             method: 'GET',
@@ -1633,12 +1639,12 @@ $(document).ready(function() {
                     $('#parte_programa_id').val(parte.id);
                     $('#tiempo_parte').val(parte.tiempo);
                     $('#tema_parte').val(parte.tema);
-                    
+
                     // Solo establecer lección si no es coordinador
                     if (!userIsCoordinator) {
                         $('#leccion_parte').val(parte.leccion);
                     }
-                    
+
                     // Cargar solo la parte correspondiente en modo edición
                     loadPartesSeccionesForEdit(parte.parte_id, function() {
                         // Manejar el campo encargado según el perfil del usuario
@@ -1646,7 +1652,7 @@ $(document).ready(function() {
                             // Para coordinadores, usar los campos de texto e input hidden
                             $('#encargado_id').val(parte.encargado_id);
                             $('#encargado_display').val(parte.encargado ? parte.encargado.name : '');
-                            
+
                             // Cargar encargado reemplazado si existe
                             if (parte.encargado_reemplazado_id && parte.encargado_reemplazado) {
                                 $('#encargado_reemplazado_id').val(parte.encargado_reemplazado_id);
@@ -1657,10 +1663,10 @@ $(document).ready(function() {
                                 $('#encargado_reemplazado_display').val('');
                                 $('#btn-eliminar-reemplazado').prop('disabled', true);
                             }
-                            
+
                             // Habilitar el botón de buscar encargado ya que hay una parte seleccionada
                             $('#btn-buscar-encargado').prop('disabled', false);
-                            
+
                             // Habilitar/deshabilitar el botón de historial según si hay encargado
                             if (parte.encargado_id) {
                                 $('#btn-historial-encargado').prop('disabled', false);
@@ -1681,7 +1687,7 @@ $(document).ready(function() {
                                 $('#encargado_id').val(parte.encargado_id).trigger('change');
                             }
                         }
-                        
+
                         $('#parteProgramaModal').modal('show');
                     });
                 }
@@ -1695,15 +1701,47 @@ $(document).ready(function() {
     function submitPartePrograma() {
         const submitBtn = $('#saveParteBtn');
         const spinner = submitBtn.find('.spinner-border');
-        
+
         // Deshabilitar botón y mostrar spinner
         submitBtn.prop('disabled', true);
         spinner.removeClass('d-none');
-        
+
         // Limpiar errores previos
         $('.is-invalid').removeClass('is-invalid');
         $('.invalid-feedback').text('');
-        
+
+        // Validar campo tiempo
+        const tiempoValue = $('#tiempo_parte').val();
+        if (!tiempoValue || tiempoValue < 1) {
+            $('#tiempo_parte').addClass('is-invalid');
+            $('#tiempo_parte').siblings('.invalid-feedback').text('El campo Tiempo es obligatorio y debe ser mayor a 0.');
+            submitBtn.prop('disabled', false);
+            spinner.addClass('d-none');
+            return;
+        }
+
+        // Validar campo leccion si no es coordinador
+        if (!userIsCoordinator) {
+            const leccionValue = $('#leccion_parte').val().trim();
+            if (!leccionValue) {
+                $('#leccion_parte').addClass('is-invalid');
+                $('#leccion_parte').siblings('.invalid-feedback').text('El campo Lección es obligatorio.');
+                submitBtn.prop('disabled', false);
+                spinner.addClass('d-none');
+                return;
+            }
+        } else {
+            // Para coordinadores también validar el campo leccion
+            const leccionValue = $('#leccion_parte').val().trim();
+            if (!leccionValue) {
+                $('#leccion_parte').addClass('is-invalid');
+                $('#leccion_parte').siblings('.invalid-feedback').text('El campo Lección es obligatorio.');
+                submitBtn.prop('disabled', false);
+                spinner.addClass('d-none');
+                return;
+            }
+        }
+
         // Crear FormData manualmente para asegurar que incluya todos los campos
         const formDataObj = {
             'programa_id': $('#programa_id_parte').val(),
@@ -1714,24 +1752,25 @@ $(document).ready(function() {
             'encargado_reemplazado_id': $('#encargado_reemplazado_id').val(),
             '_token': $('meta[name="csrf-token"]').attr('content')
         };
-        
+
         // Solo incluir lección si no es coordinador
         if (!userIsCoordinator) {
             formDataObj['leccion'] = $('#leccion_parte').val();
         } else {
-            formDataObj['leccion'] = null;
+            // Para coordinadores también es obligatorio el campo leccion
+            formDataObj['leccion'] = $('#leccion_parte').val();
         }
-        
+
         const url = isEditMode ? `/partes-programa/${$('#parte_programa_id').val()}` : '/partes-programa';
         const method = isEditMode ? 'PUT' : 'POST';
-        
+
         // Para métodos PUT, agregar el método al formulario
         if (method === 'PUT') {
             formDataObj['_method'] = 'PUT';
         }
-        
-        
-        
+
+
+
         $.ajax({
             url: url,
             method: 'POST', // Laravel maneja PUT a través de POST con _method
@@ -1751,7 +1790,7 @@ $(document).ready(function() {
                         if (field === 'tiempo') fieldName = 'tiempo_parte';
                         if (field === 'tema') fieldName = 'tema_parte';
                         if (field === 'leccion') fieldName = 'leccion_parte';
-                        
+
                         $(`#${fieldName}`).addClass('is-invalid');
                         $(`#${fieldName}`).siblings('.invalid-feedback').text(errors[field][0]);
                     }
@@ -1770,15 +1809,15 @@ $(document).ready(function() {
     function deleteParte(id) {
         // Mostrar el modal de confirmación
         $('#confirmDeleteModal').modal('show');
-        
+
         // Manejar la confirmación de eliminación
         $('#confirmDeleteBtn').off('click').on('click', function() {
             const deleteBtn = $(this);
             const originalText = deleteBtn.html();
-            
+
             // Deshabilitar botón y mostrar spinner
             deleteBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2" role="status"></span>Eliminando...');
-            
+
             $.ajax({
                 url: `/partes-programa/${id}`,
                 method: 'DELETE',
@@ -1812,7 +1851,7 @@ $(document).ready(function() {
                 if (response.success) {
                     // Limpiar el select
                     $('#encargado_id').empty().append('<option value="">Seleccionar...</option>');
-                    
+
                     // Agregar las opciones de usuarios filtrados con fecha de última participación
                     response.data.forEach(function(usuario) {
                         // Formatear como "fecha | nombre"
@@ -1827,15 +1866,15 @@ $(document).ready(function() {
                         } else {
                             displayText = `Primera vez | ${usuario.name}`;
                         }
-                        
+
                         $('#encargado_id').append(
                             `<option value="${usuario.id}">${displayText}</option>`
                         );
                     });
-                    
+
                     // Actualizar Select2 después de agregar opciones
                     $('#encargado_id').trigger('change');
-                    
+
                     // Ejecutar callback si se proporciona
                     if (typeof callback === 'function') {
                         callback();
@@ -1843,7 +1882,7 @@ $(document).ready(function() {
                 } else {
                     showAlert('alert-container', 'warning', 'No se encontraron usuarios para esta parte');
                     $('#encargado_id').empty().append('<option value="">Seleccionar...</option>').trigger('change');
-                    
+
                     // Ejecutar callback incluso si no hay usuarios
                     if (typeof callback === 'function') {
                         callback();
@@ -1853,7 +1892,7 @@ $(document).ready(function() {
             error: function(xhr) {
                 showAlert('alert-container', 'danger', 'Error al cargar los usuarios para esta parte');
                 $('#encargado_id').empty().append('<option value="">Seleccionar...</option>').trigger('change');
-                
+
                 // Ejecutar callback incluso en caso de error
                 if (typeof callback === 'function') {
                     callback();
@@ -1861,12 +1900,12 @@ $(document).ready(function() {
             }
         });
     }
-    
+
     function loadPartesSecciones() {
         const programaId = $('#programa_id').val();
-        
+
         $('#parte_id').empty().append('<option value="">Cargando...</option>');
-        
+
         $.ajax({
             url: '/partes-secciones',
             method: 'GET',
@@ -1876,13 +1915,13 @@ $(document).ready(function() {
             success: function(response) {
                 if (response.success) {
                     $('#parte_id').empty().append('<option value="">Seleccionar...</option>');
-                    
+
                     response.data.forEach(function(parte) {
                         $('#parte_id').append(
                             `<option value="${parte.id}" data-tiempo="${parte.tiempo || ''}">${parte.nombre} (${parte.abreviacion})</option>`
                         );
                     });
-                    
+
                     // Para coordinadores, mantener el campo encargado vacío por defecto
                     if (userIsCoordinator) {
                         $('#encargado_id').empty().append('<option value="">Seleccionar una parte primero...</option>').trigger('change');
@@ -1900,17 +1939,17 @@ $(document).ready(function() {
             }
         });
     }
-    
+
     function loadUsuariosDisponibles() {
         $('#encargado_id').empty().append('<option value="">Cargando...</option>');
-        
+
         $.ajax({
             url: '/usuarios-disponibles',
             method: 'GET',
             success: function(response) {
                 if (response.success) {
                     $('#encargado_id').empty().append('<option value="">Seleccionar...</option>');
-                    
+
                     response.data.forEach(function(usuario) {
                         // Formatear como "fecha | nombre"
                         let displayText;
@@ -1924,10 +1963,10 @@ $(document).ready(function() {
                         } else {
                             displayText = `Primera vez | ${usuario.name}`;
                         }
-                        
+
                         $('#encargado_id').append(`<option value="${usuario.id}">${displayText}</option>`);
                     });
-                    
+
                     // Actualizar Select2 después de agregar opciones
                     $('#encargado_id').trigger('change');
                 } else {
@@ -1940,10 +1979,10 @@ $(document).ready(function() {
             }
         });
     }
-    
+
     function loadPartesSeccionesForEdit(parteId, callback) {
         $('#parte_id').empty().append('<option value="">Cargando...</option>');
-        
+
         $.ajax({
             url: `/partes-seccion/${parteId}`,
             method: 'GET',
@@ -1951,28 +1990,28 @@ $(document).ready(function() {
                 if (response.success) {
                     const parte = response.data;
                     $('#parte_id').empty();
-                    
+
                     // Solo agregar la parte que corresponde al registro que se está editando
                     $('#parte_id').append(
                         `<option value="${parte.id}" data-tiempo="${parte.tiempo || ''}" selected>${parte.nombre} (${parte.abreviacion})</option>`
                     );
-                    
+
                     // Llenar el campo de texto deshabilitado para el modo editar
                     $('#parte_display').val(parte.nombre);
                     $('#parte_id_hidden').val(parte.id);
-                    
+
                     // Autocompletar el tiempo si está disponible
                     if (parte.tiempo) {
                         $('#tiempo_parte').val(parte.tiempo);
                     }
-                    
+
                     // Ejecutar callback si se proporciona
                     if (typeof callback === 'function') {
                         callback();
                     }
                 } else {
                     $('#parte_id').empty().append('<option value="">Error al cargar la parte</option>');
-                    
+
                     // Ejecutar callback incluso si hay error
                     if (typeof callback === 'function') {
                         callback();
@@ -1982,7 +2021,7 @@ $(document).ready(function() {
             error: function(xhr) {
                 console.error('Error al cargar parte de sección:', xhr);
                 $('#parte_id').empty().append('<option value="">Error al cargar</option>');
-                
+
                 // Ejecutar callback incluso en caso de error
                 if (typeof callback === 'function') {
                     callback();
@@ -1990,17 +2029,17 @@ $(document).ready(function() {
             }
         });
     }
-    
+
     // Inicializar Select2 para presidencia, oradores y canciones solo si es coordinador
     @if(Auth::user()->perfil == 3)
 
 
 
     @endif
-    
+
     // Funciones para segunda sección
     @if(Auth::user()->perfil == 3)
-    
+
     // Inicializar Select2 para el modal de tercera sección
     $('#encargado_id_tercera_seccion').select2({
         placeholder: 'Seleccionar...',
@@ -2049,7 +2088,7 @@ $(document).ready(function() {
                 const selectedOption = $(this).find('option:selected');
                 const tiempo = selectedOption.data('tiempo');
                 const tipo = selectedOption.data('tipo');
-                
+
                 // Limpiar campos de encargado y ayudante al seleccionar una parte
                 $('#encargado_display_segunda_seccion').val('');
                 $('#encargado_id_segunda_seccion').val('');
@@ -2058,12 +2097,12 @@ $(document).ready(function() {
                 // También limpiar el select2 de ambos (por si acaso)
                 $('#encargado_id_segunda_seccion').trigger('change');
                 $('#ayudante_id_segunda_seccion').trigger('change');
-    
+
                 if (parteId) {
                     btnBuscarEncargado.prop('disabled', false).attr('title', 'Buscar Encargado');
                     // El botón "Buscar Ayudante" se mantiene deshabilitado hasta que se seleccione un encargado
                     btnBuscarAyudante.prop('disabled', true).attr('title', 'Seleccionar un encargado primero');
-                    
+
                     // Cargar el tiempo en el campo correspondiente
                     if (typeof tiempo !== 'undefined' && tiempo !== null && tiempo !== '') {
                         $('#tiempo_segunda_seccion').val(tiempo);
@@ -2083,33 +2122,33 @@ $(document).ready(function() {
         if (window.editingParteTwoData) {
             return;
         }
-        
+
         const encargadoSeleccionado = $(this).val();
         const parteSeleccionada = $('#parte_id_segunda_seccion').val();
         const ayudanteSelect = $('#ayudante_id_segunda_seccion');
         const btnBuscarAyudante = $('#btn-buscar-ayudante-segunda');
-        
+
         // Verificar condiciones para habilitar el botón "Buscar Ayudante"
         if (encargadoSeleccionado && encargadoSeleccionado !== '' && parteSeleccionada) {
             const selectedOption = $('#parte_id_segunda_seccion').find('option:selected');
             const tipo = selectedOption.data('tipo');
-            
+
             if (tipo == 2 || tipo == 3) {
                 btnBuscarAyudante.prop('disabled', false);
                 btnBuscarAyudante.attr('title', 'Buscar Ayudante');
             } else {
                 btnBuscarAyudante.prop('disabled', true);
-                btnBuscarAyudante.attr('title', 'No disponible para este tipo de parte');
+                btnBuscarAyudante.attr('title', 'No disponible para esta Asignación');
             }
         } else {
             btnBuscarAyudante.prop('disabled', true);
             btnBuscarAyudante.attr('title', 'Seleccionar encargado y parte con tipo 2 o 3');
         }
-        
+
         // Continuar con la lógica normal
         continueEncargadoChange(encargadoSeleccionado, parteSeleccionada, ayudanteSelect);
     });
-    
+
     // Función para continuar el cambio de encargado
     function continueEncargadoChange(encargadoSeleccionado, parteSeleccionada, ayudanteSelect) {
         if (encargadoSeleccionado && parteSeleccionada) {
@@ -2122,7 +2161,7 @@ $(document).ready(function() {
                 // Si no hay ayudante actual, cargar normalmente
                 loadAyudantesByEncargadoAndParte(encargadoSeleccionado, parteSeleccionada);
             }
-            
+
         } else {
             // Si no hay encargado o parte seleccionada, limpiar ayudantes
             programmaticChange = true; // Marcar como cambio programático
@@ -2131,7 +2170,7 @@ $(document).ready(function() {
             clearHistorialEncargado();
         }
     }
-    
+
     // Función para verificar sexos y decidir si recargar ayudantes
     function verificarSexosYCargarAyudantes(encargadoId, ayudanteId, parteId) {
         $.ajax({
@@ -2145,13 +2184,13 @@ $(document).ready(function() {
                 if (response.success) {
                     const encargadoSexo = response.encargado_sexo;
                     const ayudanteSexo = response.ayudante_sexo;
-                    
+
                     // Si ambos son del mismo sexo, no recargar ayudantes
                     if (encargadoSexo === ayudanteSexo) {
-                        
+
                         return;
                     }
-                    
+
                     // Si son de diferente sexo, recargar ayudantes
                     loadAyudantesByEncargadoAndParte(encargadoId, parteId);
                 } else {
@@ -2173,21 +2212,21 @@ $(document).ready(function() {
         if (window.editingParteTwoData) {
             return;
         }
-        
+
         const ayudanteSeleccionado = $(this).val();
         const encargadoSelect = $('#encargado_id_segunda_seccion');
-        
-        
-        
+
+
+
         // Continuar con la lógica normal
         continueAyudanteChange(ayudanteSeleccionado, encargadoSelect);
     });
-    
+
     // Función para continuar el cambio de ayudante
     function continueAyudanteChange(ayudanteSeleccionado, encargadoSelect) {
         if (ayudanteSeleccionado) {
         }
-        
+
         // Actualizar Select2 para reflejar los cambios
         encargadoSelect.trigger('change.select2');
     }
@@ -2198,18 +2237,18 @@ $(document).ready(function() {
         const tiempo = selectedOption.data('tiempo');
         const parteId = $(this).val();
         const encargadoSeleccionado = $('#encargado_id_tercera_seccion').val();
-        
+
         // Autocompletar tiempo
         if (tiempo) {
             $('#tiempo_tercera_seccion').val(tiempo);
         } else {
             $('#tiempo_tercera_seccion').val('');
         }
-        
+
         // Filtrar usuarios del campo encargado basado en la parte seleccionada
         if (parteId) {
             loadEncargadosByParteTerceraSeccion(parteId);
-            
+
             // Si ya hay un encargado seleccionado, actualizar ayudantes con la nueva lógica
             if (encargadoSeleccionado) {
                 loadAyudantesByEncargadoAndParteTercera(encargadoSeleccionado, parteId);
@@ -2230,13 +2269,13 @@ $(document).ready(function() {
         if (window.editingParteTerceraData) {
             return;
         }
-        
+
         const encargadoSeleccionado = $(this).val();
         const parteSeleccionada = $('#parte_id_tercera_seccion').val();
-        
+
         // Limpiar historial anterior
         clearHistorialEncargadoTercera();
-        
+
         if (encargadoSeleccionado) {
             // Cargar historial del encargado seleccionado siempre
             if (parteSeleccionada) {
@@ -2264,57 +2303,61 @@ $(document).ready(function() {
         if (window.editingParteTerceraData) {
             return;
         }
-        
+
         const ayudanteSeleccionado = $(this).val();
         const encargadoSelect = $('#encargado_id_tercera_seccion');
-        
+
         // Limpiar historial anterior
         clearHistorialAyudanteTercera();
-        
+
         // Continuar con la lógica del ayudante
         continueAyudanteChangeTercera(ayudanteSeleccionado, encargadoSelect);
     });
 
     function openCreateParteSegundaSeccionModal() {
         isEditMode = false;
-        $('#parteProgramaSegundaSeccionModalLabel').text('Nueva Parte de la Segunda Sección');
+        $('#parteProgramaSegundaSeccionModalLabel').text('Nueva Asignación (Sala Principal)');
         $('#parteProgramaSegundaSeccionForm')[0].reset();
         $('#parte_programa_segunda_seccion_id').val('');
-        
+
         // Limpiar errores previos
         $('.is-invalid').removeClass('is-invalid');
         $('.invalid-feedback').text('');
-        
+
         // Limpiar alertas del modal
         $('#modal-alert-container-segunda-seccion').empty();
-        
+
         // Cargar partes de la segunda sección
         loadPartesSeccionesSegundaSeccion();
-        
+
         // Para perfil=3, dejar el campo encargado vacío hasta que se seleccione una parte
         $('#encargado_display_segunda_seccion').val('Seleccionar una parte primero...');
         $('#encargado_id_segunda_seccion').val('');
-        
+
         // Inicializar campo ayudante
         $('#ayudante_display_segunda_seccion').val('Seleccionar encargado y parte primero...');
         $('#ayudante_id_segunda_seccion').val('');
-        
+
         // Limpiar historial de encargado
         clearHistorialEncargado();
-        
+
         // Limpiar historial de ayudante
         clearHistorialAyudante();
-        
+
         // Ocultar campos de reemplazados en modo nuevo
         $('#campos-reemplazados-segunda-seccion').hide();
-        
+
         // Ocultar botones de agregar reemplazado en modo nuevo
         $('#btn-agregar-encargado-reemplazado').hide();
         $('#btn-agregar-ayudante-reemplazado').hide();
-        
+
+        // Ocultar botones de reemplazado en modo nuevo
+        $('#btn-encargado-reemplazado-segunda').hide();
+        $('#btn-ayudante-reemplazado-segunda').hide();
+
         // Limpiar historial de ayudante
         clearHistorialAyudante();
-        
+
         // Inicializar estado de los botones "Buscar Encargado" y "Buscar Ayudante" (deshabilitados por defecto)
         $('#btn-buscar-encargado-segunda').prop('disabled', true);
         $('#btn-buscar-encargado-segunda').attr('title', 'Seleccionar una parte primero');
@@ -2324,47 +2367,54 @@ $(document).ready(function() {
 
     function editParteSegundaSeccion(id) {
         isEditMode = true;
-        $('#parteProgramaSegundaSeccionModalLabel').text('Editar Parte de la Segunda Sección');
+        $('#parteProgramaSegundaSeccionModalLabel').text('Editar Asignación (Sala Principal)');
         $('#parte_programa_segunda_seccion_id').val(id);
-        
+
         // Limpiar errores previos
         $('.is-invalid').removeClass('is-invalid');
         $('.invalid-feedback').text('');
-        
+
         // Limpiar alertas del modal
         $('#modal-alert-container-segunda-seccion').empty();
-        
+
         // Limpiar completamente el formulario antes de cargar datos
         $('#parteProgramaSegundaSeccionForm')[0].reset();
-        
+
         // Limpiar todos los selects
         $('#parte_id_segunda_seccion').empty().append('<option value="">Seleccionar...</option>');
         $('#encargado_display_segunda_seccion').val('Seleccionar...');
         $('#encargado_id_segunda_seccion').val('');
         $('#ayudante_display_segunda_seccion').val('Seleccionar...');
         $('#ayudante_id_segunda_seccion').val('');
-        
+
         // Actualizar el estado de los botones al limpiar los campos
         updateButtonStatesSegundaSeccion();
-        
+
         // Limpiar campos de reemplazados
         clearEncargadoReemplazado();
         clearAyudanteReemplazado();
-        
-        // Limpiar historiales
-        clearHistorialEncargado();
-        clearHistorialAyudante();
-        
-        // Mostrar campos de reemplazados en modo edición
-        $('#campos-reemplazados-segunda-seccion').show();
-        
-        // Mostrar botones de agregar reemplazado en modo edición
-        $('#btn-agregar-encargado-reemplazado').show();
-        $('#btn-agregar-ayudante-reemplazado').show();
-        
+
+        // Pequeño delay para asegurar que los campos se hayan limpiado
+        setTimeout(function() {
+            // Limpiar historiales
+            clearHistorialEncargado();
+            clearHistorialAyudante();
+
+            // Mostrar campos de reemplazados en modo edición
+            $('#campos-reemplazados-segunda-seccion').show();
+
+            // Mostrar botones de agregar reemplazado en modo edición
+            $('#btn-agregar-encargado-reemplazado').show();
+            $('#btn-agregar-ayudante-reemplazado').show();
+
+            // Mostrar botones de reemplazado en modo edición
+            $('#btn-encargado-reemplazado-segunda').show();
+            $('#btn-ayudante-reemplazado-segunda').show();
+        }, 50);
+
         // Variable para controlar si estamos en modo edición para evitar eventos conflictivos
         window.editingParteTwoData = true;
-        
+
         $.ajax({
             url: `/partes-programa/${id}`,
             method: 'GET',
@@ -2374,7 +2424,7 @@ $(document).ready(function() {
                     $('#parte_id_segunda_seccion').val(parte.parte_id);
                     $('#tiempo_segunda_seccion').val(parte.tiempo);
                     $('#leccion_segunda_seccion').val(parte.leccion);
-                    
+
                     // Cargar nombres de usuarios reemplazados si existen
                     // Cargar encargado reemplazado
                     if (parte.encargado_reemplazado) {
@@ -2384,7 +2434,7 @@ $(document).ready(function() {
                         $('#encargado_reemplazado_segunda_seccion').val('');
                         $('#encargado_reemplazado_id_segunda_seccion').val('');
                     }
-                    
+
                     // Cargar ayudante reemplazado
                     if (parte.ayudante_reemplazado) {
                         $('#ayudante_reemplazado_segunda_seccion').val(parte.ayudante_reemplazado.name);
@@ -2393,16 +2443,22 @@ $(document).ready(function() {
                         $('#ayudante_reemplazado_segunda_seccion').val('');
                         $('#ayudante_reemplazado_id_segunda_seccion').val('');
                     }
-                    
-                    // Las variables de control de reemplazados se inicializarán después de cargar los selects
-                    
+
+                    // Asegurar que los campos de reemplazados sean visibles
+                    $('#campos-reemplazados-segunda-seccion').show();
+
+                    // Verificar después de un delay que los campos se hayan cargado correctamente
+                    setTimeout(function() {
+                        // Verificación completada
+                    }, 500);                    // Las variables de control de reemplazados se inicializarán después de cargar los selects
+
                     // Cargar datos necesarios en secuencia
                     loadPartesSeccionesForEditSegundaSeccion(parte.parte_id);
-                    
+
                     // Esperar un poco y luego cargar encargados
                     setTimeout(function() {
                         loadEncargadosByParteSegundaSeccion(parte.parte_id, parte.encargado_id);
-                        
+
                         // Establecer directamente el encargado seleccionado después de un momento
                         setTimeout(function() {
                             if (parte.encargado_id) {
@@ -2410,7 +2466,7 @@ $(document).ready(function() {
                                 $('#encargado_display_segunda_seccion').val(parte.encargado_nombre || 'Usuario ID: ' + parte.encargado_id);
                             }
                         }, 100);
-                        
+
                         // Esperar otro poco y cargar ayudantes
                         setTimeout(function() {
                             if (parte.encargado_id && parte.parte_id) {
@@ -2418,42 +2474,42 @@ $(document).ready(function() {
                             } else {
                                 loadAyudantesByParteSegundaSeccion(parte.ayudante_id);
                             }
-                            
+
                             // Establecer directamente el ayudante seleccionado después de un momento
                             setTimeout(function() {
                                 if (parte.ayudante_id) {
                                     $('#ayudante_id_segunda_seccion').val(parte.ayudante_id);
                                     $('#ayudante_display_segunda_seccion').val(parte.ayudante_nombre || 'Usuario ID: ' + parte.ayudante_id);
                                 }
-                                
+
                                 // Actualizar el estado de los botones después de cargar los datos
                                 updateButtonStatesSegundaSeccion();
                             }, 200);
-                            
+
                             // Cargar historial del encargado si existe
                             if (parte.encargado_id) {
                                 loadHistorialEncargado(parte.encargado_id);
                             } else {
                                 clearHistorialEncargado();
                             }
-                            
+
                             // Liberar el flag después de todo el proceso
                             setTimeout(function() {
                                 window.editingParteTwoData = false;
-                                
+
                                 // Inicializar variables para control de reemplazados después de que todo esté cargado
                                 encargadoAnterior = $('#encargado_id_segunda_seccion').val();
                                 const encargadoOption = $('#encargado_id_segunda_seccion').find('option:selected');
                                 encargadoAnteriorNombre = encargadoOption.text() || '';
-                                
+
                                 ayudanteAnterior = $('#ayudante_id_segunda_seccion').val();
                                 const ayudanteOption = $('#ayudante_id_segunda_seccion').find('option:selected');
                                 ayudanteAnteriorNombre = ayudanteOption.text() || '';
                             }, 400);
-                            
+
                         }, 300);
                     }, 200);
-                    
+
                     $('#parteProgramaSegundaSeccionModal').modal('show');
                 }
             },
@@ -2491,50 +2547,66 @@ $(document).ready(function() {
         const encargadoId = $('#encargado_id_segunda_seccion').val();
         const ayudanteId = $('#ayudante_id_segunda_seccion').val();
         const parteSeleccionada = $('#parte_id_segunda_seccion').val();
-        
+
         if (encargadoId && ayudanteId && encargadoId === ayudanteId) {
             showAlert('modal-alert-container-segunda-seccion', 'warning', 'El Encargado y el Ayudante no pueden ser la misma persona.');
             return;
         }
-        
+
         // Validar que para partes tipo 2 o 3, tanto Encargado como Ayudante sean obligatorios
         if (parteSeleccionada) {
             const selectedOption = $('#parte_id_segunda_seccion').find('option:selected');
             const tipo = selectedOption.data('tipo');
-            
-            
+
+
                 if (!encargadoId || encargadoId === '') {
-                    showAlert('modal-alert-container-segunda-seccion', 'warning', 'Para este tipo de parte es obligatorio seleccionar un Encargado.');
+                    showAlert('modal-alert-container-segunda-seccion', 'warning', 'Para esta Asignación es obligatorio seleccionar un Encargado.');
                     $('#encargado_display_segunda_seccion').addClass('is-invalid');
                     return;
                 }
-            if (tipo == 2 || tipo == 3) {    
+            if (tipo == 2 || tipo == 3) {
                 if (!ayudanteId || ayudanteId === '') {
-                    showAlert('modal-alert-container-segunda-seccion', 'warning', 'Para este tipo de parte es obligatorio seleccionar un Ayudante.');
+                    showAlert('modal-alert-container-segunda-seccion', 'warning', 'Para esta Asignación es obligatorio seleccionar un Ayudante.');
                     $('#ayudante_display_segunda_seccion').addClass('is-invalid');
                     return;
                 }
             }
         }
-        
+
+        // Validar campo tiempo
+        const tiempoValue = $('#tiempo_segunda_seccion').val();
+        if (!tiempoValue || tiempoValue < 1) {
+            showAlert('modal-alert-container-segunda-seccion', 'warning', 'El campo Tiempo es obligatorio y debe ser mayor a 0.');
+            $('#tiempo_segunda_seccion').addClass('is-invalid');
+            return;
+        }
+
+        // Validar campo leccion
+        const leccionValue = $('#leccion_segunda_seccion').val().trim();
+        if (!leccionValue) {
+            showAlert('modal-alert-container-segunda-seccion', 'warning', 'El campo Lección es obligatorio.');
+            $('#leccion_segunda_seccion').addClass('is-invalid');
+            return;
+        }
+
         const isEdit = isEditMode;
         const url = isEdit ? `/partes-programa/${$('#parte_programa_segunda_seccion_id').val()}` : '/partes-programa';
         const method = isEdit ? 'PUT' : 'POST';
-        
+
         const formData = $('#parteProgramaSegundaSeccionForm').serialize();
-        
+
         const submitBtn = $('#saveParteSegundaSeccionBtn');
         const spinner = submitBtn.find('.spinner-border');
-        
+
         submitBtn.prop('disabled', true);
         spinner.removeClass('d-none');
-        
+
         $('.is-invalid').removeClass('is-invalid');
         $('.invalid-feedback').text('');
-        
+
         // Limpiar alertas del modal
         $('#modal-alert-container-segunda-seccion').empty();
-        
+
         $.ajax({
             url: url,
             method: method,
@@ -2556,7 +2628,7 @@ $(document).ready(function() {
                         if (field === 'ayudante_id') fieldName = 'ayudante_id_segunda_seccion';
                         if (field === 'parte_id') fieldName = 'parte_id_segunda_seccion';
                         if (field === 'leccion') fieldName = 'leccion_segunda_seccion';
-                        
+
                         $(`#${fieldName}`).addClass('is-invalid');
                         $(`#${fieldName}`).siblings('.invalid-feedback').text(errors[field][0]);
                     }
@@ -2577,50 +2649,66 @@ $(document).ready(function() {
         const encargadoId = $('#encargado_id_tercera_seccion').val();
         const ayudanteId = $('#ayudante_id_tercera_seccion').val();
         const parteSeleccionada = $('#parte_id_tercera_seccion').val();
-        
+
         if (encargadoId && ayudanteId && encargadoId === ayudanteId) {
             showAlert('modal-alert-container-tercera-seccion', 'warning', 'El Encargado y el Ayudante no pueden ser la misma persona.');
             return;
         }
-        
+
         // Validar que para partes tipo 2 o 3, tanto Encargado como Ayudante sean obligatorios
         if (parteSeleccionada) {
             const selectedOption = $('#parte_id_tercera_seccion').find('option:selected');
             const tipo = selectedOption.data('tipo');
-            
-           
+
+
                 if (!encargadoId || encargadoId === '') {
-                    showAlert('modal-alert-container-tercera-seccion', 'warning', 'Para este tipo de parte es obligatorio seleccionar un Encargado.');
+                    showAlert('modal-alert-container-tercera-seccion', 'warning', 'Para esta Asignación es obligatorio seleccionar un Encargado.');
                     $('#encargado_id_tercera_seccion').addClass('is-invalid');
                     return;
                 }
-            if (tipo == 2 || tipo == 3) {   
+            if (tipo == 2 || tipo == 3) {
                 if (!ayudanteId || ayudanteId === '') {
-                    showAlert('modal-alert-container-tercera-seccion', 'warning', 'Para este tipo de parte es obligatorio seleccionar un Ayudante.');
+                    showAlert('modal-alert-container-tercera-seccion', 'warning', 'Para esta Asignación es obligatorio seleccionar un Ayudante.');
                     $('#ayudante_id_tercera_seccion').addClass('is-invalid');
                     return;
                 }
             }
         }
-        
+
+        // Validar campo tiempo
+        const tiempoValue = $('#tiempo_tercera_seccion').val();
+        if (!tiempoValue || tiempoValue < 1) {
+            showAlert('modal-alert-container-tercera-seccion', 'warning', 'El campo Tiempo es obligatorio y debe ser mayor a 0.');
+            $('#tiempo_tercera_seccion').addClass('is-invalid');
+            return;
+        }
+
+        // Validar campo leccion
+        const leccionValue = $('#leccion_tercera_seccion').val().trim();
+        if (!leccionValue) {
+            showAlert('modal-alert-container-tercera-seccion', 'warning', 'El campo Lección es obligatorio.');
+            $('#leccion_tercera_seccion').addClass('is-invalid');
+            return;
+        }
+
         const isEdit = isEditMode;
         const url = isEdit ? `/partes-programa/${$('#parte_programa_tercera_seccion_id').val()}` : '/partes-programa';
         const method = isEdit ? 'PUT' : 'POST';
-        
+
         const formData = $('#parteProgramaTerceraSeccionForm').serialize();
-        
+
         const submitBtn = $('#saveTerceraSeccionBtn');
         const spinner = submitBtn.find('.spinner-border');
-        
+
         submitBtn.prop('disabled', true);
         spinner.removeClass('d-none');
-        
+
         $('.is-invalid').removeClass('is-invalid');
         $('.invalid-feedback').text('');
-        
+
         // Limpiar alertas del modal
         $('#modal-alert-container-tercera-seccion').empty();
-        
+
         $.ajax({
             url: url,
             method: method,
@@ -2642,7 +2730,7 @@ $(document).ready(function() {
                         if (field === 'ayudante_id') fieldName = 'ayudante_id_tercera_seccion';
                         if (field === 'parte_id') fieldName = 'parte_id_tercera_seccion';
                         if (field === 'leccion') fieldName = 'leccion_tercera_seccion';
-                        
+
                         $(`#${fieldName}`).addClass('is-invalid');
                         $(`#${fieldName}`).siblings('.invalid-feedback').text(errors[field][0]);
                     }
@@ -2660,7 +2748,7 @@ $(document).ready(function() {
 
     function loadPartesSeccionesSegundaSeccion() {
         const programaId = $('#programa_id').val();
-        
+
         $.ajax({
             url: `/programas/${programaId}/partes-segunda-seccion-disponibles`,
             method: 'GET',
@@ -2668,7 +2756,7 @@ $(document).ready(function() {
                 if (response.success) {
                     const select = $('#parte_id_segunda_seccion');
                     select.empty().append('<option value="">Seleccionar...</option>');
-                    
+
                     // Las partes ya vienen filtradas desde el backend
                     response.data.forEach(function(parte) {
                         select.append(`<option value="${parte.id}" data-tiempo="${parte.tiempo}" data-tipo="${parte.tipo}">${parte.abreviacion} - ${parte.nombre}</option>`);
@@ -2683,7 +2771,7 @@ $(document).ready(function() {
 
     function loadPartesSeccionesForEditSegundaSeccion(parteIdSeleccionada) {
         const programaId = $('#programa_id').val();
-        
+
         $.ajax({
             url: `/programas/${programaId}/partes-segunda-seccion-disponibles`,
             method: 'GET',
@@ -2694,7 +2782,7 @@ $(document).ready(function() {
                 if (response.success) {
                     const select = $('#parte_id_segunda_seccion');
                     select.empty().append('<option value="">Seleccionar...</option>');
-                    
+
                     // Cargar todas las partes activas y la parte seleccionada
                     response.data.forEach(function(parte) {
                         const selected = parte.id == parteIdSeleccionada ? 'selected' : '';
@@ -2712,7 +2800,7 @@ $(document).ready(function() {
         // Obtener el ID de la parte programa que se está editando
         const editingId = $('#parte_programa_segunda_seccion_id').val();
         const url = `/encargados-por-parte-programa/${parteId}` + (editingId ? `?editing_id=${editingId}` : '');
-        
+
         $.ajax({
             url: url,
             method: 'GET',
@@ -2720,13 +2808,13 @@ $(document).ready(function() {
                 if (response.success) {
                     const select = $('#encargado_id_segunda_seccion');
                     const ayudanteSeleccionado = $('#ayudante_id_segunda_seccion').val();
-                    
+
                     select.empty().append('<option value="">Seleccionar...</option>');
-                    
+
                     // Separar usuarios por sexo
                     const mujeres = response.data.filter(usuario => usuario.sexo == 2);
                     const hombres = response.data.filter(usuario => usuario.sexo == 1);
-                    
+
                     // Agregar sección de Mujeres
                     if (mujeres.length > 0) {
                         select.append('<option disabled style="font-weight: bold;">--- Mujeres ---</option>');
@@ -2735,7 +2823,7 @@ $(document).ready(function() {
                             select.append(`<option value="${usuario.id}" ${selected}>${usuario.display_text}</option>`);
                         });
                     }
-                    
+
                     // Agregar sección de Hombres
                     if (hombres.length > 0) {
                         select.append('<option disabled style="font-weight: bold;">--- Hombres ---</option>');
@@ -2744,7 +2832,7 @@ $(document).ready(function() {
                             select.append(`<option value="${usuario.id}" ${selected}>${usuario.display_text}</option>`);
                         });
                     }
-                    
+
                     select.trigger('change');
                 }
             }
@@ -2759,22 +2847,22 @@ $(document).ready(function() {
                 if (response.success) {
                     const select = $('#encargado_id_segunda_seccion');
                     select.empty().append('<option value="">Seleccionar...</option>');
-                    
+
                     response.data.forEach(function(usuario) {
                         select.append(`<option value="${usuario.id}">${usuario.name}</option>`);
                     });
-                    
+
                     select.trigger('change');
                 }
             }
         });
     }
-    
+
     function loadAyudantesByParteSegundaSeccion(parteId, ayudanteSeleccionado = null) {
         // Obtener el ID de la parte programa que se está editando
         const editingId = $('#parte_programa_segunda_seccion_id').val();
         const url = `/ayudantes-por-parte/${parteId}` + (editingId ? `?editing_id=${editingId}` : '');
-        
+
         $.ajax({
             url: url,
             method: 'GET',
@@ -2782,16 +2870,16 @@ $(document).ready(function() {
                 if (response.success) {
                     const select = $('#ayudante_id_segunda_seccion');
                     const encargadoSeleccionado = $('#encargado_id_segunda_seccion').val();
-                    
+
                     select.empty().append('<option value="">Seleccionar...</option>');
-                    
+
                     response.data.forEach(function(usuario) {
                         const selected = ayudanteSeleccionado && usuario.id == ayudanteSeleccionado ? 'selected' : '';
                         const disabled = encargadoSeleccionado && usuario.id == encargadoSeleccionado ? 'disabled' : '';
                         // Para perfil=3, usar el display_text que ya viene formateado: fecha|parte|tipo|nombre
                         select.append(`<option value="${usuario.id}" ${selected} ${disabled}>${usuario.display_text}</option>`);
                     });
-                    
+
                     select.trigger('change');
                 }
             }
@@ -2806,20 +2894,20 @@ $(document).ready(function() {
                 if (response.success) {
                     const select = $('#ayudante_id_segunda_seccion');
                     select.empty().append('<option value="">Seleccionar...</option>');
-                    
+
                     response.data.forEach(function(usuario) {
                         select.append(`<option value="${usuario.id}">${usuario.name}</option>`);
                     });
-                    
+
                     select.trigger('change');
                 }
             }
         });
     }
-    
+
     function loadAyudantesByParteSegundaSeccion(ayudanteSeleccionado = null) {
         const parteId = $('#parte_id_segunda_seccion').val();
-        
+
         if (!parteId) {
             // Si no hay parte seleccionada, limpiar el select
             programmaticChange = true;
@@ -2827,26 +2915,26 @@ $(document).ready(function() {
             programmaticChange = false;
             return;
         }
-        
+
         // Obtener IDs auxiliares
         const editingId = $('#parte_programa_segunda_seccion_id').val();
         const encargadoId = $('#encargado_id_segunda_seccion').val();
-        
+
         // Construir URL usando el endpoint unificado con soporte de secciones por género
         const params = [];
         if (editingId) params.push(`editing_id=${editingId}`);
         if (encargadoId) params.push(`encargado_id=${encargadoId}`);
         const url = `/ayudantes-por-parte-programa/${parteId}` + (params.length ? `?${params.join('&')}` : '');
-        
+
         $.ajax({
             url: url,
             method: 'GET',
             success: function(response) {
                 const select = $('#ayudante_id_segunda_seccion');
                 const encargadoSeleccionado = $('#encargado_id_segunda_seccion').val();
-                
+
                 select.empty().append('<option value="">Seleccionar...</option>');
-                
+
                 if (response.success && Array.isArray(response.data)) {
                     response.data.forEach(function(usuario) {
                         if (usuario.is_section) {
@@ -2867,7 +2955,7 @@ $(document).ready(function() {
                     programmaticChange = false;
                     return;
                 }
-                
+
                 select.trigger('change');
             },
             error: function(xhr) {
@@ -2878,12 +2966,12 @@ $(document).ready(function() {
             }
         });
     }
-    
+
     function loadAyudantesByEncargadoAndParte(encargadoId, parteId, ayudanteSeleccionado = null) {
         // Obtener el ID de la parte programa que se está editando
         const editingId = $('#parte_programa_segunda_seccion_id').val();
         const url = `/ayudantes-por-encargado/${encargadoId}/${parteId}` + (editingId ? `?editing_id=${editingId}` : '');
-        
+
         $.ajax({
             url: url,
             method: 'GET',
@@ -2891,7 +2979,7 @@ $(document).ready(function() {
                 if (response.success) {
                     const select = $('#ayudante_id_segunda_seccion');
                     select.empty().append('<option value="">Seleccionar...</option>');
-                    
+
                     if (response.data && response.data.length > 0) {
                         response.data.forEach(function(usuario) {
                             if (usuario.is_section) {
@@ -2904,7 +2992,7 @@ $(document).ready(function() {
                             }
                         });
                     }
-                    
+
                     select.trigger('change');
                 } else {
                     const select = $('#ayudante_id_segunda_seccion');
@@ -2918,54 +3006,87 @@ $(document).ready(function() {
             }
         });
     }
-    
+
     @endif
-    
+
     // Funciones para limpiar campos de reemplazados
     function clearEncargadoReemplazado() {
         $('#encargado_reemplazado_segunda_seccion').val('');
         $('#encargado_reemplazado_id_segunda_seccion').val('');
     }
-    
+
     function clearAyudanteReemplazado() {
         $('#ayudante_reemplazado_segunda_seccion').val('');
         $('#ayudante_reemplazado_id_segunda_seccion').val('');
     }
-    
+
     function agregarEncargadoReemplazado() {
         const encargadoId = $('#encargado_id_segunda_seccion').val();
         const encargadoNombre = $('#encargado_display_segunda_seccion').val();
-        
+
         if (encargadoId && encargadoNombre) {
             // Agregar el nombre al campo visible
             $('#encargado_reemplazado_segunda_seccion').val(encargadoNombre);
-            
+
             // Agregar el ID al campo oculto para ser guardado en la BD
             $('#encargado_reemplazado_id_segunda_seccion').val(encargadoId);
-            
-            
+
+
         } else {
             alert('Por favor seleccione un encargado primero');
         }
     }
-    
+
     function agregarAyudanteReemplazado() {
         const ayudanteId = $('#ayudante_id_segunda_seccion').val();
         const ayudanteNombre = $('#ayudante_display_segunda_seccion').val();
-        
+
         if (ayudanteId && ayudanteNombre) {
             // Agregar el nombre al campo visible
             $('#ayudante_reemplazado_segunda_seccion').val(ayudanteNombre);
-            
+
             // Agregar el ID al campo oculto para ser guardado en la BD
             $('#ayudante_reemplazado_id_segunda_seccion').val(ayudanteId);
-            
-            
+
+
         } else {
             alert('Por favor seleccione un ayudante primero');
         }
     }
-    
+
+    // Funciones para manejar reemplazados
+    function manejarEncargadoReemplazado() {
+        const encargadoId = $('#encargado_id_segunda_seccion').val();
+        const encargadoNombre = $('#encargado_display_segunda_seccion').val();
+
+        if (encargadoId && encargadoNombre) {
+            // Mostrar campos de reemplazados si están ocultos
+            $('#campos-reemplazados-segunda-seccion').show();
+
+            // Copiar el encargado actual como reemplazado
+            $('#encargado_reemplazado_segunda_seccion').val(encargadoNombre);
+            $('#encargado_reemplazado_id_segunda_seccion').val(encargadoId);
+        } else {
+            alert('Por favor seleccione un encargado primero');
+        }
+    }
+
+    function manejarAyudanteReemplazado() {
+        const ayudanteId = $('#ayudante_id_segunda_seccion').val();
+        const ayudanteNombre = $('#ayudante_display_segunda_seccion').val();
+
+        if (ayudanteId && ayudanteNombre) {
+            // Mostrar campos de reemplazados si están ocultos
+            $('#campos-reemplazados-segunda-seccion').show();
+
+            // Copiar el ayudante actual como reemplazado
+            $('#ayudante_reemplazado_segunda_seccion').val(ayudanteNombre);
+            $('#ayudante_reemplazado_id_segunda_seccion').val(ayudanteId);
+        } else {
+            alert('Por favor seleccione un ayudante primero');
+        }
+    }
+
     // Funciones para los botones de la segunda sección
     function buscarEncargadoSegundaSeccion() {
         const parteId = $('#parte_id_segunda_seccion').val();
@@ -2973,10 +3094,10 @@ $(document).ready(function() {
             alert('Por favor seleccione una parte primero');
             return;
         }
-        
+
         // Abrir modal y cargar usuarios con participaciones en la parte seleccionada
         $('#buscarEncargadoSegundaSeccionModal').modal('show');
-        
+
         // Al abrir el modal, deshabilitar el botón Seleccionar
         $('#confirmarEncargadoSegundaSeccion').prop('disabled', true);
 
@@ -2984,7 +3105,7 @@ $(document).ready(function() {
         $(document).off('change.select_encargado_segunda_seccion').on('change.select_encargado_segunda_seccion', '#select_encargado_segunda_seccion', function() {
             const val = $(this).val();
             $('#confirmarEncargadoSegundaSeccion').prop('disabled', !val);
-            
+
             // Cargar historial del encargado seleccionado
             if (val) {
                 loadHistorialEncargadoSegundaSeccion(val);
@@ -3001,7 +3122,7 @@ $(document).ready(function() {
                 if (response.success) {
                     const select = $('#select_encargado_segunda_seccion');
                     select.empty();
-                    
+
                     // Inicializar Select2 si no está ya inicializado
                     if (!select.hasClass('select2-hidden-accessible')) {
                         select.select2({
@@ -3012,14 +3133,14 @@ $(document).ready(function() {
                             dropdownParent: $('#buscarEncargadoSegundaSeccionModal')
                         });
                     }
-                    
+
                     select.append('<option value="">Seleccionar encargado...</option>');
-                    
+
                     // Agregar opciones con el formato: fecha|abreviacion|nombre
                     response.data.forEach(function(usuario) {
                         select.append(`<option value="${usuario.id}">${usuario.display_text}</option>`);
                     });
-                    
+
                     // Inicializar Select2 para el historial si no está ya inicializado
                     const selectHistorial = $('#select_historial_encargado_segunda_seccion');
                     if (!selectHistorial.hasClass('select2-hidden-accessible')) {
@@ -3031,7 +3152,7 @@ $(document).ready(function() {
                             dropdownParent: $('#buscarEncargadoSegundaSeccionModal')
                         });
                     }
-                    
+
                     // Preseleccionar el encargado actual si existe
                     const encargadoActual = $('#encargado_id_segunda_seccion').val();
                     if (encargadoActual) {
@@ -3047,39 +3168,39 @@ $(document).ready(function() {
             }
         });
     }
-    
+
     function verHistorialEncargadoSegundaSeccion() {
         const encargadoId = $('#encargado_id_segunda_seccion').val();
         if (!encargadoId) {
             alert('No hay encargado seleccionado');
             return;
         }
-        
+
         // Aquí iría la lógica para mostrar el historial del encargado
         // Similar a verHistorialEncargadoParte() pero para segunda sección
         alert('Función verHistorialEncargadoSegundaSeccion() - Por implementar\nEncargado ID: ' + encargadoId);
     }
-    
+
     function buscarAyudanteSegundaSeccion() {
         const parteId = $('#parte_id_segunda_seccion').val();
         const encargadoId = $('#encargado_id_segunda_seccion').val();
         const selectedOption = $('#parte_id_segunda_seccion').find('option:selected');
         const tipo = selectedOption.data('tipo');
-        
+
         if (!parteId) {
             alert('Por favor seleccione una parte primero');
             return;
         }
-        
+
         // Validar que el tipo de parte no sea 1
         if (tipo == 1) {
-            alert('No se puede buscar ayudante para este tipo de parte');
+            alert('No se puede buscar ayudante para esta Asignación');
             return;
         }
-        
+
         // Abrir modal y cargar usuarios con participaciones como ayudante
         $('#buscarAyudanteSegundaSeccionModal').modal('show');
-        
+
         // Al abrir el modal, deshabilitar el botón Seleccionar
         $('#confirmarAyudanteSegundaSeccion').prop('disabled', true);
 
@@ -3087,7 +3208,7 @@ $(document).ready(function() {
         $(document).off('change.select_ayudante_segunda_seccion').on('change.select_ayudante_segunda_seccion', '#select_ayudante_segunda_seccion', function() {
             const val = $(this).val();
             $('#confirmarAyudanteSegundaSeccion').prop('disabled', !val);
-            
+
             // Cargar historial del ayudante seleccionado
             if (val) {
                 loadHistorialAyudanteSegundaSeccion(val);
@@ -3101,7 +3222,7 @@ $(document).ready(function() {
         if (encargadoId) {
             url += `?encargado_id=${encargadoId}`;
         }
-        
+
         $.ajax({
             url: url,
             method: 'GET',
@@ -3109,7 +3230,7 @@ $(document).ready(function() {
                 if (response.success) {
                     const select = $('#select_ayudante_segunda_seccion');
                     select.empty();
-                    
+
                     // Inicializar Select2 si no está ya inicializado
                     if (!select.hasClass('select2-hidden-accessible')) {
                         select.select2({
@@ -3120,9 +3241,9 @@ $(document).ready(function() {
                             dropdownParent: $('#buscarAyudanteSegundaSeccionModal')
                         });
                     }
-                    
+
                     select.append('<option value="">Seleccionar ayudante...</option>');
-                    
+
                     // Verificar si hay secciones de género
                     if (response.has_gender_sections) {
                         // Agregar opciones con secciones de género
@@ -3141,7 +3262,7 @@ $(document).ready(function() {
                             select.append(`<option value="${usuario.id}">${usuario.display_text}</option>`);
                         });
                     }
-                    
+
                     // Inicializar Select2 para el historial si no está ya inicializado
                     const selectHistorial = $('#select_historial_ayudante_segunda_seccion');
                     if (!selectHistorial.hasClass('select2-hidden-accessible')) {
@@ -3153,7 +3274,7 @@ $(document).ready(function() {
                             dropdownParent: $('#buscarAyudanteSegundaSeccionModal')
                         });
                     }
-                    
+
                     // Preseleccionar el ayudante actual si existe
                     const ayudanteActual = $('#ayudante_id_segunda_seccion').val();
                     if (ayudanteActual) {
@@ -3169,33 +3290,37 @@ $(document).ready(function() {
             }
         });
     }
-    
+
     function verHistorialAyudanteSegundaSeccion() {
         const ayudanteId = $('#ayudante_id_segunda_seccion').val();
         if (!ayudanteId) {
             alert('No hay ayudante seleccionado');
             return;
         }
-        
+
         // Aquí iría la lógica para mostrar el historial del ayudante
         alert('Función verHistorialAyudanteSegundaSeccion() - Por implementar\nAyudante ID: ' + ayudanteId);
     }
-    
+
     // Función para actualizar el estado de los botones de la segunda sección
     function updateButtonStatesSegundaSeccion() {
         const encargadoId = $('#encargado_id_segunda_seccion').val();
         const ayudanteId = $('#ayudante_id_segunda_seccion').val();
         const parteSeleccionada = $('#parte_id_segunda_seccion').val();
         const btnBuscarAyudante = $('#btn-buscar-ayudante-segunda');
-        
+
         // Botones del encargado
-    // ...existing code...
-        
+        if (encargadoId) {
+            $('#btn-encargado-reemplazado-segunda').prop('disabled', false);
+        } else {
+            $('#btn-encargado-reemplazado-segunda').prop('disabled', true);
+        }
+
         // Botón "Buscar Ayudante" - aplicar la nueva lógica
         if (encargadoId && encargadoId !== '' && parteSeleccionada) {
             const selectedOption = $('#parte_id_segunda_seccion').find('option:selected');
             const tipo = selectedOption.data('tipo');
-            
+
             if (tipo == 2 || tipo == 3) {
                 btnBuscarAyudante.prop('disabled', false);
                 btnBuscarAyudante.attr('title', 'Buscar Ayudante');
@@ -3207,48 +3332,52 @@ $(document).ready(function() {
             btnBuscarAyudante.prop('disabled', true);
             btnBuscarAyudante.attr('title', 'Seleccionar encargado y parte con tipo 2 o 3');
         }
-        
+
         // Botones del ayudante
-    // ...existing code...
+        if (ayudanteId) {
+            $('#btn-ayudante-reemplazado-segunda').prop('disabled', false);
+        } else {
+            $('#btn-ayudante-reemplazado-segunda').prop('disabled', true);
+        }
     }
-    
+
     // Funciones para la tercera sección
     function openCreateParteTerceraSeccionModal() {
         isEditMode = false;
-        $('#parteProgramaTerceraSeccionModalLabel').text('Nueva Parte de Seamos Mejores Maestros');
+        $('#parteProgramaTerceraSeccionModalLabel').text('Nueva Asignación de Seamos Mejores Maestros');
         $('#parteProgramaTerceraSeccionForm')[0].reset();
-        
+
         // Limpiar errores previos
         $('.is-invalid').removeClass('is-invalid');
         $('.invalid-feedback').text('');
-        
+
         // Limpiar alertas del modal
         $('#modal-alert-container-tercera-seccion').empty();
-        
+
         // Cargar partes usando las mismas condiciones que la segunda sección
         loadPartesSeccionesTerceraSeccion();
-        
+
         // Dejar campos Encargado y Ayudante vacíos hasta que se seleccione una parte
         $('#encargado_id_tercera_seccion').empty().append('<option value="">Seleccionar una parte primero...</option>').trigger('change');
         $('#ayudante_id_tercera_seccion').empty().append('<option value="">Seleccionar...</option>').trigger('change');
-        
+
         // Limpiar campos de reemplazados en modo nuevo
         $('#campos-reemplazados-tercera-seccion').hide();
         clearEncargadoReemplazadoTercera();
         clearAyudanteReemplazadoTercera();
-        
+
         // Ocultar botones de agregar reemplazado en modo nuevo
         $('#btn-agregar-encargado-reemplazado-tercera').hide();
         $('#btn-agregar-ayudante-reemplazado-tercera').hide();
-        
+
         // Limpiar historial de encargado y ayudante
         clearHistorialEncargadoTercera();
         clearHistorialAyudanteTercera();
     }
-    
+
     function loadPartesSeccionesTerceraSeccion(callback) {
         const programaId = $('#programa_id').val();
-        
+
         $.ajax({
             url: `/programas/${programaId}/partes-segunda-seccion-disponibles`,
             method: 'GET',
@@ -3256,12 +3385,12 @@ $(document).ready(function() {
                 if (response.success) {
                     const select = $('#parte_id_tercera_seccion');
                     select.empty().append('<option value="">Seleccionar...</option>');
-                    
+
                     // Usar las mismas partes que la segunda sección
                     response.data.forEach(function(parte) {
                         select.append(`<option value="${parte.id}" data-tiempo="${parte.tiempo}">${parte.abreviacion} - ${parte.nombre}</option>`);
                     });
-                    
+
                     // Ejecutar callback si se proporciona
                     if (typeof callback === 'function') {
                         callback();
@@ -3273,25 +3402,25 @@ $(document).ready(function() {
             }
         });
     }
-    
+
     function clearEncargadoReemplazadoTercera() {
         $('#encargado_reemplazado_tercera_seccion').val('');
         $('#encargado_reemplazado_id_tercera_seccion').val('');
     }
-    
+
     function clearAyudanteReemplazadoTercera() {
         $('#ayudante_reemplazado_tercera_seccion').val('');
         $('#ayudante_reemplazado_id_tercera_seccion').val('');
     }
-    
+
     function agregarEncargadoReemplazadoTercera() {
         const encargadoSelect = $('#encargado_id_tercera_seccion');
         const encargadoSeleccionado = encargadoSelect.val();
-        
+
         if (encargadoSeleccionado) {
             const selectedOption = encargadoSelect.find('option:selected');
             const textoCompleto = selectedOption.text();
-            
+
             // Extraer solo el nombre del usuario del formato: fecha|parte|tipo|nombre
             let nombreEncargado = textoCompleto;
             if (textoCompleto.includes('|')) {
@@ -3300,27 +3429,27 @@ $(document).ready(function() {
                     nombreEncargado = partes[3].trim();
                 }
             }
-            
+
             // Agregar el nombre al campo visible
             $('#encargado_reemplazado_tercera_seccion').val(nombreEncargado);
-            
+
             // Agregar el ID al campo oculto para ser guardado en la BD
             $('#encargado_reemplazado_id_tercera_seccion').val(encargadoSeleccionado);
-            
-            
+
+
         } else {
             alert('Por favor seleccione un encargado primero');
         }
     }
-    
+
     function agregarAyudanteReemplazadoTercera() {
         const ayudanteSelect = $('#ayudante_id_tercera_seccion');
         const ayudanteSeleccionado = ayudanteSelect.val();
-        
+
         if (ayudanteSeleccionado) {
             const selectedOption = ayudanteSelect.find('option:selected');
             const textoCompleto = selectedOption.text();
-            
+
             // Extraer solo el nombre del usuario del formato: fecha|parte|tipo|nombre
             let nombreAyudante = textoCompleto;
             if (textoCompleto.includes('|')) {
@@ -3329,28 +3458,28 @@ $(document).ready(function() {
                     nombreAyudante = partes[3].trim();
                 }
             }
-            
+
             // Agregar el nombre al campo visible
             $('#ayudante_reemplazado_tercera_seccion').val(nombreAyudante);
-            
+
             // Agregar el ID al campo oculto para ser guardado en la BD
             $('#ayudante_reemplazado_id_tercera_seccion').val(ayudanteSeleccionado);
-            
-            
+
+
         } else {
             alert('Por favor seleccione un ayudante primero');
         }
     }
-    
+
     function continueAyudanteChangeTercera(ayudanteSeleccionado, encargadoSelect) {
         if (ayudanteSeleccionado) {
             // Cargar historial del ayudante seleccionado
-            
+
         } else {
             // Limpiar historial del ayudante
             clearHistorialAyudanteTercera();
         }
-        
+
         // Actualizar Select2 para reflejar los cambios
         encargadoSelect.trigger('change.select2');
     }
@@ -3358,7 +3487,7 @@ $(document).ready(function() {
     function loadEncargadosByParteTerceraSeccion(parteId, encargadoSeleccionado = null) {
         const editingId = $('#parte_programa_tercera_seccion_id').val();
         const url = `/encargados-por-parte-programa/${parteId}` + (editingId ? `?editing_id=${editingId}` : '');
-        
+
         $.ajax({
             url: url,
             method: 'GET',
@@ -3366,11 +3495,11 @@ $(document).ready(function() {
                 if (response.success) {
                     const select = $('#encargado_id_tercera_seccion');
                     select.empty().append('<option value="">Seleccionar...</option>');
-                    
+
                     // Separar usuarios por sexo
                     const mujeres = response.data.filter(usuario => usuario.sexo == 2);
                     const hombres = response.data.filter(usuario => usuario.sexo == 1);
-                    
+
                     // Agregar sección de Mujeres
                     if (mujeres.length > 0) {
                         select.append('<option disabled style="font-weight: bold;">--- Mujeres ---</option>');
@@ -3379,7 +3508,7 @@ $(document).ready(function() {
                             select.append(`<option value="${usuario.id}" ${selected}>${usuario.display_text}</option>`);
                         });
                     }
-                    
+
                     // Agregar sección de Hombres
                     if (hombres.length > 0) {
                         select.append('<option disabled style="font-weight: bold;">--- Hombres ---</option>');
@@ -3388,7 +3517,7 @@ $(document).ready(function() {
                             select.append(`<option value="${usuario.id}" ${selected}>${usuario.display_text}</option>`);
                         });
                     }
-                    
+
                     select.trigger('change');
                 }
             }
@@ -3403,11 +3532,11 @@ $(document).ready(function() {
                 if (response.success) {
                     const select = $('#encargado_id_tercera_seccion');
                     select.empty().append('<option value="">Seleccionar...</option>');
-                    
+
                     response.data.forEach(function(usuario) {
                         select.append(`<option value="${usuario.id}">${usuario.name}</option>`);
                     });
-                    
+
                     select.trigger('change');
                 }
             }
@@ -3419,24 +3548,24 @@ $(document).ready(function() {
         if (!parteId) {
             return;
         }
-        
+
         const editingId = $('#parte_programa_tercera_seccion_id').val();
         const encargadoId = $('#encargado_id_tercera_seccion').val();
-        
+
         const params = [];
         if (editingId) params.push(`editing_id=${editingId}`);
         if (encargadoId) params.push(`encargado_id=${encargadoId}`);
         const url = `/ayudantes-por-parte-programa/${parteId}` + (params.length ? `?${params.join('&')}` : '');
-        
+
         $.ajax({
             url: url,
             method: 'GET',
             success: function(response) {
                 const select = $('#ayudante_id_tercera_seccion');
                 const encargadoSeleccionado = $('#encargado_id_tercera_seccion').val();
-                
+
                 select.empty().append('<option value="">Seleccionar...</option>');
-                
+
                 if (response.success && Array.isArray(response.data)) {
                     response.data.forEach(function(usuario) {
                         if (usuario.is_section) {
@@ -3464,16 +3593,16 @@ $(document).ready(function() {
 
     function loadAyudantesByEncargadoAndParteTercera(encargadoId, parteId, ayudanteIdToSelect = null, callback = null) {
         const editingId = $('#parte_programa_tercera_seccion_id').val();
-        
+
         $.ajax({
             url: `/ayudantes-por-encargado/${encargadoId}/${parteId}` + (editingId ? `?editing_id=${editingId}` : ''),
             method: 'GET',
             success: function(response) {
                 if (response.success && Array.isArray(response.data)) {
                     const select = $('#ayudante_id_tercera_seccion');
-                    
+
                     select.empty().append('<option value="">Seleccionar...</option>');
-                    
+
                     response.data.forEach(function(usuario) {
                         if (usuario.is_section) {
                             const label = usuario.display_text || usuario.name || '—';
@@ -3483,14 +3612,14 @@ $(document).ready(function() {
                             select.append(`<option value="${usuario.id}">${displayText}</option>`);
                         }
                     });
-                    
+
                     // Preseleccionar ayudante si se especifica
                     if (ayudanteIdToSelect) {
                         select.val(ayudanteIdToSelect).trigger('change');
                     } else {
                         select.trigger('change');
                     }
-                    
+
                     if (typeof callback === 'function') {
                         callback();
                     }
@@ -3504,42 +3633,42 @@ $(document).ready(function() {
 
     function editParteTerceraSeccion(id) {
         isEditMode = true;
-        $('#parteProgramaTerceraSeccionModalLabel').text('Editar Parte de Seamos Mejores Maestros');
+        $('#parteProgramaTerceraSeccionModalLabel').text('Editar Asignación de Seamos Mejores Maestros');
         $('#parte_programa_tercera_seccion_id').val(id);
-        
+
         // Limpiar errores previos
         $('.is-invalid').removeClass('is-invalid');
         $('.invalid-feedback').text('');
-        
+
         // Limpiar alertas del modal
         $('#modal-alert-container-tercera-seccion').empty();
-        
+
         // Limpiar completamente el formulario antes de cargar datos
         $('#parteProgramaTerceraSeccionForm')[0].reset();
-        
+
         // Limpiar todos los selects
         $('#parte_id_tercera_seccion').empty().append('<option value="">Seleccionar...</option>');
         $('#encargado_id_tercera_seccion').empty().append('<option value="">Seleccionar...</option>');
         $('#ayudante_id_tercera_seccion').empty().append('<option value="">Seleccionar...</option>');
-        
+
         // Limpiar campos de reemplazados
         clearEncargadoReemplazadoTercera();
         clearAyudanteReemplazadoTercera();
-        
+
         // Limpiar historiales
         clearHistorialEncargadoTercera();
         clearHistorialAyudanteTercera();
-        
+
         // Mostrar campos de reemplazados en modo edición
         $('#campos-reemplazados-tercera-seccion').show();
-        
+
         // Mostrar botones de agregar reemplazado en modo edición
         $('#btn-agregar-encargado-reemplazado-tercera').show();
         $('#btn-agregar-ayudante-reemplazado-tercera').show();
-        
+
         // Variable para controlar si estamos en modo edición para evitar eventos conflictivos
         window.editingParteTerceraData = true;
-        
+
         $.ajax({
             url: `/partes-programa/${id}`,
             method: 'GET',
@@ -3549,7 +3678,7 @@ $(document).ready(function() {
                     $('#parte_id_tercera_seccion').val(parte.parte_id);
                     $('#tiempo_tercera_seccion').val(parte.tiempo);
                     $('#leccion_tercera_seccion').val(parte.leccion);
-                    
+
                     // Cargar nombres de usuarios reemplazados si existen
                     if (parte.encargado_reemplazado) {
                         $('#encargado_reemplazado_tercera_seccion').val(parte.encargado_reemplazado.name);
@@ -3558,7 +3687,7 @@ $(document).ready(function() {
                         $('#encargado_reemplazado_tercera_seccion').val('');
                         $('#encargado_reemplazado_id_tercera_seccion').val('');
                     }
-                    
+
                     if (parte.ayudante_reemplazado) {
                         $('#ayudante_reemplazado_tercera_seccion').val(parte.ayudante_reemplazado.name);
                         $('#ayudante_reemplazado_id_tercera_seccion').val(parte.ayudante_reemplazado.id);
@@ -3566,29 +3695,29 @@ $(document).ready(function() {
                         $('#ayudante_reemplazado_tercera_seccion').val('');
                         $('#ayudante_reemplazado_id_tercera_seccion').val('');
                     }
-                    
+
                     // Cargar datos necesarios en secuencia
                     loadPartesSeccionesTerceraSeccion(function() {
                         // Preseleccionar la parte después de cargar las opciones
                         $('#parte_id_tercera_seccion').val(parte.parte_id).trigger('change');
-                        
+
                         setTimeout(function() {
                             loadEncargadosByParteTerceraSeccion(parte.parte_id, parte.encargado_id);
-                        
+
                             setTimeout(function() {
                                 if (parte.encargado_id) {
                                     $('#encargado_id_tercera_seccion').val(parte.encargado_id).trigger('change');
                                 }
                             }, 100);
-                            
+
                             setTimeout(function() {
                                 if (parte.encargado_id && parte.parte_id) {
                                     loadAyudantesByEncargadoAndParteTercera(parte.encargado_id, parte.parte_id, parte.ayudante_id, function() {
                                         // Callback después de cargar ayudantes
-                                        
-                                        
-                                        
-                                        
+
+
+
+
                                         // Liberar el flag después de todo el proceso
                                         setTimeout(function() {
                                             window.editingParteTerceraData = false;
@@ -3596,17 +3725,17 @@ $(document).ready(function() {
                                     });
                                 } else {
                                     loadAyudantesByParteTerceraSeccion(parte.ayudante_id);
-                                    
+
                                     setTimeout(function() {
                                         if (parte.ayudante_id) {
                                             $('#ayudante_id_tercera_seccion').val(parte.ayudante_id).trigger('change');
                                         }
                                     }, 200);
-                                    
-                                    
-                                    
-                                    
-                                    
+
+
+
+
+
                                     // Liberar el flag después de todo el proceso
                                     setTimeout(function() {
                                         window.editingParteTerceraData = false;
@@ -3615,7 +3744,7 @@ $(document).ready(function() {
                             }, 300);
                         }, 200);
                     });
-                    
+
                     $('#parteProgramaTerceraSeccionModal').modal('show');
                 }
             },
@@ -3647,7 +3776,7 @@ $(document).ready(function() {
                 }
             });
         });
-        
+
         $('#confirmDeleteModal').modal('show');
     }
 
@@ -3669,7 +3798,7 @@ $(document).ready(function() {
 
     function moveParteTerceraSeccion(id, direction) {
         const url = `/partes-programa/${id}/move-${direction}`;
-        
+
         $.ajax({
             url: url,
             method: 'POST',
@@ -3690,7 +3819,7 @@ $(document).ready(function() {
             }
         });
     }
-    
+
     // Funciones globales para uso en onclick
     window.openCreateParteModal = openCreateParteModal;
     window.editParte = editParte;
@@ -3698,7 +3827,7 @@ $(document).ready(function() {
     window.loadPartesSecciones = loadPartesSecciones;
     window.loadPartesSeccionesForEdit = loadPartesSeccionesForEdit;
     window.loadUsuariosDisponibles = loadUsuariosDisponibles;
-    
+
     @if(Auth::user()->perfil == 3)
     window.openCreateParteSegundaSeccionModal = openCreateParteSegundaSeccionModal;
     window.editParteSegundaSeccion = editParteSegundaSeccion;
@@ -3711,6 +3840,8 @@ $(document).ready(function() {
     window.clearAyudanteReemplazado = clearAyudanteReemplazado;
     window.agregarEncargadoReemplazado = agregarEncargadoReemplazado;
     window.agregarAyudanteReemplazado = agregarAyudanteReemplazado;
+    window.manejarEncargadoReemplazado = manejarEncargadoReemplazado;
+    window.manejarAyudanteReemplazado = manejarAyudanteReemplazado;
     // Funciones para tercera sección
     window.openCreateParteTerceraSeccionModal = openCreateParteTerceraSeccionModal;
     window.editParteTerceraSeccion = editParteTerceraSeccion;
@@ -3729,7 +3860,7 @@ $(document).ready(function() {
         if (button && button.disabled) {
             return;
         }
-        
+
         moveParte(id, 'up');
     }
 
@@ -3739,7 +3870,7 @@ $(document).ready(function() {
         if (button && button.disabled) {
             return;
         }
-        
+
         moveParte(id, 'down');
     }
 
@@ -3749,7 +3880,7 @@ $(document).ready(function() {
         if (button && button.disabled) {
             return;
         }
-        
+
         moveParte(id, 'up');
     }
 
@@ -3759,13 +3890,13 @@ $(document).ready(function() {
         if (button && button.disabled) {
             return;
         }
-        
+
         moveParte(id, 'down');
     }
 
     function moveParte(id, direction) {
         const url = `/partes-programa/${id}/move-${direction}`;
-        
+
         $.ajax({
             url: url,
             method: 'POST',
@@ -3791,12 +3922,12 @@ $(document).ready(function() {
             }
         });
     }
-    
+
     // Funciones para los botones del campo Orador Inicial (solo para coordinadores)
     function buscarOradorInicial() {
         // Abrir modal y cargar usuarios con asignación de oración
         $('#buscarOradorInicialModal').modal('show');
-        
+
         // Cargar usuarios con asignación_id=23 y su historial
         $.ajax({
             url: '/usuarios-orador-inicial',
@@ -3805,7 +3936,7 @@ $(document).ready(function() {
                 if (response.success) {
                     const select = $('#select_orador_inicial');
                     select.empty();
-                    
+
                     // Inicializar Select2 si no está ya inicializado
                     if (!select.hasClass('select2-hidden-accessible')) {
                         select.select2({
@@ -3816,9 +3947,9 @@ $(document).ready(function() {
                             dropdownParent: $('#buscarOradorInicialModal')
                         });
                     }
-                    
+
                     select.append('<option value="">Seleccionar orador inicial...</option>');
-                    
+
                     // Agregar opciones con el formato: fecha - nombre
                     response.data.forEach(function(usuario) {
                         let fechaTexto = 'Primera vez';
@@ -3832,7 +3963,7 @@ $(document).ready(function() {
                         const textoOpcion = `${fechaTexto} - ${usuario.name}`;
                         select.append(`<option value="${usuario.id}">${textoOpcion}</option>`);
                     });
-                    
+
                     // Preseleccionar el orador actual si existe
                     const oradorActual = $('#orador_inicial').val();
                     if (oradorActual) {
@@ -3848,17 +3979,17 @@ $(document).ready(function() {
             }
         });
     }
-    
+
     function verHistorialOradorInicial() {
         const oradorId = $('#orador_inicial').val();
         if (!oradorId) {
             alert('No hay orador inicial seleccionado para mostrar historial');
             return;
         }
-        
+
         // Abrir modal y cargar historial del orador
         $('#historialOradorInicialModal').modal('show');
-        
+
         // Cargar historial de participaciones del usuario
         $.ajax({
             url: `/usuarios/${oradorId}/historial-orador`,
@@ -3867,7 +3998,7 @@ $(document).ready(function() {
                 if (response.success) {
                     const select = $('#select_historial_orador');
                     select.empty();
-                    
+
                     // Inicializar Select2 si no está ya inicializado
                     if (!select.hasClass('select2-hidden-accessible')) {
                         select.select2({
@@ -3877,10 +4008,10 @@ $(document).ready(function() {
                             dropdownParent: $('#historialOradorInicialModal')
                         });
                     }
-                    
+
                     if (response.data.length > 0) {
                         select.append('<option value="">Seleccionar participación...</option>');
-                        
+
                         // Agregar opciones con el formato: fecha - nombre - tipo
                         response.data.forEach(function(participacion) {
                             const fecha = new Date(participacion.fecha);
@@ -3888,19 +4019,19 @@ $(document).ready(function() {
                             const mes = String(fecha.getMonth() + 1).padStart(2, '0');
                             const año = fecha.getFullYear();
                             const fechaTexto = `${dia}/${mes}/${año}`;
-                            
+
                             const tipoOracion = participacion.tipo === 'inicial' ? 'Orador Inicial' : 'Orador Final';
                             const textoOpcion = `${fechaTexto} - ${participacion.nombre_usuario} - ${tipoOracion}`;
-                            
+
                             select.append(`<option value="${participacion.programa_id}">${textoOpcion}</option>`);
                         });
-                        
+
                         // Habilitar el select
                         select.prop('disabled', false);
-                        
+
                         // Seleccionar automáticamente el primer elemento (índice 1, ya que 0 es "Seleccionar participación...")
                         select.val(response.data[0].programa_id).trigger('change');
-                        
+
                         // Actualizar el título del modal con el nombre del usuario
                         $('#historialOradorInicialModalLabel').html(`<i class="fas fa-history me-2"></i>Historial de ${response.data[0].nombre_usuario}`);
                     } else {
@@ -3917,36 +4048,36 @@ $(document).ready(function() {
             }
         });
     }
-    
+
     // Evento para confirmar la selección del orador inicial
     $('#confirmarOradorInicial').on('click', function() {
         const oradorSeleccionado = $('#select_orador_inicial').val();
         const textoSeleccionado = $('#select_orador_inicial option:selected').text();
-        
+
         if (!oradorSeleccionado) {
             alert('Por favor seleccione un orador inicial');
             return;
         }
-        
+
         // Extraer solo el nombre del formato "fecha - nombre"
         let nombreOrador = textoSeleccionado;
         if (textoSeleccionado.includes(' - ')) {
             nombreOrador = textoSeleccionado.split(' - ')[1];
         }
-        
+
         // Actualizar los campos
         $('#orador_inicial').val(oradorSeleccionado);
         $('#orador_inicial_display').val(nombreOrador);
-        
+
         // Habilitar el botón de historial ahora que hay un orador seleccionado
         $('#btn-historial-orador-inicial').prop('disabled', false);
-        
+
         // Cerrar modal
         $('#buscarOradorInicialModal').modal('hide');
-        
-        
+
+
     });
-    
+
     // Limpiar Select2 cuando se cierre el modal
     $('#buscarOradorInicialModal').on('hidden.bs.modal', function() {
         const select = $('#select_orador_inicial');
@@ -3955,7 +4086,7 @@ $(document).ready(function() {
         }
         select.empty().append('<option value="">Cargando usuarios...</option>');
     });
-    
+
     // Limpiar Select2 cuando se cierre el modal del historial
     $('#historialOradorInicialModal').on('hidden.bs.modal', function() {
         const select = $('#select_historial_orador');
@@ -3964,40 +4095,40 @@ $(document).ready(function() {
         }
         select.empty().append('<option value="">Cargando historial...</option>');
         select.prop('disabled', true);
-        
+
         // Restaurar el título original del modal
         $('#historialOradorInicialModalLabel').html('<i class="fas fa-history me-2"></i>Historial de Participaciones');
     });
-    
+
     // Evento para confirmar la selección del orador final
     $('#confirmarOradorFinal').on('click', function() {
         const oradorSeleccionado = $('#select_orador_final').val();
         const textoSeleccionado = $('#select_orador_final option:selected').text();
-        
+
         if (!oradorSeleccionado) {
             alert('Por favor seleccione un orador final');
             return;
         }
-        
+
         // Extraer solo el nombre del formato "fecha - nombre"
         let nombreOrador = textoSeleccionado;
         if (textoSeleccionado.includes(' - ')) {
             nombreOrador = textoSeleccionado.split(' - ')[1];
         }
-        
+
         // Actualizar los campos
         $('#orador_final').val(oradorSeleccionado);
         $('#orador_final_display').val(nombreOrador);
-        
+
         // Habilitar el botón de historial ahora que hay un orador seleccionado
         $('#btn-historial-orador-final').prop('disabled', false);
-        
+
         // Cerrar modal
         $('#buscarOradorFinalModal').modal('hide');
-        
-        
+
+
     });
-    
+
     // Limpiar Select2 cuando se cierre el modal de buscar orador final
     $('#buscarOradorFinalModal').on('hidden.bs.modal', function() {
         const select = $('#select_orador_final');
@@ -4006,7 +4137,7 @@ $(document).ready(function() {
         }
         select.empty().append('<option value="">Cargando usuarios...</option>');
     });
-    
+
     // Limpiar Select2 cuando se cierre el modal del historial orador final
     $('#historialOradorFinalModal').on('hidden.bs.modal', function() {
         const select = $('#select_historial_orador_final');
@@ -4015,40 +4146,40 @@ $(document).ready(function() {
         }
         select.empty().append('<option value="">Cargando historial...</option>');
         select.prop('disabled', true);
-        
+
         // Restaurar el título original del modal
         $('#historialOradorFinalModalLabel').html('<i class="fas fa-history me-2"></i>Historial de Participaciones');
     });
-    
+
     // Evento para confirmar la selección de presidencia
     $('#confirmarPresidencia').on('click', function() {
         const presidenteSeleccionado = $('#select_presidencia').val();
         const textoSeleccionado = $('#select_presidencia option:selected').text();
-        
+
         if (!presidenteSeleccionado) {
             alert('Por favor seleccione un presidente');
             return;
         }
-        
+
         // Extraer solo el nombre del formato "fecha - nombre"
         let nombrePresidente = textoSeleccionado;
         if (textoSeleccionado.includes(' - ')) {
             nombrePresidente = textoSeleccionado.split(' - ')[1];
         }
-        
+
         // Actualizar los campos
         $('#presidencia').val(presidenteSeleccionado);
         $('#presidencia_display').val(nombrePresidente);
-        
+
         // Habilitar el botón de historial ahora que hay un presidente seleccionado
         $('#btn-historial-presidencia').prop('disabled', false);
-        
+
         // Cerrar modal
         $('#buscarPresidenciaModal').modal('hide');
-        
-        
+
+
     });
-    
+
     // Limpiar Select2 cuando se cierre el modal de buscar presidencia
     $('#buscarPresidenciaModal').on('hidden.bs.modal', function() {
         const select = $('#select_presidencia');
@@ -4057,7 +4188,7 @@ $(document).ready(function() {
         }
         select.empty().append('<option value="">Cargando usuarios...</option>');
     });
-    
+
     // Limpiar Select2 cuando se cierre el modal del historial presidencia
     $('#historialPresidenciaModal').on('hidden.bs.modal', function() {
         const select = $('#select_historial_presidencia');
@@ -4066,43 +4197,43 @@ $(document).ready(function() {
         }
         select.empty().append('<option value="">Cargando historial...</option>');
         select.prop('disabled', true);
-        
+
         // Restaurar el título original del modal
         $('#historialPresidenciaModalLabel').html('<i class="fas fa-history me-2"></i>Historial de Participaciones');
     });
-    
+
     // Eventos para confirmar selección de canciones
     $('#confirmarCancionInicial').on('click', function() {
         confirmarSeleccionCancion('select_cancion_inicial', 'cancion_pre', 'cancion_pre_display', '#buscarCancionInicialModal');
     });
-    
+
     $('#confirmarCancionIntermedia').on('click', function() {
         confirmarSeleccionCancion('select_cancion_intermedia', 'cancion_en', 'cancion_en_display', '#buscarCancionIntermediaModal');
     });
-    
+
     $('#confirmarCancionFinal').on('click', function() {
         confirmarSeleccionCancion('select_cancion_final', 'cancion_post', 'cancion_post_display', '#buscarCancionFinalModal');
     });
-    
+
     function confirmarSeleccionCancion(selectId, campoHiddenId, campoDisplayId, modalId) {
         const cancionSeleccionada = $('#' + selectId).val();
         const textoSeleccionado = $('#' + selectId + ' option:selected').text();
-        
+
         if (!cancionSeleccionada) {
             alert('Por favor seleccione una canción');
             return;
         }
-        
+
         // Actualizar los campos
         $('#' + campoHiddenId).val(cancionSeleccionada);
         $('#' + campoDisplayId).val(textoSeleccionado);
-        
+
         // Cerrar modal
         $(modalId).modal('hide');
-        
-        
+
+
     }
-    
+
     // Limpiar Select2 cuando se cierren los modales de canciones
     $('#buscarCancionInicialModal').on('hidden.bs.modal', function() {
         const select = $('#select_cancion_inicial');
@@ -4111,7 +4242,7 @@ $(document).ready(function() {
         }
         select.empty().append('<option value="">Cargando canciones...</option>');
     });
-    
+
     $('#buscarCancionIntermediaModal').on('hidden.bs.modal', function() {
         const select = $('#select_cancion_intermedia');
         if (select.hasClass('select2-hidden-accessible')) {
@@ -4119,7 +4250,7 @@ $(document).ready(function() {
         }
         select.empty().append('<option value="">Cargando canciones...</option>');
     });
-    
+
     $('#buscarCancionFinalModal').on('hidden.bs.modal', function() {
         const select = $('#select_cancion_final');
         if (select.hasClass('select2-hidden-accessible')) {
@@ -4127,12 +4258,12 @@ $(document).ready(function() {
         }
         select.empty().append('<option value="">Cargando canciones...</option>');
     });
-    
+
     // Funciones para los botones del campo Orador Final (solo para coordinadores)
     function buscarOradorFinal() {
         // Abrir modal y cargar usuarios con asignación de oración
         $('#buscarOradorFinalModal').modal('show');
-        
+
         // Cargar usuarios con asignación_id=23 y su historial (misma función que orador inicial)
         $.ajax({
             url: '/usuarios-orador-inicial',
@@ -4141,7 +4272,7 @@ $(document).ready(function() {
                 if (response.success) {
                     const select = $('#select_orador_final');
                     select.empty();
-                    
+
                     // Inicializar Select2 si no está ya inicializado
                     if (!select.hasClass('select2-hidden-accessible')) {
                         select.select2({
@@ -4152,9 +4283,9 @@ $(document).ready(function() {
                             dropdownParent: $('#buscarOradorFinalModal')
                         });
                     }
-                    
+
                     select.append('<option value="">Seleccionar orador final...</option>');
-                    
+
                     // Agregar opciones con el formato: fecha - nombre
                     response.data.forEach(function(usuario) {
                         let fechaTexto = 'Primera vez';
@@ -4168,7 +4299,7 @@ $(document).ready(function() {
                         const textoOpcion = `${fechaTexto} - ${usuario.name}`;
                         select.append(`<option value="${usuario.id}">${textoOpcion}</option>`);
                     });
-                    
+
                     // Preseleccionar el orador actual si existe
                     const oradorActual = $('#orador_final').val();
                     if (oradorActual) {
@@ -4184,17 +4315,17 @@ $(document).ready(function() {
             }
         });
     }
-    
+
     function verHistorialOradorFinal() {
         const oradorId = $('#orador_final').val();
         if (!oradorId) {
             alert('No hay orador final seleccionado para mostrar historial');
             return;
         }
-        
+
         // Abrir modal y cargar historial del orador
         $('#historialOradorFinalModal').modal('show');
-        
+
         // Cargar historial de participaciones del usuario (misma función que orador inicial)
         $.ajax({
             url: `/usuarios/${oradorId}/historial-orador`,
@@ -4203,7 +4334,7 @@ $(document).ready(function() {
                 if (response.success) {
                     const select = $('#select_historial_orador_final');
                     select.empty();
-                    
+
                     // Inicializar Select2 si no está ya inicializado
                     if (!select.hasClass('select2-hidden-accessible')) {
                         select.select2({
@@ -4213,10 +4344,10 @@ $(document).ready(function() {
                             dropdownParent: $('#historialOradorFinalModal')
                         });
                     }
-                    
+
                     if (response.data.length > 0) {
                         select.append('<option value="">Seleccionar participación...</option>');
-                        
+
                         // Agregar opciones con el formato: fecha - nombre - tipo
                         response.data.forEach(function(participacion) {
                             const fecha = new Date(participacion.fecha);
@@ -4224,19 +4355,19 @@ $(document).ready(function() {
                             const mes = String(fecha.getMonth() + 1).padStart(2, '0');
                             const año = fecha.getFullYear();
                             const fechaTexto = `${dia}/${mes}/${año}`;
-                            
+
                             const tipoOracion = participacion.tipo === 'inicial' ? 'Orador Inicial' : 'Orador Final';
                             const textoOpcion = `${fechaTexto} - ${participacion.nombre_usuario} - ${tipoOracion}`;
-                            
+
                             select.append(`<option value="${participacion.programa_id}">${textoOpcion}</option>`);
                         });
-                        
+
                         // Habilitar el select
                         select.prop('disabled', false);
-                        
+
                         // Seleccionar automáticamente el primer elemento (índice 1, ya que 0 es "Seleccionar participación...")
                         select.val(response.data[0].programa_id).trigger('change');
-                        
+
                         // Actualizar el título del modal con el nombre del usuario
                         $('#historialOradorFinalModalLabel').html(`<i class="fas fa-history me-2"></i>Historial de ${response.data[0].nombre_usuario}`);
                     } else {
@@ -4253,12 +4384,12 @@ $(document).ready(function() {
             }
         });
     }
-    
+
     // Funciones para los botones del campo Presidencia (solo para coordinadores)
     function buscarPresidencia() {
         // Abrir modal y cargar usuarios con asignación de presidencia
         $('#buscarPresidenciaModal').modal('show');
-        
+
         // Cargar usuarios con asignación_id=1 y su historial
         $.ajax({
             url: '/usuarios-presidencia',
@@ -4267,7 +4398,7 @@ $(document).ready(function() {
                 if (response.success) {
                     const select = $('#select_presidencia');
                     select.empty();
-                    
+
                     // Inicializar Select2 si no está ya inicializado
                     if (!select.hasClass('select2-hidden-accessible')) {
                         select.select2({
@@ -4278,9 +4409,9 @@ $(document).ready(function() {
                             dropdownParent: $('#buscarPresidenciaModal')
                         });
                     }
-                    
+
                     select.append('<option value="">Seleccionar presidente...</option>');
-                    
+
                     // Agregar opciones con el formato: fecha - nombre
                     response.data.forEach(function(usuario) {
                         let fechaTexto = 'Primera vez';
@@ -4294,7 +4425,7 @@ $(document).ready(function() {
                         const textoOpcion = `${fechaTexto} - ${usuario.name}`;
                         select.append(`<option value="${usuario.id}">${textoOpcion}</option>`);
                     });
-                    
+
                     // Preseleccionar el presidente actual si existe
                     const presidenteActual = $('#presidencia').val();
                     if (presidenteActual) {
@@ -4310,17 +4441,17 @@ $(document).ready(function() {
             }
         });
     }
-    
+
     function verHistorialPresidencia() {
         const presidenteId = $('#presidencia').val();
         if (!presidenteId) {
             alert('No hay presidente seleccionado para mostrar historial');
             return;
         }
-        
+
         // Abrir modal y cargar historial del presidente
         $('#historialPresidenciaModal').modal('show');
-        
+
         // Cargar historial de participaciones del usuario
         $.ajax({
             url: `/usuarios/${presidenteId}/historial-presidencia`,
@@ -4329,7 +4460,7 @@ $(document).ready(function() {
                 if (response.success) {
                     const select = $('#select_historial_presidencia');
                     select.empty();
-                    
+
                     // Inicializar Select2 si no está ya inicializado
                     if (!select.hasClass('select2-hidden-accessible')) {
                         select.select2({
@@ -4339,10 +4470,10 @@ $(document).ready(function() {
                             dropdownParent: $('#historialPresidenciaModal')
                         });
                     }
-                    
+
                     if (response.data.length > 0) {
                         select.append('<option value="">Seleccionar participación...</option>');
-                        
+
                         // Agregar opciones con el formato: fecha - nombre
                         response.data.forEach(function(participacion) {
                             const fecha = new Date(participacion.fecha);
@@ -4350,18 +4481,18 @@ $(document).ready(function() {
                             const mes = String(fecha.getMonth() + 1).padStart(2, '0');
                             const año = fecha.getFullYear();
                             const fechaTexto = `${dia}/${mes}/${año}`;
-                            
+
                             const textoOpcion = `${fechaTexto} - ${participacion.nombre_usuario}`;
-                            
+
                             select.append(`<option value="${participacion.programa_id}">${textoOpcion}</option>`);
                         });
-                        
+
                         // Habilitar el select
                         select.prop('disabled', false);
-                        
+
                         // Seleccionar automáticamente el primer elemento (índice 1, ya que 0 es "Seleccionar participación...")
                         select.val(response.data[0].programa_id).trigger('change');
-                        
+
                         // Actualizar el título del modal con el nombre del usuario
                         $('#historialPresidenciaModalLabel').html(`<i class="fas fa-history me-2"></i>Historial de ${response.data[0].nombre_usuario}`);
                     } else {
@@ -4378,23 +4509,23 @@ $(document).ready(function() {
             }
         });
     }
-    
+
     // Funciones para los botones de canciones (solo para coordinadores)
     function buscarCancionInicial() {
         $('#buscarCancionInicialModal').modal('show');
         cargarCanciones('select_cancion_inicial', '#cancion_pre');
     }
-    
+
     function buscarCancionIntermedia() {
         $('#buscarCancionIntermediaModal').modal('show');
         cargarCanciones('select_cancion_intermedia', '#cancion_en');
     }
-    
+
     function buscarCancionFinal() {
         $('#buscarCancionFinalModal').modal('show');
         cargarCanciones('select_cancion_final', '#cancion_post');
     }
-    
+
     function cargarCanciones(selectId, campoActualId) {
         $.ajax({
             url: '/canciones-disponibles',
@@ -4403,13 +4534,13 @@ $(document).ready(function() {
                 if (response.success) {
                     const select = $('#' + selectId);
                     select.empty();
-                    
+
                     // Inicializar Select2 si no está ya inicializado
                     if (!select.hasClass('select2-hidden-accessible')) {
                         const modalId = selectId.includes('inicial') ? '#buscarCancionInicialModal' :
                                        selectId.includes('intermedia') ? '#buscarCancionIntermediaModal' :
                                        '#buscarCancionFinalModal';
-                        
+
                         select.select2({
                             theme: 'bootstrap-5',
                             placeholder: "Buscar y seleccionar canción...",
@@ -4418,15 +4549,15 @@ $(document).ready(function() {
                             dropdownParent: $(modalId)
                         });
                     }
-                    
+
                     select.append('<option value="">Seleccionar canción...</option>');
-                    
+
                     // Agregar opciones con el formato: número - nombre
                     response.data.forEach(function(cancion) {
                         const textoOpcion = cancion.numero ? `${cancion.numero} - ${cancion.nombre}` : cancion.nombre;
                         select.append(`<option value="${cancion.id}">${textoOpcion}</option>`);
                     });
-                    
+
                     // Preseleccionar la canción actual si existe
                     const cancionActual = $(campoActualId).val();
                     if (cancionActual) {
@@ -4449,10 +4580,10 @@ $(document).ready(function() {
             alert('Por favor seleccione una parte primero');
             return;
         }
-        
+
         // Abrir modal y cargar usuarios con participaciones en la parte seleccionada
         $('#buscarEncargadoParteModal').modal('show');
-        
+
         // Cargar usuarios que han participado como encargados en esta parte
         $.ajax({
             url: `/encargados-por-parte-programa/${parteId}`,
@@ -4461,7 +4592,7 @@ $(document).ready(function() {
                 if (response.success) {
                     const select = $('#select_encargado_parte');
                     select.empty();
-                    
+
                     // Inicializar Select2 si no está ya inicializado
                     if (!select.hasClass('select2-hidden-accessible')) {
                         select.select2({
@@ -4472,9 +4603,9 @@ $(document).ready(function() {
                             dropdownParent: $('#buscarEncargadoParteModal')
                         });
                     }
-                    
+
                     select.append('<option value="">Seleccionar encargado...</option>');
-                    
+
                     // Agregar opciones con el formato: fecha (dd/mm/AAAA) - Nombre del usuario
                     response.data.forEach(function(usuario) {
                         let fechaTexto = 'Primera vez';
@@ -4488,7 +4619,7 @@ $(document).ready(function() {
                         const textoOpcion = `${fechaTexto} - ${usuario.name}`;
                         select.append(`<option value="${usuario.id}">${textoOpcion}</option>`);
                     });
-                    
+
                     // Preseleccionar el encargado actual si existe, sino seleccionar el primero
                     const encargadoActual = $('#encargado_id').val();
                     if (encargadoActual) {
@@ -4507,29 +4638,29 @@ $(document).ready(function() {
             }
         });
     }
-    
+
     function verHistorialEncargadoParte() {
         const encargadoId = $('#encargado_id').val();
         const parteId = $('#parte_id').val();
-        
+
         if (!encargadoId) {
             alert('No hay encargado seleccionado para mostrar historial');
             return;
         }
-        
+
         if (!parteId) {
             alert('No hay parte seleccionada para mostrar historial');
             return;
         }
-        
+
         // Abrir modal y cargar historial del encargado en esta parte específica
         $('#historialEncargadoParteModal').modal('show');
-        
+
         // Cargar historial de participaciones del usuario como encargado en esta parte
         $.ajax({
             url: `/usuarios/${encargadoId}/historial-participaciones`,
             method: 'GET',
-            data: { 
+            data: {
                 parte_id: parteId,
                 tipo: 'encargado'
             },
@@ -4537,7 +4668,7 @@ $(document).ready(function() {
                 if (response.success) {
                     const select = $('#select_historial_encargado_parte');
                     select.empty();
-                    
+
                     // Inicializar Select2 si no está ya inicializado
                     if (!select.hasClass('select2-hidden-accessible')) {
                         select.select2({
@@ -4547,10 +4678,10 @@ $(document).ready(function() {
                             dropdownParent: $('#historialEncargadoParteModal')
                         });
                     }
-                    
+
                     if (response.data.length > 0) {
                         select.append('<option value="">Seleccionar participación...</option>');
-                        
+
                         // Agregar opciones con el formato: fecha - parte - tipo
                         response.data.forEach(function(participacion) {
                             const fecha = new Date(participacion.fecha);
@@ -4558,17 +4689,17 @@ $(document).ready(function() {
                             const mes = String(fecha.getMonth() + 1).padStart(2, '0');
                             const año = fecha.getFullYear();
                             const fechaTexto = `${dia}/${mes}/${año}`;
-                            
+
                             const textoOpcion = `${fechaTexto}|${participacion.parte_abreviacion}|${participacion.nombre_usuario || 'Usuario'}`;
                             select.append(`<option value="${participacion.programa_id}">${textoOpcion}</option>`);
                         });
-                        
+
                         // Habilitar el select
                         select.prop('disabled', false);
-                        
+
                         // Seleccionar automáticamente el primer elemento
                         select.val(response.data[0].programa_id).trigger('change');
-                        
+
                         // Actualizar el título del modal con el nombre del usuario
                         $('#historialEncargadoParteModalLabel').html(`<i class="fas fa-history me-2"></i>Historial de ${response.data[0].nombre_usuario || 'Usuario'}`);
                     } else {
@@ -4585,37 +4716,37 @@ $(document).ready(function() {
             }
         });
     }
-    
+
     // Evento para confirmar la selección del encargado
     $('#confirmarEncargadoParte').on('click', function() {
         const encargadoSeleccionado = $('#select_encargado_parte').val();
         const textoSeleccionado = $('#select_encargado_parte option:selected').text();
-        
+
         if (!encargadoSeleccionado) {
             alert('Por favor seleccione un encargado');
             return;
         }
-        
+
         // Extraer solo el nombre del formato "fecha - nombre"
         let nombreEncargado = textoSeleccionado;
         if (textoSeleccionado.includes(' - ')) {
             nombreEncargado = textoSeleccionado.split(' - ')[1];
         }
-        
+
         // Actualizar los campos
         $('#encargado_id').val(encargadoSeleccionado);
         $('#encargado_display').val(nombreEncargado);
-        
+
         // Habilitar los botones ahora que hay un encargado seleccionado
         $('#btn-historial-encargado').prop('disabled', false);
         $('#btn-agregar-reemplazado').prop('disabled', false);
-        
+
         // Cerrar modal
         $('#buscarEncargadoParteModal').modal('hide');
-        
-        
+
+
     });
-    
+
     // Limpiar Select2 cuando se cierre el modal de buscar encargado
     $('#buscarEncargadoParteModal').on('hidden.bs.modal', function() {
         const select = $('#select_encargado_parte');
@@ -4624,7 +4755,7 @@ $(document).ready(function() {
         }
         select.empty().append('<option value="">Cargando usuarios...</option>');
     });
-    
+
     // Limpiar Select2 cuando se cierre el modal del historial de encargado
     $('#historialEncargadoParteModal').on('hidden.bs.modal', function() {
         const select = $('#select_historial_encargado_parte');
@@ -4633,11 +4764,11 @@ $(document).ready(function() {
         }
         select.empty().append('<option value="">Cargando historial...</option>');
         select.prop('disabled', true);
-        
+
         // Restaurar el título original del modal
         $('#historialEncargadoParteModalLabel').html('<i class="fas fa-history me-2"></i>Historial de Participaciones como Encargado');
     });
-    
+
     // Hacer las funciones globales para uso en onclick
     window.buscarOradorInicial = buscarOradorInicial;
     window.verHistorialOradorInicial = verHistorialOradorInicial;
@@ -4651,26 +4782,26 @@ $(document).ready(function() {
     function agregarEncargadoReemplazado() {
         const encargadoId = $('#encargado_id').val();
         const encargadoNombre = $('#encargado_display').val();
-        
+
         if (!encargadoId || !encargadoNombre) {
             alert('No hay encargado seleccionado para agregar como reemplazado');
             return;
         }
-        
+
         // Mostrar el modal de confirmación
         $('#nombreEncargadoAgregar').text(encargadoNombre);
         $('#confirmarAgregarReemplazadoModal').modal('show');
     }
-    
+
     // Función para eliminar encargado reemplazado
     function eliminarEncargadoReemplazado() {
         const encargadoReemplazadoNombre = $('#encargado_reemplazado_display').val();
-        
+
         if (!encargadoReemplazadoNombre) {
             alert('No hay encargado reemplazado para eliminar');
             return;
         }
-        
+
         // Mostrar el modal de confirmación
         $('#nombreEncargadoEliminar').text(encargadoReemplazadoNombre);
         $('#confirmarEliminarReemplazadoModal').modal('show');
@@ -4680,32 +4811,32 @@ $(document).ready(function() {
     $('#confirmarAgregarReemplazado').on('click', function() {
         const encargadoId = $('#encargado_id').val();
         const encargadoNombre = $('#encargado_display').val();
-        
+
         // Establecer los valores en los campos de reemplazado
         $('#encargado_reemplazado_id').val(encargadoId);
         $('#encargado_reemplazado_display').val(encargadoNombre);
-        
+
         // Habilitar el botón de eliminar
         $('#btn-eliminar-reemplazado').prop('disabled', false);
-        
+
         // Cerrar el modal
         $('#confirmarAgregarReemplazadoModal').modal('hide');
-        
-        
+
+
     });
 
     $('#confirmarEliminarReemplazado').on('click', function() {
         // Limpiar los campos
         $('#encargado_reemplazado_id').val('');
         $('#encargado_reemplazado_display').val('');
-        
+
         // Deshabilitar el botón de eliminar
         $('#btn-eliminar-reemplazado').prop('disabled', true);
-        
+
         // Cerrar el modal
         $('#confirmarEliminarReemplazadoModal').modal('hide');
-        
-        
+
+
     });
 
     window.buscarCancionFinal = buscarCancionFinal;
@@ -4716,35 +4847,35 @@ $(document).ready(function() {
     window.buscarEncargadoSegundaSeccion = buscarEncargadoSegundaSeccion;
     window.buscarAyudanteSegundaSeccion = buscarAyudanteSegundaSeccion;
     window.verHistorialAyudanteSegundaSeccion = verHistorialAyudanteSegundaSeccion;
-    
+
     // Funciones para limpiar historiales (segunda sección)
     function clearHistorialEncargado() {
         // Esta función se llama para mantener consistencia en la segunda sección
         // No hay campos específicos de historial que limpiar en esta sección
     }
-    
+
     function clearHistorialAyudante() {
         // Esta función se llama para mantener consistencia en la segunda sección
         // No hay campos específicos de historial que limpiar en esta sección
     }
-    
+
     // Funciones para limpiar historiales (tercera sección)
     function clearHistorialEncargadoTercera() {
         // Esta función se llama para mantener consistencia en la tercera sección
         // No hay campos específicos de historial que limpiar en esta sección
     }
-    
+
     function clearHistorialAyudanteTercera() {
         // Esta función se llama para mantener consistencia en la tercera sección
         // No hay campos específicos de historial que limpiar en esta sección
     }
-    
+
     // Función para cargar historial del encargado (funcionalidad específica)
     function loadHistorialEncargado(encargadoId) {
         // Aquí se implementaría la lógica para cargar el historial del encargado
         // Esta función se puede expandir en el futuro si se necesita mostrar historial específico
     }
-    
+
     // Hacer las funciones globales para uso en otros contextos
     window.clearHistorialEncargado = clearHistorialEncargado;
     window.clearHistorialAyudante = clearHistorialAyudante;
@@ -4753,17 +4884,17 @@ $(document).ready(function() {
     window.loadHistorialEncargado = loadHistorialEncargado;
     window.loadHistorialEncargadoSegundaSeccion = loadHistorialEncargadoSegundaSeccion;
     window.clearHistorialEncargadoSegundaSeccion = clearHistorialEncargadoSegundaSeccion;
-    
+
     // Evento para confirmar la selección del encargado de segunda sección
     $('#confirmarEncargadoSegundaSeccion').on('click', function() {
         const encargadoSeleccionado = $('#select_encargado_segunda_seccion').val();
         const textoSeleccionado = $('#select_encargado_segunda_seccion option:selected').text();
-        
+
         if (!encargadoSeleccionado) {
             alert('Por favor seleccione un encargado');
             return;
         }
-        
+
         // Extraer solo el nombre limpio del formato "fecha - abreviacion - nombre (tipo)" o "fecha|parte|tipo|nombre"
         let nombreEncargado = textoSeleccionado;
         if (textoSeleccionado.includes(' - ')) {
@@ -4775,23 +4906,23 @@ $(document).ready(function() {
         } else {
             nombreEncargado = nombreEncargado.replace(/\s*\([^)]*\)\s*$/, '').trim();
         }
-        
+
         // Actualizar los campos
         $('#encargado_id_segunda_seccion').val(encargadoSeleccionado);
         $('#encargado_display_segunda_seccion').val(nombreEncargado);
-        
+
         // Habilitar los botones ahora que hay un encargado seleccionado
     // ...existing code...
-        
+
         // Actualizar el estado de los botones
         updateButtonStatesSegundaSeccion();
-        
+
         // Cerrar modal
         $('#buscarEncargadoSegundaSeccionModal').modal('hide');
-        
-        
+
+
     });
-    
+
     // Limpiar Select2 cuando se cierre el modal de buscar encargado segunda sección
     $('#buscarEncargadoSegundaSeccionModal').on('hidden.bs.modal', function() {
         const select = $('#select_encargado_segunda_seccion');
@@ -4799,7 +4930,7 @@ $(document).ready(function() {
             select.select2('destroy');
         }
         select.empty().append('<option value="">Cargando usuarios...</option>');
-        
+
         // Limpiar también el historial
         const selectHistorial = $('#select_historial_encargado_segunda_seccion');
         if (selectHistorial.hasClass('select2-hidden-accessible')) {
@@ -4808,25 +4939,25 @@ $(document).ready(function() {
         selectHistorial.empty().append('<option value="">Seleccionar un encargado primero...</option>');
         selectHistorial.prop('disabled', true);
     });
-    
+
     // Función para cargar el historial del encargado en la segunda sección
     function loadHistorialEncargadoSegundaSeccion(encargadoId) {
         const selectHistorial = $('#select_historial_encargado_segunda_seccion');
-        
+
         // Limpiar el select y mostrar "Cargando..."
         selectHistorial.empty().append('<option value="">Cargando historial...</option>');
         selectHistorial.prop('disabled', false);
-        
+
         $.ajax({
             url: `/usuarios/${encargadoId}/historial-segunda-seccion`,
             method: 'GET',
             success: function(response) {
                 if (response.success) {
                     selectHistorial.empty();
-                    
+
                     if (response.historial.length > 0) {
                         selectHistorial.append('<option value="">Seleccionar participación...</option>');
-                        
+
                         // Agregar opciones con el formato requerido: fecha | sala | parte | ES | encargado(20chars) | AY | ayudante
                         response.historial.forEach(function(participacion) {
                             const fecha = new Date(participacion.fecha);
@@ -4834,19 +4965,19 @@ $(document).ready(function() {
                             const mes = String(fecha.getMonth() + 1).padStart(2, '0');
                             const año = fecha.getFullYear();
                             const fechaTexto = `${dia}/${mes}/${año}`;
-                            
+
                             // Usar nombres formateados desde el backend con str_pad
                             const encargadoNombre = participacion.encargado_nombre_formateado || '';
                             const ayudanteNombre = participacion.ayudante_nombre_formateado || '';
-                            
+
                             // Formato: fecha|sala|parte|ES|encargado|AY|ayudante (sin espacios alrededor de |)
                             const textoOpcion = `${fechaTexto}|${participacion.sala_abreviacion}|${participacion.parte_abreviacion}|ES|${encargadoNombre}|AY|${ayudanteNombre}`;
-                            
+
                             selectHistorial.append(`<option value="${participacion.programa_id}">${textoOpcion}</option>`);
                         });
-                        
+
                         selectHistorial.prop('disabled', false);
-                        
+
                         // Seleccionar automáticamente el primer elemento (índice 1, ya que 0 es "Seleccionar participación...")
                         if (response.historial.length > 0) {
                             selectHistorial.val(response.historial[0].programa_id).trigger('change');
@@ -4867,32 +4998,32 @@ $(document).ready(function() {
             }
         });
     }
-    
+
     // Función para limpiar el historial del encargado en la segunda sección
     function clearHistorialEncargadoSegundaSeccion() {
         const selectHistorial = $('#select_historial_encargado_segunda_seccion');
         selectHistorial.empty().append('<option value="">Seleccionar un encargado primero...</option>');
         selectHistorial.prop('disabled', true);
     }
-    
+
     // Función para cargar el historial del ayudante en la segunda sección
     function loadHistorialAyudanteSegundaSeccion(ayudanteId) {
         const selectHistorial = $('#select_historial_ayudante_segunda_seccion');
-        
+
         // Limpiar el select y mostrar "Cargando..."
         selectHistorial.empty().append('<option value="">Cargando historial...</option>');
         selectHistorial.prop('disabled', false);
-        
+
         $.ajax({
             url: `/usuarios/${ayudanteId}/historial-segunda-seccion`,
             method: 'GET',
             success: function(response) {
                 if (response.success) {
                     selectHistorial.empty();
-                    
+
                     if (response.historial.length > 0) {
                         selectHistorial.append('<option value="">Seleccionar participación...</option>');
-                        
+
                         // Agregar opciones con el formato requerido: fecha | sala | parte | ES | encargado(25chars) | AY | ayudante
                         response.historial.forEach(function(participacion) {
                             const fecha = new Date(participacion.fecha);
@@ -4900,19 +5031,19 @@ $(document).ready(function() {
                             const mes = String(fecha.getMonth() + 1).padStart(2, '0');
                             const año = fecha.getFullYear();
                             const fechaTexto = `${dia}/${mes}/${año}`;
-                            
+
                             // Usar nombres formateados desde el backend con str_pad
                             const encargadoNombre = participacion.encargado_nombre_formateado || '';
                             const ayudanteNombre = participacion.ayudante_nombre_formateado || '';
-                            
+
                             // Formato: fecha|sala|parte|ES|encargado|AY|ayudante (sin espacios alrededor de |)
                             const textoOpcion = `${fechaTexto}|${participacion.sala_abreviacion}|${participacion.parte_abreviacion}|ES|${encargadoNombre}|AY|${ayudanteNombre}`;
-                            
+
                             selectHistorial.append(`<option value="${participacion.programa_id}">${textoOpcion}</option>`);
                         });
-                        
+
                         selectHistorial.prop('disabled', false);
-                        
+
                         // Seleccionar automáticamente el primer elemento (índice 1, ya que 0 es "Seleccionar participación...")
                         if (response.historial.length > 0) {
                             selectHistorial.val(response.historial[0].programa_id).trigger('change');
@@ -4933,7 +5064,7 @@ $(document).ready(function() {
             }
         });
     }
-    
+
     // Función para limpiar el historial del ayudante en la segunda sección
     function clearHistorialAyudanteSegundaSeccion() {
         const selectHistorial = $('#select_historial_ayudante_segunda_seccion');
@@ -4945,12 +5076,12 @@ $(document).ready(function() {
     $('#confirmarAyudanteSegundaSeccion').on('click', function() {
         const ayudanteSeleccionado = $('#select_ayudante_segunda_seccion').val();
         const textoSeleccionado = $('#select_ayudante_segunda_seccion option:selected').text();
-        
+
         if (!ayudanteSeleccionado) {
             alert('Por favor seleccione un ayudante');
             return;
         }
-        
+
         // Extraer solo el nombre del formato "fecha|sala_abrev|parte_abrev|nombre"
         let nombreAyudante = textoSeleccionado;
         if (textoSeleccionado.includes('|')) {
@@ -4960,21 +5091,21 @@ $(document).ready(function() {
                 nombreAyudante = partes[3].trim();
             }
         }
-        
+
         // Actualizar los campos
         $('#ayudante_id_segunda_seccion').val(ayudanteSeleccionado);
         $('#ayudante_display_segunda_seccion').val(nombreAyudante);
-        
+
         // Habilitar los botones ahora que hay un ayudante seleccionado
     // ...existing code...
-        
+
         // Actualizar el estado de los botones
         updateButtonStatesSegundaSeccion();
-        
+
         // Cerrar modal
         $('#buscarAyudanteSegundaSeccionModal').modal('hide');
     });
-    
+
     // Limpiar Select2 cuando se cierre el modal de buscar ayudante segunda sección
     $('#buscarAyudanteSegundaSeccionModal').on('hidden.bs.modal', function() {
         const select = $('#select_ayudante_segunda_seccion');
@@ -4982,7 +5113,7 @@ $(document).ready(function() {
             select.select2('destroy');
         }
         select.empty().append('<option value="">Cargando usuarios...</option>');
-        
+
         // Limpiar también el historial
         const selectHistorial = $('#select_historial_ayudante_segunda_seccion');
         if (selectHistorial.hasClass('select2-hidden-accessible')) {
