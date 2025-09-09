@@ -1238,8 +1238,15 @@ $(document).ready(function() {
 
     // Manejar envío del formulario de partes del programa
     $('#parteProgramaForm').submit(function(e) {
+        console.log('Form submit event triggered');
         e.preventDefault();
         submitPartePrograma();
+    });
+
+    // Debugging adicional para el botón
+    $('#saveParteBtn').on('click', function(e) {
+        console.log('Save button clicked - debugging only');
+        // No prevenir el evento por defecto aquí para no interferir
     });
 
     // Manejar cambio en el select de parte_id para autocompletar el tiempo y filtrar encargados
@@ -1700,47 +1707,74 @@ $(document).ready(function() {
     }
 
     function submitPartePrograma() {
+        console.log('submitPartePrograma() called');
         const submitBtn = $('#saveParteBtn');
         const spinner = submitBtn.find('.spinner-border');
 
         // Deshabilitar botón y mostrar spinner
         submitBtn.prop('disabled', true);
         spinner.removeClass('d-none');
+        console.log('Button disabled and spinner shown');
 
         // Limpiar errores previos
         $('.is-invalid').removeClass('is-invalid');
         $('.invalid-feedback').text('');
+        console.log('Errors cleared');
 
         // Validar campo tiempo
         const tiempoValue = $('#tiempo_parte').val();
+        console.log('Tiempo value:', tiempoValue);
         if (!tiempoValue || tiempoValue < 1) {
+            console.log('Tiempo validation failed');
             $('#tiempo_parte').addClass('is-invalid');
             $('#tiempo_parte').siblings('.invalid-feedback').text('El campo Tiempo es obligatorio y debe ser mayor a 0.');
             submitBtn.prop('disabled', false);
             spinner.addClass('d-none');
             return;
         }
+        console.log('Tiempo validation passed');
 
-        // Validar campo leccion si no es coordinador
-        if (!userIsCoordinator) {
-            const leccionValue = $('#leccion_parte').val().trim();
-            if (!leccionValue) {
-                $('#leccion_parte').addClass('is-invalid');
-                $('#leccion_parte').siblings('.invalid-feedback').text('El campo Lección es obligatorio.');
-                submitBtn.prop('disabled', false);
-                spinner.addClass('d-none');
-                return;
+        // Detectar qué modal está activo para usar el campo de lección correcto
+        let leccionFieldId = '';
+        let leccionValue = '';
+
+        if ($('#parteProgramaModal').hasClass('show')) {
+            // Primera sección - solo tiene campo de lección si NO es coordinador
+            if (!userIsCoordinator) {
+                leccionFieldId = 'leccion_parte';
+                leccionValue = $('#leccion_parte').val();
+                console.log('Using first section leccion field (non-coordinator)');
+            } else {
+                console.log('First section modal active but user is coordinator - no leccion field');
             }
+        } else if ($('#parteProgramaSegundaSeccionModal').hasClass('show')) {
+            // Segunda sección (coordinadores)
+            leccionFieldId = 'leccion_segunda_seccion';
+            leccionValue = $('#leccion_segunda_seccion').val();
+            console.log('Using second section leccion field');
+        } else if ($('#parteProgramaTerceraSeccionModal').hasClass('show')) {
+            // Tercera sección (coordinadores)
+            leccionFieldId = 'leccion_tercera_seccion';
+            leccionValue = $('#leccion_tercera_seccion').val();
+            console.log('Using third section leccion field');
+        }
+
+        console.log('userIsCoordinator:', userIsCoordinator);
+        console.log('Leccion field ID:', leccionFieldId);
+        console.log('Leccion value:', leccionValue);
+
+        // Validar campo leccion solo si existe el campo
+        if (leccionFieldId && (!leccionValue || leccionValue.trim() === '')) {
+            console.log('Leccion validation failed');
+            $(`#${leccionFieldId}`).addClass('is-invalid');
+            $(`#${leccionFieldId}`).siblings('.invalid-feedback').text('El campo Lección es obligatorio.');
+            submitBtn.prop('disabled', false);
+            spinner.addClass('d-none');
+            return;
+        } else if (leccionFieldId) {
+            console.log('Leccion validation passed');
         } else {
-            // Para coordinadores también validar el campo leccion
-            const leccionValue = $('#leccion_parte').val().trim();
-            if (!leccionValue) {
-                $('#leccion_parte').addClass('is-invalid');
-                $('#leccion_parte').siblings('.invalid-feedback').text('El campo Lección es obligatorio.');
-                submitBtn.prop('disabled', false);
-                spinner.addClass('d-none');
-                return;
-            }
+            console.log('No leccion field to validate');
         }
 
         // Crear FormData manualmente para asegurar que incluya todos los campos
@@ -1754,12 +1788,11 @@ $(document).ready(function() {
             '_token': $('meta[name="csrf-token"]').attr('content')
         };
 
-        // Solo incluir lección si no es coordinador
-        if (!userIsCoordinator) {
-            formDataObj['leccion'] = $('#leccion_parte').val();
-        } else {
-            // Para coordinadores también es obligatorio el campo leccion
-            formDataObj['leccion'] = $('#leccion_parte').val();
+        console.log('Form data object:', formDataObj);
+
+        // Agregar lección al formDataObj solo si existe el campo
+        if (leccionValue) {
+            formDataObj['leccion'] = leccionValue;
         }
 
         const url = isEditMode ? `/partes-programa/${$('#parte_programa_id').val()}` : '/partes-programa';
@@ -1770,13 +1803,17 @@ $(document).ready(function() {
             formDataObj['_method'] = 'PUT';
         }
 
-
+        console.log('About to send AJAX request');
+        console.log('Final formDataObj:', formDataObj);
+        console.log('AJAX URL:', url);
+        console.log('AJAX Method:', method);
 
         $.ajax({
             url: url,
             method: 'POST', // Laravel maneja PUT a través de POST con _method
             data: formDataObj,
             success: function(response) {
+                console.log('AJAX success response:', response);
                 if (response.success) {
                     $('#parteProgramaModal').modal('hide');
                     loadPartesPrograma();
@@ -1784,13 +1821,17 @@ $(document).ready(function() {
                 }
             },
             error: function(xhr) {
+                console.log('AJAX error response:', xhr);
+                console.log('AJAX error status:', xhr.status);
+                console.log('AJAX error responseText:', xhr.responseText);
                 if (xhr.status === 422) {
                     const errors = xhr.responseJSON.errors;
+                    console.log('Validation errors:', errors);
                     for (const field in errors) {
                         let fieldName = field;
                         if (field === 'tiempo') fieldName = 'tiempo_parte';
                         if (field === 'tema') fieldName = 'tema_parte';
-                        if (field === 'leccion') fieldName = 'leccion_parte';
+                        if (field === 'leccion' && leccionFieldId) fieldName = leccionFieldId; // Solo usar si existe el campo
 
                         $(`#${fieldName}`).addClass('is-invalid');
                         $(`#${fieldName}`).siblings('.invalid-feedback').text(errors[field][0]);
@@ -1801,10 +1842,13 @@ $(document).ready(function() {
                 }
             },
             complete: function() {
+                console.log('AJAX request completed');
                 submitBtn.prop('disabled', false);
                 spinner.addClass('d-none');
             }
         });
+
+        console.log('End of submitPartePrograma function');
     }
 
     function deleteParte(id) {
@@ -2535,13 +2579,7 @@ $(document).ready(function() {
             return;
         }
 
-        // Validar campo leccion
-        const leccionValue = $('#leccion_segunda_seccion').val().trim();
-        if (!leccionValue) {
-            showAlert('modal-alert-container-segunda-seccion', 'warning', 'El campo Lección es obligatorio.');
-            $('#leccion_segunda_seccion').addClass('is-invalid');
-            return;
-        }
+        // Campo leccion ahora es opcional
 
         const isEdit = isEditMode;
         const url = isEdit ? `/partes-programa/${$('#parte_programa_segunda_seccion_id').val()}` : '/partes-programa';
@@ -2637,13 +2675,7 @@ $(document).ready(function() {
             return;
         }
 
-        // Validar campo leccion
-        const leccionValue = $('#leccion_tercera_seccion').val().trim();
-        if (!leccionValue) {
-            showAlert('modal-alert-container-tercera-seccion', 'warning', 'El campo Lección es obligatorio.');
-            $('#leccion_tercera_seccion').addClass('is-invalid');
-            return;
-        }
+        // Campo leccion ahora es opcional
 
         const isEdit = isEditMode;
         const url = isEdit ? `/partes-programa/${$('#parte_programa_tercera_seccion_id').val()}` : '/partes-programa';
@@ -4747,9 +4779,12 @@ $(document).ready(function() {
             return;
         }
 
-        // Mostrar el modal de confirmación
-        $('#nombreEncargadoAgregar').text(encargadoNombre);
-        $('#confirmarAgregarReemplazadoModal').modal('show');
+        // Agregar directamente sin confirmación
+        $('#encargado_reemplazado_id').val(encargadoId);
+        $('#encargado_reemplazado_display').val(encargadoNombre);
+
+        // Habilitar el botón de eliminar
+        $('#btn-eliminar-reemplazado').prop('disabled', false);
     }
 
     // Función para eliminar encargado reemplazado
@@ -4761,9 +4796,12 @@ $(document).ready(function() {
             return;
         }
 
-        // Mostrar el modal de confirmación
-        $('#nombreEncargadoEliminar').text(encargadoReemplazadoNombre);
-        $('#confirmarEliminarReemplazadoModal').modal('show');
+        // Eliminar directamente sin confirmación
+        $('#encargado_reemplazado_id').val('');
+        $('#encargado_reemplazado_display').val('');
+
+        // Deshabilitar el botón de eliminar
+        $('#btn-eliminar-reemplazado').prop('disabled', true);
     }
 
     // Event listeners para los modales de confirmación

@@ -212,7 +212,7 @@ class ParteProgramaController extends Controller
             'tema' => 'nullable|string|max:500',
             'encargado_id' => 'required|exists:users,id',
             'ayudante_id' => 'nullable|exists:users,id',
-            'leccion' => 'required|string|max:500',
+            'leccion' => 'nullable|string|max:500',
             'encargado_reemplazado_id' => 'nullable|exists:users,id',
             'ayudante_reemplazado_id' => 'nullable|exists:users,id',
             'sala_id' => 'nullable|integer|in:1,2'
@@ -342,10 +342,14 @@ class ParteProgramaController extends Controller
                 'ayudante_id' => $parte->ayudante_id,
                 'encargado_reemplazado_id' => $parte->encargado_reemplazado_id,
                 'ayudante_reemplazado_id' => $parte->ayudante_reemplazado_id,
-                'encargado_nombre' => $parte->encargado_nombre,
-                'ayudante_nombre' => $parte->ayudante_nombre,
-                'parte_nombre' => $parte->parte_nombre,
-                'parte_abreviacion' => $parte->parte_abreviacion,
+                'encargado' => $parte->encargado_id ? [
+                    'id' => $parte->encargado_id,
+                    'name' => $parte->encargado_nombre
+                ] : null,
+                'ayudante' => $parte->ayudante_id ? [
+                    'id' => $parte->ayudante_id,
+                    'name' => $parte->ayudante_nombre
+                ] : null,
                 'encargado_reemplazado' => $parte->encargado_reemplazado_id ? [
                     'id' => $parte->encargado_reemplazado_id,
                     'name' => $parte->encargado_reemplazado_nombre
@@ -353,7 +357,11 @@ class ParteProgramaController extends Controller
                 'ayudante_reemplazado' => $parte->ayudante_reemplazado_id ? [
                     'id' => $parte->ayudante_reemplazado_id,
                     'name' => $parte->ayudante_reemplazado_nombre
-                ] : null
+                ] : null,
+                'encargado_nombre' => $parte->encargado_nombre,
+                'ayudante_nombre' => $parte->ayudante_nombre,
+                'parte_nombre' => $parte->parte_nombre,
+                'parte_abreviacion' => $parte->parte_abreviacion
             ];
 
             return response()->json([
@@ -379,7 +387,7 @@ class ParteProgramaController extends Controller
             'tema' => 'nullable|string|max:500',
             'encargado_id' => 'required|exists:users,id',
             'ayudante_id' => 'nullable|exists:users,id',
-            'leccion' => 'required|string|max:500',
+            'leccion' => 'nullable|string|max:500',
             'encargado_reemplazado_id' => 'nullable|exists:users,id',
             'ayudante_reemplazado_id' => 'nullable|exists:users,id'
         ]);
