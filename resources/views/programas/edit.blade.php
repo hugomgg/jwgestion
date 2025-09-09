@@ -1038,7 +1038,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="buscarEncargadoSegundaSeccionModalLabel">
-                    <i class="fas fa-search me-2"></i>Buscar Encargado (Segunda Sección)
+                    <i class="fas fa-search me-2"></i>Buscar Encargado (Sala Principal)
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -1059,6 +1059,7 @@
                     <small class="form-text text-muted">Historial de participaciones del encargado seleccionado en la segunda sección, ordenadas desde la más reciente</small>
                 </div>
             </div>
+            <br><br><br><br>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                 <button type="button" class="btn btn-primary" id="confirmarEncargadoSegundaSeccion">
@@ -1075,7 +1076,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="buscarAyudanteSegundaSeccionModalLabel">
-                    <i class="fas fa-search me-2"></i>Buscar Ayudante (Segunda Sección)
+                    <i class="fas fa-search me-2"></i>Buscar Ayudante (Sala Principal)
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -2079,74 +2080,43 @@ $(document).ready(function() {
         submitParteTerceraSeccion();
     });
 
-            // Habilitar los botones Buscar Encargado y Buscar Ayudante al seleccionar una parte en la segunda sección
-            $(document).on('change', '#parte_id_segunda_seccion', function() {
-                const parteId = $(this).val();
-                const btnBuscarEncargado = $('#btn-buscar-encargado-segunda');
-                const btnBuscarAyudante = $('#btn-buscar-ayudante-segunda');
-                // Obtener el tiempo de la opción seleccionada (data-tiempo)
-                const selectedOption = $(this).find('option:selected');
-                const tiempo = selectedOption.data('tiempo');
-                const tipo = selectedOption.data('tipo');
-
-                // Limpiar campos de encargado y ayudante al seleccionar una parte
-                $('#encargado_display_segunda_seccion').val('');
-                $('#encargado_id_segunda_seccion').val('');
-                $('#ayudante_display_segunda_seccion').val('');
-                $('#ayudante_id_segunda_seccion').val('');
-                // También limpiar el select2 de ambos (por si acaso)
-                $('#encargado_id_segunda_seccion').trigger('change');
-                $('#ayudante_id_segunda_seccion').trigger('change');
-
-                if (parteId) {
-                    btnBuscarEncargado.prop('disabled', false).attr('title', 'Buscar Encargado');
-                    // El botón "Buscar Ayudante" se mantiene deshabilitado hasta que se seleccione un encargado
-                    btnBuscarAyudante.prop('disabled', true).attr('title', 'Seleccionar un encargado primero');
-
-                    // Cargar el tiempo en el campo correspondiente
-                    if (typeof tiempo !== 'undefined' && tiempo !== null && tiempo !== '') {
-                        $('#tiempo_segunda_seccion').val(tiempo);
-                    } else {
-                        $('#tiempo_segunda_seccion').val('');
-                    }
-                } else {
-                    btnBuscarEncargado.prop('disabled', true).attr('title', 'Seleccionar una parte primero');
-                    btnBuscarAyudante.prop('disabled', true).attr('title', 'Seleccionar una parte primero');
-                    $('#tiempo_segunda_seccion').val('');
-                }
-            });
-
-    // Manejar cambio en el select de encargado para cargar ayudantes según las reglas específicas
-    $(document).on('change', '#encargado_id_segunda_seccion', function() {
-        // No procesar eventos durante la carga en modo edición
-        if (window.editingParteTwoData) {
-            return;
-        }
-
-        const encargadoSeleccionado = $(this).val();
-        const parteSeleccionada = $('#parte_id_segunda_seccion').val();
-        const ayudanteSelect = $('#ayudante_id_segunda_seccion');
+    // Habilitar los botones Buscar Encargado y Buscar Ayudante al seleccionar una parte en la segunda sección
+    $(document).on('change', '#parte_id_segunda_seccion', function() {
+        const parteId = $(this).val();
+        const btnBuscarEncargado = $('#btn-buscar-encargado-segunda');
         const btnBuscarAyudante = $('#btn-buscar-ayudante-segunda');
+        // Obtener el tiempo de la opción seleccionada (data-tiempo)
+        const selectedOption = $(this).find('option:selected');
+        const tiempo = selectedOption.data('tiempo');
+        const tipo = selectedOption.data('tipo');
 
-        // Verificar condiciones para habilitar el botón "Buscar Ayudante"
-        if (encargadoSeleccionado && encargadoSeleccionado !== '' && parteSeleccionada) {
-            const selectedOption = $('#parte_id_segunda_seccion').find('option:selected');
-            const tipo = selectedOption.data('tipo');
+        // Limpiar campos de encargado y ayudante al seleccionar una parte
+        $('#encargado_display_segunda_seccion').val('');
+        $('#encargado_id_segunda_seccion').val('');
+        $('#ayudante_display_segunda_seccion').val('');
+        $('#ayudante_id_segunda_seccion').val('');
+        // Limpiar la variable global para permitir nuevos cambios
+        window.ultimoValorEncargado = null;
+        // También limpiar el select2 del ayudante (sin trigger para evitar loops)
+        $('#ayudante_id_segunda_seccion').trigger('change');
+        $('#btn-encargado-reemplazado-segunda').prop('disabled', true);
+        $('#btn-ayudante-reemplazado-segunda').prop('disabled', true);
+        if (parteId) {
+            btnBuscarEncargado.prop('disabled', false).attr('title', 'Buscar Encargado');
+            // El botón "Buscar Ayudante" se mantiene deshabilitado hasta que se seleccione un encargado
+            btnBuscarAyudante.prop('disabled', true).attr('title', 'Seleccionar un encargado primero');
 
-            if (tipo == 2 || tipo == 3) {
-                btnBuscarAyudante.prop('disabled', false);
-                btnBuscarAyudante.attr('title', 'Buscar Ayudante');
+            // Cargar el tiempo en el campo correspondiente
+            if (typeof tiempo !== 'undefined' && tiempo !== null && tiempo !== '') {
+                $('#tiempo_segunda_seccion').val(tiempo);
             } else {
-                btnBuscarAyudante.prop('disabled', true);
-                btnBuscarAyudante.attr('title', 'No disponible para esta Asignación');
+                $('#tiempo_segunda_seccion').val('');
             }
         } else {
-            btnBuscarAyudante.prop('disabled', true);
-            btnBuscarAyudante.attr('title', 'Seleccionar encargado y parte con tipo 2 o 3');
+            btnBuscarEncargado.prop('disabled', true).attr('title', 'Seleccionar una parte primero');
+            btnBuscarAyudante.prop('disabled', true).attr('title', 'Seleccionar una parte primero');
+            $('#tiempo_segunda_seccion').val('');
         }
-
-        // Continuar con la lógica normal
-        continueEncargadoChange(encargadoSeleccionado, parteSeleccionada, ayudanteSelect);
     });
 
     // Función para continuar el cambio de encargado
@@ -2205,22 +2175,6 @@ $(document).ready(function() {
             }
         });
     }
-
-    // Manejar cambio en el select de ayudante para eliminar del campo encargado
-    $(document).on('change', '#ayudante_id_segunda_seccion', function() {
-        // No procesar eventos durante la carga en modo edición
-        if (window.editingParteTwoData) {
-            return;
-        }
-
-        const ayudanteSeleccionado = $(this).val();
-        const encargadoSelect = $('#encargado_id_segunda_seccion');
-
-
-
-        // Continuar con la lógica normal
-        continueAyudanteChange(ayudanteSeleccionado, encargadoSelect);
-    });
 
     // Función para continuar el cambio de ayudante
     function continueAyudanteChange(ayudanteSeleccionado, encargadoSelect) {
@@ -2463,7 +2417,7 @@ $(document).ready(function() {
                         setTimeout(function() {
                             if (parte.encargado_id) {
                                 $('#encargado_id_segunda_seccion').val(parte.encargado_id);
-                                $('#encargado_display_segunda_seccion').val(parte.encargado_nombre || 'Usuario ID: ' + parte.encargado_id);
+                                $('#encargado_display_segunda_seccion').val(parte.encargado_nombre);
                             }
                         }, 100);
 
@@ -2479,7 +2433,7 @@ $(document).ready(function() {
                             setTimeout(function() {
                                 if (parte.ayudante_id) {
                                     $('#ayudante_id_segunda_seccion').val(parte.ayudante_id);
-                                    $('#ayudante_display_segunda_seccion').val(parte.ayudante_nombre || 'Usuario ID: ' + parte.ayudante_id);
+                                    $('#ayudante_display_segunda_seccion').val(parte.ayudante_nombre);
                                 }
 
                                 // Actualizar el estado de los botones después de cargar los datos
@@ -3307,13 +3261,18 @@ $(document).ready(function() {
         const encargadoId = $('#encargado_id_segunda_seccion').val();
         const ayudanteId = $('#ayudante_id_segunda_seccion').val();
         const parteSeleccionada = $('#parte_id_segunda_seccion').val();
+        const btnBuscarEncargado = $('#btn-buscar-encargado-segunda');
         const btnBuscarAyudante = $('#btn-buscar-ayudante-segunda');
 
         // Botones del encargado
         if (encargadoId) {
             $('#btn-encargado-reemplazado-segunda').prop('disabled', false);
+            btnBuscarEncargado.prop('disabled', false);
+            btnBuscarEncargado.attr('title', 'Buscar Encargado');
         } else {
             $('#btn-encargado-reemplazado-segunda').prop('disabled', true);
+            btnBuscarEncargado.prop('disabled', true);
+            btnBuscarEncargado.attr('title', 'Seleccionar encargado primero');
         }
 
         // Botón "Buscar Ayudante" - aplicar la nueva lógica
@@ -4911,16 +4870,67 @@ $(document).ready(function() {
         $('#encargado_id_segunda_seccion').val(encargadoSeleccionado);
         $('#encargado_display_segunda_seccion').val(nombreEncargado);
 
-        // Habilitar los botones ahora que hay un encargado seleccionado
-    // ...existing code...
+        // Verificar si necesitamos resetear el ayudante por diferencia de sexo
+        const parteSeleccionada = $('#parte_id_segunda_seccion').val();
+        const ayudanteActual = $('#ayudante_id_segunda_seccion').val();
 
-        // Actualizar el estado de los botones
+        if (parteSeleccionada && ayudanteActual) {
+            const selectedOption = $('#parte_id_segunda_seccion').find('option:selected');
+            const tipo = selectedOption.data('tipo');
+
+            // Solo verificar si la parte es de tipo 2
+            if (tipo == 2) {
+                console.log('Verificando sexos al confirmar encargado - Parte tipo 2');
+                // Obtener el sexo del encargado y del ayudante
+                $.ajax({
+                    url: '/verificar-sexos-usuarios',
+                    method: 'GET',
+                    data: {
+                        encargado_id: encargadoSeleccionado,
+                        ayudante_id: ayudanteActual
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            const encargadoSexo = response.encargado_sexo;
+                            const ayudanteSexo = response.ayudante_sexo;
+
+                            // Si los sexos son diferentes, resetear el campo ayudante
+                            if (encargadoSexo !== ayudanteSexo) {
+                                console.log('Sexos diferentes al confirmar encargado - Reseteando ayudante:', {encargadoSexo, ayudanteSexo});
+                                $('#ayudante_id_segunda_seccion').val('').trigger('change');
+                                $('#ayudante_display_segunda_seccion').val('');
+                                $('#btn-ayudante-reemplazado-segunda').prop('disabled', true);
+                                clearHistorialAyudanteSegundaSeccion();
+                                showAlert('modal-alert-container-segunda-seccion', 'info', 'El ayudante ha sido removido porque tiene un sexo diferente al encargado.');
+                                // Cerrar modal inmediatamente después de mostrar el mensaje
+                                $('#buscarEncargadoSegundaSeccionModal').modal('hide');
+                            } else {
+                                console.log('Sexos iguales al confirmar encargado - Manteniendo ayudante:', {encargadoSexo, ayudanteSexo});
+                                // Cerrar modal inmediatamente si no hay cambios
+                                $('#buscarEncargadoSegundaSeccionModal').modal('hide');
+                            }
+                        } else {
+                            console.log('Error en respuesta de verificación de sexos al confirmar:', response);
+                            // Cerrar modal incluso si hay error en la respuesta
+                            $('#buscarEncargadoSegundaSeccionModal').modal('hide');
+                        }
+                    },
+                    error: function(xhr) {
+                        console.error('Error al verificar sexos al confirmar encargado:', xhr.responseText);
+                        // Cerrar modal incluso si hay error en la petición
+                        $('#buscarEncargadoSegundaSeccionModal').modal('hide');
+                    }
+                });
+
+                // Actualizar campos y botones antes de cerrar el modal
+                updateButtonStatesSegundaSeccion();
+                return; // Salir para evitar cerrar el modal dos veces
+            }
+        }
+
+        // Si no hay verificación de sexos, actualizar campos y cerrar modal normalmente
         updateButtonStatesSegundaSeccion();
-
-        // Cerrar modal
         $('#buscarEncargadoSegundaSeccionModal').modal('hide');
-
-
     });
 
     // Limpiar Select2 cuando se cierre el modal de buscar encargado segunda sección
@@ -5129,17 +5139,17 @@ $(document).ready(function() {
 <style>
 /* Aplicar fuente Consolas al select2 del campo Encargado de la Segunda Sección */
 #encargado_id_segunda_seccion + .select2-container {
-    font-family: Consolas, "Courier New", monospace;
+    font-family: "Cascadia Mono", monospace !important;
 }
 
 #encargado_id_segunda_seccion + .select2-container .select2-selection {
-    font-family: Consolas, "Courier New", monospace;
-    font-size: 12px;
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
 }
 
 #encargado_id_segunda_seccion + .select2-container .select2-selection__rendered {
-    font-family: Consolas, "Courier New", monospace;
-    font-size: 12px;
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
 }
 
 /* Aplicar fuente Consolas al select2 del campo Ayudante de la Segunda Sección */
@@ -5148,18 +5158,18 @@ $(document).ready(function() {
 }
 
 #ayudante_id_segunda_seccion + .select2-container .select2-selection {
-    font-family: Consolas, "Courier New", monospace;
+    font-family: "Cascadia Mono", monospace !important;
     font-size: 12px;
 }
 
 #ayudante_id_segunda_seccion + .select2-container .select2-selection__rendered {
-    font-family: Consolas, "Courier New", monospace;
+    font-family: "Cascadia Mono", monospace !important;
     font-size: 12px;
 }
 
 /* Para el dropdown también */
 .select2-container--bootstrap-5 .select2-dropdown .select2-results__options {
-    font-family: Consolas, "Courier New", monospace;
+    font-family: "Cascadia Mono", monospace !important;
     font-size: 12px;
 }
 
@@ -5170,27 +5180,28 @@ $(document).ready(function() {
 
 /* Regla específica para prevenir que Bootstrap 5 sobrescriba con 1rem */
 .select2-container--bootstrap-5 .select2-dropdown .select2-results__options .select2-results__option {
-    font-size: 14px !important;
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
 }
 
 /* Asegurar que el dropdown específico del campo encargado use Consolas */
 .select2-dropdown[aria-labelledby="select2-encargado_id_segunda_seccion-container"] {
-    font-family: Consolas, "Courier New", monospace;
+    font-family: "Cascadia Mono", monospace !important;
     font-size: 12px;
 }
 
 .select2-dropdown[aria-labelledby="select2-encargado_id_segunda_seccion-container"] .select2-results__option {
-    font-family: Consolas, "Courier New", monospace;
+    font-family: "Cascadia Mono", monospace !important;
     font-size: 12px;
 }
 
 /* Asegurar que el dropdown específico del campo ayudante use Consolas */
 .select2-dropdown[aria-labelledby="select2-ayudante_id_segunda_seccion-container"] {
-    font-family: Consolas, "Courier New", monospace;
+    font-family: "Cascadia Mono", monospace !important;
     font-size: 12px;
 }
 .select2-dropdown[aria-labelledby="select2-ayudante_id_segunda_seccion-container"] .select2-results__option {
-    font-family: Consolas, "Courier New", monospace;
+    font-family: "Cascadia Mono", monospace !important;
     font-size: 12px;
 }
 
@@ -5199,7 +5210,7 @@ $(document).ready(function() {
 #orador_inicial option,
 .form-select#orador_inicial {
     font-size: 12px !important;
-    font-family: inherit !important;
+    font-family: "Cascadia Mono", monospace !important;
 }
 
 /* Asegurar que se mantenga después de la carga */
@@ -5208,134 +5219,135 @@ select#orador_inicial.form-select {
 }
 
 
-
-
-
 /* Aplicar fuente Consolas al Select2 del campo Historial de Encargado */
 #historial_encargado_segunda_seccion + .select2-container {
-    font-family: Consolas, "Courier New", monospace;
+    font-family: "Cascadia Mono", monospace !important;
 }
 
 #historial_encargado_segunda_seccion + .select2-container .select2-selection {
-    font-family: Consolas, "Courier New", monospace;
-    font-size: 12px;
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
 }
 
 #historial_encargado_segunda_seccion + .select2-container .select2-selection__rendered {
-    font-family: Consolas, "Courier New", monospace;
-    font-size: 12px;
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
 }
 
 /* Asegurar que el dropdown específico del campo historial use Consolas */
 .select2-dropdown[aria-labelledby="select2-historial_encargado_segunda_seccion-container"] {
-    font-family: Consolas, "Courier New", monospace;
-    font-size: 12px;
+    ffont-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
 }
 
 .select2-dropdown[aria-labelledby="select2-historial_encargado_segunda_seccion-container"] .select2-results__option {
-    font-family: Consolas, "Courier New", monospace;
-    font-size: 12px;
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
 }
 
 /* Aplicar fuente Consolas al Select2 del campo Historial de Ayudante */
 #historial_ayudante_segunda_seccion + .select2-container {
-    font-family: Consolas, "Courier New", monospace;
+    font-family: "Cascadia Mono", monospace !important;
 }
 
 #historial_ayudante_segunda_seccion + .select2-container .select2-selection {
-    font-family: Consolas, "Courier New", monospace;
+    font-family: "Cascadia Mono", monospace !important;
     font-size: 12px;
 }
 
 #historial_ayudante_segunda_seccion + .select2-container .select2-selection__rendered {
-    font-family: Consolas, "Courier New", monospace;
+    font-family: "Cascadia Mono", monospace !important;
     font-size: 12px;
 }
 
 /* Asegurar que el dropdown específico del campo historial del ayudante use Consolas */
 .select2-dropdown[aria-labelledby="select2-historial_ayudante_segunda_seccion-container"] {
-    font-family: Consolas, "Courier New", monospace;
+    font-family: "Cascadia Mono", monospace !important;
     font-size: 12px;
 }
 
 .select2-dropdown[aria-labelledby="select2-historial_ayudante_segunda_seccion-container"] .select2-results__option {
-    font-family: Consolas, "Courier New", monospace;
+    font-family: "Cascadia Mono", monospace !important;
     font-size: 12px;
 }
 
 /* Estilos para el Select2 del modal buscar orador inicial */
 #select_orador_inicial + .select2-container .select2-selection {
-    font-size: 14px !important;
+    font-size: 12px !important;
 }
 
 #select_orador_inicial + .select2-container .select2-selection__rendered {
-    font-size: 14px !important;
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
 }
 
 /* Para el dropdown del modal buscar orador inicial */
 .select2-dropdown[aria-labelledby="select2-select_orador_inicial-container"] .select2-results__option {
-    font-size: 14px !important;
+    font-size: 12px !important;
 }
 
 /* Estilos para el Select2 del modal historial orador inicial */
 #select_historial_orador + .select2-container .select2-selection {
-    font-size: 14px !important;
+    font-size: 12px !important;
 }
 
 #select_historial_orador + .select2-container .select2-selection__rendered {
-    font-size: 14px !important;
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
 }
 
 /* Para el dropdown del modal historial orador inicial */
 .select2-dropdown[aria-labelledby="select2-select_historial_orador-container"] .select2-results__option {
-    font-size: 14px !important;
+    font-size: 12px !important;
 }
 
 /* Estilos para el Select2 del modal buscar orador final */
 #select_orador_final + .select2-container .select2-selection {
-    font-size: 14px !important;
+    font-size: 12px !important;
 }
 
 #select_orador_final + .select2-container .select2-selection__rendered {
-    font-size: 14px !important;
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
 }
 
 /* Para el dropdown del modal buscar orador final */
 .select2-dropdown[aria-labelledby="select2-select_orador_final-container"] .select2-results__option {
-    font-size: 14px !important;
+    font-size: 12px !important;
 }
 
 /* Estilos para el Select2 del modal historial orador final */
 #select_historial_orador_final + .select2-container .select2-selection {
-    font-size: 14px !important;
+    font-size: 12px !important;
 }
 
 #select_historial_orador_final + .select2-container .select2-selection__rendered {
-    font-size: 14px !important;
+    font-size: 12px !important;
 }
 
 /* Para el dropdown del modal historial orador final */
 .select2-dropdown[aria-labelledby="select2-select_historial_orador_final-container"] .select2-results__option {
-    font-size: 14px !important;
+    font-size: 12px !important;
 }
 
 /* Estilos para el Select2 del modal buscar presidencia */
 #select_presidencia + .select2-container .select2-selection {
-    font-size: 14px !important;
+    font-size: 12px !important;
 }
 
 #select_presidencia + .select2-container .select2-selection__rendered {
-    font-size: 14px !important;
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
 }
 
 /* Para el dropdown del modal buscar presidencia */
 .select2-dropdown[aria-labelledby="select2-select_presidencia-container"] .select2-results__option {
-    font-size: 14px !important;
+    font-size: 12px !important;
 }
 
 /* Estilos para el Select2 del modal historial presidencia */
 #select_historial_presidencia + .select2-container .select2-selection {
-    font-size: 14px !important;
+    font-size: 12px !important;
 }
 
 #select_historial_presidencia + .select2-container .select2-selection__rendered {
@@ -5344,152 +5356,159 @@ select#orador_inicial.form-select {
 
 /* Para el dropdown del modal historial presidencia */
 .select2-dropdown[aria-labelledby="select2-select_historial_presidencia-container"] .select2-results__option {
-    font-size: 14px !important;
+    font-size: 12px !important;
 }
 
 /* Estilos para el Select2 del modal buscar canción inicial */
 #select_cancion_inicial + .select2-container .select2-selection {
-    font-size: 14px !important;
+    font-size: 12px !important;
 }
 
 #select_cancion_inicial + .select2-container .select2-selection__rendered {
-    font-size: 14px !important;
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
 }
 
 .select2-dropdown[aria-labelledby="select2-select_cancion_inicial-container"] .select2-results__option {
-    font-size: 14px !important;
+    font-size: 12px !important;
 }
 
 /* Estilos para el Select2 del modal buscar canción intermedia */
 #select_cancion_intermedia + .select2-container .select2-selection {
-    font-size: 14px !important;
+    font-size: 12px !important;
 }
 
 #select_cancion_intermedia + .select2-container .select2-selection__rendered {
-    font-size: 14px !important;
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
 }
 
 .select2-dropdown[aria-labelledby="select2-select_cancion_intermedia-container"] .select2-results__option {
-    font-size: 14px !important;
+    font-size: 12px !important;
 }
 
 /* Estilos para el Select2 del modal buscar canción final */
 #select_cancion_final + .select2-container .select2-selection {
-    font-size: 14px !important;
+    font-size: 12px !important;
 }
 
 #select_cancion_final + .select2-container .select2-selection__rendered {
-    font-size: 14px !important;
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
 }
 
 .select2-dropdown[aria-labelledby="select2-select_cancion_final-container"] .select2-results__option {
-    font-size: 14px !important;
+    font-size: 12px !important;
 }
 
 /* Estilos para el Select2 del campo Encargado del primer modal (datatable 1) */
 #encargado_id + .select2-container .select2-selection {
-    font-size: 14px !important;
+    font-size: 12px !important;
 }
 
 #encargado_id + .select2-container .select2-selection__rendered {
-    font-size: 14px !important;
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
 }
 
 .select2-dropdown[aria-labelledby="select2-encargado_id-container"] .select2-results__option {
-    font-size: 14px !important;
+    font-size: 12px !important;
 }
 
 /* Estilos para el Select2 del modal buscar encargado parte */
 #select_encargado_parte + .select2-container .select2-selection {
-    font-size: 14px !important;
+    font-size: 12px !important;
 }
 
 #select_encargado_parte + .select2-container .select2-selection__rendered {
-    font-size: 14px !important;
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
 }
 
 .select2-dropdown[aria-labelledby="select2-select_encargado_parte-container"] .select2-results__option {
-    font-size: 14px !important;
+    font-size: 12px !important;
 }
 
 /* Estilos para el Select2 del modal historial encargado parte */
 #select_historial_encargado_parte + .select2-container .select2-selection {
-    font-size: 14px !important;
+    font-size: 12px !important;
 }
 
 #select_historial_encargado_parte + .select2-container .select2-selection__rendered {
-    font-size: 14px !important;
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
 }
 
 .select2-dropdown[aria-labelledby="select2-select_historial_encargado_parte-container"] .select2-results__option {
-    font-size: 14px !important;
+    font-size: 12px !important;
 }
 
 /* Estilos para el Select2 del modal buscar encargado segunda sección */
 #select_encargado_segunda_seccion + .select2-container .select2-selection {
-    font-size: 14px !important;
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
 }
 
 #select_encargado_segunda_seccion + .select2-container .select2-selection__rendered {
-    font-size: 14px !important;
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
 }
 
 .select2-dropdown[aria-labelledby="select2-select_encargado_segunda_seccion-container"] .select2-results__option {
-    font-size: 14px !important;
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
 }
 
 /* Estilos para el Select2 del historial del encargado segunda sección */
 #select_historial_encargado_segunda_seccion + .select2-container .select2-selection {
-    font-family: Consolas, "Courier New", monospace;
+    font-family: "Cascadia Mono", monospace !important;
     font-size: 12px !important;
 }
 
 #select_historial_encargado_segunda_seccion + .select2-container .select2-selection__rendered {
-    font-family: Consolas, "Courier New", monospace;
+    font-family: "Cascadia Mono", monospace !important;
     font-size: 12px !important;
 }
 
 .select2-dropdown[aria-labelledby="select2-select_historial_encargado_segunda_seccion-container"] {
-    font-family: Consolas, "Courier New", monospace;
-    font-size: 12px;
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
 }
 
 .select2-dropdown[aria-labelledby="select2-select_historial_encargado_segunda_seccion-container"] .select2-results__option {
-    font-family: Consolas, "Courier New", monospace;
+    font-family: "Cascadia Mono", monospace !important;
     font-size: 12px !important;
 }
 
 /* Estilos para el Select2 del modal buscar ayudante segunda sección */
 #select_ayudante_segunda_seccion + .select2-container .select2-selection {
-    font-size: 14px !important;
+    font-size: 12px !important;
 }
 
 #select_ayudante_segunda_seccion + .select2-container .select2-selection__rendered {
-    font-size: 14px !important;
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
 }
 
 .select2-dropdown[aria-labelledby="select2-select_ayudante_segunda_seccion-container"] .select2-results__option {
-    font-size: 14px !important;
+    font-size: 12px !important;
 }
 
 /* Estilos para el Select2 del historial del ayudante segunda sección */
 #select_historial_ayudante_segunda_seccion + .select2-container .select2-selection {
-    font-family: Consolas, "Courier New", monospace;
     font-size: 12px !important;
 }
 
 #select_historial_ayudante_segunda_seccion + .select2-container .select2-selection__rendered {
-    font-family: Consolas, "Courier New", monospace;
+    font-family: "Cascadia Mono", monospace !important;
     font-size: 12px !important;
 }
 
 .select2-dropdown[aria-labelledby="select2-select_historial_ayudante_segunda_seccion-container"] {
-    font-family: Consolas, "Courier New", monospace;
     font-size: 12px;
 }
 
 .select2-dropdown[aria-labelledby="select2-select_historial_ayudante_segunda_seccion-container"] .select2-results__option {
-    font-family: Consolas, "Courier New", monospace;
     font-size: 12px !important;
 }
 </style>
