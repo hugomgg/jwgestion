@@ -415,10 +415,6 @@
                                                 title="Buscar Encargado" onclick="buscarEncargadoParte()" disabled>
                                             <i class="fas fa-search"></i>
                                         </button>
-                                        <button type="button" class="btn btn-outline-info" id="btn-historial-encargado"
-                                                title="Historial de Encargado" onclick="verHistorialEncargadoParte()" disabled>
-                                            <i class="fas fa-history"></i>
-                                        </button>
                                         <button type="button" class="btn btn-outline-success" id="btn-agregar-reemplazado"
                                                 title="Agregar como Encargado Reemplazado" onclick="agregarEncargadoReemplazado()" disabled>
                                             <i class="fas fa-user-plus"></i>
@@ -1012,14 +1008,13 @@
                         <option value="">Cargando usuarios...</option>
                     </select>
                     <small class="form-text text-muted">Usuarios con participaciones en la parte seleccionada, ordenados por fecha más reciente</small>
-                    <br>
-                    <br>
-                    <br>
-                    <br>
-                    <br>
-                    <br>
-                    <br>
-                    <br>
+                </div>
+                <div class="mb-3">
+                    <label for="select_historial_encargado_parte" class="form-label">Historial de Participaciones</label>
+                    <select class="form-select" id="select_historial_encargado_parte" style="width: 100%;" disabled>
+                        <option value="">Seleccione un encargado primero...</option>
+                    </select>
+                    <small class="form-text text-muted">Participaciones como encargado en la parte actual, ordenadas desde la más reciente</small>
                 </div>
             </div>
             <div class="modal-footer">
@@ -1118,20 +1113,9 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="mb-3">
-                    <label for="select_historial_encargado_parte" class="form-label">Historial de Participaciones</label>
-                    <select class="form-select" id="select_historial_encargado_parte" style="width: 100%;" disabled>
-                        <option value="">Cargando historial...</option>
-                    </select>
-                    <small class="form-text text-muted">Participaciones como encargado en la parte actual, ordenadas desde la más reciente</small>
-                    <br>
-                    <br>
-                    <br>
-                    <br>
-                    <br>
-                    <br>
-                    <br>
-                    <br>
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    El historial de participaciones ahora se muestra en el modal de búsqueda de encargados.
                 </div>
             </div>
             <div class="modal-footer">
@@ -1238,15 +1222,8 @@ $(document).ready(function() {
 
     // Manejar envío del formulario de partes del programa
     $('#parteProgramaForm').submit(function(e) {
-        console.log('Form submit event triggered');
         e.preventDefault();
         submitPartePrograma();
-    });
-
-    // Debugging adicional para el botón
-    $('#saveParteBtn').on('click', function(e) {
-        console.log('Save button clicked - debugging only');
-        // No prevenir el evento por defecto aquí para no interferir
     });
 
     // Manejar cambio en el select de parte_id para autocompletar el tiempo y filtrar encargados
@@ -1707,32 +1684,26 @@ $(document).ready(function() {
     }
 
     function submitPartePrograma() {
-        console.log('submitPartePrograma() called');
         const submitBtn = $('#saveParteBtn');
         const spinner = submitBtn.find('.spinner-border');
 
         // Deshabilitar botón y mostrar spinner
         submitBtn.prop('disabled', true);
         spinner.removeClass('d-none');
-        console.log('Button disabled and spinner shown');
 
         // Limpiar errores previos
         $('.is-invalid').removeClass('is-invalid');
         $('.invalid-feedback').text('');
-        console.log('Errors cleared');
 
         // Validar campo tiempo
         const tiempoValue = $('#tiempo_parte').val();
-        console.log('Tiempo value:', tiempoValue);
         if (!tiempoValue || tiempoValue < 1) {
-            console.log('Tiempo validation failed');
             $('#tiempo_parte').addClass('is-invalid');
             $('#tiempo_parte').siblings('.invalid-feedback').text('El campo Tiempo es obligatorio y debe ser mayor a 0.');
             submitBtn.prop('disabled', false);
             spinner.addClass('d-none');
             return;
         }
-        console.log('Tiempo validation passed');
 
         // Detectar qué modal está activo para usar el campo de lección correcto
         let leccionFieldId = '';
@@ -1743,38 +1714,24 @@ $(document).ready(function() {
             if (!userIsCoordinator) {
                 leccionFieldId = 'leccion_parte';
                 leccionValue = $('#leccion_parte').val();
-                console.log('Using first section leccion field (non-coordinator)');
-            } else {
-                console.log('First section modal active but user is coordinator - no leccion field');
             }
         } else if ($('#parteProgramaSegundaSeccionModal').hasClass('show')) {
             // Segunda sección (coordinadores)
             leccionFieldId = 'leccion_segunda_seccion';
             leccionValue = $('#leccion_segunda_seccion').val();
-            console.log('Using second section leccion field');
         } else if ($('#parteProgramaTerceraSeccionModal').hasClass('show')) {
             // Tercera sección (coordinadores)
             leccionFieldId = 'leccion_tercera_seccion';
             leccionValue = $('#leccion_tercera_seccion').val();
-            console.log('Using third section leccion field');
         }
-
-        console.log('userIsCoordinator:', userIsCoordinator);
-        console.log('Leccion field ID:', leccionFieldId);
-        console.log('Leccion value:', leccionValue);
 
         // Validar campo leccion solo si existe el campo
         if (leccionFieldId && (!leccionValue || leccionValue.trim() === '')) {
-            console.log('Leccion validation failed');
             $(`#${leccionFieldId}`).addClass('is-invalid');
             $(`#${leccionFieldId}`).siblings('.invalid-feedback').text('El campo Lección es obligatorio.');
             submitBtn.prop('disabled', false);
             spinner.addClass('d-none');
             return;
-        } else if (leccionFieldId) {
-            console.log('Leccion validation passed');
-        } else {
-            console.log('No leccion field to validate');
         }
 
         // Crear FormData manualmente para asegurar que incluya todos los campos
@@ -1787,8 +1744,6 @@ $(document).ready(function() {
             'encargado_reemplazado_id': $('#encargado_reemplazado_id').val(),
             '_token': $('meta[name="csrf-token"]').attr('content')
         };
-
-        console.log('Form data object:', formDataObj);
 
         // Agregar lección al formDataObj solo si existe el campo
         if (leccionValue) {
@@ -1803,17 +1758,11 @@ $(document).ready(function() {
             formDataObj['_method'] = 'PUT';
         }
 
-        console.log('About to send AJAX request');
-        console.log('Final formDataObj:', formDataObj);
-        console.log('AJAX URL:', url);
-        console.log('AJAX Method:', method);
-
         $.ajax({
             url: url,
             method: 'POST', // Laravel maneja PUT a través de POST con _method
             data: formDataObj,
             success: function(response) {
-                console.log('AJAX success response:', response);
                 if (response.success) {
                     $('#parteProgramaModal').modal('hide');
                     loadPartesPrograma();
@@ -1821,12 +1770,8 @@ $(document).ready(function() {
                 }
             },
             error: function(xhr) {
-                console.log('AJAX error response:', xhr);
-                console.log('AJAX error status:', xhr.status);
-                console.log('AJAX error responseText:', xhr.responseText);
                 if (xhr.status === 422) {
                     const errors = xhr.responseJSON.errors;
-                    console.log('Validation errors:', errors);
                     for (const field in errors) {
                         let fieldName = field;
                         if (field === 'tiempo') fieldName = 'tiempo_parte';
@@ -1842,13 +1787,10 @@ $(document).ready(function() {
                 }
             },
             complete: function() {
-                console.log('AJAX request completed');
                 submitBtn.prop('disabled', false);
                 spinner.addClass('d-none');
             }
         });
-
-        console.log('End of submitPartePrograma function');
     }
 
     function deleteParte(id) {
@@ -4572,6 +4514,9 @@ $(document).ready(function() {
             return;
         }
 
+        // Restaurar el título original del modal
+        $('#buscarEncargadoParteModalLabel').html('<i class="fas fa-search me-2"></i>Buscar Encargado');
+
         // Abrir modal y cargar usuarios con participaciones en la parte seleccionada
         $('#buscarEncargadoParteModal').modal('show');
 
@@ -4611,11 +4556,39 @@ $(document).ready(function() {
                         select.append(`<option value="${usuario.id}">${textoOpcion}</option>`);
                     });
 
-                    // Preseleccionar el encargado actual si existe, sino seleccionar el primero
+                    // Inicializar el select de historial si no está inicializado
+                    const historialSelect = $('#select_historial_encargado_parte');
+                    if (!historialSelect.hasClass('select2-hidden-accessible')) {
+                        historialSelect.select2({
+                            theme: 'bootstrap-5',
+                            placeholder: "Historial de participaciones...",
+                            width: '100%',
+                            dropdownParent: $('#buscarEncargadoParteModal')
+                        });
+                    }
+
+                    // Preseleccionar el encargado actual si existe
                     const encargadoActual = $('#encargado_id').val();
                     if (encargadoActual) {
                         select.val(encargadoActual).trigger('change');
-                    } 
+                    }
+
+                    // Agregar event listener para cargar historial cuando se selecciona un encargado
+                    select.off('change.historial').on('change.historial', function() {
+                        const encargadoSeleccionado = $(this).val();
+                        const parteId = $('#parte_id').val();
+
+                        if (encargadoSeleccionado && parteId) {
+                            cargarHistorialEncargado(encargadoSeleccionado, parteId);
+                        } else {
+                            // Limpiar historial si no hay selección
+                            const historialSelect = $('#select_historial_encargado_parte');
+                            historialSelect.empty();
+                            historialSelect.append('<option value="">Seleccione un encargado primero...</option>');
+                            historialSelect.prop('disabled', true);
+                        }
+                    });
+
                 } else {
                     alert('Error al cargar los usuarios: ' + response.message);
                 }
@@ -4627,24 +4600,13 @@ $(document).ready(function() {
         });
     }
 
-    function verHistorialEncargadoParte() {
-        const encargadoId = $('#encargado_id').val();
-        const parteId = $('#parte_id').val();
+    // Función para cargar historial de encargado
+    function cargarHistorialEncargado(encargadoId, parteId) {
+        const historialSelect = $('#select_historial_encargado_parte');
+        historialSelect.empty();
+        historialSelect.append('<option value="">Cargando historial...</option>');
+        historialSelect.prop('disabled', true);
 
-        if (!encargadoId) {
-            alert('No hay encargado seleccionado para mostrar historial');
-            return;
-        }
-
-        if (!parteId) {
-            alert('No hay parte seleccionada para mostrar historial');
-            return;
-        }
-
-        // Abrir modal y cargar historial del encargado en esta parte específica
-        $('#historialEncargadoParteModal').modal('show');
-
-        // Cargar historial de participaciones del usuario como encargado en esta parte
         $.ajax({
             url: `/usuarios/${encargadoId}/historial-participaciones`,
             method: 'GET',
@@ -4654,21 +4616,10 @@ $(document).ready(function() {
             },
             success: function(response) {
                 if (response.success) {
-                    const select = $('#select_historial_encargado_parte');
-                    select.empty();
-
-                    // Inicializar Select2 si no está ya inicializado
-                    if (!select.hasClass('select2-hidden-accessible')) {
-                        select.select2({
-                            theme: 'bootstrap-5',
-                            placeholder: "Historial de participaciones...",
-                            width: '100%',
-                            dropdownParent: $('#historialEncargadoParteModal')
-                        });
-                    }
+                    historialSelect.empty();
 
                     if (response.data.length > 0) {
-                        select.append('<option value="">Seleccionar participación...</option>');
+                        historialSelect.append('<option value="">Seleccionar participación...</option>');
 
                         // Agregar opciones con el formato: fecha - parte - tipo
                         response.data.forEach(function(participacion) {
@@ -4679,30 +4630,54 @@ $(document).ready(function() {
                             const fechaTexto = `${dia}/${mes}/${año}`;
 
                             const textoOpcion = `${fechaTexto}|${participacion.parte_abreviacion}|${participacion.nombre_usuario || 'Usuario'}`;
-                            select.append(`<option value="${participacion.programa_id}">${textoOpcion}</option>`);
+                            historialSelect.append(`<option value="${participacion.programa_id}">${textoOpcion}</option>`);
                         });
 
                         // Habilitar el select
-                        select.prop('disabled', false);
+                        historialSelect.prop('disabled', false);
 
                         // Seleccionar automáticamente el primer elemento
-                        select.val(response.data[0].programa_id).trigger('change');
-
-                        // Actualizar el título del modal con el nombre del usuario
-                        $('#historialEncargadoParteModalLabel').html(`<i class="fas fa-history me-2"></i>Historial de ${response.data[0].nombre_usuario || 'Usuario'}`);
+                        historialSelect.val(response.data[0].programa_id).trigger('change');
                     } else {
-                        select.append('<option value="">No hay participaciones registradas como encargado</option>');
-                        select.prop('disabled', true);
+                        historialSelect.append('<option value="">No hay participaciones registradas como encargado</option>');
+                        historialSelect.prop('disabled', true);
                     }
                 } else {
-                    alert('Error al cargar el historial: ' + response.message);
+                    historialSelect.empty();
+                    historialSelect.append('<option value="">Error al cargar historial</option>');
+                    historialSelect.prop('disabled', true);
                 }
             },
             error: function(xhr) {
-                alert('Error al cargar el historial del encargado');
+                historialSelect.empty();
+                historialSelect.append('<option value="">Error al cargar historial</option>');
+                historialSelect.prop('disabled', true);
                 console.error(xhr);
             }
         });
+    }
+
+    function verHistorialEncargadoParte() {
+        const encargadoId = $('#encargado_id').val();
+        const parteId = $('#parte_id').val();
+
+        if (!parteId) {
+            alert('No hay parte seleccionada para mostrar historial');
+            return;
+        }
+
+        // Cambiar el título del modal para indicar que es para ver historial
+        $('#buscarEncargadoParteModalLabel').html('<i class="fas fa-history me-2"></i>Historial de Encargado');
+
+        // Abrir el modal de búsqueda de encargados que ahora incluye el historial
+        buscarEncargadoParte();
+
+        // Si hay un encargado seleccionado, cargar su historial
+        if (encargadoId) {
+            setTimeout(function() {
+                cargarHistorialEncargado(encargadoId, parteId);
+            }, 500); // Pequeño delay para asegurar que el modal esté abierto
+        }
     }
 
     // Evento para confirmar la selección del encargado
@@ -4744,17 +4719,23 @@ $(document).ready(function() {
         select.empty().append('<option value="">Cargando usuarios...</option>');
     });
 
-    // Limpiar Select2 cuando se cierre el modal del historial de encargado
-    $('#historialEncargadoParteModal').on('hidden.bs.modal', function() {
-        const select = $('#select_historial_encargado_parte');
+    // Limpiar Select2 cuando se cierre el modal de búsqueda de encargado
+    $('#buscarEncargadoParteModal').on('hidden.bs.modal', function() {
+        const select = $('#select_encargado_parte');
         if (select.hasClass('select2-hidden-accessible')) {
             select.select2('destroy');
         }
-        select.empty().append('<option value="">Cargando historial...</option>');
-        select.prop('disabled', true);
+        select.empty().append('<option value="">Cargando usuarios...</option>');
+
+        const historialSelect = $('#select_historial_encargado_parte');
+        if (historialSelect.hasClass('select2-hidden-accessible')) {
+            historialSelect.select2('destroy');
+        }
+        historialSelect.empty().append('<option value="">Seleccione un encargado primero...</option>');
+        historialSelect.prop('disabled', true);
 
         // Restaurar el título original del modal
-        $('#historialEncargadoParteModalLabel').html('<i class="fas fa-history me-2"></i>Historial de Participaciones como Encargado');
+        $('#buscarEncargadoParteModalLabel').html('<i class="fas fa-search me-2"></i>Buscar Encargado');
     });
 
     // Hacer las funciones globales para uso en onclick
@@ -4915,7 +4896,6 @@ $(document).ready(function() {
 
             // Solo verificar si la parte es de tipo 2
             if (tipo == 2) {
-                console.log('Verificando sexos al confirmar encargado - Parte tipo 2');
                 // Obtener el sexo del encargado y del ayudante
                 $.ajax({
                     url: '/verificar-sexos-usuarios',
@@ -4931,7 +4911,6 @@ $(document).ready(function() {
 
                             // Si los sexos son diferentes, resetear el campo ayudante
                             if (encargadoSexo !== ayudanteSexo) {
-                                console.log('Sexos diferentes al confirmar encargado - Reseteando ayudante:', {encargadoSexo, ayudanteSexo});
                                 $('#ayudante_id_segunda_seccion').val('').trigger('change');
                                 $('#ayudante_display_segunda_seccion').val('');
                                 $('#btn-ayudante-reemplazado-segunda').prop('disabled', true);
@@ -4940,18 +4919,15 @@ $(document).ready(function() {
                                 // Cerrar modal inmediatamente después de mostrar el mensaje
                                 $('#buscarEncargadoSegundaSeccionModal').modal('hide');
                             } else {
-                                console.log('Sexos iguales al confirmar encargado - Manteniendo ayudante:', {encargadoSexo, ayudanteSexo});
                                 // Cerrar modal inmediatamente si no hay cambios
                                 $('#buscarEncargadoSegundaSeccionModal').modal('hide');
                             }
                         } else {
-                            console.log('Error en respuesta de verificación de sexos al confirmar:', response);
                             // Cerrar modal incluso si hay error en la respuesta
                             $('#buscarEncargadoSegundaSeccionModal').modal('hide');
                         }
                     },
                     error: function(xhr) {
-                        console.error('Error al verificar sexos al confirmar encargado:', xhr.responseText);
                         // Cerrar modal incluso si hay error en la petición
                         $('#buscarEncargadoSegundaSeccionModal').modal('hide');
                     }
