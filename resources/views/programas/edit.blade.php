@@ -4615,10 +4615,7 @@ $(document).ready(function() {
                     const encargadoActual = $('#encargado_id').val();
                     if (encargadoActual) {
                         select.val(encargadoActual).trigger('change');
-                    } else if (response.data.length > 0) {
-                        // Seleccionar automáticamente el primer elemento de la lista
-                        select.val(response.data[0].id).trigger('change');
-                    }
+                    } 
                 } else {
                     alert('Error al cargar los usuarios: ' + response.message);
                 }
