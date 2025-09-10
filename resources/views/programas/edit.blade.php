@@ -942,7 +942,7 @@
                     <small class="form-text text-muted">Usuarios con participaciones en la parte seleccionada, ordenados por fecha más reciente</small>
                 </div>
                 <div class="mb-3">
-                    <label for="select_historial_encargado_parte" class="form-label">Historial de Participaciones</label>
+                    <label for="select_historial_encargado_parte" class="form-label">Historial del Encargado</label>
                     <select class="form-select" id="select_historial_encargado_parte" style="width: 100%;" disabled>
                         <option value="">Seleccione un encargado primero...</option>
                     </select>
@@ -3842,7 +3842,7 @@ $(document).ready(function() {
                     if (!selectHistorial.hasClass('select2-hidden-accessible')) {
                         selectHistorial.select2({
                             theme: 'bootstrap-5',
-                            placeholder: "Historial de participaciones...",
+                            placeholder: "Historial del Encargado...",
                             width: '100%',
                             dropdownParent: $('#buscarOradorInicialModal')
                         });
@@ -3881,7 +3881,7 @@ $(document).ready(function() {
                     if (!select.hasClass('select2-hidden-accessible')) {
                         select.select2({
                             theme: 'bootstrap-5',
-                            placeholder: "Historial de participaciones...",
+                            placeholder: "Historial del Encargado...",
                             width: '100%',
                             dropdownParent: $('#buscarOradorInicialModal')
                         });
@@ -4339,7 +4339,7 @@ $(document).ready(function() {
                     if (!selectHistorial.hasClass('select2-hidden-accessible')) {
                         selectHistorial.select2({
                             theme: 'bootstrap-5',
-                            placeholder: "Historial de participaciones...",
+                            placeholder: "Historial del Encargado...",
                             width: '100%',
                             dropdownParent: $('#buscarOradorFinalModal')
                         });
@@ -4378,7 +4378,7 @@ $(document).ready(function() {
                     if (!select.hasClass('select2-hidden-accessible')) {
                         select.select2({
                             theme: 'bootstrap-5',
-                            placeholder: "Historial de participaciones...",
+                            placeholder: "Historial de Encargado...",
                             width: '100%',
                             dropdownParent: $('#buscarOradorFinalModal')
                         });
@@ -4476,7 +4476,7 @@ $(document).ready(function() {
                     if (!selectHistorial.hasClass('select2-hidden-accessible')) {
                         selectHistorial.select2({
                             theme: 'bootstrap-5',
-                            placeholder: "Historial de participaciones...",
+                            placeholder: "Historial del Encargado...",
                             width: '100%',
                             dropdownParent: $('#buscarPresidenciaModal')
                         });
@@ -4515,7 +4515,7 @@ $(document).ready(function() {
                     if (!select.hasClass('select2-hidden-accessible')) {
                         select.select2({
                             theme: 'bootstrap-5',
-                            placeholder: "Historial de participaciones...",
+                            placeholder: "Historial del Encargado...",
                             width: '100%',
                             dropdownParent: $('#buscarPresidenciaModal')
                         });
@@ -4678,7 +4678,7 @@ $(document).ready(function() {
                     if (!historialSelect.hasClass('select2-hidden-accessible')) {
                         historialSelect.select2({
                             theme: 'bootstrap-5',
-                            placeholder: "Historial de participaciones...",
+                            placeholder: "Historial del Encargado...",
                             width: '100%',
                             dropdownParent: $('#buscarEncargadoParteModal')
                         });
