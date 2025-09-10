@@ -211,7 +211,7 @@
                         <div class="card mb-4">
                             <div class="card-header d-flex justify-content-between align-items-center">
                                 <h6 class="mb-0">
-                                    <i class="fas fa-chalkboard-teacher me-2"></i>Seamos Mejores Maestros (Sala Auxiliar 1)
+                                    <i class="fas fa-chalkboard-teacher me-2"></i>Asiganciones de Seamos Mejores Maestros (Sala Auxiliar 1)
                                 </h6>
                                 <div>
                                     <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#parteProgramaTerceraSeccionModal" onclick="openCreateParteTerceraSeccionModal()">
