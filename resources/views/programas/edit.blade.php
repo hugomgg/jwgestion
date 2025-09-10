@@ -124,7 +124,7 @@
                                         <div class="row align-items-center">
                                             <div class="col-md-6">
                                                 <h6 class="mb-0">
-                                                    <i class="fas fa-list me-2"></i>{{ $seccionReunion ? $seccionReunion->nombre : 'Partes del Programa (Primera Sección)' }}
+                                                    <i class="fas fa-list me-2"></i>Asignaciones de Tesoros de la Biblia
                                                 </h6>
                                             </div>
                                             <div class="col-md-6">
@@ -170,13 +170,13 @@
                                         <div class="row align-items-center">
                                             <div class="col-md-6">
                                                 <h6 class="mb-0">
-                                                    <i class="fas fa-list me-2"></i>Partes de la Segunda Sección (Sala Principal)
+                                                    <i class="fas fa-chalkboard-teacher me-2"></i>Asignaciones de Seamos Mejores Maestros (Sala Principal)
                                                 </h6>
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="d-flex justify-content-end">
                                                     <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#parteProgramaSegundaSeccionModal" onclick="openCreateParteSegundaSeccionModal()">
-                                                        <i class="fas fa-plus me-2"></i>Nueva Asignación SP
+                                                        <i class="fas fa-plus me-2"></i>Nueva Asignación SMM (SP)
                                                     </button>
                                                 </div>
                                             </div>
@@ -211,11 +211,11 @@
                         <div class="card mb-4">
                             <div class="card-header d-flex justify-content-between align-items-center">
                                 <h6 class="mb-0">
-                                    <i class="fas fa-chalkboard-teacher me-2"></i>Seamos Mejores Maestros
+                                    <i class="fas fa-chalkboard-teacher me-2"></i>Seamos Mejores Maestros (Sala Auxiliar 1)
                                 </h6>
                                 <div>
                                     <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#parteProgramaTerceraSeccionModal" onclick="openCreateParteTerceraSeccionModal()">
-                                        <i class="fas fa-plus me-2"></i>Nueva Asignación SMM
+                                        <i class="fas fa-plus me-2"></i>Nueva Asignación SMM (S1)
                                     </button>
                                 </div>
                             </div>
@@ -751,6 +751,7 @@
                     <small class="form-text text-muted">Participaciones ordenadas desde la más reciente</small>
                 </div>
             </div>
+            <br><br><br><br><br><br>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                 <button type="button" class="btn btn-primary" id="confirmarOradorInicial">
@@ -787,6 +788,7 @@
                     <small class="form-text text-muted">Participaciones ordenadas desde la más reciente</small>
                 </div>
             </div>
+            <br><br><br><br><br><br>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                 <button type="button" class="btn btn-primary" id="confirmarOradorFinal">
@@ -825,6 +827,7 @@
                     <small class="form-text text-muted">Participaciones ordenadas desde la más reciente</small>
                 </div>
             </div>
+            <br><br><br><br><br><br>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                 <button type="button" class="btn btn-primary" id="confirmarPresidencia">
@@ -949,6 +952,7 @@
                     <small class="form-text text-muted">Participaciones como encargado en la parte actual, ordenadas desde la más reciente</small>
                 </div>
             </div>
+            <br><br><br><br><br><br>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                 <button type="button" class="btn btn-primary" id="confirmarEncargadoParte">
@@ -975,7 +979,7 @@
                     <select class="form-select" id="select_encargado_segunda_seccion" style="width: 100%;">
                         <option value="">Cargando usuarios...</option>
                     </select>
-                    <small class="form-text text-muted">Usuarios que han participado como encargado o ayudante en partes_programa, ordenados por fecha más reciente. Formato: fecha - parte - nombre (tipo)</small>
+                    <small class="form-text text-muted">Usuarios que han participado como encargado o ayudante en partes_programa, ordenados por fecha más reciente.</small>
                 </div>
 
                 <div class="mb-3">
@@ -983,10 +987,10 @@
                     <select class="form-select" id="select_historial_encargado_segunda_seccion" style="width: 100%;" disabled>
                         <option value="">Seleccionar un encargado primero...</option>
                     </select>
-                    <small class="form-text text-muted">Historial de participaciones del encargado seleccionado en la segunda sección, ordenadas desde la más reciente</small>
+                    <small class="form-text text-muted">Historial de participaciones del encargado seleccionado en la segunda sección, ordenadas desde la más reciente.</small>
                 </div>
             </div>
-            <br><br><br><br>
+            <br><br><br><br><br><br>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                 <button type="button" class="btn btn-primary" id="confirmarEncargadoSegundaSeccion">
@@ -1013,7 +1017,7 @@
                     <select class="form-select" id="select_ayudante_segunda_seccion" style="width: 100%;">
                         <option value="">Cargando usuarios...</option>
                     </select>
-                    <small class="form-text text-muted">Usuarios que han participado como ayudante en partes_programa, ordenados por fecha más reciente. Formato: fecha - parte - nombre (tipo)</small>
+                    <small class="form-text text-muted">Usuarios que han participado como ayudante en partes_programa, ordenados por fecha más reciente.</small>
                 </div>
 
                 <div class="mb-3">
@@ -1021,9 +1025,10 @@
                     <select class="form-select" id="select_historial_ayudante_segunda_seccion" style="width: 100%;" disabled>
                         <option value="">Seleccionar un ayudante primero...</option>
                     </select>
-                    <small class="form-text text-muted">Historial de participaciones del ayudante seleccionado en la segunda sección, ordenadas desde la más reciente</small>
+                    <small class="form-text text-muted">Historial de participaciones del ayudante seleccionado en la segunda sección, ordenadas desde la más reciente.</small>
                 </div>
             </div>
+            <br><br><br><br><br><br>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                 <button type="button" class="btn btn-primary" id="confirmarAyudanteSegundaSeccion">
