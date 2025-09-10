@@ -718,7 +718,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p class="mb-0">¿Está seguro de que desea eliminar esta parte del programa?</p>
+                <p class="mb-0">¿Está seguro de que desea eliminar esta Asignación del programa?</p>
                 <small class="text-muted">Esta acción no se puede deshacer.</small>
             </div>
             <div class="modal-footer">
@@ -865,6 +865,7 @@
                     <small class="form-text text-muted">Todas las canciones disponibles</small>
                 </div>
             </div>
+            <br><br><br><br><br><br>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                 <button type="button" class="btn btn-primary" id="confirmarCancionInicial">
@@ -894,6 +895,7 @@
                     <small class="form-text text-muted">Todas las canciones disponibles</small>
                 </div>
             </div>
+            <br><br><br><br><br><br>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                 <button type="button" class="btn btn-primary" id="confirmarCancionIntermedia">
@@ -923,6 +925,7 @@
                     <small class="form-text text-muted">Todas las canciones disponibles</small>
                 </div>
             </div>
+            <br><br><br><br><br><br>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                 <button type="button" class="btn btn-primary" id="confirmarCancionFinal">
@@ -5306,7 +5309,7 @@ $(document).ready(function() {
 
 <style>
 /* Aplicar fuente Consolas al select2 del campo Encargado de la Segunda Sección */
-#encargado_id_segunda_seccion + .select2-container {
+#encargado_id_segunda_seccion + .select2-container{
     font-family: "Cascadia Mono", monospace !important;
 }
 
@@ -5322,7 +5325,7 @@ $(document).ready(function() {
 
 /* Aplicar fuente Consolas al select2 del campo Ayudante de la Segunda Sección */
 #ayudante_id_segunda_seccion + .select2-container {
-    font-family: Consolas, "Courier New", monospace;
+    font-family: "Cascadia Mono", monospace !important;
 }
 
 #ayudante_id_segunda_seccion + .select2-container .select2-selection {
@@ -5336,7 +5339,7 @@ $(document).ready(function() {
 }
 
 /* Para el dropdown también */
-.select2-container--bootstrap-5 .select2-dropdown .select2-results__options {
+.select2-container--bootstrap-5 .select2-dropdown .select2-results__options{
     font-family: "Cascadia Mono", monospace !important;
     font-size: 12px;
 }
@@ -5347,11 +5350,14 @@ $(document).ready(function() {
 }
 
 /* Regla específica para prevenir que Bootstrap 5 sobrescriba con 1rem */
-.select2-container--bootstrap-5 .select2-dropdown .select2-results__options .select2-results__option {
+.select2-container--bootstrap-5 .select2-dropdown .select2-results__option {
     font-family: "Cascadia Mono", monospace !important;
     font-size: 12px !important;
 }
-
+.select2-search__field{
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
 /* Asegurar que el dropdown específico del campo encargado use Consolas */
 .select2-dropdown[aria-labelledby="select2-encargado_id_segunda_seccion-container"] {
     font-family: "Cascadia Mono", monospace !important;
@@ -5516,6 +5522,7 @@ select#orador_inicial.form-select {
 
 /* Estilos para el Select2 del modal historial presidencia */
 #select_historial_presidencia + .select2-container .select2-selection {
+    font-family: "Cascadia Mono", monospace !important;
     font-size: 12px !important;
 }
 
@@ -5526,6 +5533,7 @@ select#orador_inicial.form-select {
 
 /* Para el dropdown del modal historial presidencia */
 .select2-dropdown[aria-labelledby="select2-select_historial_presidencia-container"] .select2-results__option {
+    font-family: "Cascadia Mono", monospace !important;
     font-size: 12px !important;
 }
 
