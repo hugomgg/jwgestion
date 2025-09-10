@@ -540,11 +540,11 @@
                             <div class="mb-3">
                                 <label for="encargado_reemplazado_segunda_seccion" class="form-label">Encargado Reemplazado</label>
                                 <div class="input-group">
+                                    <input type="text" class="form-control" id="encargado_reemplazado_segunda_seccion" readonly>
+                                    <input type="hidden" id="encargado_reemplazado_id_segunda_seccion" name="encargado_reemplazado_id">
                                     <button type="button" class="btn btn-outline-danger" onclick="clearEncargadoReemplazado()" title="Eliminar encargado reemplazado">
                                         <i class="fas fa-user-times"></i>
                                     </button>
-                                    <input type="text" class="form-control" id="encargado_reemplazado_segunda_seccion" readonly>
-                                    <input type="hidden" id="encargado_reemplazado_id_segunda_seccion" name="encargado_reemplazado_id">
                                 </div>
                                 <div class="invalid-feedback"></div>
                             </div>
@@ -553,11 +553,11 @@
                             <div class="mb-3">
                                 <label for="ayudante_reemplazado_segunda_seccion" class="form-label">Ayudante Reemplazado</label>
                                 <div class="input-group">
+                                    <input type="text" class="form-control" id="ayudante_reemplazado_segunda_seccion" readonly>
+                                    <input type="hidden" id="ayudante_reemplazado_id_segunda_seccion" name="ayudante_reemplazado_id">
                                     <button type="button" class="btn btn-outline-danger" onclick="clearAyudanteReemplazado()" title="Eliminar ayudante reemplazado">
                                         <i class="fas fa-user-times"></i>
                                     </button>
-                                    <input type="text" class="form-control" id="ayudante_reemplazado_segunda_seccion" readonly>
-                                    <input type="hidden" id="ayudante_reemplazado_id_segunda_seccion" name="ayudante_reemplazado_id">
                                 </div>
                                 <div class="invalid-feedback"></div>
                             </div>
@@ -2356,7 +2356,7 @@ $(document).ready(function() {
 
                                 // Actualizar el estado de los botones después de cargar los datos
                                 updateButtonStatesSegundaSeccion();
-                            }, 200);
+                            }, 500);
 
                             // Cargar historial del encargado si existe
                             if (parte.encargado_id) {
@@ -3169,6 +3169,7 @@ $(document).ready(function() {
         const parteSeleccionada = $('#parte_id_segunda_seccion').val();
         const btnBuscarEncargado = $('#btn-buscar-encargado-segunda');
         const btnBuscarAyudante = $('#btn-buscar-ayudante-segunda');
+        const btnBuscarAyudante2 = $('#btn-buscar-ayudante2-segunda');
 
         // Botones del encargado
         if (encargadoId) {
@@ -3180,7 +3181,7 @@ $(document).ready(function() {
             btnBuscarEncargado.prop('disabled', true);
             btnBuscarEncargado.attr('title', 'Seleccionar encargado primero');
         }
-
+        //console.log('encargado=', encargadoId, 'parte=', parteSeleccionada);
         // Botón "Buscar Ayudante" - aplicar la nueva lógica
         if (encargadoId && encargadoId !== '' && parteSeleccionada) {
             const selectedOption = $('#parte_id_segunda_seccion').find('option:selected');
@@ -5231,9 +5232,6 @@ $(document).ready(function() {
         // Actualizar los campos
         $('#ayudante_id_segunda_seccion').val(ayudanteSeleccionado);
         $('#ayudante_display_segunda_seccion').val(nombreAyudante);
-
-        // Habilitar los botones ahora que hay un ayudante seleccionado
-    // ...existing code...
 
         // Actualizar el estado de los botones
         updateButtonStatesSegundaSeccion();
