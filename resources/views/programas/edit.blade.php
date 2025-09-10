@@ -50,11 +50,6 @@
                                                     title="Buscar Orador Inicial" onclick="buscarOradorInicial()">
                                                 <i class="fas fa-search"></i>
                                             </button>
-                                            <button type="button" class="btn btn-outline-info" id="btn-historial-orador-inicial"
-                                                    title="Historial de Orador Inicial" onclick="verHistorialOradorInicial()"
-                                                    {{ !$programa->orador_inicial ? 'disabled' : '' }}>
-                                                <i class="fas fa-history"></i>
-                                            </button>
                                         </div>
                                         <input type="hidden" id="orador_inicial" name="orador_inicial" value="{{ $programa->orador_inicial }}">
                                     @else
@@ -105,11 +100,6 @@
                                             <button type="button" class="btn btn-outline-primary" id="btn-buscar-presidencia"
                                                     title="Buscar Presidentes" onclick="buscarPresidencia()">
                                                 <i class="fas fa-search"></i>
-                                            </button>
-                                            <button type="button" class="btn btn-outline-info" id="btn-historial-presidencia"
-                                                    title="Historial de Presidente" onclick="verHistorialPresidencia()"
-                                                    {{ !$programa->presidencia ? 'disabled' : '' }}>
-                                                <i class="fas fa-history"></i>
                                             </button>
                                         </div>
                                         <input type="hidden" id="presidencia" name="presidencia" value="{{ $programa->presidencia }}">
@@ -313,11 +303,6 @@
                                             <button type="button" class="btn btn-outline-primary" id="btn-buscar-orador-final"
                                                     title="Buscar Orador Final" onclick="buscarOradorFinal()">
                                                 <i class="fas fa-search"></i>
-                                            </button>
-                                            <button type="button" class="btn btn-outline-info" id="btn-historial-orador-final"
-                                                    title="Historial de Orador Final" onclick="verHistorialOradorFinal()"
-                                                    {{ !$programa->orador_final ? 'disabled' : '' }}>
-                                                <i class="fas fa-history"></i>
                                             </button>
                                         </div>
                                         <input type="hidden" id="orador_final" name="orador_final" value="{{ $programa->orador_final }}">
@@ -758,28 +743,6 @@
                     </select>
                     <small class="form-text text-muted">Usuarios con asignación de oración, ordenados por fecha más reciente de participación</small>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" id="confirmarOradorInicial">
-                    <i class="fas fa-check me-2"></i>Seleccionar
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal para Historial de Orador Inicial -->
-<div class="modal fade" id="historialOradorInicialModal" tabindex="-1" aria-labelledby="historialOradorInicialModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="historialOradorInicialModalLabel">
-                    <i class="fas fa-history me-2"></i>Historial de Participaciones
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
                 <div class="mb-3">
                     <label for="select_historial_orador" class="form-label">Historial de Participaciones como Orador</label>
                     <select class="form-select" id="select_historial_orador" style="width: 100%;" disabled>
@@ -789,7 +752,10 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="confirmarOradorInicial">
+                    <i class="fas fa-check me-2"></i>Seleccionar
+                </button>
             </div>
         </div>
     </div>
@@ -813,6 +779,13 @@
                     </select>
                     <small class="form-text text-muted">Usuarios con asignación de oración, ordenados por fecha más reciente de participación</small>
                 </div>
+                <div class="mb-3">
+                    <label for="select_historial_orador_final" class="form-label">Historial de Participaciones como Orador</label>
+                    <select class="form-select" id="select_historial_orador_final" style="width: 100%;" disabled>
+                        <option value="">Seleccione un orador para ver historial...</option>
+                    </select>
+                    <small class="form-text text-muted">Participaciones ordenadas desde la más reciente</small>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -824,31 +797,7 @@
     </div>
 </div>
 
-<!-- Modal para Historial de Orador Final -->
-<div class="modal fade" id="historialOradorFinalModal" tabindex="-1" aria-labelledby="historialOradorFinalModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="historialOradorFinalModalLabel">
-                    <i class="fas fa-history me-2"></i>Historial de Participaciones
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="mb-3">
-                    <label for="select_historial_orador_final" class="form-label">Historial de Participaciones como Orador</label>
-                    <select class="form-select" id="select_historial_orador_final" style="width: 100%;" disabled>
-                        <option value="">Cargando historial...</option>
-                    </select>
-                    <small class="form-text text-muted">Participaciones ordenadas desde la más reciente</small>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-            </div>
-        </div>
-    </div>
-</div>
+
 
 <!-- Modal para Buscar Presidencia -->
 <div class="modal fade" id="buscarPresidenciaModal" tabindex="-1" aria-labelledby="buscarPresidenciaModalLabel" aria-hidden="true">
@@ -868,6 +817,13 @@
                     </select>
                     <small class="form-text text-muted">Usuarios con asignación de presidencia, ordenados por fecha más reciente de participación</small>
                 </div>
+                <div class="mb-3">
+                    <label for="select_historial_presidencia" class="form-label">Historial de Participaciones como Presidente</label>
+                    <select class="form-select" id="select_historial_presidencia" style="width: 100%;" disabled>
+                        <option value="">Seleccione un presidente para ver historial...</option>
+                    </select>
+                    <small class="form-text text-muted">Participaciones ordenadas desde la más reciente</small>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -879,31 +835,7 @@
     </div>
 </div>
 
-<!-- Modal para Historial de Presidencia -->
-<div class="modal fade" id="historialPresidenciaModal" tabindex="-1" aria-labelledby="historialPresidenciaModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="historialPresidenciaModalLabel">
-                    <i class="fas fa-history me-2"></i>Historial de Participaciones
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="mb-3">
-                    <label for="select_historial_presidencia" class="form-label">Historial de Participaciones como Presidente</label>
-                    <select class="form-select" id="select_historial_presidencia" style="width: 100%;" disabled>
-                        <option value="">Cargando historial...</option>
-                    </select>
-                    <small class="form-text text-muted">Participaciones ordenadas desde la más reciente</small>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-            </div>
-        </div>
-    </div>
-</div>
+
 
 <!-- Modal para Buscar Canción Inicial -->
 <div class="modal fade" id="buscarCancionInicialModal" tabindex="-1" aria-labelledby="buscarCancionInicialModalLabel" aria-hidden="true">
@@ -3902,6 +3834,17 @@ $(document).ready(function() {
                     if (oradorActual) {
                         select.val(oradorActual).trigger('change');
                     }
+
+                    // Inicializar el select2 del historial también
+                    const selectHistorial = $('#select_historial_orador');
+                    if (!selectHistorial.hasClass('select2-hidden-accessible')) {
+                        selectHistorial.select2({
+                            theme: 'bootstrap-5',
+                            placeholder: "Historial de participaciones...",
+                            width: '100%',
+                            dropdownParent: $('#buscarOradorInicialModal')
+                        });
+                    }
                 } else {
                     alert('Error al cargar los usuarios: ' + response.message);
                 }
@@ -3920,8 +3863,8 @@ $(document).ready(function() {
             return;
         }
 
-        // Abrir modal y cargar historial del orador
-        $('#historialOradorInicialModal').modal('show');
+        // Abrir modal principal y cargar historial del orador
+        $('#buscarOradorInicialModal').modal('show');
 
         // Cargar historial de participaciones del usuario
         $.ajax({
@@ -3938,7 +3881,7 @@ $(document).ready(function() {
                             theme: 'bootstrap-5',
                             placeholder: "Historial de participaciones...",
                             width: '100%',
-                            dropdownParent: $('#historialOradorInicialModal')
+                            dropdownParent: $('#buscarOradorInicialModal')
                         });
                     }
 
@@ -3966,7 +3909,7 @@ $(document).ready(function() {
                         select.val(response.data[0].programa_id).trigger('change');
 
                         // Actualizar el título del modal con el nombre del usuario
-                        $('#historialOradorInicialModalLabel').html(`<i class="fas fa-history me-2"></i>Historial de ${response.data[0].nombre_usuario}`);
+                        $('#buscarOradorInicialModalLabel').html(`<i class="fas fa-history me-2"></i>Historial de ${response.data[0].nombre_usuario}`);
                     } else {
                         select.append('<option value="">No hay participaciones registradas</option>');
                         select.prop('disabled', true);
@@ -4002,9 +3945,6 @@ $(document).ready(function() {
         $('#orador_inicial').val(oradorSeleccionado);
         $('#orador_inicial_display').val(nombreOrador);
 
-        // Habilitar el botón de historial ahora que hay un orador seleccionado
-        $('#btn-historial-orador-inicial').prop('disabled', false);
-
         // Cerrar modal
         $('#buscarOradorInicialModal').modal('hide');
 
@@ -4018,19 +3958,73 @@ $(document).ready(function() {
             select.select2('destroy');
         }
         select.empty().append('<option value="">Cargando usuarios...</option>');
-    });
 
-    // Limpiar Select2 cuando se cierre el modal del historial
-    $('#historialOradorInicialModal').on('hidden.bs.modal', function() {
-        const select = $('#select_historial_orador');
-        if (select.hasClass('select2-hidden-accessible')) {
-            select.select2('destroy');
+        // Limpiar también el select del historial
+        const selectHistorial = $('#select_historial_orador');
+        if (selectHistorial.hasClass('select2-hidden-accessible')) {
+            selectHistorial.select2('destroy');
         }
-        select.empty().append('<option value="">Cargando historial...</option>');
-        select.prop('disabled', true);
+        selectHistorial.empty().append('<option value="">Seleccione un orador para ver historial...</option>');
+        selectHistorial.prop('disabled', true);
 
         // Restaurar el título original del modal
-        $('#historialOradorInicialModalLabel').html('<i class="fas fa-history me-2"></i>Historial de Participaciones');
+        $('#buscarOradorInicialModalLabel').html('<i class="fas fa-search me-2"></i>Buscar Orador Inicial');
+    });
+
+    // Evento para cargar historial automáticamente cuando se selecciona un orador
+    $('#select_orador_inicial').on('change', function() {
+        const oradorId = $(this).val();
+        if (!oradorId) {
+            // Limpiar el historial si no hay orador seleccionado
+            const selectHistorial = $('#select_historial_orador');
+            selectHistorial.empty().append('<option value="">Seleccione un orador para ver historial...</option>');
+            selectHistorial.prop('disabled', true);
+            return;
+        }
+
+        // Cargar historial del orador seleccionado
+        $.ajax({
+            url: `/usuarios/${oradorId}/historial-orador`,
+            method: 'GET',
+            success: function(response) {
+                if (response.success) {
+                    const select = $('#select_historial_orador');
+                    select.empty();
+
+                    if (response.data.length > 0) {
+                        select.append('<option value="">Seleccionar participación...</option>');
+
+                        // Agregar opciones con el formato: fecha - nombre - tipo
+                        response.data.forEach(function(participacion) {
+                            const fecha = new Date(participacion.fecha);
+                            const dia = String(fecha.getDate()).padStart(2, '0');
+                            const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+                            const año = fecha.getFullYear();
+                            const fechaTexto = `${dia}/${mes}/${año}`;
+
+                            const tipoOracion = participacion.tipo === 'inicial' ? 'Orador Inicial' : 'Orador Final';
+                            const textoOpcion = `${fechaTexto} - ${participacion.nombre_usuario} - ${tipoOracion}`;
+
+                            select.append(`<option value="${participacion.programa_id}">${textoOpcion}</option>`);
+                        });
+
+                        // Habilitar el select
+                        select.prop('disabled', false);
+
+                        // Seleccionar automáticamente el primer elemento
+                        select.val(response.data[0].programa_id).trigger('change');
+                    } else {
+                        select.append('<option value="">No hay participaciones registradas</option>');
+                        select.prop('disabled', true);
+                    }
+                } else {
+                    console.error('Error al cargar el historial:', response.message);
+                }
+            },
+            error: function(xhr) {
+                console.error('Error al cargar el historial del orador inicial:', xhr);
+            }
+        });
     });
 
     // Evento para confirmar la selección del orador final
@@ -4053,35 +4047,85 @@ $(document).ready(function() {
         $('#orador_final').val(oradorSeleccionado);
         $('#orador_final_display').val(nombreOrador);
 
-        // Habilitar el botón de historial ahora que hay un orador seleccionado
-        $('#btn-historial-orador-final').prop('disabled', false);
-
         // Cerrar modal
         $('#buscarOradorFinalModal').modal('hide');
 
 
     });
 
-    // Limpiar Select2 cuando se cierre el modal de buscar orador final
+    // Limpiar Select2 cuando se cierre el modal
     $('#buscarOradorFinalModal').on('hidden.bs.modal', function() {
         const select = $('#select_orador_final');
         if (select.hasClass('select2-hidden-accessible')) {
             select.select2('destroy');
         }
         select.empty().append('<option value="">Cargando usuarios...</option>');
-    });
 
-    // Limpiar Select2 cuando se cierre el modal del historial orador final
-    $('#historialOradorFinalModal').on('hidden.bs.modal', function() {
-        const select = $('#select_historial_orador_final');
-        if (select.hasClass('select2-hidden-accessible')) {
-            select.select2('destroy');
+        // Limpiar también el select del historial
+        const selectHistorial = $('#select_historial_orador_final');
+        if (selectHistorial.hasClass('select2-hidden-accessible')) {
+            selectHistorial.select2('destroy');
         }
-        select.empty().append('<option value="">Cargando historial...</option>');
-        select.prop('disabled', true);
+        selectHistorial.empty().append('<option value="">Seleccione un orador para ver historial...</option>');
+        selectHistorial.prop('disabled', true);
 
         // Restaurar el título original del modal
-        $('#historialOradorFinalModalLabel').html('<i class="fas fa-history me-2"></i>Historial de Participaciones');
+        $('#buscarOradorFinalModalLabel').html('<i class="fas fa-search me-2"></i>Buscar Orador Final');
+    });
+
+    // Evento para cargar historial automáticamente cuando se selecciona un orador final
+    $('#select_orador_final').on('change', function() {
+        const oradorId = $(this).val();
+        if (oradorId) {
+            // Cargar historial del orador seleccionado
+            $.ajax({
+                url: `/usuarios/${oradorId}/historial-orador`,
+                method: 'GET',
+                success: function(response) {
+                    if (response.success) {
+                        const select = $('#select_historial_orador_final');
+                        select.empty();
+
+                        if (response.data.length > 0) {
+                            select.append('<option value="">Seleccionar participación...</option>');
+
+                            // Agregar opciones con el formato: fecha - nombre - tipo
+                            response.data.forEach(function(participacion) {
+                                const fecha = new Date(participacion.fecha);
+                                const dia = String(fecha.getDate()).padStart(2, '0');
+                                const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+                                const año = fecha.getFullYear();
+                                const fechaTexto = `${dia}/${mes}/${año}`;
+
+                                const tipoOracion = participacion.tipo === 'inicial' ? 'Orador Inicial' : 'Orador Final';
+                                const textoOpcion = `${fechaTexto} - ${participacion.nombre_usuario} - ${tipoOracion}`;
+
+                                select.append(`<option value="${participacion.programa_id}">${textoOpcion}</option>`);
+                            });
+
+                            // Habilitar el select
+                            select.prop('disabled', false);
+
+                            // Seleccionar automáticamente el primer elemento
+                            select.val(response.data[0].programa_id).trigger('change');
+                        } else {
+                            select.append('<option value="">No hay participaciones registradas</option>');
+                            select.prop('disabled', true);
+                        }
+                    } else {
+                        console.error('Error al cargar el historial: ' + response.message);
+                    }
+                },
+                error: function(xhr) {
+                    console.error('Error al cargar el historial de orador final', xhr);
+                }
+            });
+        } else {
+            // Limpiar el select del historial si no hay orador seleccionado
+            const select = $('#select_historial_orador_final');
+            select.empty().append('<option value="">Seleccione un orador para ver historial...</option>');
+            select.prop('disabled', true);
+        }
     });
 
     // Evento para confirmar la selección de presidencia
@@ -4104,35 +4148,84 @@ $(document).ready(function() {
         $('#presidencia').val(presidenteSeleccionado);
         $('#presidencia_display').val(nombrePresidente);
 
-        // Habilitar el botón de historial ahora que hay un presidente seleccionado
-        $('#btn-historial-presidencia').prop('disabled', false);
-
         // Cerrar modal
         $('#buscarPresidenciaModal').modal('hide');
 
 
     });
 
-    // Limpiar Select2 cuando se cierre el modal de buscar presidencia
+    // Limpiar Select2 cuando se cierre el modal
     $('#buscarPresidenciaModal').on('hidden.bs.modal', function() {
         const select = $('#select_presidencia');
         if (select.hasClass('select2-hidden-accessible')) {
             select.select2('destroy');
         }
         select.empty().append('<option value="">Cargando usuarios...</option>');
-    });
 
-    // Limpiar Select2 cuando se cierre el modal del historial presidencia
-    $('#historialPresidenciaModal').on('hidden.bs.modal', function() {
-        const select = $('#select_historial_presidencia');
-        if (select.hasClass('select2-hidden-accessible')) {
-            select.select2('destroy');
+        // Limpiar también el select del historial
+        const selectHistorial = $('#select_historial_presidencia');
+        if (selectHistorial.hasClass('select2-hidden-accessible')) {
+            selectHistorial.select2('destroy');
         }
-        select.empty().append('<option value="">Cargando historial...</option>');
-        select.prop('disabled', true);
+        selectHistorial.empty().append('<option value="">Seleccione un presidente para ver historial...</option>');
+        selectHistorial.prop('disabled', true);
 
         // Restaurar el título original del modal
-        $('#historialPresidenciaModalLabel').html('<i class="fas fa-history me-2"></i>Historial de Participaciones');
+        $('#buscarPresidenciaModalLabel').html('<i class="fas fa-search me-2"></i>Buscar Presidentes');
+    });
+
+    // Evento para cargar historial automáticamente cuando se selecciona un presidente
+    $('#select_presidencia').on('change', function() {
+        const presidenteId = $(this).val();
+        if (presidenteId) {
+            // Cargar historial del presidente seleccionado
+            $.ajax({
+                url: `/usuarios/${presidenteId}/historial-presidencia`,
+                method: 'GET',
+                success: function(response) {
+                    if (response.success) {
+                        const select = $('#select_historial_presidencia');
+                        select.empty();
+
+                        if (response.data.length > 0) {
+                            select.append('<option value="">Seleccionar participación...</option>');
+
+                            // Agregar opciones con el formato: fecha - nombre
+                            response.data.forEach(function(participacion) {
+                                const fecha = new Date(participacion.fecha);
+                                const dia = String(fecha.getDate()).padStart(2, '0');
+                                const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+                                const año = fecha.getFullYear();
+                                const fechaTexto = `${dia}/${mes}/${año}`;
+
+                                const textoOpcion = `${fechaTexto} - ${participacion.nombre_usuario}`;
+
+                                select.append(`<option value="${participacion.programa_id}">${textoOpcion}</option>`);
+                            });
+
+                            // Habilitar el select
+                            select.prop('disabled', false);
+
+                            // Seleccionar automáticamente el primer elemento
+                            select.val(response.data[0].programa_id).trigger('change');
+                        } else {
+                            select.append('<option value="">No hay participaciones registradas</option>');
+                            select.prop('disabled', true);
+                        }
+                    } else {
+                        console.error('Error al cargar el historial: ' + response.message);
+                    }
+                },
+                error: function(xhr) {
+                    console.error('Error al cargar el historial de presidencia', xhr);
+                }
+            });
+        } else {
+            // Limpiar el select del historial si no hay presidente seleccionado
+            const select = $('#select_historial_presidencia');
+            select.empty().append('<option value="">Seleccione un presidente para ver historial...</option>');
+            select.prop('disabled', true);
+        }
     });
 
     // Eventos para confirmar selección de canciones
@@ -4238,6 +4331,17 @@ $(document).ready(function() {
                     if (oradorActual) {
                         select.val(oradorActual).trigger('change');
                     }
+
+                    // Inicializar el select2 del historial también
+                    const selectHistorial = $('#select_historial_orador_final');
+                    if (!selectHistorial.hasClass('select2-hidden-accessible')) {
+                        selectHistorial.select2({
+                            theme: 'bootstrap-5',
+                            placeholder: "Historial de participaciones...",
+                            width: '100%',
+                            dropdownParent: $('#buscarOradorFinalModal')
+                        });
+                    }
                 } else {
                     alert('Error al cargar los usuarios: ' + response.message);
                 }
@@ -4256,8 +4360,8 @@ $(document).ready(function() {
             return;
         }
 
-        // Abrir modal y cargar historial del orador
-        $('#historialOradorFinalModal').modal('show');
+        // Abrir modal principal y cargar historial del orador
+        $('#buscarOradorFinalModal').modal('show');
 
         // Cargar historial de participaciones del usuario (misma función que orador inicial)
         $.ajax({
@@ -4274,7 +4378,7 @@ $(document).ready(function() {
                             theme: 'bootstrap-5',
                             placeholder: "Historial de participaciones...",
                             width: '100%',
-                            dropdownParent: $('#historialOradorFinalModal')
+                            dropdownParent: $('#buscarOradorFinalModal')
                         });
                     }
 
@@ -4302,7 +4406,7 @@ $(document).ready(function() {
                         select.val(response.data[0].programa_id).trigger('change');
 
                         // Actualizar el título del modal con el nombre del usuario
-                        $('#historialOradorFinalModalLabel').html(`<i class="fas fa-history me-2"></i>Historial de ${response.data[0].nombre_usuario}`);
+                        $('#buscarOradorFinalModalLabel').html(`<i class="fas fa-history me-2"></i>Historial de ${response.data[0].nombre_usuario}`);
                     } else {
                         select.append('<option value="">No hay participaciones registradas</option>');
                         select.prop('disabled', true);
@@ -4364,6 +4468,17 @@ $(document).ready(function() {
                     if (presidenteActual) {
                         select.val(presidenteActual).trigger('change');
                     }
+
+                    // Inicializar el select2 del historial también
+                    const selectHistorial = $('#select_historial_presidencia');
+                    if (!selectHistorial.hasClass('select2-hidden-accessible')) {
+                        selectHistorial.select2({
+                            theme: 'bootstrap-5',
+                            placeholder: "Historial de participaciones...",
+                            width: '100%',
+                            dropdownParent: $('#buscarPresidenciaModal')
+                        });
+                    }
                 } else {
                     alert('Error al cargar los usuarios: ' + response.message);
                 }
@@ -4382,8 +4497,8 @@ $(document).ready(function() {
             return;
         }
 
-        // Abrir modal y cargar historial del presidente
-        $('#historialPresidenciaModal').modal('show');
+        // Abrir modal principal y cargar historial del presidente
+        $('#buscarPresidenciaModal').modal('show');
 
         // Cargar historial de participaciones del usuario
         $.ajax({
@@ -4400,7 +4515,7 @@ $(document).ready(function() {
                             theme: 'bootstrap-5',
                             placeholder: "Historial de participaciones...",
                             width: '100%',
-                            dropdownParent: $('#historialPresidenciaModal')
+                            dropdownParent: $('#buscarPresidenciaModal')
                         });
                     }
 
@@ -4427,7 +4542,7 @@ $(document).ready(function() {
                         select.val(response.data[0].programa_id).trigger('change');
 
                         // Actualizar el título del modal con el nombre del usuario
-                        $('#historialPresidenciaModalLabel').html(`<i class="fas fa-history me-2"></i>Historial de ${response.data[0].nombre_usuario}`);
+                        $('#buscarPresidenciaModalLabel').html(`<i class="fas fa-history me-2"></i>Historial de ${response.data[0].nombre_usuario}`);
                     } else {
                         select.append('<option value="">No hay participaciones registradas</option>');
                         select.prop('disabled', true);
@@ -5333,6 +5448,7 @@ select#orador_inicial.form-select {
 }
 
 #select_historial_orador_final + .select2-container .select2-selection__rendered {
+    font-family: "Cascadia Mono", monospace !important;
     font-size: 12px !important;
 }
 
@@ -5362,7 +5478,8 @@ select#orador_inicial.form-select {
 }
 
 #select_historial_presidencia + .select2-container .select2-selection__rendered {
-    font-size: 14px !important;
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
 }
 
 /* Para el dropdown del modal historial presidencia */
