@@ -175,7 +175,7 @@
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="d-flex justify-content-end">
-                                                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#parteProgramaSegundaSeccionModal" onclick="openCreateParteSegundaSeccionModal()">
+                                                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#parteProgramaSegundaSeccionModal" onclick="openCreateParteSegundaSeccionModal(false)">
                                                         <i class="fas fa-plus me-2"></i>Nueva Asignación SMM (SP)
                                                     </button>
                                                 </div>
@@ -209,14 +209,20 @@
                         @if(Auth::user()->perfil == 3)
                         <!-- Tabla de Partes de Seamos Mejores Maestros -->
                         <div class="card mb-4">
-                            <div class="card-header d-flex justify-content-between align-items-center">
-                                <h6 class="mb-0">
-                                    <i class="fas fa-chalkboard-teacher me-2"></i>Asiganciones de Seamos Mejores Maestros (Sala Auxiliar 1)
-                                </h6>
-                                <div>
-                                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#parteProgramaTerceraSeccionModal" onclick="openCreateParteTerceraSeccionModal()">
-                                        <i class="fas fa-plus me-2"></i>Nueva Asignación SMM (S1)
-                                    </button>
+                            <div class="card-header">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <h6 class="mb-0">
+                                            <i class="fas fa-chalkboard-teacher me-2"></i>Asignaciones de Seamos Mejores Maestros (Sala Auxiliar 1)
+                                        </h6>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex justify-content-end">
+                                            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#parteProgramaSegundaSeccionModal" onclick="openCreateParteSegundaSeccionModal(true)">
+                                                <i class="fas fa-plus me-2"></i>Nueva Asignación SMM (S1)
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="card-body p-0">
@@ -1381,7 +1387,7 @@ $(document).ready(function() {
                                 <button type="button" class="btn btn-sm btn-outline-secondary" onclick="moveParteTerceraSeccionDown(${parte.id})" title="Bajar" ${downDisabled}>
                                     <i class="fas fa-chevron-down"></i>
                                 </button>
-                                <button type="button" class="btn btn-sm btn-outline-primary" onclick="editParteTerceraSeccion(${parte.id})" title="Editar">
+                                <button type="button" class="btn btn-sm btn-outline-primary" onclick="editParteSegundaSeccion(${parte.id})" title="Editar">
                                     <i class="fas fa-edit"></i>
                                 </button>
                                 <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteParteTerceraSeccion(${parte.id})" title="Eliminar">
@@ -2191,9 +2197,19 @@ $(document).ready(function() {
         continueAyudanteChangeTercera(ayudanteSeleccionado, encargadoSelect);
     });
 
-    function openCreateParteSegundaSeccionModal() {
+    function openCreateParteSegundaSeccionModal(isSalaAuxiliar = false) {
         isEditMode = false;
-        $('#parteProgramaSegundaSeccionModalLabel').text('Nueva Asignación (Sala Principal)');
+
+        if (isSalaAuxiliar) {
+            $('#parteProgramaSegundaSeccionModalLabel').text('Nueva Asignación (Sala Auxiliar 1)');
+            // Cambiar sala_id a 2 para sala auxiliar
+            $('#parteProgramaSegundaSeccionForm input[name="sala_id"]').val('2');
+        } else {
+            $('#parteProgramaSegundaSeccionModalLabel').text('Nueva Asignación (Sala Principal)');
+            // Mantener sala_id en 1 para sala principal
+            $('#parteProgramaSegundaSeccionForm input[name="sala_id"]').val('1');
+        }
+
         $('#parteProgramaSegundaSeccionForm')[0].reset();
         $('#parte_programa_segunda_seccion_id').val('');
         $('#saveParteSegundaSeccionBtn').text('Guardar Asignación');
@@ -2244,7 +2260,7 @@ $(document).ready(function() {
 
     function editParteSegundaSeccion(id) {
         isEditMode = true;
-        $('#parteProgramaSegundaSeccionModalLabel').text('Editar Asignación (Sala Principal)');
+        $('#parteProgramaSegundaSeccionModalLabel').text('Editar Asignación');
         $('#parte_programa_segunda_seccion_id').val(id);
         $('#saveParteSegundaSeccionBtn').text('Actualizar Asignación');
 
@@ -2299,6 +2315,15 @@ $(document).ready(function() {
             success: function(response) {
                 if (response.success) {
                     const parte = response.data;
+
+                    // Establecer el sala_id correcto y actualizar el título del modal
+                    if (parte.sala_id == 2) {
+                        $('#parteProgramaSegundaSeccionModalLabel').text('Editar Asignación (Sala Auxiliar 1)');
+                        $('#parteProgramaSegundaSeccionForm input[name="sala_id"]').val('2');
+                    } else {
+                        $('#parteProgramaSegundaSeccionModalLabel').text('Editar Asignación (Sala Principal)');
+                        $('#parteProgramaSegundaSeccionForm input[name="sala_id"]').val('1');
+                    }
                     $('#parte_id_segunda_seccion').val(parte.parte_id);
                     $('#tiempo_segunda_seccion').val(parte.tiempo);
                     $('#leccion_segunda_seccion').val(parte.leccion);
@@ -2408,7 +2433,12 @@ $(document).ready(function() {
                 },
                 success: function(response) {
                     if (response.success) {
+                        // Determinar qué datatable actualizar según el sala_id de la parte eliminada
+                        // Como estamos eliminando desde la tabla de segunda sección, pero puede ser sala auxiliar,
+                        // necesitamos verificar si hay una manera de determinar el sala_id
+                        // Por ahora, recargamos ambas tablas para asegurar consistencia
                         loadPartesSegundaSeccion();
+                        loadPartesTerceraSeccion();
                         $('#confirmDeleteModal').modal('hide');
                     }
                 },
@@ -2486,7 +2516,15 @@ $(document).ready(function() {
             success: function(response) {
                 if (response.success) {
                     $('#parteProgramaSegundaSeccionModal').modal('hide');
-                    loadPartesSegundaSeccion();
+
+                    // Determinar qué datatable actualizar según el sala_id
+                    const salaId = $('#parteProgramaSegundaSeccionForm input[name="sala_id"]').val();
+                    if (salaId == '2') {
+                        loadPartesTerceraSeccion(); // Sala auxiliar → actualizar tabla de tercera sección
+                    } else {
+                        loadPartesSegundaSeccion(); // Sala principal → actualizar tabla de segunda sección
+                    }
+
                     showAlert('alert-container', 'success', response.message);
                 }
             },
