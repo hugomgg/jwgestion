@@ -445,7 +445,7 @@
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-primary" id="saveParteBtn">
                         <span class="spinner-border spinner-border-sm me-2 d-none" role="status"></span>
-                        Guardar Parte
+                        Guardar Asignación
                     </button>
                 </div>
             </form>
@@ -574,7 +574,7 @@
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-primary" id="saveParteSegundaSeccionBtn">
                         <span class="spinner-border spinner-border-sm me-2 d-none" role="status"></span>
-                        Guardar Parte
+                        Guardar Asignación
                     </button>
                 </div>
             </form>
@@ -692,7 +692,7 @@
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-primary" id="saveTerceraSeccionBtn">
                         <span class="spinner-border spinner-border-sm me-2 d-none" role="status"></span>
-                        Guardar Parte
+                        Guardar Asignación
                     </button>
                 </div>
             </form>
@@ -1487,7 +1487,7 @@ $(document).ready(function() {
         isEditMode = false;
         const seccionNombre = '{{ $seccionReunion ? $seccionReunion->nombre : "Primera Sección" }}';
         $('#parteProgramaModalLabel').text('Nueva Asignación de ' + seccionNombre);
-        $('#saveParteBtn').text('Guardar Parte');
+        $('#saveParteBtn').text('Guardar Asignación');
         $('#parteProgramaForm')[0].reset();
 
         // Mostrar select y ocultar input de texto para "Asignación" en modo "nuevo"
@@ -1531,7 +1531,7 @@ $(document).ready(function() {
     function editParte(id) {
         isEditMode = true;
         $('#parteProgramaModalLabel').text('Editar Asignación del Programa');
-        $('#saveParteBtn').text('Actualizar Parte');
+        $('#saveParteBtn').text('Actualizar Asignación');
 
         // Ocultar select y mostrar input de texto para "Asignación" en modo "editar"
         $('#parte_id').hide();
@@ -2191,7 +2191,7 @@ $(document).ready(function() {
         $('#parteProgramaSegundaSeccionModalLabel').text('Nueva Asignación (Sala Principal)');
         $('#parteProgramaSegundaSeccionForm')[0].reset();
         $('#parte_programa_segunda_seccion_id').val('');
-
+        $('#saveParteSegundaSeccionBtn').text('Guardar Asignación');
         // Limpiar errores previos
         $('.is-invalid').removeClass('is-invalid');
         $('.invalid-feedback').text('');
@@ -2241,6 +2241,7 @@ $(document).ready(function() {
         isEditMode = true;
         $('#parteProgramaSegundaSeccionModalLabel').text('Editar Asignación (Sala Principal)');
         $('#parte_programa_segunda_seccion_id').val(id);
+        $('#saveParteSegundaSeccionBtn').text('Actualizar Asignación');
 
         // Limpiar errores previos
         $('.is-invalid').removeClass('is-invalid');
@@ -2356,7 +2357,7 @@ $(document).ready(function() {
 
                                 // Actualizar el estado de los botones después de cargar los datos
                                 updateButtonStatesSegundaSeccion();
-                            }, 500);
+                            }, 600);
 
                             // Cargar historial del encargado si existe
                             if (parte.encargado_id) {
