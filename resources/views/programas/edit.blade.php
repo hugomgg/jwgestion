@@ -1220,10 +1220,10 @@ $(document).ready(function() {
             data: $(this).serialize(),
             success: function(response) {
                 if (response.success) {
-                    // Mostrar mensaje de éxito y redirigir
+                    // Mostrar mensaje de éxito y recargar la página para mantener la vista de edición
                     showAlert('alert-container', 'success', 'Programa actualizado exitosamente');
                     setTimeout(function() {
-                        window.location.href = '{{ route("programas.index") }}';
+                        window.location.reload();
                     }, 1500);
                 } else {
                     showAlert('alert-container', 'danger', response.message || 'Error al actualizar el programa');
