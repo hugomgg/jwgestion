@@ -145,9 +145,6 @@
                                                         <th style="width: 120px;">Parte</th>
                                                         <th style="width: 400px;">Encargado</th>
                                                         <th>Tema</th>
-                                                        @if(!Auth::user()->isCoordinator())
-                                                        <th>Lección</th>
-                                                        @endif
                                                         <th style="width: 140px;">Acciones</th>
                                                     </tr>
                                                 </thead>
@@ -201,7 +198,7 @@
                                                         <thead>
                                                             <tr>
                                                                 <th style="width: 120px;">Tiempo (min)</th>
-                                                                <th style="width: 120px;">Parte</th>
+                                                                <th style="width: 80px;">Parte</th>
                                                                 <th style="width: 400px;">Encargado</th>
                                                                 <th style="width: 400px;">Ayudante</th>
                                                                 <th>Lección</th>
@@ -228,7 +225,7 @@
                                                         <thead>
                                                             <tr>
                                                                 <th style="width: 120px;">Tiempo (min)</th>
-                                                                <th style="width: 120px;">Parte</th>
+                                                                <th style="width: 80px;">Parte</th>
                                                                 <th style="width: 400px;">Encargado</th>
                                                                 <th style="width: 400px;">Ayudante</th>
                                                                 <th>Lección</th>

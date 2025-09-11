@@ -1,39 +1,3 @@
-/* Aplicar fuente Consolas al select2 del campo Encargado de la Segunda Sección */
-#encargado_display_segunda_seccion + .select2-container,
-#encargado_id_segunda_seccion + .select2-container{
-    font-family: "Cascadia Mono", monospace !important;
-}
-
-#encargado_display_segunda_seccion + .select2-container .select2-selection,
-#encargado_id_segunda_seccion + .select2-container .select2-selection {
-    font-family: "Cascadia Mono", monospace !important;
-    font-size: 12px !important;
-}
-
-#encargado_display_segunda_seccion + .select2-container .select2-selection__rendered,
-#encargado_id_segunda_seccion + .select2-container .select2-selection__rendered {
-    font-family: "Cascadia Mono", monospace !important;
-    font-size: 12px !important;
-}
-
-/* Aplicar fuente Consolas al select2 del campo Ayudante de la Segunda Sección */
-#ayudante_display_segunda_seccion + .select2-container,
-#ayudante_id_segunda_seccion + .select2-container {
-    font-family: "Cascadia Mono", monospace !important;
-}
-
-#ayudante_display_segunda_seccion + .select2-container .select2-selection,
-#ayudante_id_segunda_seccion + .select2-container .select2-selection {
-    font-family: "Cascadia Mono", monospace !important;
-    font-size: 12px;
-}
-
-#ayudante_display_segunda_seccion + .select2-container .select2-selection__rendered,
-#ayudante_id_segunda_seccion + .select2-container .select2-selection__rendered {
-    font-family: "Cascadia Mono", monospace !important;
-    font-size: 12px;
-}
-
 /* Estilos globales para Select2 con fuente Cascadia Mono */
 .select2-container--bootstrap-5 .select2-selection,
 .select2-container--bootstrap-5 .select2-selection__rendered {
@@ -42,13 +6,6 @@
 }
 
 .select2-container--bootstrap-5 .select2-dropdown .select2-results__options .select2-results__option {
-    font-family: "Cascadia Mono", monospace !important;
-    font-size: 12px !important;
-}
-
-/* Estilos específicos para campos de segunda sección */
-#encargado_display_segunda_seccion,
-#ayudante_display_segunda_seccion {
     font-family: "Cascadia Mono", monospace !important;
     font-size: 12px !important;
 }
