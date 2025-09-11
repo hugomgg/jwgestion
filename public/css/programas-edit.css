@@ -76,14 +76,205 @@ div.select2-container--bootstrap-5 .select2-selection__rendered {
     font-size: 12px !important;
 }
 
-/* Estilos para el dropdown */
-.select2-container--bootstrap-5 .select2-dropdown {
-    font-family: "Cascadia Mono", monospace !important;
+/* Estilos para asegurar que ambas tablas de escuela tengan el mismo ancho */
+#partesSegundaSeccionTable,
+#partesTerceraSeccionTable {
+    width: 100% !important;
+    table-layout: fixed !important;
 }
 
-.select2-container--bootstrap-5 .select2-dropdown .select2-results__option {
-    font-family: "Cascadia Mono", monospace !important;
-    font-size: 12px !important;
+#partesSegundaSeccionTable th,
+#partesTerceraSeccionTable th,
+#partesSegundaSeccionTable td,
+#partesTerceraSeccionTable td {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+}
+
+/* Asegurar que los contenedores de tabla tengan el mismo ancho */
+.tab-pane .table-responsive {
+    width: 100% !important;
+    overflow-x: auto;
+}
+
+/* Estilos específicos para las columnas de las tablas de escuela */
+#partesSegundaSeccionTable th:nth-child(1),
+#partesTerceraSeccionTable th:nth-child(1) {
+    width: 120px !important;
+    min-width: 120px !important;
+}
+
+#partesSegundaSeccionTable th:nth-child(2),
+#partesTerceraSeccionTable th:nth-child(2) {
+    width: 120px !important;
+    min-width: 120px !important;
+}
+
+#partesSegundaSeccionTable th:nth-child(3),
+#partesTerceraSeccionTable th:nth-child(3) {
+    width: 400px !important;
+    min-width: 400px !important;
+}
+
+#partesSegundaSeccionTable th:nth-child(4),
+#partesTerceraSeccionTable th:nth-child(4) {
+    width: 400px !important;
+    min-width: 400px !important;
+}
+
+#partesSegundaSeccionTable th:nth-child(5),
+#partesTerceraSeccionTable th:nth-child(5) {
+    width: auto !important;
+    min-width: 200px !important;
+}
+
+#partesSegundaSeccionTable th:nth-child(6),
+#partesTerceraSeccionTable th:nth-child(6) {
+    width: 140px !important;
+    min-width: 140px !important;
+}
+
+/* Aplicar los mismos estilos a las celdas del cuerpo de la tabla */
+#partesSegundaSeccionTable td:nth-child(1),
+#partesTerceraSeccionTable td:nth-child(1) {
+    width: 120px !important;
+    max-width: 120px !important;
+}
+
+#partesSegundaSeccionTable td:nth-child(2),
+#partesTerceraSeccionTable td:nth-child(2) {
+    width: 120px !important;
+    max-width: 120px !important;
+}
+
+#partesSegundaSeccionTable td:nth-child(3),
+#partesTerceraSeccionTable td:nth-child(3) {
+    width: 400px !important;
+    max-width: 400px !important;
+}
+
+#partesSegundaSeccionTable td:nth-child(4),
+#partesTerceraSeccionTable td:nth-child(4) {
+    width: 400px !important;
+    max-width: 400px !important;
+}
+
+#partesSegundaSeccionTable td:nth-child(5),
+#partesTerceraSeccionTable td:nth-child(5) {
+    width: auto !important;
+    min-width: 200px !important;
+}
+
+#partesSegundaSeccionTable td:nth-child(6),
+#partesTerceraSeccionTable td:nth-child(6) {
+    width: 140px !important;
+    max-width: 140px !important;
+}
+
+/* Estilos para los tabs de Escuela - Más específicos y robustos */
+#escuelaTabs.nav-tabs {
+    border-bottom: 1px solid #dee2e6 !important;
+    margin-bottom: 0 !important;
+    padding: 0 !important;
+    position: relative !important;
+}
+
+#escuelaTabs.nav-tabs .nav-link {
+    border: 1px solid #dee2e6 !important;
+    border-bottom: 1px solid #dee2e6 !important;
+    background-color: #f8f9fa !important;
+    color: #495057 !important;
+    font-weight: 500 !important;
+    transition: all 0.3s ease !important;
+    position: relative !important;
+}
+
+#escuelaTabs.nav-tabs .nav-link:hover {
+    background-color: #e9ecef !important;
+    border-color: #adb5bd !important;
+    color: #495057 !important;
+}
+
+#escuelaTabs.nav-tabs .nav-link.active {
+    background-color: #ffffff !important;
+    border-color: #dee2e6 #dee2e6 #ffffff !important;
+    border-bottom: 2px solid #ffffff !important;
+    color: #495057 !important;
+    font-weight: 600 !important;
+    margin-bottom: -1px !important;
+    position: relative !important;
+    z-index: 2 !important;
+}
+
+#escuelaTabs.nav-tabs .nav-link.active i {
+    color: #0d6efd !important;
+}
+
+/* Reforzar la línea horizontal del contenedor de tabs */
+#escuelaTabs.nav-tabs::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background-color: #dee2e6 !important;
+    z-index: 1 !important;
+}
+
+/* Asegurar que los tabs inactivos mantengan su borde inferior visible */
+#escuelaTabs.nav-tabs .nav-link:not(.active) {
+    border-bottom: 1px solid #dee2e6 !important;
+}
+
+/* Contenedor de contenido de tabs con bordes continuos y más específicos */
+#escuelaTabsContent.tab-content {
+    border: 1px solid #dee2e6 !important;
+    border-top: none !important;
+    padding: 1.5rem !important;
+    background-color: #ffffff !important;
+    border-radius: 0 0 0.375rem 0.375rem !important;
+    margin-top: -1px !important;
+    position: relative !important;
+}
+
+/* Asegurar que no haya espacio entre el contenedor de tabs y el contenido */
+#escuelaTabs + #escuelaTabsContent {
+    margin-top: -1px !important;
+}
+
+/* Estilos adicionales para mantener la línea horizontal visible */
+.nav-tabs {
+    border-bottom: 1px solid #dee2e6 !important;
+}
+
+.tab-content {
+    border-left: 1px solid #dee2e6 !important;
+    border-right: 1px solid #dee2e6 !important;
+    border-bottom: 1px solid #dee2e6 !important;
+    border-top: none !important;
+}
+
+/* Estilos para los encabezados dentro de los tabs */
+.tab-pane h6 {
+    color: #495057;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+/* Mejorar la apariencia de los botones en los tabs */
+.tab-pane .btn-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+    transition: all 0.3s ease;
+}
+
+.tab-pane .btn-primary:hover {
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+    transform: translateY(-1px);
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
 }
 
 /* Asegurar que el dropdown específico del campo encargado use Consolas */

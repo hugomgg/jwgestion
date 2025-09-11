@@ -116,7 +116,7 @@
                             </div>
                         </div>
 
-                        <!-- Sección de Partes del Programa -->
+                        <!-- Sección TB -->
                         <div class="row">
                             <div class="col-12">
                                 <div class="card mb-4">
@@ -161,87 +161,88 @@
                             </div>
                         </div>
 
-                        <!-- Sección de Partes de la Segunda Sección (Solo para Coordinadores) -->
+                        <!-- Sección de Escuela con Tabs -->
                         @if(Auth::user()->perfil == 3)
                         <div class="row">
                             <div class="col-12">
                                 <div class="card mb-4">
                                     <div class="card-header">
-                                        <div class="row align-items-center">
-                                            <div class="col-md-6">
-                                                <h6 class="mb-0">
-                                                    <i class="fas fa-chalkboard-teacher me-2"></i>Asignaciones de Seamos Mejores Maestros (Sala Principal)
-                                                </h6>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="d-flex justify-content-end">
+                                        <h6 class="mb-0">
+                                            <i class="fas fa-graduation-cap me-2"></i>Escuela de Ministerio
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <!-- Nav tabs -->
+                                        <ul class="nav nav-tabs" id="escuelaTabs" role="tablist">
+                                            <li class="nav-item" role="presentation">
+                                                <button class="nav-link active" id="escuela-sp-tab" data-bs-toggle="tab" data-bs-target="#escuela-sp" type="button" role="tab" aria-controls="escuela-sp" aria-selected="true">
+                                                    <i class="fas fa-chalkboard-teacher me-2"></i>Escuela (SP)
+                                                </button>
+                                            </li>
+                                            <li class="nav-item" role="presentation">
+                                                <button class="nav-link" id="escuela-s1-tab" data-bs-toggle="tab" data-bs-target="#escuela-s1" type="button" role="tab" aria-controls="escuela-s1" aria-selected="false">
+                                                    <i class="fas fa-chalkboard-teacher me-2"></i>Escuela (S1)
+                                                </button>
+                                            </li>
+                                        </ul>
+
+                                        <!-- Tab content -->
+                                        <div class="tab-content mt-3" id="escuelaTabsContent">
+                                            <!-- Tab Escuela (SP) -->
+                                            <div class="tab-pane fade show active" id="escuela-sp" role="tabpanel" aria-labelledby="escuela-sp-tab">
+                                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                                    <h6 class="mb-0">Asignaciones de Seamos Mejores Maestros (Sala Principal)</h6>
                                                     <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#parteProgramaSegundaSeccionModal" onclick="openCreateParteSegundaSeccionModal(false)">
                                                         <i class="fas fa-plus me-2"></i>Nueva Asignación SMM (SP)
                                                     </button>
                                                 </div>
+                                                <div class="table-responsive">
+                                                    <table id="partesSegundaSeccionTable" class="table table-striped table-hover">
+                                                        <thead>
+                                                            <tr>
+                                                                <th style="width: 120px;">Tiempo (min)</th>
+                                                                <th style="width: 120px;">Parte</th>
+                                                                <th style="width: 400px;">Encargado</th>
+                                                                <th style="width: 400px;">Ayudante</th>
+                                                                <th>Lección</th>
+                                                                <th style="width: 140px;">Acciones</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <!-- Los datos se cargarán vía AJAX -->
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+
+                                            <!-- Tab Escuela (S1) -->
+                                            <div class="tab-pane fade" id="escuela-s1" role="tabpanel" aria-labelledby="escuela-s1-tab">
+                                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                                    <h6 class="mb-0">Asignaciones de Seamos Mejores Maestros (Sala Auxiliar 1)</h6>
+                                                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#parteProgramaSegundaSeccionModal" onclick="openCreateParteSegundaSeccionModal(true)">
+                                                        <i class="fas fa-plus me-2"></i>Nueva Asignación SMM (S1)
+                                                    </button>
+                                                </div>
+                                                <div class="table-responsive">
+                                                    <table id="partesTerceraSeccionTable" class="table table-striped table-hover">
+                                                        <thead>
+                                                            <tr>
+                                                                <th style="width: 120px;">Tiempo (min)</th>
+                                                                <th style="width: 120px;">Parte</th>
+                                                                <th style="width: 400px;">Encargado</th>
+                                                                <th style="width: 400px;">Ayudante</th>
+                                                                <th>Lección</th>
+                                                                <th style="width: 140px;">Acciones</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <!-- Los datos se cargan dinámicamente -->
+                                                        </tbody>
+                                                    </table>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="card-body">
-                                        <div class="table-responsive">
-                                            <table id="partesSegundaSeccionTable" class="table table-striped table-hover">
-                                                <thead>
-                                                    <tr>
-                                                        <th style="width: 120px;">Tiempo (min)</th>
-                                                        <th style="width: 120px;">Parte</th>
-                                                        <th style="width: 400px;">Encargado</th>
-                                                        <th style="width: 400px;">Ayudante</th>
-                                                        <th>Lección</th>
-                                                        <th style="width: 140px;">Acciones</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <!-- Los datos se cargarán vía AJAX -->
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        @endif
-
-                        @if(Auth::user()->perfil == 3)
-                        <!-- Tabla de Partes de Seamos Mejores Maestros -->
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <div class="row align-items-center">
-                                    <div class="col-md-6">
-                                        <h6 class="mb-0">
-                                            <i class="fas fa-chalkboard-teacher me-2"></i>Asignaciones de Seamos Mejores Maestros (Sala Auxiliar 1)
-                                        </h6>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="d-flex justify-content-end">
-                                            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#parteProgramaSegundaSeccionModal" onclick="openCreateParteSegundaSeccionModal(true)">
-                                                <i class="fas fa-plus me-2"></i>Nueva Asignación SMM (S1)
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-body p-0">
-                                <div class="table-responsive">
-                                    <table id="partesTerceraSeccionTable" class="table table-striped table-hover">
-                                        <thead>
-                                            <tr>
-                                                <th style="width: 120px;">Tiempo (min)</th>
-                                                <th style="width: 120px;">Parte</th>
-                                                <th style="width: 400px;">Encargado</th>
-                                                <th style="width: 400px;">Ayudante</th>
-                                                <th>Lección</th>
-                                                <th style="width: 140px;">Acciones</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <!-- Los datos se cargan dinámicamente -->
-                                        </tbody>
-                                    </table>
                                 </div>
                             </div>
                         </div>
