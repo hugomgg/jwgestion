@@ -158,6 +158,8 @@
             }
         }
     </style>
+
+    @stack('styles')
 </head>
 <body>
     <div id="app">

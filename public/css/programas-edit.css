@@ -1,0 +1,489 @@
+/* Aplicar fuente Consolas al select2 del campo Encargado de la Segunda Sección */
+#encargado_display_segunda_seccion + .select2-container,
+#encargado_id_segunda_seccion + .select2-container{
+    font-family: "Cascadia Mono", monospace !important;
+}
+
+#encargado_display_segunda_seccion + .select2-container .select2-selection,
+#encargado_id_segunda_seccion + .select2-container .select2-selection {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+#encargado_display_segunda_seccion + .select2-container .select2-selection__rendered,
+#encargado_id_segunda_seccion + .select2-container .select2-selection__rendered {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Aplicar fuente Consolas al select2 del campo Ayudante de la Segunda Sección */
+#ayudante_display_segunda_seccion + .select2-container,
+#ayudante_id_segunda_seccion + .select2-container {
+    font-family: "Cascadia Mono", monospace !important;
+}
+
+#ayudante_display_segunda_seccion + .select2-container .select2-selection,
+#ayudante_id_segunda_seccion + .select2-container .select2-selection {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px;
+}
+
+#ayudante_display_segunda_seccion + .select2-container .select2-selection__rendered,
+#ayudante_id_segunda_seccion + .select2-container .select2-selection__rendered {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px;
+}
+
+/* Estilos globales para Select2 con fuente Cascadia Mono */
+.select2-container--bootstrap-5 .select2-selection,
+.select2-container--bootstrap-5 .select2-selection__rendered {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+.select2-container--bootstrap-5 .select2-dropdown .select2-results__options .select2-results__option {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Estilos específicos para campos de segunda sección */
+#encargado_display_segunda_seccion,
+#ayudante_display_segunda_seccion {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Forzar estilos después de la inicialización de Select2 */
+.select2-container--bootstrap-5 .select2-selection {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+.select2-container--bootstrap-5 .select2-selection__rendered {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Estilos con mayor especificidad para campos específicos */
+div.select2-container--bootstrap-5.select2-container--focus .select2-selection,
+div.select2-container--bootstrap-5 .select2-selection {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+div.select2-container--bootstrap-5 .select2-selection__rendered {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Estilos para el dropdown */
+.select2-container--bootstrap-5 .select2-dropdown {
+    font-family: "Cascadia Mono", monospace !important;
+}
+
+.select2-container--bootstrap-5 .select2-dropdown .select2-results__option {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Asegurar que el dropdown específico del campo encargado use Consolas */
+.select2-dropdown[aria-labelledby="select2-encargado_display_segunda_seccion-container"],
+.select2-dropdown[aria-labelledby="select2-encargado_id_segunda_seccion-container"] {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px;
+}
+
+.select2-dropdown[aria-labelledby="select2-encargado_display_segunda_seccion-container"] .select2-results__option,
+.select2-dropdown[aria-labelledby="select2-encargado_id_segunda_seccion-container"] .select2-results__option {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px;
+}
+
+/* Asegurar que el dropdown específico del campo ayudante use Consolas */
+.select2-dropdown[aria-labelledby="select2-ayudante_display_segunda_seccion-container"],
+.select2-dropdown[aria-labelledby="select2-ayudante_id_segunda_seccion-container"] {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px;
+}
+
+.select2-dropdown[aria-labelledby="select2-ayudante_display_segunda_seccion-container"] .select2-results__option,
+.select2-dropdown[aria-labelledby="select2-ayudante_id_segunda_seccion-container"] .select2-results__option {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px;
+}
+
+/* Estilo para el select de orador inicial */
+#orador_inicial,
+#orador_inicial option,
+.form-select#orador_inicial {
+    font-size: 12px !important;
+    font-family: "Cascadia Mono", monospace !important;
+}
+
+/* Asegurar que se mantenga después de la carga */
+select#orador_inicial.form-select {
+    font-size: 12px !important;
+}
+
+/* Aplicar fuente Consolas al Select2 del campo Historial de Encargado */
+#historial_encargado_segunda_seccion + .select2-container {
+    font-family: "Cascadia Mono", monospace !important;
+}
+
+#historial_encargado_segunda_seccion + .select2-container .select2-selection {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+#historial_encargado_segunda_seccion + .select2-container .select2-selection__rendered {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Aplicar fuente Consolas al Select2 del campo Historial de Ayudante */
+#historial_ayudante_segunda_seccion + .select2-container {
+    font-family: "Cascadia Mono", monospace !important;
+}
+
+#historial_ayudante_segunda_seccion + .select2-container .select2-selection {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+#historial_ayudante_segunda_seccion + .select2-container .select2-selection__rendered {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Dropdown del historial de encargado */
+.select2-dropdown[aria-labelledby="select2-historial_encargado_segunda_seccion-container"] {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+.select2-dropdown[aria-labelledby="select2-historial_encargado_segunda_seccion-container"] .select2-results__option {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Dropdown del historial de ayudante */
+.select2-dropdown[aria-labelledby="select2-historial_ayudante_segunda_seccion-container"] {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+.select2-dropdown[aria-labelledby="select2-historial_ayudante_segunda_seccion-container"] .select2-results__option {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Estilos para el Select2 del modal buscar orador inicial */
+#select_orador_inicial + .select2-container .select2-selection {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+#select_orador_inicial + .select2-container .select2-selection__rendered {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Para el dropdown del modal buscar orador inicial */
+.select2-dropdown[aria-labelledby="select2-select_orador_inicial-container"] .select2-results__option {
+    font-size: 12px !important;
+}
+
+/* Estilos para el Select2 del modal historial orador inicial */
+#select_historial_orador_inicial + .select2-container .select2-selection {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+#select_historial_orador_inicial + .select2-container .select2-selection__rendered {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Para el dropdown del modal historial orador inicial */
+.select2-dropdown[aria-labelledby="select2-select_historial_orador_inicial-container"] .select2-results__option {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Estilos para el Select2 del modal buscar orador final */
+#select_orador_final + .select2-container .select2-selection {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+#select_orador_final + .select2-container .select2-selection__rendered {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Para el dropdown del modal buscar orador final */
+.select2-dropdown[aria-labelledby="select2-select_orador_final-container"] .select2-results__option {
+    font-size: 12px !important;
+}
+
+/* Estilos para el Select2 del modal historial orador final */
+#select_historial_orador_final + .select2-container .select2-selection {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+#select_historial_orador_final + .select2-container .select2-selection__rendered {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Para el dropdown del modal historial orador final */
+.select2-dropdown[aria-labelledby="select2-select_historial_orador_final-container"] .select2-results__option {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Estilos para el Select2 del modal buscar presidencia */
+#select_presidencia + .select2-container .select2-selection {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+#select_presidencia + .select2-container .select2-selection__rendered {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Para el dropdown del modal buscar presidencia */
+.select2-dropdown[aria-labelledby="select2-select_presidencia-container"] .select2-results__option {
+    font-size: 12px !important;
+}
+
+/* Estilos para el input de búsqueda del select2 de presidencia */
+.select2-container--open .select2-dropdown[aria-labelledby="select2-select_presidencia-container"] .select2-search__field,
+#select_presidencia + .select2-container + .select2-container--open .select2-dropdown .select2-search__field,
+.select2-container--default .select2-search--dropdown .select2-search__field[aria-labelledby="select2-select_presidencia-container"] {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 14px !important;
+    font-weight: normal !important;
+    color: inherit !important;
+}
+
+/* Estilos para el Select2 del modal historial presidencia */
+#select_historial_presidencia + .select2-container .select2-selection {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+#select_historial_presidencia + .select2-container .select2-selection__rendered {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Para el dropdown del modal historial presidencia */
+.select2-dropdown[aria-labelledby="select2-select_historial_presidencia-container"] .select2-results__option {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Estilos para el Select2 del modal buscar canción inicial */
+#select_cancion_inicial + .select2-container .select2-selection {
+    font-size: 12px !important;
+}
+
+#select_cancion_inicial + .select2-container .select2-selection__rendered {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+.select2-dropdown[aria-labelledby="select2-select_cancion_inicial-container"] .select2-results__option {
+    font-size: 12px !important;
+}
+
+/* Estilos para el Select2 del modal buscar canción intermedia */
+#select_cancion_intermedia + .select2-container .select2-selection {
+    font-size: 12px !important;
+}
+
+#select_cancion_intermedia + .select2-container .select2-selection__rendered {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+.select2-dropdown[aria-labelledby="select2-select_cancion_intermedia-container"] .select2-results__option {
+    font-size: 12px !important;
+}
+
+/* Estilos para el Select2 del modal buscar canción final */
+#select_cancion_final + .select2-container .select2-selection {
+    font-size: 12px !important;
+}
+
+#select_cancion_final + .select2-container .select2-selection__rendered {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+.select2-dropdown[aria-labelledby="select2-select_cancion_final-container"] .select2-results__option {
+    font-size: 12px !important;
+}
+
+/* Estilos para el Select2 del modal buscar parte segunda sección */
+#parte_id_segunda_seccion + .select2-container .select2-selection {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+#parte_id_segunda_seccion + .select2-container .select2-selection__rendered {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+.select2-dropdown[aria-labelledby="select2-parte_id_segunda_seccion-container"] .select2-results__option {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Estilos para el Select2 del modal buscar parte tercera sección */
+#parte_id_tercera_seccion + .select2-container .select2-selection {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+#parte_id_tercera_seccion + .select2-container .select2-selection__rendered {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+.select2-dropdown[aria-labelledby="select2-parte_id_tercera_seccion-container"] .select2-results__option {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Estilos para el Select2 del modal buscar encargado segunda sección */
+#encargado_id_segunda_seccion + .select2-container .select2-selection {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+#encargado_id_segunda_seccion + .select2-container .select2-selection__rendered {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+.select2-dropdown[aria-labelledby="select2-encargado_id_segunda_seccion-container"] .select2-results__option {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Estilos para el Select2 del modal buscar ayudante segunda sección */
+#ayudante_id_segunda_seccion + .select2-container .select2-selection {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+#ayudante_id_segunda_seccion + .select2-container .select2-selection__rendered {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+.select2-dropdown[aria-labelledby="select2-ayudante_id_segunda_seccion-container"] .select2-results__option {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Estilos para el Select2 del modal buscar encargado tercera sección */
+#encargado_id_tercera_seccion + .select2-container .select2-selection {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+#encargado_id_tercera_seccion + .select2-container .select2-selection__rendered {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+.select2-dropdown[aria-labelledby="select2-encargado_id_tercera_seccion-container"] .select2-results__option {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Estilos para el Select2 del modal buscar ayudante tercera sección */
+#ayudante_id_tercera_seccion + .select2-container .select2-selection {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+#ayudante_id_tercera_seccion + .select2-container .select2-selection__rendered {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+.select2-dropdown[aria-labelledby="select2-ayudante_id_tercera_seccion-container"] .select2-results__option {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Estilos para el Select2 del modal buscar historial encargado segunda sección */
+#select_historial_encargado_segunda + .select2-container .select2-selection {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+#select_historial_encargado_segunda + .select2-container .select2-selection__rendered {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+.select2-dropdown[aria-labelledby="select2-select_historial_encargado_segunda-container"] .select2-results__option {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Estilos para el Select2 del modal buscar historial ayudante segunda sección */
+#select_historial_ayudante_segunda + .select2-container .select2-selection {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+#select_historial_ayudante_segunda + .select2-container .select2-selection__rendered {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+.select2-dropdown[aria-labelledby="select2-select_historial_ayudante_segunda-container"] .select2-results__option {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Estilos para el Select2 del modal buscar historial encargado tercera sección */
+#select_historial_encargado_tercera + .select2-container .select2-selection {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+#select_historial_encargado_tercera + .select2-container .select2-selection__rendered {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+.select2-dropdown[aria-labelledby="select2-select_historial_encargado_tercera-container"] .select2-results__option {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Estilos para el Select2 del modal buscar historial ayudante tercera sección */
+#select_historial_ayudante_tercera + .select2-container .select2-selection {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+#select_historial_ayudante_tercera + .select2-container .select2-selection__rendered {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+.select2-dropdown[aria-labelledby="select2-select_historial_ayudante_tercera-container"] .select2-results__option {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
