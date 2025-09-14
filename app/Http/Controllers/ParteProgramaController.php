@@ -153,6 +153,103 @@ class ParteProgramaController extends Controller
     }
 
     /**
+     * Obtener las partes del programa de la sección Nuestra Vida Cristiana (seccion_id = 3)
+     */
+    public function getPartesNV($programaId)
+    {
+        try {
+            $user = Auth::user();
+
+            $query = DB::table('partes_programa as pp')
+                ->join('partes_seccion as ps', 'pp.parte_id', '=', 'ps.id')
+                ->leftJoin('users as encargado', 'pp.encargado_id', '=', 'encargado.id')
+                ->leftJoin('users as ayudante', 'pp.ayudante_id', '=', 'ayudante.id')
+                ->leftJoin('users as encargado_reemplazado', 'pp.encargado_reemplazado_id', '=', 'encargado_reemplazado.id')
+                ->where('pp.programa_id', $programaId)
+                ->where('ps.seccion_id', 3)
+                ->where('pp.estado', true);
+
+            $partes = $query->select(
+                    'pp.id',
+                    'pp.tiempo',
+                    'pp.tema',
+                    'pp.leccion',
+                    'pp.estado',
+                    'pp.sala_id',
+                    'pp.orden',
+                    'pp.encargado_id',
+                    'pp.ayudante_id',
+                    'pp.encargado_reemplazado_id',
+                    'pp.ayudante_reemplazado_id',
+                    'ps.nombre as parte_nombre',
+                    'ps.abreviacion as parte_abreviacion',
+                    'encargado.name as encargado_nombre',
+                    'ayudante.name as ayudante_nombre',
+                    'encargado_reemplazado.name as encargado_reemplazado_nombre'
+                )
+                ->orderBy('pp.orden')
+                ->get();
+
+            // Agregar información sobre posición (primero/último) para cada parte
+            $partesCollection = collect($partes);
+            $partesCollection = $partesCollection->map(function ($parte, $index) use ($partesCollection) {
+                $parte->es_primero = $index === 0;
+                $parte->es_ultimo = $index === ($partesCollection->count() - 1);
+
+                // Estructurar los datos del encargado
+                $parte->encargado = null;
+                if ($parte->encargado_id && $parte->encargado_nombre) {
+                    $parte->encargado = (object)[
+                        'id' => $parte->encargado_id,
+                        'name' => $parte->encargado_nombre
+                    ];
+                }
+
+                // Estructurar los datos del ayudante
+                $parte->ayudante = null;
+                if ($parte->ayudante_id && $parte->ayudante_nombre) {
+                    $parte->ayudante = (object)[
+                        'id' => $parte->ayudante_id,
+                        'name' => $parte->ayudante_nombre
+                    ];
+                }
+
+                // Estructurar los datos del encargado reemplazado
+                $parte->encargado_reemplazado = null;
+                if ($parte->encargado_reemplazado_id && $parte->encargado_reemplazado_nombre) {
+                    $parte->encargado_reemplazado = (object)[
+                        'id' => $parte->encargado_reemplazado_id,
+                        'name' => $parte->encargado_reemplazado_nombre
+                    ];
+                }
+
+                // Estructurar los datos del ayudante reemplazado
+                $parte->ayudante_reemplazado = null;
+                if ($parte->ayudante_reemplazado_id && $parte->ayudante_reemplazado_nombre) {
+                    $parte->ayudante_reemplazado = (object)[
+                        'id' => $parte->ayudante_reemplazado_id,
+                        'name' => $parte->ayudante_reemplazado_nombre
+                    ];
+                }
+
+                return $parte;
+            });
+
+            $partes = $partesCollection->toArray();
+
+            return response()->json([
+                'success' => true,
+                'data' => $partes
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al obtener las partes de Nuestra Vida Cristiana: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
      * Obtener el historial de participaciones de un usuario
      */
     public function getHistorialUsuario($usuarioId)
@@ -237,19 +334,19 @@ class ParteProgramaController extends Controller
         // Validar sección según el contexto
         $user = Auth::user();
         if ($user && $user->isCoordinator()) {
-            // Para coordinadores, permitir tanto sección 1 como sección 2
-            if (!in_array($parteSeccion->seccion_id, [1, 2])) {
+            // Para coordinadores, permitir secciones 1, 2 y 3
+            if (!in_array($parteSeccion->seccion_id, [1, 2, 3])) {
                 return response()->json([
                     'success' => false,
                     'message' => 'La parte seleccionada no es válida.'
                 ], 422);
             }
         } else {
-            // Para otros perfiles, solo sección 1
-            if ($parteSeccion->seccion_id != 1) {
+            // Para otros perfiles, secciones 1 y 3
+            if (!in_array($parteSeccion->seccion_id, [1, 3])) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'La parte seleccionada no pertenece a la primera sección.'
+                    'message' => 'La parte seleccionada no pertenece a una sección válida.'
                 ], 422);
             }
         }
@@ -411,19 +508,19 @@ class ParteProgramaController extends Controller
         // Validar sección según el contexto
         $user = Auth::user();
         if ($user && $user->isCoordinator()) {
-            // Para coordinadores, permitir tanto sección 1 como sección 2
-            if (!in_array($parteSeccion->seccion_id, [1, 2])) {
+            // Para coordinadores, permitir secciones 1, 2 y 3
+            if (!in_array($parteSeccion->seccion_id, [1, 2, 3])) {
                 return response()->json([
                     'success' => false,
                     'message' => 'La parte seleccionada no es válida.'
                 ], 422);
             }
         } else {
-            // Para otros perfiles, solo sección 1
-            if ($parteSeccion->seccion_id != 1) {
+            // Para otros perfiles, secciones 1 y 3
+            if (!in_array($parteSeccion->seccion_id, [1, 3])) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'La parte seleccionada no pertenece a la primera sección.'
+                    'message' => 'La parte seleccionada no pertenece a una sección válida.'
                 ], 422);
             }
         }
@@ -484,8 +581,8 @@ class ParteProgramaController extends Controller
         try {
             $user = Auth::user();
             $programaId = $request->get('programa_id');
-
-            $query = ParteSeccion::where('seccion_id', 1);
+            $parteId = $request->get('parte_id');
+            $query = ParteSeccion::where('seccion_id', $parteId ?? 1);
 
             // Solo aplicar filtro de estado para usuarios que no son administradores
             if ($user && $user->perfil != 1) {

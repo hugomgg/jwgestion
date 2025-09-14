@@ -88,6 +88,7 @@ Route::get('/secciones-reunion', [App\Http\Controllers\SeccionReunionController:
         Route::get('/programas/{programaId}/partes-segunda-seccion', [App\Http\Controllers\ProgramaController::class, 'getPartesSegundaSeccion'])->name('programas.partes-segunda-seccion');
         Route::get('/programas/{programaId}/partes-segunda-seccion-disponibles', [App\Http\Controllers\ProgramaController::class, 'getPartesSegundaSeccionDisponibles'])->name('programas.partes-segunda-seccion-disponibles');
         Route::get('/programas/{programaId}/partes-tercera-seccion', [App\Http\Controllers\ParteProgramaController::class, 'getPartesTerceraSeccion'])->name('programas.partes-tercera-seccion');
+        Route::get('/programas/{programaId}/partes-nv', [App\Http\Controllers\ParteProgramaController::class, 'getPartesNV'])->name('programas.partes-nv');
         Route::get('/historial-usuario/{usuarioId}', [App\Http\Controllers\ParteProgramaController::class, 'getHistorialUsuario'])->name('historial-usuario.get');
         Route::post('/partes-programa', [App\Http\Controllers\ParteProgramaController::class, 'store'])->name('partes-programa.store');
         Route::get('/partes-programa/{id}', [App\Http\Controllers\ParteProgramaController::class, 'show'])->name('partes-programa.show');

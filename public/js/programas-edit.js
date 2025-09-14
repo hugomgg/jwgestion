@@ -36,17 +36,26 @@ $(document).ready(function() {
     if (userIsCoordinator) {
         initPartesSegundaSeccionDataTable();
         initPartesTerceraSeccionDataTable();
+        initPartesNVDataTable();
 
         // Cargar partes de la segunda sección
         loadPartesSegundaSeccion();
         // Cargar partes de la tercera sección
         loadPartesTerceraSeccion();
+        // Cargar partes de Nuestra Vida Cristiana
+        loadPartesNV();
     }
 
     // Manejar envío del formulario de partes del programa
     $('#parteProgramaForm').submit(function(e) {
         e.preventDefault();
         submitPartePrograma();
+    });
+
+    // Manejar envío del formulario de partes de NVC
+    $('#parteProgramaNVForm').submit(function(e) {
+        e.preventDefault();
+        submitParteProgramaNV();
     });
 
     // Manejar cambio en el select de parte_id para autocompletar el tiempo y filtrar encargados
@@ -82,6 +91,42 @@ $(document).ready(function() {
             } else {
                 // Si no hay parte seleccionada, cargar todos los usuarios disponibles
                 loadUsuariosDisponibles();
+            }
+        }
+    });
+
+    // Manejar cambio en el select de parte_id_nv para autocompletar el tiempo y filtrar encargados
+    $(document).on('change', '#parte_id_nv', function() {
+        const selectedOption = $(this).find('option:selected');
+        const tiempo = selectedOption.data('tiempo');
+        const parteId = $(this).val();
+
+        // Autocompletar tiempo
+        if (tiempo) {
+            $('#tiempo_parte_nv').val(tiempo);
+        } else {
+            $('#tiempo_parte_nv').val('');
+        }
+
+        // Manejar campos de encargado según el perfil del usuario
+        if (userIsCoordinator) {
+            // Para coordinadores, habilitar/deshabilitar botón de buscar encargado
+            if (parteId) {
+                $('#btn-buscar-encargado-nv').prop('disabled', false);
+            } else {
+                $('#btn-buscar-encargado-nv').prop('disabled', true);
+                // También limpiar los campos si no hay parte seleccionada
+                $('#encargado_id_nv').val('');
+                $('#encargado_display_nv').val('');
+                $('#btn-agregar-reemplazado-nv').prop('disabled', true);
+            }
+        } else {
+            // Para otros perfiles, filtrar usuarios del campo encargado basado en la parte seleccionada
+            if (parteId) {
+                loadEncargadosByParteNV(parteId);
+            } else {
+                // Si no hay parte seleccionada, cargar todos los usuarios disponibles
+                loadUsuariosDisponiblesNV();
             }
         }
     });
@@ -384,32 +429,24 @@ $(document).ready(function() {
         $('#parte_display').hide();
 
         // Ocultar campo y botón de encargado reemplazado en modo "nuevo"
-        if (userIsCoordinator) {
-            $('#encargado_reemplazado_display').closest('.col-md-6').hide();
-            $('#btn-agregar-reemplazado').hide();
-        }
+        $('#encargado_reemplazado_display').closest('.col-md-6').hide();
+        $('#btn-agregar-reemplazado').hide();
         $('#parte_programa_id').val('');
+        $('#btn-buscar-encargado').prop('disabled', true);
 
         // Limpiar errores previos
         $('.is-invalid').removeClass('is-invalid');
         $('.invalid-feedback').text('');
 
         // Restablecer campos de encargado según el perfil del usuario
-        if (userIsCoordinator) {
-            // Para coordinadores, limpiar los campos de texto e input hidden
-            $('#encargado_id').val('');
-            $('#encargado_display').val('');
-            $('#btn-buscar-encargado').prop('disabled', true);
-            $('#btn-historial-encargado').prop('disabled', true);
-            $('#btn-agregar-reemplazado').prop('disabled', true);
-            // Limpiar campos de encargado reemplazado
-            $('#encargado_reemplazado_id').val('');
-            $('#encargado_reemplazado_display').val('');
-            $('#btn-eliminar-reemplazado').prop('disabled', true);
-        } else {
-            // Para otros perfiles, restablecer el select de encargados
-            $('#encargado_id').empty().append('<option value="">Seleccionar una parte primero...</option>').trigger('change');
-        }
+        $('#encargado_id').val('');
+        $('#encargado_display').val('');
+        
+        $('#btn-agregar-reemplazado').prop('disabled', true);
+        // Limpiar campos de encargado reemplazado
+        $('#encargado_reemplazado_id').val('');
+        $('#encargado_reemplazado_display').val('');
+        $('#btn-eliminar-reemplazado').prop('disabled', true);
 
         // Cargar partes de sección disponibles con Ajax
         loadPartesSecciones();
@@ -464,11 +501,7 @@ $(document).ready(function() {
                                 $('#encargado_reemplazado_id').val(parte.encargado_reemplazado_id);
                                 $('#encargado_reemplazado_display').val(parte.encargado_reemplazado.name);
                                 $('#btn-eliminar-reemplazado').prop('disabled', false);
-                            } else {
-                                $('#encargado_reemplazado_id').val('');
-                                $('#encargado_reemplazado_display').val('');
-                                $('#btn-eliminar-reemplazado').prop('disabled', true);
-                            }
+                            } 
 
                             // Habilitar el botón de buscar encargado ya que hay una parte seleccionada
                             $('#btn-buscar-encargado').prop('disabled', false);
@@ -614,6 +647,183 @@ $(document).ready(function() {
         });
     }
 
+    function submitParteProgramaNV() {
+        const submitBtn = $('#saveParteNVBtn');
+        const spinner = submitBtn.find('.spinner-border');
+
+        // Deshabilitar botón y mostrar spinner
+        submitBtn.prop('disabled', true);
+        spinner.removeClass('d-none');
+
+        // Limpiar errores previos
+        $('.is-invalid').removeClass('is-invalid');
+        $('.invalid-feedback').text('');
+
+        // Validar campo tiempo
+        const tiempoValue = $('#tiempo_parte_nv').val();
+        if (!tiempoValue || tiempoValue < 1) {
+            $('#tiempo_parte_nv').addClass('is-invalid');
+            $('#tiempo_parte_nv').siblings('.invalid-feedback').text('El campo Tiempo es obligatorio y debe ser mayor a 0.');
+            submitBtn.prop('disabled', false);
+            spinner.addClass('d-none');
+            return;
+        }
+
+        // Crear FormData para NVC
+        const formDataObj = {
+            'programa_id': $('#programa_id_parte_nv').val(),
+            'parte_id': $('#parte_id_nv').val(),
+            'tiempo': $('#tiempo_parte_nv').val(),
+            'tema': $('#tema_parte_nv').val(),
+            'encargado_id': $('#encargado_id_nv').val(),
+            'encargado_reemplazado_id': $('#encargado_reemplazado_id_nv').val(),
+            '_token': $('meta[name="csrf-token"]').attr('content')
+        };
+
+        // Agregar lección si existe el campo (para perfiles no coordinadores)
+        if (!userIsCoordinator) {
+            const leccionValue = $('#leccion_parte_nv').val();
+            if (!leccionValue || leccionValue.trim() === '') {
+                $('#leccion_parte_nv').addClass('is-invalid');
+                $('#leccion_parte_nv').siblings('.invalid-feedback').text('El campo Lección es obligatorio.');
+                submitBtn.prop('disabled', false);
+                spinner.addClass('d-none');
+                return;
+            }
+            formDataObj['leccion'] = leccionValue;
+        }
+
+        const url = isEditMode ? `/partes-programa/${$('#parte_programa_nv_id').val()}` : '/partes-programa';
+        const method = isEditMode ? 'PUT' : 'POST';
+
+        // Para métodos PUT, agregar el método al formulario
+        if (method === 'PUT') {
+            formDataObj['_method'] = 'PUT';
+        }
+
+        $.ajax({
+            url: url,
+            method: 'POST', // Laravel maneja PUT a través de POST con _method
+            data: formDataObj,
+            success: function(response) {
+                if (response.success) {
+                    $('#parteProgramaNVModal').modal('hide');
+                    loadPartesNV();
+                    showAlert('alert-container', 'success', response.message);
+                }
+            },
+            error: function(xhr) {
+                if (xhr.status === 422) {
+                    const errors = xhr.responseJSON.errors;
+                    for (const field in errors) {
+                        let fieldName = field;
+                        if (field === 'tiempo') fieldName = 'tiempo_parte_nv';
+                        if (field === 'tema') fieldName = 'tema_parte_nv';
+                        if (field === 'leccion') fieldName = 'leccion_parte_nv';
+
+                        $(`#${fieldName}`).addClass('is-invalid');
+                        $(`#${fieldName}`).siblings('.invalid-feedback').text(errors[field][0]);
+                    }
+                } else {
+                    const errorMessage = xhr.responseJSON?.message || `Error ${xhr.status}: ${xhr.statusText}`;
+                    showAlert('alert-container', 'danger', errorMessage);
+                }
+            },
+            complete: function() {
+                submitBtn.prop('disabled', false);
+                spinner.addClass('d-none');
+            }
+        });
+    }
+
+    function loadEncargadosByParteNV(parteId, callback) {
+        $.ajax({
+            url: `/usuarios-por-parte/${parteId}`,
+            method: 'GET',
+            success: function(response) {
+                if (response.success) {
+                    // Limpiar el select
+                    $('#encargado_id_nv').empty().append('<option value="">Seleccionar...</option>');
+
+                    // Agregar las opciones de usuarios filtrados con fecha de última participación
+                    response.data.forEach(function(usuario) {
+                        // Formatear como "fecha | nombre"
+                        let displayText;
+                        if (usuario.ultima_fecha) {
+                            // Formatear fecha a dd/mm/AAAA
+                            let fecha = new Date(usuario.ultima_fecha);
+                            let fechaFormateada = fecha.getDate().toString().padStart(2, '0') + '/' +
+                                                (fecha.getMonth() + 1).toString().padStart(2, '0') + '/' +
+                                                fecha.getFullYear();
+                            displayText = `${fechaFormateada} | ${usuario.name}`;
+                        } else {
+                            displayText = `Primera vez | ${usuario.name}`;
+                        }
+
+                        $('#encargado_id_nv').append(
+                            `<option value="${usuario.id}">${displayText}</option>`
+                        );
+                    });
+
+                    // Actualizar Select2 después de agregar opciones
+                    $('#encargado_id_nv').trigger('change');
+
+                    // Ejecutar callback si se proporciona
+                    if (typeof callback === 'function') {
+                        callback();
+                    }
+                } else {
+                    showAlert('alert-container', 'warning', 'No se encontraron usuarios para esta parte');
+                    $('#encargado_id_nv').empty().append('<option value="">Seleccionar...</option>').trigger('change');
+
+                    // Ejecutar callback incluso si no hay usuarios
+                    if (typeof callback === 'function') {
+                        callback();
+                    }
+                }
+            },
+            error: function(xhr) {
+                showAlert('alert-container', 'danger', 'Error al cargar los usuarios para esta parte');
+                $('#encargado_id_nv').empty().append('<option value="">Seleccionar...</option>').trigger('change');
+
+                // Ejecutar callback incluso en caso de error
+                if (typeof callback === 'function') {
+                    callback();
+                }
+            }
+        });
+    }
+
+    function loadUsuariosDisponiblesNV() {
+        $.ajax({
+            url: '/usuarios-disponibles',
+            method: 'GET',
+            success: function(response) {
+                if (response.success) {
+                    // Limpiar el select
+                    $('#encargado_id_nv').empty().append('<option value="">Seleccionar...</option>');
+
+                    // Agregar las opciones de usuarios disponibles
+                    response.data.forEach(function(usuario) {
+                        $('#encargado_id_nv').append(
+                            `<option value="${usuario.id}">${usuario.name}</option>`
+                        );
+                    });
+
+                    // Actualizar Select2 después de agregar opciones
+                    $('#encargado_id_nv').trigger('change');
+                } else {
+                    showAlert('alert-container', 'warning', 'No se encontraron usuarios disponibles');
+                    $('#encargado_id_nv').empty().append('<option value="">Seleccionar...</option>').trigger('change');
+                }
+            },
+            error: function(xhr) {
+                showAlert('alert-container', 'danger', 'Error al cargar los usuarios disponibles');
+                $('#encargado_id_nv').empty().append('<option value="">Seleccionar...</option>').trigger('change');
+            }
+        });
+    }
+
     function deleteParte(id) {
         // Mostrar el modal de confirmación
         $('#confirmDeleteModal').modal('show');
@@ -718,7 +928,8 @@ $(document).ready(function() {
             url: '/partes-secciones',
             method: 'GET',
             data: {
-                programa_id: programaId
+                programa_id: programaId,
+                parte_id: 1
             },
             success: function(response) {
                 if (response.success) {
@@ -730,13 +941,7 @@ $(document).ready(function() {
                         );
                     });
 
-                    // Para coordinadores, mantener el campo encargado vacío por defecto
-                    if (userIsCoordinator) {
-                        $('#encargado_id').empty().append('<option value="">Seleccionar una parte primero...</option>').trigger('change');
-                    } else {
-                        // Para otros perfiles, cargar usuarios disponibles inicialmente
-                        loadUsuariosDisponibles();
-                    }
+                   
                 } else {
                     $('#parte_id').empty().append('<option value="">No hay partes disponibles</option>');
                 }
@@ -1634,40 +1839,6 @@ $(document).ready(function() {
                 },
                 error: function(xhr) {
                     console.error('Error al cargar usuarios disponibles:', xhr.responseText);
-                }
-            });
-        }
-
-        function loadAyudantesByParteSegundaSeccion(parteId, ayudanteSeleccionado = null) {
-            // Obtener el ID de la parte programa que se está editando
-            const editingId = $('#parte_programa_segunda_seccion_id').val();
-            const url = `/ayudantes-por-parte/${parteId}` + (editingId ? `?editing_id=${editingId}` : '');
-
-            $.ajax({
-                url: url,
-                method: 'GET',
-                success: function(response) {
-                    if (response.success) {
-                        const select = $('#ayudante_id_segunda_seccion');
-                        const encargadoSeleccionado = $('#encargado_id_segunda_seccion').val();
-
-                        select.empty().append('<option value="">Seleccionar...</option>');
-
-                        response.data.forEach(function(usuario) {
-                            const selected = ayudanteSeleccionado && usuario.id == ayudanteSeleccionado ? 'selected' : '';
-                            const disabled = encargadoSeleccionado && usuario.id == encargadoSeleccionado ? 'disabled' : '';
-                            // Para perfil=3, usar el display_text que ya viene formateado: fecha|parte|tipo|nombre
-                            select.append(`<option value="${usuario.id}" ${selected} ${disabled}>${usuario.display_text}</option>`);
-                        });
-
-                        select.trigger('change');
-                    }
-                },
-                error: function(xhr) {
-                    console.error('Error al cargar ayudantes por parte (segunda):', xhr.responseText);
-                    programmaticChange = true;
-                    $('#ayudante_id_segunda_seccion').empty().append('<option value="">Error al cargar ayudantes</option>').trigger('change');
-                    programmaticChange = false;
                 }
             });
         }
@@ -3715,6 +3886,55 @@ $(document).ready(function() {
         });
     }
 
+    // Evento para confirmar la selección del encargado NVC
+    $('#confirmarEncargadoParteNV').on('click', function() {
+        const encargadoSeleccionado = $('#select_encargado_parte_nv').val();
+        const textoSeleccionado = $('#select_encargado_parte_nv option:selected').text();
+
+        if (!encargadoSeleccionado) {
+            alert('Por favor seleccione un encargado');
+            return;
+        }
+
+        // Extraer solo el nombre del formato "fecha - nombre"
+        let nombreEncargado = textoSeleccionado;
+        if (textoSeleccionado.includes(' - ')) {
+            nombreEncargado = textoSeleccionado.split(' - ')[1];
+        }
+
+        // Actualizar los campos
+        $('#encargado_id_nv').val(encargadoSeleccionado);
+        $('#encargado_display_nv').val(nombreEncargado);
+
+        // Habilitar los botones ahora que hay un encargado seleccionado
+        $('#btn-buscar-encargado-nv').prop('disabled', false);
+
+        // Cerrar modal
+        $('#buscarEncargadoParteNVModal').modal('hide');
+    });
+
+    // Limpiar Select2 cuando se cierre el modal de buscar encargado NVC
+    $('#buscarEncargadoParteNVModal').on('hidden.bs.modal', function() {
+        const select = $('#select_encargado_parte_nv');
+        if (select.hasClass('select2-hidden-accessible')) {
+            select.select2('destroy');
+        }
+        select.empty().append('<option value="">Cargando usuarios...</option>');
+
+        const historialSelect = $('#select_historial_encargado_parte_nv');
+        if (historialSelect.hasClass('select2-hidden-accessible')) {
+            historialSelect.select2('destroy');
+        }
+        historialSelect.empty().append('<option value="">Seleccione un encargado primero...</option>');
+        historialSelect.prop('disabled', true);
+
+        // Restaurar el título original del modal
+        $('#buscarEncargadoParteNVModalLabel').html('<i class="fas fa-search me-2"></i>Buscar Encargado NVC');
+    });
+
+    // Hacer la función global para uso en onclick
+    window.buscarEncargadoParteNV = buscarEncargadoParteNV;
+
     function verHistorialEncargadoParte() {
         const encargadoId = $('#encargado_id').val();
         const parteId = $('#parte_id').val();
@@ -4200,3 +4420,449 @@ $(document).ready(function() {
     });
 
 });
+
+// Funciones para Nuestra Vida Cristiana (Sección NVC)
+function initPartesNVDataTable() {
+    partesNVTable = $('#partesNVTable').DataTable({
+        language: {
+            emptyTable: "No hay partes asignadas en Nuestra Vida Cristiana",
+            zeroRecords: "No se encontraron partes que coincidan con la búsqueda"
+        },
+        responsive: true,
+        ordering: false,
+        paging: false,
+        info: false,
+        searching: false
+    });
+}
+
+function loadPartesNV() {
+    const programaId = $('#programa_id').val();
+
+    $.ajax({
+        url: `/programas/${programaId}/partes-nv`,
+        method: 'GET',
+        success: function(response) {
+            if (response.success) {
+                // Limpiar la tabla
+                partesNVTable.clear();
+
+                response.data.forEach(function(parte) {
+                    const upDisabled = parte.es_primero ? 'disabled' : '';
+                    const downDisabled = parte.es_ultimo ? 'disabled' : '';
+
+                    let acciones = `
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="moveParteNVUp(${parte.id})" title="Subir" ${upDisabled}>
+                                <i class="fas fa-chevron-up"></i>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="moveParteNVDown(${parte.id})" title="Bajar" ${downDisabled}>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="editParteNV(${parte.id})" title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteParteNV(${parte.id})" title="Eliminar">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
+
+                    let rowData = [
+                        parte.tiempo || '-',
+                        parte.parte_abreviacion || '-',
+                        parte.encargado_nombre || '-',
+                        parte.tema || '-',
+                        acciones
+                    ];
+
+                    partesNVTable.row.add(rowData);
+                });
+
+                // Dibujar la tabla
+                partesNVTable.draw();
+            } else {
+                console.error('Error en la respuesta:', response);
+            }
+        },
+        error: function(xhr) {
+            console.error('Error al cargar las partes de Nuestra Vida Cristiana:', xhr.responseText);
+            showAlert('alert-container', 'danger', 'Error al cargar las partes de Nuestra Vida Cristiana');
+        }
+    });
+}
+
+// Funciones para mover partes de NVC
+function moveParteNVUp(id) {
+    moveParte(id, 'up', loadPartesNV);
+}
+
+function moveParteNVDown(id) {
+    moveParte(id, 'down', loadPartesNV);
+}
+
+// Función para editar parte de NVC
+function editParteNV(id) {
+    openEditParteNVModal(id);
+}
+
+// Función para eliminar parte de NVC
+function deleteParteNV(id) {
+    deleteParte(id, loadPartesNV);
+}
+
+// Función para abrir modal de crear parte NVC
+function openCreateParteNVModal() {
+    isEditMode = false;
+    $('#parteProgramaNVModalLabel').text('Nueva Asignación de Nuestra Vida Cristiana');
+    $('#parteProgramaNVForm')[0].reset();
+    $('#programa_id_parte_nv').val($('#programa_id').val());
+
+     // Mostrar select y ocultar input de texto para "Asignación" en modo "nuevo"
+    $('#parte_id_nv').show();
+    $('#parte_display_nv').hide();
+
+    // Limpiar campos de reemplazados
+   
+    $('#encargado_reemplazado_display_nv').closest('.col-md-6').hide();
+    $('#btn-agregar-reemplazado-nv').hide();
+    $('#parte_programa_nv_id').val('');
+    $('#btn-buscar-encargado-nv').prop('disabled', true);
+
+    // Limpiar errores previos
+    $('.is-invalid').removeClass('is-invalid');
+    $('.invalid-feedback').text('');
+
+    // Restablecer campos de encargado según el perfil del usuario
+    $('#encargado_id_nv').val('');
+    $('#encargado_display_nv').val('');
+
+    $('#btn-agregar-reemplazado').prop('disabled', true);
+    // Limpiar campos de encargado reemplazado
+    $('#encargado_reemplazado_id_nv').val('');
+    $('#encargado_reemplazado_display_nv').val('');
+    $('#btn-eliminar-reemplazado-nv').prop('disabled', true);
+    
+
+    // Cargar partes de la sección NVC
+    loadPartesSeccionNV();
+
+    $('#parteProgramaNVModal').modal('show');
+}
+
+// Función para abrir modal de editar parte NVC
+function openEditParteNVModal(id) {
+    isEditMode = true;
+    $('#parteProgramaNVModalLabel').text('Editar Asignación de Nuestra Vida Cristiana');
+
+    // Ocultar select y mostrar input de texto para "Asignación" en modo "editar"
+        $('#parte_id_nv').hide();
+        $('#parte_display_nv').show();
+
+    // Mostrar el campo Encargado Reemplazado y el botón Agregar Reemplazado cuando se edita
+    $('#encargado_reemplazado_display_nv').closest('.col-md-6').show();
+    $('#btn-agregar-reemplazado-nv').show();
+
+    $.ajax({
+        url: `/partes-programa/${id}`,
+        method: 'GET',
+        success: function(response) {
+            if (response.success) {
+                const parte = response.data;
+
+                // Llenar el formulario con los datos
+                $('#parte_programa_nv_id').val(parte.id);
+                $('#programa_id_parte_nv').val(parte.programa_id);
+                $('#tiempo_parte_nv').val(parte.tiempo);
+                $('#tema_parte_nv').val(parte.tema);
+
+                // Seleccionar la parte
+                $('#parte_id_nv').val(parte.parte_id).trigger('change');
+
+                $('#encargado_display_nv').val(parte.encargado.name);
+                $('#encargado_id_nv').val(parte.encargado.id);
+                $('#btn-buscar-encargado-nv').prop('disabled', false);
+                $('#btn-agregar-reemplazado-nv').prop('disabled', false);
+                // Manejar encargado reemplazado
+                if (parte.encargado_reemplazado) {
+                    $('#encargado_reemplazado_display_nv').val(parte.encargado_reemplazado.name);
+                    $('#encargado_reemplazado_id_nv').val(parte.encargado_reemplazado.id);
+                    $('#btn-eliminar-reemplazado-nv').prop('disabled', false);
+                }
+
+                // Cargar partes de la sección NVC
+                loadPartesSeccionesNVForEdit(parte.parte_id);
+
+                $('#parteProgramaNVModal').modal('show');
+            } else {
+                showAlert('alert-container', 'danger', response.message || 'Error al cargar los datos de la parte');
+            }
+        },
+        error: function(xhr) {
+            console.error('Error al cargar la parte:', xhr.responseText);
+            showAlert('alert-container', 'danger', 'Error al cargar los datos de la parte');
+        }
+    });
+}
+
+// Función para cargar partes de la sección NVC
+function loadPartesSeccionNV() {
+    const programaId = $('#programa_id').val();
+
+    $('#parte_id').empty().append('<option value="">Cargando...</option>');
+    $.ajax({
+        url: '/partes-secciones',
+        method: 'GET',
+        data: {
+                programa_id: programaId,
+                parte_id: 3
+            },
+            success: function(response) {
+            if (response.success) {
+                const select = $('#parte_id_nv');
+                select.empty();
+                select.append('<option value="">Seleccionar...</option>');
+
+                 response.data.forEach(function(parte) {
+                        $('#parte_id_nv').append(
+                            `<option value="${parte.id}" data-tiempo="${parte.tiempo || ''}">${parte.nombre} (${parte.abreviacion})</option>`
+                        );
+                    });
+            } else {
+                console.error('Error al cargar las partes de sección:', response.message);
+            }
+        },
+        error: function(xhr) {
+            console.error('Error al cargar las partes de sección:', xhr.responseText);
+        }
+    });
+}
+
+function loadPartesSeccionesNVForEdit(parteId) {
+        $('#parte_id').empty().append('<option value="">Cargando...</option>');
+
+        $.ajax({
+            url: `/partes-seccion/${parteId}`,
+            method: 'GET',
+            success: function(response) {
+                if (response.success) {
+                    const parte = response.data;
+                    $('#parte_id_nv').empty();
+
+                    // Solo agregar la parte que corresponde al registro que se está editando
+                    $('#parte_id_nv').append(
+                        `<option value="${parte.id}" data-tiempo="${parte.tiempo || ''}" selected>${parte.nombre} (${parte.abreviacion})</option>`
+                    );
+
+                    // Llenar el campo de texto deshabilitado para el modo editar
+                    $('#parte_display_nv').val(parte.nombre);
+                    $('#parte_id_hidden_nv').val(parte.id);
+
+                    // Autocompletar el tiempo si está disponible
+                    if (parte.tiempo) {
+                        $('#tiempo_parte_nv').val(parte.tiempo);
+                    }
+
+                } else {
+                    $('#parte_id_nv').empty().append('<option value="">Error al cargar la parte</option>');
+                }
+            },
+            error: function(xhr) {
+                console.error('Error al cargar parte de sección:', xhr);
+                $('#parte_id_nv').empty().append('<option value="">Error al cargar</option>');
+            }
+        });
+    }
+// Función para buscar encargado en NVC
+function buscarEncargadoParteNV() {
+    const parteId = $('#parte_id_nv').val();
+    if (!parteId) {
+        alert('Por favor seleccione una parte primero');
+        return;
+    }
+
+    // Restaurar el título original del modal
+    $('#buscarEncargadoParteNVModalLabel').html('<i class="fas fa-search me-2"></i>Buscar Encargado NVC');
+
+    // Abrir modal y cargar usuarios con participaciones en la parte seleccionada
+    $('#buscarEncargadoParteNVModal').modal('show');
+
+    // Cargar usuarios que han participado como encargados en esta parte
+    $.ajax({
+        url: `/encargados-por-parte-programa/${parteId}`,
+        method: 'GET',
+        success: function(response) {
+            if (response.success) {
+                const select = $('#select_encargado_parte_nv');
+                select.empty();
+
+                // Inicializar Select2 si no está ya inicializado
+                if (!select.hasClass('select2-hidden-accessible')) {
+                    select.select2({
+                        theme: 'bootstrap-5',
+                        placeholder: "Buscar y seleccionar encargado...",
+                        allowClear: true,
+                        width: '100%',
+                        dropdownParent: $('#buscarEncargadoParteNVModal')
+                    });
+                }
+
+                select.append('<option value="">Seleccionar encargado...</option>');
+
+                // Agregar opciones con el formato: fecha (dd/mm/AAAA) - Nombre del usuario
+                response.data.forEach(function(usuario) {
+                    let fechaTexto = 'Primera vez';
+                    if (usuario.ultima_fecha) {
+                        const fecha = new Date(usuario.ultima_fecha);
+                        const dia = String(fecha.getDate()).padStart(2, '0');
+                        const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+                        const año = fecha.getFullYear();
+                        fechaTexto = `${dia}/${mes}/${año}`;
+                    }
+                    const textoOpcion = `${fechaTexto} - ${usuario.name}`;
+                    select.append(`<option value="${usuario.id}">${textoOpcion}</option>`);
+                });
+
+                // Inicializar el select de historial si no está inicializado
+                const historialSelect = $('#select_historial_encargado_parte_nv');
+                if (!historialSelect.hasClass('select2-hidden-accessible')) {
+                    historialSelect.select2({
+                        theme: 'bootstrap-5',
+                        placeholder: "Historial del Encargado...",
+                        width: '100%',
+                        dropdownParent: $('#buscarEncargadoParteNVModal')
+                    });
+                }
+
+                // Preseleccionar el encargado actual si existe
+                const encargadoActual = $('#encargado_id_nv').val();
+                if (encargadoActual) {
+                    select.val(encargadoActual).trigger('change');
+                }
+
+                // Agregar event listener para cargar historial cuando se selecciona un encargado
+                select.off('change.historial_nv').on('change.historial_nv', function() {
+                    const encargadoSeleccionado = $(this).val();
+                    const parteId = $('#parte_id_nv').val();
+
+                    if (encargadoSeleccionado && parteId) {
+                        cargarHistorialEncargadoNV(encargadoSeleccionado, parteId);
+                    } else {
+                        // Limpiar historial si no hay selección
+                        const historialSelect = $('#select_historial_encargado_parte_nv');
+                        historialSelect.empty();
+                        historialSelect.append('<option value="">Seleccione un encargado primero...</option>');
+                        historialSelect.prop('disabled', true);
+                    }
+                });
+
+            } else {
+                alert('Error al cargar los usuarios: ' + response.message);
+            }
+        },
+        error: function(xhr) {
+            alert('Error al cargar los usuarios para encargado NVC');
+            console.error(xhr);
+        }
+    });
+}
+
+// Event handler para restaurar la visibilidad del campo Encargado Reemplazado y el botón cuando se cierra el modal
+$('#parteProgramaNVModal').on('hidden.bs.modal', function() {
+    // Mostrar el campo Encargado Reemplazado y el botón Agregar Reemplazado por defecto cuando se cierra el modal
+    $('#encargado_reemplazado_display_nv').closest('.col-md-6').show();
+    $('#btn-agregar-reemplazado-nv').show();
+});
+
+// Función para cargar historial de encargado en NVC
+function cargarHistorialEncargadoNV(encargadoId, parteId) {
+    const historialSelect = $('#select_historial_encargado_parte_nv');
+    historialSelect.empty();
+    historialSelect.append('<option value="">Cargando historial...</option>');
+    historialSelect.prop('disabled', true);
+
+    $.ajax({
+        url: `/usuarios/${encargadoId}/historial-participaciones`,
+        method: 'GET',
+        data: {
+            parte_id: parteId,
+            tipo: 'encargado'
+        },
+        success: function(response) {
+            if (response.success) {
+                historialSelect.empty();
+
+                if (response.data.length > 0) {
+                    historialSelect.append('<option value="">Seleccionar participación...</option>');
+
+                    // Agregar opciones con el formato: fecha - parte - tipo
+                    response.data.forEach(function(participacion) {
+                        const fecha = new Date(participacion.fecha);
+                        const dia = String(fecha.getDate()).padStart(2, '0');
+                        const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+                        const año = fecha.getFullYear();
+                        const fechaTexto = `${dia}/${mes}/${año}`;
+
+                        const textoOpcion = `${fechaTexto}|${participacion.parte_abreviacion}|${participacion.nombre_usuario || 'Usuario'}`;
+                        historialSelect.append(`<option value="${participacion.programa_id}">${textoOpcion}</option>`);
+                    });
+
+                    // Habilitar el select
+                    historialSelect.prop('disabled', false);
+
+                    // Seleccionar automáticamente el primer elemento
+                    historialSelect.val(response.data[0].programa_id).trigger('change');
+                } else {
+                    historialSelect.append('<option value="">No hay participaciones registradas como encargado</option>');
+                    historialSelect.prop('disabled', true);
+                }
+            } else {
+                historialSelect.empty();
+                historialSelect.append('<option value="">Error al cargar historial</option>');
+                historialSelect.prop('disabled', true);
+            }
+        },
+        error: function(xhr) {
+            historialSelect.empty();
+            historialSelect.append('<option value="">Error al cargar historial</option>');
+            historialSelect.prop('disabled', true);
+            console.error(xhr);
+        }
+    });
+}
+
+// Función para agregar encargado reemplazado en NVC
+function agregarEncargadoReemplazadoNV() {
+    const encargadoId = $('#encargado_id_nv').val();
+    const encargadoNombre = $('#encargado_display_nv').val();
+
+    if (encargadoId && encargadoNombre) {
+        // Agregar el nombre al campo visible
+        $('#encargado_reemplazado_display_nv').val(encargadoNombre);
+
+        // Agregar el ID al campo oculto para ser guardado en la BD
+        $('#encargado_reemplazado_id_nv').val(encargadoId);
+
+        // Habilitar el botón de eliminar reemplazado
+        $('#btn-eliminar-reemplazado-nv').prop('disabled', false);
+    } else {
+        alert('Por favor seleccione un encargado primero');
+    }
+}
+
+// Función para eliminar encargado reemplazado en NVC
+function eliminarEncargadoReemplazadoNV() {
+    const encargadoReemplazadoNombre = $('#encargado_reemplazado_display_nv').val();
+
+    if (!encargadoReemplazadoNombre) {
+        alert('No hay encargado reemplazado para eliminar');
+        return;
+    }
+
+    // Eliminar directamente sin confirmación
+    $('#encargado_reemplazado_id_nv').val('');
+    $('#encargado_reemplazado_display_nv').val('Sin encargado reemplazado...');
+
+    // Deshabilitar el botón de eliminar
+    $('#btn-eliminar-reemplazado-nv').prop('disabled', true);
+}

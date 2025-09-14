@@ -245,6 +245,47 @@
                         </div>
                         @endif
 
+                        <!-- Sección Nuestra Vida Cristiana -->
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <div class="row align-items-center">
+                                            <div class="col-md-6">
+                                                <h6 class="mb-0">
+                                                    <i class="fas fa-heart me-2"></i>Asignaciones de Nuestra Vida Cristiana
+                                                </h6>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="d-flex justify-content-end">
+                                                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#parteProgramaNVModal" onclick="openCreateParteNVModal()">
+                                                        <i class="fas fa-plus me-2"></i>Nueva Asignación NVC
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table id="partesNVTable" class="table table-striped table-hover">
+                                                <thead>
+                                                    <tr>
+                                                        <th style="width: 120px;">Tiempo (min)</th>
+                                                        <th style="width: 120px;">Parte</th>
+                                                        <th style="width: 400px;">Encargado</th>
+                                                        <th>Tema</th>
+                                                        <th style="width: 140px;">Acciones</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <!-- Los datos se cargarán vía AJAX -->
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
@@ -705,6 +746,112 @@
 </div>
 @endif
 
+<!-- Modal para Crear/Editar Parte del Programa NVC -->
+<div class="modal fade" id="parteProgramaNVModal" tabindex="-1" aria-labelledby="parteProgramaNVModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="parteProgramaNVModalLabel">Nueva Asignación de Nuestra Vida Cristiana</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="parteProgramaNVForm">
+                <div class="modal-body">
+                    @csrf
+                    <input type="hidden" id="parte_programa_nv_id" name="parte_programa_id">
+                    <input type="hidden" id="programa_id_parte_nv" name="programa_id" value="{{ $programa->id }}">
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="parte_id_nv" class="form-label">Asignación <span class="text-danger">*</span></label>
+                                <select class="form-select" id="parte_id_nv" name="parte_id" required>
+                                    <option value="">Cargando...</option>
+                                </select>
+                                <input type="text" class="form-control" id="parte_display_nv" style="display: none;" disabled>
+                                <input type="hidden" id="parte_id_hidden_nv" name="parte_id">
+                                <div class="invalid-feedback"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="tiempo_parte_nv" class="form-label">Tiempo (minutos) <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="tiempo_parte_nv" name="tiempo" min="1" max="60" required>
+                                <div class="invalid-feedback"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="tema_parte_nv" class="form-label">Tema</label>
+                        <textarea class="form-control" id="tema_parte_nv" name="tema" rows="2" maxlength="500"></textarea>
+                        <div class="invalid-feedback"></div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="encargado_id_nv" class="form-label">Encargado <span class="text-danger">*</span></label>
+                                @if(Auth::user()->perfil == 3)
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="encargado_display_nv" name="encargado_display"
+                                               placeholder="Seleccionar encargado..." disabled>
+                                        <button type="button" class="btn btn-outline-primary" id="btn-buscar-encargado-nv"
+                                                title="Buscar Encargado" onclick="buscarEncargadoParteNV()" disabled>
+                                            <i class="fas fa-search"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-outline-success" id="btn-agregar-reemplazado-nv"
+                                                title="Agregar como Encargado Reemplazado" onclick="agregarEncargadoReemplazadoNV()" disabled>
+                                            <i class="fas fa-user-plus"></i>
+                                        </button>
+                                    </div>
+                                    <input type="hidden" id="encargado_id_nv" name="encargado_id" required>
+                                @else
+                                    <select class="form-select select2" id="encargado_id_nv" name="encargado_id" required>
+                                        <option value="">Seleccionar una parte primero...</option>
+                                    </select>
+                                @endif
+                                <div class="invalid-feedback"></div>
+                            </div>
+                        </div>
+                        @if(Auth::user()->perfil == 3)
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="encargado_reemplazado_display_nv" class="form-label">Encargado Reemplazado</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="encargado_reemplazado_display_nv" name="encargado_reemplazado_display"
+                                           placeholder="Sin encargado reemplazado..." disabled>
+                                    <button type="button" class="btn btn-outline-danger" id="btn-eliminar-reemplazado-nv"
+                                            title="Eliminar Encargado Reemplazado" onclick="eliminarEncargadoReemplazadoNV()" disabled>
+                                        <i class="fas fa-user-times"></i>
+                                    </button>
+                                </div>
+                                <input type="hidden" id="encargado_reemplazado_id_nv" name="encargado_reemplazado_id">
+                            </div>
+                        </div>
+                        @endif
+                        @if(!Auth::user()->isCoordinator())
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="leccion_parte_nv" class="form-label">Lección <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="leccion_parte_nv" name="leccion" maxlength="500" required>
+                                <div class="invalid-feedback"></div>
+                            </div>
+                        </div>
+                        @endif
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="saveParteNVBtn">
+                        <span class="spinner-border spinner-border-sm me-2 d-none" role="status"></span>
+                        Guardar Asignación
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <!-- Modal de Confirmación para Eliminar Parte del Programa -->
 <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -970,6 +1117,43 @@
     </div>
 </div>
 
+<!-- Modal para Buscar Encargado del Datatable NVC -->
+<div class="modal fade" id="buscarEncargadoParteNVModal" tabindex="-1" aria-labelledby="buscarEncargadoParteNVModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="buscarEncargadoParteNVModalLabel">
+                    <i class="fas fa-search me-2"></i>Buscar Encargado NVC
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="select_encargado_parte_nv" class="form-label">Seleccionar Encargado</label>
+                    <select class="form-select" id="select_encargado_parte_nv" style="width: 100%;">
+                        <option value="">Cargando usuarios...</option>
+                    </select>
+                    <small class="form-text text-muted">Usuarios con participaciones en la parte seleccionada, ordenados por fecha más reciente</small>
+                </div>
+                <div class="mb-3">
+                    <label for="select_historial_encargado_parte_nv" class="form-label">Historial del Encargado</label>
+                    <select class="form-select" id="select_historial_encargado_parte_nv" style="width: 100%;" disabled>
+                        <option value="">Seleccione un encargado primero...</option>
+                    </select>
+                    <small class="form-text text-muted">Participaciones como encargado en la parte actual, ordenadas desde la más reciente</small>
+                </div>
+            </div>
+            <br><br><br><br><br><br>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="confirmarEncargadoParteNV">
+                    <i class="fas fa-check me-2"></i>Seleccionar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Modal para Buscar Encargado del Datatable 2 (Segunda Sección) -->
 <div class="modal fade" id="buscarEncargadoSegundaSeccionModal" tabindex="-1" aria-labelledby="buscarEncargadoSegundaSeccionModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -1122,6 +1306,7 @@
 let partesTable;
 let partesSegundaSeccionTable;
 let partesTerceraSeccionTable;
+let partesNVTable;
 let isEditMode = false;
 const userIsCoordinator = {{ Auth::user()->isCoordinator() ? 'true' : 'false' }};
 window.editingParteTwoData = false; // Variable para controlar la carga en modo edición
