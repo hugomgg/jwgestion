@@ -1,0 +1,34 @@
+/* Estilos para Select2 en la página de programas/index con fuente Cascadia Mono */
+.select2-container--bootstrap-5 .select2-selection,
+.select2-container--bootstrap-5 .select2-selection__rendered {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+.select2-container--bootstrap-5 .select2-dropdown .select2-results__options .select2-results__option {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Forzar estilos después de la inicialización de Select2 */
+.select2-container--bootstrap-5 .select2-selection {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+.select2-container--bootstrap-5 .select2-selection__rendered {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Estilos con mayor especificidad para campos específicos */
+div.select2-container--bootstrap-5.select2-container--focus .select2-selection,
+div.select2-container--bootstrap-5 .select2-selection {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+div.select2-container--bootstrap-5 .select2-selection__rendered {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}

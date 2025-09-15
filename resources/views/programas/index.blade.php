@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/programas-index.css') }}">
+@endpush
+
 @section('content')
 <div class="container-fluid">
     <div class="row">
@@ -139,7 +143,7 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="mb-3">
+                            <div class="mb-3 d-none">
                                 <label for="add_estado" class="form-label">Estado *</label>
                                 <select class="form-select" id="add_estado" name="estado" required>
                                     <option value="1">Activo</option>
@@ -152,9 +156,9 @@
                     
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="mb-3">
+                            <div class="mb-3 d-none">
                                 <label for="add_orador_inicial" class="form-label">Orador Inicial</label>
-                                <select class="form-select" id="add_orador_inicial" name="orador_inicial">
+                                <select class="form-select" id="add_orador_inicial" name="orador_inicial" style="width: 100%;">
                                     <option value="">Seleccionar...</option>
                                     @if(Auth::user()->perfil == 3 && isset($usuariosOradorInicial))
                                         @foreach($usuariosOradorInicial as $usuario)
@@ -177,7 +181,7 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="mb-3">
+                            <div class="mb-3 d-none">
                                 <label for="add_presidencia" class="form-label">Presidencia</label>
                                 <select class="form-select" id="add_presidencia" name="presidencia">
                                     <option value="">Seleccionar...</option>
@@ -250,7 +254,7 @@
                     
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="mb-3">
+                            <div class="mb-3 d-none">
                                 <label for="add_orador_final" class="form-label">Orador Final</label>
                                 <select class="form-select" id="add_orador_final" name="orador_final">
                                     <option value="">Seleccionar...</option>
