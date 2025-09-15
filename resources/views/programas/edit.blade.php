@@ -120,11 +120,11 @@
                         <div class="row">
                             <div class="col-12">
                                 <div class="card mb-4">
-                                    <div class="card-header">
+                                    <div class="card-header" style="background-color: #BBE6FC;">
                                         <div class="row align-items-center">
                                             <div class="d-flex justify-content-between align-items-center mb-3">
                                                 <h6 class="mb-0">
-                                                    <i class="fas fa-book me-2"></i>Asignaciones de Tesoros de la Biblia
+                                                    <i class="fas fa-book me-2"></i>TESOROS DE LA BIBLIA
                                                 </h6>
                                                 <div class="d-flex justify-content-end">
                                                     <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#parteProgramaModal" onclick="openCreateParteModal()">
@@ -160,11 +160,11 @@
                         @if(Auth::user()->perfil == 3)
                         <div class="row">
                             <div class="col-12">
-                                <div class="card mb-4">
-                                    <div class="card-header">
+                                <div class="card mb-4" >
+                                    <div class="card-header" style="background-color: #FCF2BB;">
                                         <h6 class="mb-0">
-                                            <i class="fas fa-graduation-cap me-2"></i>Escuela Seamos Mejores Maestros
-                                        </h6>
+                                            <i class="fas fa-graduation-cap me-2"></i>ESCUELA SEAMOS MEJORES MAESTROS
+                                        </h6><br>
                                     </div>
                                     <div class="card-body">
                                         <!-- Nav tabs -->
@@ -247,11 +247,11 @@
                         <div class="row">
                             <div class="col-12">
                                 <div class="card mb-4">
-                                    <div class="card-header">
+                                    <div class="card-header" style="background-color: #FCBBBF;">
                                         <div class="row align-items-center">
                                             <div class="d-flex justify-content-between align-items-center mb-3">
                                                 <h6 class="mb-0">
-                                                    <i class="fas fa-briefcase me-2"></i>Asignaciones de Nuestra Vida Cristiana
+                                                    <i class="fas fa-briefcase me-2"></i>NUESTRA VIDA CRISTIANA
                                                 </h6>
                                             
                                                 <div class="d-flex justify-content-end">
