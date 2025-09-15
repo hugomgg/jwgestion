@@ -34,7 +34,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="fecha" class="form-label">Fecha *</label>
+                                    <label for="fecha" class="form-label">Fecha * </label>
                                     <input type="date" class="form-control" id="fecha" name="fecha" value="{{ $programa->fecha ? $programa->fecha->format('Y-m-d') : '' }}" required>
                                     <div class="invalid-feedback"></div>
                                 </div>
@@ -122,12 +122,10 @@
                                 <div class="card mb-4">
                                     <div class="card-header">
                                         <div class="row align-items-center">
-                                            <div class="col-md-6">
+                                            <div class="d-flex justify-content-between align-items-center mb-3">
                                                 <h6 class="mb-0">
                                                     <i class="fas fa-book me-2"></i>Asignaciones de Tesoros de la Biblia
                                                 </h6>
-                                            </div>
-                                            <div class="col-md-6">
                                                 <div class="d-flex justify-content-end">
                                                     <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#parteProgramaModal" onclick="openCreateParteModal()">
                                                         <i class="fas fa-plus me-2"></i>Nueva Asignación TB
@@ -251,12 +249,11 @@
                                 <div class="card mb-4">
                                     <div class="card-header">
                                         <div class="row align-items-center">
-                                            <div class="col-md-6">
+                                            <div class="d-flex justify-content-between align-items-center mb-3">
                                                 <h6 class="mb-0">
-                                                    <i class="fas fa-heart me-2"></i>Asignaciones de Nuestra Vida Cristiana
+                                                    <i class="fas fa-briefcase me-2"></i>Asignaciones de Nuestra Vida Cristiana
                                                 </h6>
-                                            </div>
-                                            <div class="col-md-6">
+                                            
                                                 <div class="d-flex justify-content-end">
                                                     <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#parteProgramaNVModal" onclick="openCreateParteNVModal()">
                                                         <i class="fas fa-plus me-2"></i>Nueva Asignación NVC
@@ -363,7 +360,7 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="mb-3">
+                                <div class="mb-3 d-none">
                                     <label for="estado" class="form-label">Estado *</label>
                                     <select class="form-select" id="estado" name="estado" required>
                                         <option value="1" {{ $programa->estado ? 'selected' : '' }}>Activo</option>
@@ -377,8 +374,10 @@
                         <div class="row">
                             <div class="col-12">
                                 <div class="d-flex justify-content-end gap-2">
-                                    <a href="{{ route('programas.index') }}" class="btn btn-secondary">Cancelar</a>
-                                    <button type="submit" class="btn btn-primary" id="updateProgramaBtn">
+                                    <a href="{{ route('programas.index') }}" class="btn btn-secondary">
+                                    <i class="fas fa-arrow-left me-2"></i>Volver a Programas
+                                    </a>
+                                    <button type="submit" class="btn btn-success d-none" id="updateProgramaBtn">
                                         <span class="spinner-border spinner-border-sm me-2 d-none" role="status"></span>
                                         Actualizar Programa
                                     </button>
@@ -906,7 +905,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                 <button type="button" class="btn btn-primary" id="confirmarOradorInicial">
-                    <i class="fas fa-check me-2"></i>Seleccionar
+                    <i class="fas fa-check me-2"></i>Guardar Orador Inicial
                 </button>
             </div>
         </div>
@@ -943,7 +942,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                 <button type="button" class="btn btn-primary" id="confirmarOradorFinal">
-                    <i class="fas fa-check me-2"></i>Seleccionar
+                    <i class="fas fa-check me-2"></i>Guardar Orador Final
                 </button>
             </div>
         </div>
@@ -982,7 +981,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                 <button type="button" class="btn btn-primary" id="confirmarPresidencia">
-                    <i class="fas fa-check me-2"></i>Seleccionar
+                    <i class="fas fa-check me-2"></i>Guardar Presidente
                 </button>
             </div>
         </div>
@@ -1014,7 +1013,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                 <button type="button" class="btn btn-primary" id="confirmarCancionInicial">
-                    <i class="fas fa-check me-2"></i>Seleccionar
+                    <i class="fas fa-check me-2"></i>Guardar Canción Inicial
                 </button>
             </div>
         </div>
@@ -1044,7 +1043,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                 <button type="button" class="btn btn-primary" id="confirmarCancionIntermedia">
-                    <i class="fas fa-check me-2"></i>Seleccionar
+                    <i class="fas fa-check me-2"></i>Guardar Canción Intermedia
                 </button>
             </div>
         </div>
@@ -1074,7 +1073,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                 <button type="button" class="btn btn-primary" id="confirmarCancionFinal">
-                    <i class="fas fa-check me-2"></i>Seleccionar
+                    <i class="fas fa-check me-2"></i>Guardar Canción Final
                 </button>
             </div>
         </div>

@@ -131,6 +131,59 @@ $(document).ready(function() {
         }
     });
 
+    // Manejar cambio en el campo fecha para guardar automáticamente
+    $('#fecha').on('change', function() {
+        const nuevaFecha = $(this).val();
+        const programaId = $('#programa_id').val();
+
+        if (!nuevaFecha) {
+            alert('Por favor seleccione una fecha válida');
+            return;
+        }
+
+        // Preparar datos para la actualización
+        const updateData = {
+            fecha: nuevaFecha,
+            estado: $('#estado').val() || 1, // Usar estado activo por defecto si no está disponible
+            // Incluir otros campos que puedan existir para evitar errores de validación
+            orador_inicial: $('#orador_inicial').val() || null,
+            presidencia: $('#presidencia').val() || null,
+            cancion_pre: $('#cancion_pre').val() || null,
+            cancion_en: $('#cancion_en').val() || null,
+            cancion_post: $('#cancion_post').val() || null,
+            orador_final: $('#orador_final').val() || null
+        };
+
+        // Hacer la llamada AJAX para actualizar el programa
+        $.ajax({
+            url: `/programas/${programaId}`,
+            type: 'PUT',
+            data: updateData,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                if (response.success) {
+                    console.log('Fecha guardada exitosamente');
+                    // Opcional: mostrar un mensaje de éxito sutil
+                    // alert('Fecha guardada exitosamente');
+                } else {
+                    alert('Error al guardar la fecha: ' + (response.message || 'Error desconocido'));
+                }
+            },
+            error: function(xhr) {
+                let errorMessage = 'Error al guardar la fecha';
+                if (xhr.responseJSON && xhr.responseJSON.errors) {
+                    const errors = Object.values(xhr.responseJSON.errors).flat();
+                    errorMessage += ': ' + errors.join(', ');
+                } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage += ': ' + xhr.responseJSON.message;
+                }
+                alert(errorMessage);
+            }
+        });
+    });
+
     // Manejar envío del formulario de editar programa
     $('#editProgramaForm').submit(function(e) {
         e.preventDefault();
@@ -3040,6 +3093,7 @@ $(document).ready(function() {
     }
 
     // Evento para confirmar la selección del orador inicial
+    // Evento para confirmar la selección del orador inicial
     $('#confirmarOradorInicial').on('click', function() {
         const oradorSeleccionado = $('#select_orador_inicial').val();
         const textoSeleccionado = $('#select_orador_inicial option:selected').text();
@@ -3055,14 +3109,64 @@ $(document).ready(function() {
             nombreOrador = textoSeleccionado.split(' - ')[1];
         }
 
-        // Actualizar los campos
-        $('#orador_inicial').val(oradorSeleccionado);
-        $('#orador_inicial_display').val(nombreOrador);
+        // Obtener datos del formulario
+        const programaId = $('#programa_id').val();
+        const fecha = $('#fecha').val();
+        const estado = $('#estado').val();
 
-        // Cerrar modal
-        $('#buscarOradorInicialModal').modal('hide');
+        // Preparar datos para la actualización
+        const updateData = {
+            fecha: fecha,
+            orador_inicial: oradorSeleccionado,
+            estado: estado,
+            // Incluir otros campos que puedan existir para evitar errores de validación
+            presidencia: $('#presidencia').val() || null,
+            cancion_pre: $('#cancion_pre').val() || null,
+            cancion_en: $('#cancion_en').val() || null,
+            cancion_post: $('#cancion_post').val() || null,
+            orador_final: $('#orador_final').val() || null
+        };
 
+        // Mostrar indicador de carga
+        const button = $(this);
+        const originalText = button.html();
+        button.html('<i class="fas fa-spinner fa-spin me-2"></i>Guardando...').prop('disabled', true);
 
+        // Hacer la llamada AJAX para actualizar el programa
+        $.ajax({
+            url: `/programas/${programaId}`,
+            type: 'PUT',
+            data: updateData,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                if (response.success) {
+                    // Actualizar los campos del formulario
+                    $('#orador_inicial').val(oradorSeleccionado);
+                    $('#orador_inicial_display').val(nombreOrador);
+
+                    // Cerrar modal
+                    $('#buscarOradorInicialModal').modal('hide');
+                } else {
+                    alert('Error al guardar el orador inicial: ' + (response.message || 'Error desconocido'));
+                }
+            },
+            error: function(xhr) {
+                let errorMessage = 'Error al guardar el orador inicial';
+                if (xhr.responseJSON && xhr.responseJSON.errors) {
+                    const errors = Object.values(xhr.responseJSON.errors).flat();
+                    errorMessage += ': ' + errors.join(', ');
+                } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage += ': ' + xhr.responseJSON.message;
+                }
+                alert(errorMessage);
+            },
+            complete: function() {
+                // Restaurar el botón original
+                button.html(originalText).prop('disabled', false);
+            }
+        });
     });
 
     // Limpiar Select2 cuando se cierre el modal
@@ -3157,14 +3261,64 @@ $(document).ready(function() {
             nombreOrador = textoSeleccionado.split(' - ')[1];
         }
 
-        // Actualizar los campos
-        $('#orador_final').val(oradorSeleccionado);
-        $('#orador_final_display').val(nombreOrador);
+        // Obtener datos del formulario
+        const programaId = $('#programa_id').val();
+        const fecha = $('#fecha').val();
+        const estado = $('#estado').val();
 
-        // Cerrar modal
-        $('#buscarOradorFinalModal').modal('hide');
+        // Preparar datos para la actualización
+        const updateData = {
+            fecha: fecha,
+            orador_final: oradorSeleccionado,
+            estado: estado,
+            // Incluir otros campos que puedan existir para evitar errores de validación
+            orador_inicial: $('#orador_inicial').val() || null,
+            presidencia: $('#presidencia').val() || null,
+            cancion_pre: $('#cancion_pre').val() || null,
+            cancion_en: $('#cancion_en').val() || null,
+            cancion_post: $('#cancion_post').val() || null
+        };
 
+        // Mostrar indicador de carga
+        const button = $(this);
+        const originalText = button.html();
+        button.html('<i class="fas fa-spinner fa-spin me-2"></i>Guardando...').prop('disabled', true);
 
+        // Hacer la llamada AJAX para actualizar el programa
+        $.ajax({
+            url: `/programas/${programaId}`,
+            type: 'PUT',
+            data: updateData,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                if (response.success) {
+                    // Actualizar los campos del formulario
+                    $('#orador_final').val(oradorSeleccionado);
+                    $('#orador_final_display').val(nombreOrador);
+
+                    // Cerrar modal
+                    $('#buscarOradorFinalModal').modal('hide');
+                } else {
+                    alert('Error al guardar el orador final: ' + (response.message || 'Error desconocido'));
+                }
+            },
+            error: function(xhr) {
+                let errorMessage = 'Error al guardar el orador final';
+                if (xhr.responseJSON && xhr.responseJSON.errors) {
+                    const errors = Object.values(xhr.responseJSON.errors).flat();
+                    errorMessage += ': ' + errors.join(', ');
+                } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage += ': ' + xhr.responseJSON.message;
+                }
+                alert(errorMessage);
+            },
+            complete: function() {
+                // Restaurar el botón original
+                button.html(originalText).prop('disabled', false);
+            }
+        });
     });
 
     // Limpiar Select2 cuando se cierre el modal
@@ -3258,14 +3412,64 @@ $(document).ready(function() {
             nombrePresidente = textoSeleccionado.split(' - ')[1];
         }
 
-        // Actualizar los campos
-        $('#presidencia').val(presidenteSeleccionado);
-        $('#presidencia_display').val(nombrePresidente);
+        // Obtener datos del formulario
+        const programaId = $('#programa_id').val();
+        const fecha = $('#fecha').val();
+        const estado = $('#estado').val();
 
-        // Cerrar modal
-        $('#buscarPresidenciaModal').modal('hide');
+        // Preparar datos para la actualización
+        const updateData = {
+            fecha: fecha,
+            presidencia: presidenteSeleccionado,
+            estado: estado,
+            // Incluir otros campos que puedan existir para evitar errores de validación
+            orador_inicial: $('#orador_inicial').val() || null,
+            cancion_pre: $('#cancion_pre').val() || null,
+            cancion_en: $('#cancion_en').val() || null,
+            cancion_post: $('#cancion_post').val() || null,
+            orador_final: $('#orador_final').val() || null
+        };
 
+        // Mostrar indicador de carga
+        const button = $(this);
+        const originalText = button.html();
+        button.html('<i class="fas fa-spinner fa-spin me-2"></i>Guardando...').prop('disabled', true);
 
+        // Hacer la llamada AJAX para actualizar el programa
+        $.ajax({
+            url: `/programas/${programaId}`,
+            type: 'PUT',
+            data: updateData,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                if (response.success) {
+                    // Actualizar los campos del formulario
+                    $('#presidencia').val(presidenteSeleccionado);
+                    $('#presidencia_display').val(nombrePresidente);
+
+                    // Cerrar modal
+                    $('#buscarPresidenciaModal').modal('hide');
+                } else {
+                    alert('Error al guardar el presidente: ' + (response.message || 'Error desconocido'));
+                }
+            },
+            error: function(xhr) {
+                let errorMessage = 'Error al guardar el presidente';
+                if (xhr.responseJSON && xhr.responseJSON.errors) {
+                    const errors = Object.values(xhr.responseJSON.errors).flat();
+                    errorMessage += ': ' + errors.join(', ');
+                } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage += ': ' + xhr.responseJSON.message;
+                }
+                alert(errorMessage);
+            },
+            complete: function() {
+                // Restaurar el botón original
+                button.html(originalText).prop('disabled', false);
+            }
+        });
     });
 
     // Limpiar Select2 cuando se cierre el modal
@@ -3344,15 +3548,210 @@ $(document).ready(function() {
 
     // Eventos para confirmar selección de canciones
     $('#confirmarCancionInicial').on('click', function() {
-        confirmarSeleccionCancion('select_cancion_inicial', 'cancion_pre', 'cancion_pre_display', '#buscarCancionInicialModal');
+        const cancionSeleccionada = $('#select_cancion_inicial').val();
+        const textoSeleccionado = $('#select_cancion_inicial option:selected').text();
+
+        if (!cancionSeleccionada) {
+            alert('Por favor seleccione una canción');
+            return;
+        }
+
+        // Obtener datos del formulario
+        const programaId = $('#programa_id').val();
+        const fecha = $('#fecha').val();
+        const estado = $('#estado').val();
+
+        // Preparar datos para la actualización
+        const updateData = {
+            fecha: fecha,
+            cancion_pre: cancionSeleccionada,
+            estado: estado,
+            // Incluir otros campos que puedan existir para evitar errores de validación
+            orador_inicial: $('#orador_inicial').val() || null,
+            presidencia: $('#presidencia').val() || null,
+            cancion_en: $('#cancion_en').val() || null,
+            cancion_post: $('#cancion_post').val() || null,
+            orador_final: $('#orador_final').val() || null
+        };
+
+        // Mostrar indicador de carga
+        const button = $(this);
+        const originalText = button.html();
+        button.html('<i class="fas fa-spinner fa-spin me-2"></i>Guardando...').prop('disabled', true);
+
+        // Hacer la llamada AJAX para actualizar el programa
+        $.ajax({
+            url: `/programas/${programaId}`,
+            type: 'PUT',
+            data: updateData,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                if (response.success) {
+                    // Actualizar los campos del formulario
+                    $('#cancion_pre').val(cancionSeleccionada);
+                    $('#cancion_pre_display').val(textoSeleccionado);
+
+                    // Cerrar modal
+                    $('#buscarCancionInicialModal').modal('hide');
+                } else {
+                    alert('Error al guardar la canción inicial: ' + (response.message || 'Error desconocido'));
+                }
+            },
+            error: function(xhr) {
+                let errorMessage = 'Error al guardar la canción inicial';
+                if (xhr.responseJSON && xhr.responseJSON.errors) {
+                    const errors = Object.values(xhr.responseJSON.errors).flat();
+                    errorMessage += ': ' + errors.join(', ');
+                } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage += ': ' + xhr.responseJSON.message;
+                }
+                alert(errorMessage);
+            },
+            complete: function() {
+                // Restaurar el botón original
+                button.html(originalText).prop('disabled', false);
+            }
+        });
     });
 
     $('#confirmarCancionIntermedia').on('click', function() {
-        confirmarSeleccionCancion('select_cancion_intermedia', 'cancion_en', 'cancion_en_display', '#buscarCancionIntermediaModal');
+        const cancionSeleccionada = $('#select_cancion_intermedia').val();
+        const textoSeleccionado = $('#select_cancion_intermedia option:selected').text();
+
+        if (!cancionSeleccionada) {
+            alert('Por favor seleccione una canción');
+            return;
+        }
+
+        // Obtener datos del formulario
+        const programaId = $('#programa_id').val();
+        const fecha = $('#fecha').val();
+        const estado = $('#estado').val();
+
+        // Preparar datos para la actualización
+        const updateData = {
+            fecha: fecha,
+            cancion_en: cancionSeleccionada,
+            estado: estado,
+            // Incluir otros campos que puedan existir para evitar errores de validación
+            orador_inicial: $('#orador_inicial').val() || null,
+            presidencia: $('#presidencia').val() || null,
+            cancion_pre: $('#cancion_pre').val() || null,
+            cancion_post: $('#cancion_post').val() || null,
+            orador_final: $('#orador_final').val() || null
+        };
+
+        // Mostrar indicador de carga
+        const button = $(this);
+        const originalText = button.html();
+        button.html('<i class="fas fa-spinner fa-spin me-2"></i>Guardando...').prop('disabled', true);
+
+        // Hacer la llamada AJAX para actualizar el programa
+        $.ajax({
+            url: `/programas/${programaId}`,
+            type: 'PUT',
+            data: updateData,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                if (response.success) {
+                    // Actualizar los campos del formulario
+                    $('#cancion_en').val(cancionSeleccionada);
+                    $('#cancion_en_display').val(textoSeleccionado);
+
+                    // Cerrar modal
+                    $('#buscarCancionIntermediaModal').modal('hide');
+                } else {
+                    alert('Error al guardar la canción intermedia: ' + (response.message || 'Error desconocido'));
+                }
+            },
+            error: function(xhr) {
+                let errorMessage = 'Error al guardar la canción intermedia';
+                if (xhr.responseJSON && xhr.responseJSON.errors) {
+                    const errors = Object.values(xhr.responseJSON.errors).flat();
+                    errorMessage += ': ' + errors.join(', ');
+                } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage += ': ' + xhr.responseJSON.message;
+                }
+                alert(errorMessage);
+            },
+            complete: function() {
+                // Restaurar el botón original
+                button.html(originalText).prop('disabled', false);
+            }
+        });
     });
 
     $('#confirmarCancionFinal').on('click', function() {
-        confirmarSeleccionCancion('select_cancion_final', 'cancion_post', 'cancion_post_display', '#buscarCancionFinalModal');
+        const cancionSeleccionada = $('#select_cancion_final').val();
+        const textoSeleccionado = $('#select_cancion_final option:selected').text();
+
+        if (!cancionSeleccionada) {
+            alert('Por favor seleccione una canción');
+            return;
+        }
+
+        // Obtener datos del formulario
+        const programaId = $('#programa_id').val();
+        const fecha = $('#fecha').val();
+        const estado = $('#estado').val();
+
+        // Preparar datos para la actualización
+        const updateData = {
+            fecha: fecha,
+            cancion_post: cancionSeleccionada,
+            estado: estado,
+            // Incluir otros campos que puedan existir para evitar errores de validación
+            orador_inicial: $('#orador_inicial').val() || null,
+            presidencia: $('#presidencia').val() || null,
+            cancion_pre: $('#cancion_pre').val() || null,
+            cancion_en: $('#cancion_en').val() || null,
+            orador_final: $('#orador_final').val() || null
+        };
+
+        // Mostrar indicador de carga
+        const button = $(this);
+        const originalText = button.html();
+        button.html('<i class="fas fa-spinner fa-spin me-2"></i>Guardando...').prop('disabled', true);
+
+        // Hacer la llamada AJAX para actualizar el programa
+        $.ajax({
+            url: `/programas/${programaId}`,
+            type: 'PUT',
+            data: updateData,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                if (response.success) {
+                    // Actualizar los campos del formulario
+                    $('#cancion_post').val(cancionSeleccionada);
+                    $('#cancion_post_display').val(textoSeleccionado);
+
+                    // Cerrar modal
+                    $('#buscarCancionFinalModal').modal('hide');
+                } else {
+                    alert('Error al guardar la canción final: ' + (response.message || 'Error desconocido'));
+                }
+            },
+            error: function(xhr) {
+                let errorMessage = 'Error al guardar la canción final';
+                if (xhr.responseJSON && xhr.responseJSON.errors) {
+                    const errors = Object.values(xhr.responseJSON.errors).flat();
+                    errorMessage += ': ' + errors.join(', ');
+                } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage += ': ' + xhr.responseJSON.message;
+                }
+                alert(errorMessage);
+            },
+            complete: function() {
+                // Restaurar el botón original
+                button.html(originalText).prop('disabled', false);
+            }
+        });
     });
 
     function confirmarSeleccionCancion(selectId, campoHiddenId, campoDisplayId, modalId) {
