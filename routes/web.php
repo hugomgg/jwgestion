@@ -48,6 +48,7 @@ Route::middleware('auth')->group(function () {
         
         // Gesti?n de Programas - Para coordinadores (perfil 3)
         Route::get('/programas', [App\Http\Controllers\ProgramaController::class, 'index'])->name('programas.index');
+        Route::get('/programas/{id}', [App\Http\Controllers\ProgramaController::class, 'show'])->name('programas.show');
         
         // Rutas de solo lectura para supervisores (perfil 2) - CONFIGURACI?N
         Route::get('/congregaciones', [App\Http\Controllers\CongregacionController::class, 'index'])->name('congregaciones.index');

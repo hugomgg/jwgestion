@@ -92,6 +92,11 @@
                                     </td>
                                     <td>
                                         <div class="btn-group" role="group">
+                                            <a href="{{ route('programas.show', $programa->id) }}" class="btn btn-sm btn-info"
+                                               data-bs-toggle="tooltip"
+                                               title="Ver programa">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
                                             <a href="{{ route('programas.edit', $programa->id) }}" class="btn btn-sm btn-warning"
                                                data-bs-toggle="tooltip"
                                                title="Editar programa">

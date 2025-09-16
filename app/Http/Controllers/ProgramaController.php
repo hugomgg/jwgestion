@@ -197,6 +197,25 @@ class ProgramaController extends Controller
     }
 
     /**
+     * Display the specified resource.
+     */
+    public function show($id)
+    {
+        try {
+            $programa = Programa::with(['oradorInicial', 'presidenciaUsuario', 'oradorFinal', 'cancionPre', 'cancionEn', 'cancionPost'])->findOrFail($id);
+            $currentUser = auth()->user();
+
+            // Obtener la sección de reunión con id=1 para el título
+            $seccionReunion = SeccionReunion::find(1);
+
+            return view('programas.show', compact('programa', 'seccionReunion'));
+        } catch (\Exception $e) {
+            return redirect()->route('programas.index')
+                ->with('error', 'Programa no encontrado.');
+        }
+    }
+
+    /**
      * Obtener usuarios con asignación de oración para orador inicial
      */
     public function getUsuariosOradorInicial()
