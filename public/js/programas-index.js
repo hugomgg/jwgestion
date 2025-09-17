@@ -73,6 +73,64 @@ $(document).ready(function() {
     // Inicializar Select2 si es coordinador (esta función será llamada desde el Blade)
     window.initializeSelect2ForCoordinators = initializeSelect2ForCoordinators;
 
+    // Inicializar Select2 para filtros de año y mes
+    initializeFiltrosSelect2();
+
+    // Función para inicializar Select2 para coordinadores
+    function initializeSelect2ForCoordinators() {
+        $('#add_presidencia').select2({
+            theme: 'bootstrap-5',
+            dropdownParent: $('#addProgramaModal'),
+            placeholder: "Seleccionar presidencia...",
+            allowClear: true,
+            width: '100%'
+        });
+
+        $('#add_orador_inicial').select2({
+            theme: 'bootstrap-5',
+            dropdownParent: $('#addProgramaModal'),
+            placeholder: "Seleccionar orador inicial...",
+            allowClear: true,
+            width: '100%'
+        });
+
+        $('#add_orador_final').select2({
+            theme: 'bootstrap-5',
+            dropdownParent: $('#addProgramaModal'),
+            placeholder: "Seleccionar orador final...",
+            allowClear: true,
+            width: '100%'
+        });
+
+        // Inicializar Select2 para canciones
+        $('#add_cancion_pre').select2({
+            theme: 'bootstrap-5',
+            dropdownParent: $('#addProgramaModal'),
+            placeholder: "Seleccionar canción inicial...",
+            allowClear: true,
+            width: '100%'
+        });
+
+        $('#add_cancion_en').select2({
+            theme: 'bootstrap-5',
+            dropdownParent: $('#addProgramaModal'),
+            placeholder: "Seleccionar canción intermedia...",
+            allowClear: true,
+            width: '100%'
+        });
+
+        $('#add_cancion_post').select2({
+            theme: 'bootstrap-5',
+            dropdownParent: $('#addProgramaModal'),
+            placeholder: "Seleccionar canción final...",
+            allowClear: true,
+            width: '100%'
+        });
+    }
+
+    // Inicializar Select2 si es coordinador (esta función será llamada desde el Blade)
+    window.initializeSelect2ForCoordinators = initializeSelect2ForCoordinators;
+
     // Manejar envío del formulario de agregar
     $('#addProgramaForm').submit(function(e) {
         e.preventDefault();
@@ -348,3 +406,226 @@ $(document).ready(function() {
         });
     };
 });
+
+// Función para inicializar los filtros de año y mes
+function initializeFiltrosSelect2() {
+    // Verificar que los elementos existan
+    if (!$('#filtro_anio').length) {
+        console.error('Elemento #filtro_anio no encontrado');
+        return;
+    }
+    if (!$('#filtro_mes').length) {
+        console.error('Elemento #filtro_mes no encontrado');
+        return;
+    }
+
+    const csrfToken = $('meta[name="csrf-token"]').attr('content');
+
+    // Inicializar Select2 para el filtro de año
+    $('#filtro_anio').select2({
+        theme: 'bootstrap-5',
+        placeholder: "Seleccionar año",
+        allowClear: true,
+        width: '120px'
+    });
+
+    // Inicializar Select2 para el filtro de mes
+    $('#filtro_mes').select2({
+        theme: 'bootstrap-5',
+        placeholder: "Seleccionar mes",
+        allowClear: true,
+        width: '140px'
+    });
+
+    // Cargar años disponibles
+    cargarAniosDisponibles();    // Evento cuando cambia el año seleccionado
+    $('#filtro_anio').on('change', function() {
+        const anioSeleccionado = $(this).val();
+        
+        if (anioSeleccionado) {
+            // Habilitar el select de mes y cargar meses disponibles
+            $('#filtro_mes').prop('disabled', false);
+            cargarMesesDisponibles(anioSeleccionado);
+        } else {
+            // Deshabilitar el select de mes y limpiar opciones
+            $('#filtro_mes').prop('disabled', true).val('').trigger('change');
+        }
+        
+        // Aplicar filtro a la tabla
+        aplicarFiltroTabla();
+    });
+    
+    // Evento cuando cambia el mes seleccionado
+    $('#filtro_mes').on('change', function() {
+        aplicarFiltroTabla();
+    });
+}
+
+// Función para cargar años disponibles
+function cargarAniosDisponibles() {
+    const csrfToken = $('meta[name="csrf-token"]').attr('content');
+
+    if (!csrfToken) {
+        console.error('CSRF token not found');
+        mostrarAlerta('Error de configuración: Token CSRF no encontrado', 'danger');
+        return;
+    }
+
+    $.ajax({
+        url: '/programas/anios-disponibles',
+        method: 'GET',
+        headers: {
+            'X-CSRF-TOKEN': csrfToken
+        },
+        success: function(response) {
+            if (response && response.success) {
+                const $selectAnio = $('#filtro_anio');
+
+                // Limpiar opciones existentes excepto "Todos"
+                $selectAnio.find('option:not([value=""])').remove();
+
+                // Agregar años disponibles
+                if (response.anios && Array.isArray(response.anios)) {
+                    response.anios.forEach(function(anio) {
+                        $selectAnio.append(`<option value="${anio}">${anio}</option>`);
+                    });
+                }
+            } else {
+                const errorMessage = response && response.message ? response.message : 'Respuesta inválida del servidor';
+                mostrarAlerta('Error al cargar años disponibles: ' + errorMessage, 'danger');
+            }
+        },
+        error: function(xhr, status, error) {
+            let errorMessage = 'Error al conectar con el servidor';
+            if (xhr.status === 404) {
+                errorMessage = 'Ruta no encontrada';
+            } else if (xhr.status === 500) {
+                errorMessage = 'Error interno del servidor';
+            } else if (xhr.responseText) {
+                try {
+                    const errorResponse = JSON.parse(xhr.responseText);
+                    errorMessage = errorResponse.message || errorMessage;
+                } catch (e) {
+                    errorMessage = 'Error desconocido del servidor';
+                }
+            }
+
+            mostrarAlerta(errorMessage, 'danger');
+        }
+    });
+}
+
+// Función para cargar meses disponibles para un año específico
+function cargarMesesDisponibles(anio) {
+    const csrfToken = $('meta[name="csrf-token"]').attr('content');
+
+    if (!csrfToken) {
+        console.error('CSRF token not found');
+        mostrarAlerta('Error de configuración: Token CSRF no encontrado', 'danger');
+        return;
+    }
+
+    $.ajax({
+        url: `/programas/meses-disponibles/${anio}`,
+        method: 'GET',
+        headers: {
+            'X-CSRF-TOKEN': csrfToken
+        },
+        success: function(response) {
+            if (response && response.success) {
+                const $selectMes = $('#filtro_mes');
+
+                // Limpiar opciones existentes
+                $selectMes.find('option:not([value=""])').remove();
+
+                // Agregar meses disponibles
+                if (response.meses && Array.isArray(response.meses)) {
+                    response.meses.forEach(function(mes) {
+                        $selectMes.append(`<option value="${mes.numero_mes}">${mes.nombre}</option>`);
+                    });
+                }
+
+                // Resetear selección
+                $selectMes.val('').trigger('change');
+            } else {
+                const errorMessage = response && response.message ? response.message : 'Respuesta inválida del servidor';
+                mostrarAlerta('Error al cargar meses disponibles: ' + errorMessage, 'danger');
+            }
+        },
+        error: function(xhr, status, error) {
+            let errorMessage = 'Error al conectar con el servidor';
+            if (xhr.status === 404) {
+                errorMessage = 'Ruta no encontrada';
+            } else if (xhr.status === 500) {
+                errorMessage = 'Error interno del servidor';
+            } else if (xhr.responseText) {
+                try {
+                    const errorResponse = JSON.parse(xhr.responseText);
+                    errorMessage = errorResponse.message || errorMessage;
+                } catch (e) {
+                    errorMessage = 'Error desconocido del servidor';
+                }
+            }
+
+            mostrarAlerta(errorMessage, 'danger');
+        }
+    });
+}
+
+// Función para aplicar filtro a la tabla DataTable
+function aplicarFiltroTabla() {
+    const anioSeleccionado = $('#filtro_anio').val();
+    const mesSeleccionado = $('#filtro_mes').val();
+    
+    // Si DataTable está inicializado
+    if ($.fn.DataTable.isDataTable('#programasTable')) {
+        const table = $('#programasTable').DataTable();
+        
+        // Remover filtros anteriores
+        $.fn.dataTable.ext.search.pop();
+        
+        // Agregar nuevo filtro
+        $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+            const fechaPrograma = data[0]; // Primera columna es la fecha
+            const fechaParts = fechaPrograma.split('/');
+            
+            if (fechaParts.length === 3) {
+                const dia = fechaParts[0];
+                const mes = fechaParts[1];
+                const anio = fechaParts[2];
+                
+                // Verificar filtro de año
+                if (anioSeleccionado && anio !== anioSeleccionado) {
+                    return false;
+                }
+                
+                // Verificar filtro de mes
+                if (mesSeleccionado && mes !== mesSeleccionado) {
+                    return false;
+                }
+            }
+            
+            return true;
+        });
+        
+        // Redibujar la tabla
+        table.draw();
+    }
+}
+
+// Función para mostrar alertas
+function mostrarAlerta(mensaje, tipo) {
+    const alertaHtml = `
+        <div class="alert alert-${tipo} alert-dismissible fade show" role="alert">
+            ${mensaje}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    `;
+    
+    $('#alert-container').html(alertaHtml);
+    
+    // Auto-ocultar después de 5 segundos
+    setTimeout(function() {
+        $('.alert').fadeOut();
+    }, 5000);
+}

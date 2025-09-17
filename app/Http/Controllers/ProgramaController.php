@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf as PDF;
 
 class ProgramaController extends Controller
 {
@@ -608,6 +609,203 @@ class ProgramaController extends Controller
                 'success' => false,
                 'message' => 'Error al eliminar el programa: ' . $e->getMessage()
             ], 500);
+        }
+    }
+
+    /**
+     * Obtener años disponibles de programas
+     */
+    public function getAniosDisponibles()
+    {
+        try {
+            $anios = DB::table('programas')
+                ->selectRaw('DISTINCT strftime(\'%Y\', fecha) as anio')
+                ->whereNotNull('fecha')
+                ->orderBy('anio', 'desc')
+                ->pluck('anio')
+                ->toArray();
+
+            return response()->json([
+                'success' => true,
+                'anios' => $anios
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al obtener años disponibles: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Obtener meses disponibles para un año específico
+     */
+    public function getMesesDisponibles($anio)
+    {
+        try {
+            // Obtener todas las fechas del año especificado y extraer los meses únicos
+            $fechas = DB::table('programas')
+                ->select('fecha')
+                ->whereNotNull('fecha')
+                ->where('fecha', 'like', $anio . '-%')
+                ->get();
+
+            $mesesUnicos = [];
+            foreach ($fechas as $fecha) {
+                $mes = date('m', strtotime($fecha->fecha));
+                if (!in_array($mes, $mesesUnicos)) {
+                    $mesesUnicos[] = $mes;
+                }
+            }
+
+            sort($mesesUnicos);
+
+            $mesesNombres = [
+                '01' => 'Enero',
+                '02' => 'Febrero', 
+                '03' => 'Marzo',
+                '04' => 'Abril',
+                '05' => 'Mayo',
+                '06' => 'Junio',
+                '07' => 'Julio',
+                '08' => 'Agosto',
+                '09' => 'Septiembre',
+                '10' => 'Octubre',
+                '11' => 'Noviembre',
+                '12' => 'Diciembre'
+            ];
+
+            $meses = array_map(function ($mes) use ($mesesNombres) {
+                return [
+                    'mes' => $mes,
+                    'nombre' => $mesesNombres[$mes] ?? $mes,
+                    'numero_mes' => $mes
+                ];
+            }, $mesesUnicos);
+
+            return response()->json([
+                'success' => true,
+                'meses' => $meses
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al obtener meses disponibles: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Exportar programas a PDF (solo para coordinadores - perfil 3)
+     */
+    public function exportPdf(Request $request)
+    {
+        try {
+            $currentUser = Auth::user();
+            
+            // Obtener parámetros de filtro
+            $anio = $request->get('anio');
+            $mes = $request->get('mes');
+            
+            // Log con información del usuario y filtros
+            \Log::info('📄 Exportación PDF de programas iniciada', [
+                'user_id' => $currentUser->id,
+                'user_name' => $currentUser->name,
+                'perfil' => $currentUser->perfil,
+                'congregacion' => $currentUser->congregacion,
+                'anio_filtro' => $anio,
+                'mes_filtro' => $mes,
+                'timestamp' => now()
+            ]);
+
+            // Consulta base de programas
+            $query = DB::table('programas as p')
+                ->join('users as presidente', 'p.presidencia', '=', 'presidente.id')
+                ->leftJoin('users as orador_inicial', 'p.orador_inicial', '=', 'orador_inicial.id')
+                ->leftJoin('users as orador_final', 'p.orador_final', '=', 'orador_final.id')
+                ->leftJoin('congregaciones as c', 'presidente.congregacion', '=', 'c.id')
+                ->where('presidente.congregacion', $currentUser->congregacion);
+
+            // Aplicar filtros de fecha si se proporcionan
+            if ($anio && $mes) {
+                $query->whereYear('p.fecha', $anio)
+                      ->whereMonth('p.fecha', $mes);
+            }
+
+            $programas = $query->select(
+                    'p.id',
+                    'p.fecha',
+                    'presidente.name as nombre_presidencia',
+                    'orador_inicial.name as nombre_orador_inicial',
+                    'orador_final.name as nombre_orador_final',
+                    'c.nombre as congregacion_nombre'
+                )
+                ->orderBy('p.fecha', 'asc') // Orden ascendente para mostrar programas cronológicamente
+                ->get();
+
+            // Para cada programa, obtener sus partes con temas
+            foreach ($programas as &$programa) {
+                $programa->partes = DB::table('partes_programa as pp')
+                    ->leftJoin('users as encargado', 'pp.encargado_id', '=', 'encargado.id')
+                    ->leftJoin('users as ayudante', 'pp.ayudante_id', '=', 'ayudante.id')
+                    ->leftJoin('partes_seccion as ps', 'pp.parte_id', '=', 'ps.id')
+                    ->where('pp.programa_id', $programa->id)
+                    ->select(
+                        'pp.tema',
+                        'pp.tiempo',
+                        'ps.nombre as parte_nombre',
+                        'encargado.name as encargado_nombre',
+                        'ayudante.name as ayudante_nombre',
+                        'pp.orden'
+                    )
+                    ->orderBy('pp.orden')
+                    ->get();
+            }
+
+            \Log::info('📊 Programas encontrados para exportar', [
+                'cantidad' => $programas->count(),
+                'congregacion' => $currentUser->congregacion,
+                'anio_filtro' => $anio,
+                'mes_filtro' => $mes
+            ]);
+
+            // Verificar si hay programas para exportar
+            if ($programas->isEmpty()) {
+                return redirect()->route('programas.index')
+                    ->with('error', 'No hay programas disponibles para el período seleccionado.');
+            }
+
+            // Obtener nombre de la congregación
+            $congregacionNombre = $programas->first()->congregacion_nombre ?? 'Sin nombre';
+
+            // Preparar nombre del archivo
+            $fileName = 'programas';
+            if ($anio && $mes) {
+                $fileName .= '_' . $anio . '_' . str_pad($mes, 2, '0', STR_PAD_LEFT);
+            } else {
+                $fileName .= '_' . date('Y-m-d');
+            }
+
+            \Log::info('📄 Generando PDF con vista blade');
+            
+            // Crear PDF usando la vista blade
+            $pdf = PDF::loadView('programas.pdf', compact('programas', 'congregacionNombre'));
+            $pdf->setPaper('letter', 'portrait'); // Cambiar a carta (letter) como se solicitó
+            
+            \Log::info('✅ PDF creado exitosamente, iniciando descarga');
+            
+            return $pdf->download($fileName . '.pdf');
+            
+        } catch (\Throwable $e) {
+            \Log::error('❌ Error en exportación PDF:', [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'user_id' => Auth::id()
+            ]);
+            
+            return redirect()->route('programas.index')
+                ->with('error', 'Error al generar el PDF: ' . $e->getMessage());
         }
     }
 }

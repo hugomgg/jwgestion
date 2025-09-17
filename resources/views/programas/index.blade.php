@@ -2,6 +2,8 @@
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('css/programas-index.css') }}">
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
 @endpush
 
 @section('content')
@@ -18,6 +20,28 @@
                         </div>
                         <div class="col-md-8">
                             <div class="d-flex justify-content-end align-items-center gap-2 flex-wrap">
+                                <!-- Select2 para filtrar por Año -->
+                                <div class="d-flex align-items-center gap-2">
+                                    <label for="filtro_anio" class="form-label mb-0 me-2">Año:</label>
+                                    <select class="form-select" id="filtro_anio" style="width: 120px;">
+                                        <option value="">Todos</option>
+                                    </select>
+                                </div>
+                                
+                                <!-- Select2 para filtrar por Mes -->
+                                <div class="d-flex align-items-center gap-2">
+                                    <label for="filtro_mes" class="form-label mb-0 me-2">Mes:</label>
+                                    <select class="form-select" id="filtro_mes" style="width: 140px;" disabled>
+                                        <option value="">Seleccionar mes</option>
+                                    </select>
+                                </div>
+                                
+                                <!-- Botón Exportar PDF -->
+                                <a href="#" class="btn btn-success disabled" id="exportPdfBtn" target="_blank" disabled>
+                                    <i class="fas fa-file-pdf me-2"></i>Exportar PDF
+                                </a>
+                                
+                                <!-- Botón Nuevo Programa -->
                                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProgramaModal">
                                     <i class="fas fa-plus me-2"></i>Nuevo Programa
                                 </button>
@@ -322,6 +346,7 @@
 </div>
 
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="{{ asset('js/programas-index.js') }}"></script>
 <script>
 $(document).ready(function() {
@@ -330,6 +355,35 @@ $(document).ready(function() {
     initializeSelect2ForCoordinators();
     handleModalEventsForSelect2();
     @endif
+    
+    // Inicializar Select2 para filtros de año y mes
+    initializeFiltrosSelect2();
+    
+    // Función para manejar el estado del botón Exportar PDF
+    function actualizarBotonExportarPDF() {
+        const anioSeleccionado = $('#filtro_anio').val();
+        const mesSeleccionado = $('#filtro_mes').val();
+        const $btnExportar = $('#exportPdfBtn');
+        
+        if (anioSeleccionado && mesSeleccionado) {
+            // Habilitar botón y actualizar URL
+            $btnExportar.removeClass('disabled').prop('disabled', false);
+            const url = "{{ route('programas.export.pdf') }}?anio=" + anioSeleccionado + "&mes=" + mesSeleccionado;
+            $btnExportar.attr('href', url);
+        } else {
+            // Deshabilitar botón
+            $btnExportar.addClass('disabled').prop('disabled', true);
+            $btnExportar.attr('href', '#');
+        }
+    }
+    
+    // Escuchar cambios en los filtros para actualizar el botón
+    $('#filtro_anio, #filtro_mes').on('change', function() {
+        actualizarBotonExportarPDF();
+    });
+    
+    // Inicializar estado del botón
+    actualizarBotonExportarPDF();
 });
 </script>
 @endpush

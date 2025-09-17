@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 
+// Incluir rutas de prueba en desarrollo (limpiado - archivos eliminados)
+
 Route::get('/', function () {
     if (Auth::check()) {
         return redirect()->route('home');
@@ -17,6 +19,13 @@ Route::middleware(['auth', 'admin'])->get('/usuarios/exportar-pdf', [App\Http\Co
 Route::middleware('auth')->group(function () {
     // Ruta accesible para todos los usuarios autenticados
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+    
+    // Rutas para obtener años y meses de programas (accesibles para usuarios autenticados)
+    Route::get('/programas/anios-disponibles', [App\Http\Controllers\ProgramaController::class, 'getAniosDisponibles'])->name('programas.anios-disponibles');
+    Route::get('/programas/meses-disponibles/{anio}', [App\Http\Controllers\ProgramaController::class, 'getMesesDisponibles'])->name('programas.meses-disponibles');
+    
+    // Exportar PDF de programas (para coordinadores)
+    Route::get('/programas/exportar-pdf', [App\Http\Controllers\ProgramaController::class, 'exportPdf'])->name('programas.export.pdf');
     
     // Rutas de lectura para usuarios (perfil 1, 2, 3 y 4)
     Route::middleware('can:can.view.users')->group(function () {
@@ -49,14 +58,6 @@ Route::middleware('auth')->group(function () {
         // Gesti?n de Programas - Para coordinadores (perfil 3)
         Route::get('/programas', [App\Http\Controllers\ProgramaController::class, 'index'])->name('programas.index');
         Route::get('/programas/{id}', [App\Http\Controllers\ProgramaController::class, 'show'])->name('programas.show');
-        
-        // Rutas de solo lectura para supervisores (perfil 2) - CONFIGURACI?N
-        Route::get('/congregaciones', [App\Http\Controllers\CongregacionController::class, 'index'])->name('congregaciones.index');
-        Route::get('/grupos', [App\Http\Controllers\GrupoController::class, 'index'])->name('grupos.index');
-        Route::get('/estados-espirituales', [App\Http\Controllers\EstadoEspiritualController::class, 'index'])->name('estados-espirituales.index');
-Route::get('/secciones-reunion', [App\Http\Controllers\SeccionReunionController::class, 'index'])->name('secciones-reunion.index');
-        Route::get('/partes-seccion', [App\Http\Controllers\ParteSeccionController::class, 'index'])->name('partes-seccion.index');
-        Route::get('/canciones', [App\Http\Controllers\CancionController::class, 'index'])->name('canciones.index');
     });
     
     // Actualizaci?n de perfil del usuario (para todos los perfiles autenticados)
@@ -91,6 +92,7 @@ Route::get('/secciones-reunion', [App\Http\Controllers\SeccionReunionController:
         Route::get('/programas/{programaId}/partes-tercera-seccion', [App\Http\Controllers\ParteProgramaController::class, 'getPartesTerceraSeccion'])->name('programas.partes-tercera-seccion');
         Route::get('/programas/{programaId}/partes-nv', [App\Http\Controllers\ParteProgramaController::class, 'getPartesNV'])->name('programas.partes-nv');
         Route::get('/historial-usuario/{usuarioId}', [App\Http\Controllers\ParteProgramaController::class, 'getHistorialUsuario'])->name('historial-usuario.get');
+        
         Route::post('/partes-programa', [App\Http\Controllers\ParteProgramaController::class, 'store'])->name('partes-programa.store');
         Route::get('/partes-programa/{id}', [App\Http\Controllers\ParteProgramaController::class, 'show'])->name('partes-programa.show');
         Route::put('/partes-programa/{id}', [App\Http\Controllers\ParteProgramaController::class, 'update'])->name('partes-programa.update');
@@ -180,7 +182,8 @@ Route::get('/secciones-reunion', [App\Http\Controllers\SeccionReunionController:
         Route::post('/estados-espirituales', [App\Http\Controllers\EstadoEspiritualController::class, 'store'])->name('estados-espirituales.store');
         Route::get('/estados-espirituales/{id}/edit', [App\Http\Controllers\EstadoEspiritualController::class, 'edit'])->name('estados-espirituales.edit');
         Route::put('/estados-espirituales/{id}', [App\Http\Controllers\EstadoEspiritualController::class, 'update'])->name('estados-espirituales.update');
-// Gestión de Secciones Reunión - Solo para administradores (perfil 1) - ESCRITURA
+        
+        // Gestión de Secciones Reunión - Solo para administradores (perfil 1) - ESCRITURA
         Route::post('/secciones-reunion', [App\Http\Controllers\SeccionReunionController::class, 'store'])->name('secciones-reunion.store');
         Route::get('/secciones-reunion/{id}/edit', [App\Http\Controllers\SeccionReunionController::class, 'edit'])->name('secciones-reunion.edit');
         Route::put('/secciones-reunion/{id}', [App\Http\Controllers\SeccionReunionController::class, 'update'])->name('secciones-reunion.update');
