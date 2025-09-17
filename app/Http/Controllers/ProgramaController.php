@@ -21,7 +21,7 @@ class ProgramaController extends Controller
     public function index()
     {
         $currentUser = auth()->user();
-        
+
         // Consulta base con JOIN para obtener los nombres relacionados
         $query = DB::table('programas')
             ->leftJoin('users as orador_inicial', 'programas.orador_inicial', '=', 'orador_inicial.id')
@@ -52,12 +52,12 @@ class ProgramaController extends Controller
             );
 
         $programas = $query->orderBy('programas.fecha', 'desc')->get();
-        
+
         // Obtener datos para los selects
         $usuarios = User::where('estado', true)
             ->orderBy('name')
             ->get();
-            
+
         // Para coordinadores (perfil=3), obtener usuarios especiales para presidencia y orador inicial
         $usuariosPresidencia = [];
         $usuariosOradorInicial = [];
@@ -109,7 +109,7 @@ class ProgramaController extends Controller
                 ->orderByRaw('ultima_oracion.ultima_fecha IS NULL DESC, ultima_oracion.ultima_fecha ASC, u.name ASC')
                 ->get();
         }
-            
+
         $canciones = Cancion::where('estado', true)
             ->orderBy('numero')
             ->get();
@@ -125,12 +125,12 @@ class ProgramaController extends Controller
         try {
             $programa = Programa::with(['oradorInicial', 'presidenciaUsuario', 'oradorFinal'])->findOrFail($id);
             $currentUser = auth()->user();
-            
+
             // Obtener datos para los selects del formulario principal
             $usuarios = User::where('estado', true)
                 ->orderBy('name')
                 ->get();
-                
+
             $canciones = Cancion::where('estado', true)
                 ->orderBy('numero')
                 ->get();
@@ -223,7 +223,7 @@ class ProgramaController extends Controller
     {
         try {
             $currentUser = auth()->user();
-            
+
             // Obtener usuarios con asignación_id=23 (oración) de la misma congregación
             $usuarios = DB::table('users as u')
                 ->join('asignaciones_users as au', 'u.id', '=', 'au.user_id')
@@ -318,7 +318,7 @@ class ProgramaController extends Controller
     {
         try {
             $currentUser = auth()->user();
-            
+
             // Obtener usuarios con asignación_id=1 (presidencia) de la misma congregación
             $usuarios = DB::table('users as u')
                 ->join('asignaciones_users as au', 'u.id', '=', 'au.user_id')
@@ -466,7 +466,7 @@ class ProgramaController extends Controller
     {
         try {
             $includeSelected = $request->get('include_selected');
-            
+
             // Obtener TODAS las partes de la segunda sección activas
             $query = DB::table('partes_seccion')
                 ->where('seccion_id', 2)
@@ -479,7 +479,7 @@ class ProgramaController extends Controller
                 })
                 ->orderBy('orden')
                 ->select('id', 'nombre', 'abreviacion', 'tiempo', 'tipo');
-                
+
             $partesDisponibles = $query->get();
 
             return response()->json([
@@ -662,7 +662,7 @@ class ProgramaController extends Controller
 
             $mesesNombres = [
                 '01' => 'Enero',
-                '02' => 'Febrero', 
+                '02' => 'Febrero',
                 '03' => 'Marzo',
                 '04' => 'Abril',
                 '05' => 'Mayo',
@@ -702,21 +702,10 @@ class ProgramaController extends Controller
     {
         try {
             $currentUser = Auth::user();
-            
+
             // Obtener parámetros de filtro
             $anio = $request->get('anio');
             $mes = $request->get('mes');
-            
-            // Log con información del usuario y filtros
-            \Log::info('📄 Exportación PDF de programas iniciada', [
-                'user_id' => $currentUser->id,
-                'user_name' => $currentUser->name,
-                'perfil' => $currentUser->perfil,
-                'congregacion' => $currentUser->congregacion,
-                'anio_filtro' => $anio,
-                'mes_filtro' => $mes,
-                'timestamp' => now()
-            ]);
 
             // Consulta base de programas
             $query = DB::table('programas as p')
@@ -753,21 +742,21 @@ class ProgramaController extends Controller
                     ->select(
                         'pp.tema',
                         'pp.tiempo',
+                        'pp.sala_id',
                         'ps.nombre as parte_nombre',
                         'encargado.name as encargado_nombre',
                         'ayudante.name as ayudante_nombre',
-                        'pp.orden'
+                        DB::raw('CASE WHEN pp.parte_id = 3 THEN 99 ELSE pp.orden END as orden'), //Cambiar orden de LB a al final
+                        DB::raw('CASE WHEN pp.parte_id=3 then 1 else ps.seccion_id end as seccion_id')// Cambiar LB a TB
                     )
-                    ->orderBy('pp.orden')
+                    ->orderBy('ps.seccion_id', 'asc')
+                    ->orderBy('pp.sala_id', 'asc')
+                    ->orderBy('pp.orden', 'asc')
                     ->get();
             }
-
-            \Log::info('📊 Programas encontrados para exportar', [
-                'cantidad' => $programas->count(),
-                'congregacion' => $currentUser->congregacion,
-                'anio_filtro' => $anio,
-                'mes_filtro' => $mes
-            ]);
+            //imprimir SQL log $programa->partes:
+            \DB::enableQueryLog();
+            \Log::info('SQL Log:', \DB::getQueryLog());
 
             // Verificar si hay programas para exportar
             if ($programas->isEmpty()) {
@@ -786,16 +775,12 @@ class ProgramaController extends Controller
                 $fileName .= '_' . date('Y-m-d');
             }
 
-            \Log::info('📄 Generando PDF con vista blade');
-            
             // Crear PDF usando la vista blade
             $pdf = PDF::loadView('programas.pdf', compact('programas', 'congregacionNombre'));
             $pdf->setPaper('letter', 'portrait'); // Cambiar a carta (letter) como se solicitó
-            
-            \Log::info('✅ PDF creado exitosamente, iniciando descarga');
-            
+
             return $pdf->download($fileName . '.pdf');
-            
+
         } catch (\Throwable $e) {
             \Log::error('❌ Error en exportación PDF:', [
                 'error' => $e->getMessage(),
@@ -803,7 +788,7 @@ class ProgramaController extends Controller
                 'line' => $e->getLine(),
                 'user_id' => Auth::id()
             ]);
-            
+
             return redirect()->route('programas.index')
                 ->with('error', 'Error al generar el PDF: ' . $e->getMessage());
         }

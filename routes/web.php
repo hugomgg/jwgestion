@@ -27,6 +27,9 @@ Route::middleware('auth')->group(function () {
     // Exportar PDF de programas (para coordinadores)
     Route::get('/programas/exportar-pdf', [App\Http\Controllers\ProgramaController::class, 'exportPdf'])->name('programas.export.pdf');
     
+// Ruta de prueba para generar error SQL (temporal - sin auth para testing)
+Route::get('/test-sql-error-public', [App\Http\Controllers\ProgramaController::class, 'testSqlError'])->name('test.sql.error.public');
+    
     // Rutas de lectura para usuarios (perfil 1, 2, 3 y 4)
     Route::middleware('can:can.view.users')->group(function () {
         // Gesti?n de Usuarios - Lectura (perfil 1, 2, 3 y 4)

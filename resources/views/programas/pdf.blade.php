@@ -6,9 +6,9 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            font-size: 9px;
+            font-size: 10px;
             line-height: 1.1;
-            margin: 8px;
+            margin: 0px;
             padding: 0;
         }
         .programa-container {
@@ -45,11 +45,29 @@
         .tesoros-biblia { background-color: #4a90e2; }
         .mejores-maestros { background-color: #f5a623; }
         .vida-cristiana { background-color: #e94b3c; }
-        
+
         .parte-item {
             padding: 3px 8px;
             border-bottom: 1px solid #eee;
             font-size: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .parte-content {
+            font-size: 12px;
+            flex: 1;
+            height: 9px;
+        }
+
+        .parte-asignado {
+            text-align: right;
+            font-weight: bold;
+            min-width: 80px;
+            font-family: "Cascadia Mono", monospace !important;
+            font-size: 9px;
+            height: 9px;
         }
         .clear { clear: both; }
         .page-break {
@@ -59,44 +77,61 @@
     </style>
 </head>
 <body>
-    <div style="text-align: center; margin-bottom: 15px; font-size: 10px;">
-        <strong>Congregación: {{ $congregacionNombre ?? 'Sin nombre' }}</strong>
-    </div>
-
     @if($programas && $programas->count() > 0)
         @foreach($programas->chunk(2) as $programasPar)
             @foreach($programasPar as $programa)
                 <div class="programa-container">
                     <!-- Header del programa -->
+                     <!--Solo la primera vez-->
+                     @if($loop->first)
                     <div class="programa-header">
-                        Programa de entre semana
+                        {{ $congregacionNombre ?? 'Sin nombre' }}: Programa de entre semana
                     </div>
-                    
+                    @endif
                     <!-- Fecha -->
                     <div class="fecha-header">
                         {{ date('l j F Y', strtotime($programa->fecha)) }}
                     </div>
-                    
+                    <div class="parte-item">
+                            <div class="parte-content">
+                                Orador inicial
+                            </div>
+                            <div class="parte-asignado">
+                                {{ $programa->nombre_orador_inicial ?? 'Sin asignar' }}
+                            </div>
+                        </div>
+                    <div class="parte-item">
+                        <div class="parte-content">
+                            Presidente
+                        </div>
+                        <div class="parte-asignado">
+                            {{ $programa->nombre_presidencia ?? 'Sin asignar' }}
+                        </div>
+                    </div>
                     @if($programa->partes && count($programa->partes) > 0)
                         @php
                             $tesorosBiblia = $programa->partes->filter(function($parte) {
-                                return stripos($parte->parte_nombre, 'tesoro') !== false || 
-                                       stripos($parte->parte_nombre, 'perla') !== false ||
-                                       stripos($parte->parte_nombre, 'lectura') !== false;
+                                return $parte->seccion_id == 1;
                             });
-                            
+
                             $mejoresMaestros = $programa->partes->filter(function($parte) {
-                                return stripos($parte->parte_nombre, 'maestro') !== false ||
-                                       stripos($parte->parte_nombre, 'conversacion') !== false;
+                                return $parte->seccion_id == 2;
                             });
-                            
+
+                            // Separar por sala
+                            $mejoresMaestrosPrincipal = $mejoresMaestros->filter(function($parte) {
+                                return $parte->sala_id == 1;
+                            });
+
+                            $mejoresMaestrosAuxiliar = $mejoresMaestros->filter(function($parte) {
+                                return $parte->sala_id == 2;
+                            });
+
                             $vidaCristiana = $programa->partes->filter(function($parte) {
-                                return stripos($parte->parte_nombre, 'vida') !== false ||
-                                       stripos($parte->parte_nombre, 'estudio') !== false ||
-                                       stripos($parte->parte_nombre, 'informe') !== false;
+                                return $parte->seccion_id == 3;
                             });
                         @endphp
-                        
+
                         <!-- TESOROS DE LA BIBLIA -->
                         @if($tesorosBiblia->count() > 0)
                             <div class="seccion-header tesoros-biblia">
@@ -104,28 +139,56 @@
                             </div>
                             @foreach($tesorosBiblia as $parte)
                                 <div class="parte-item">
-                                    {{ $parte->tiempo ?? '' }}min. - {{ $parte->tema ?? $parte->parte_nombre }} 
-                                    - {{ $parte->encargado_nombre ?? 'Sin asignar' }}
+                                    <div class="parte-content">
+                                        {{ $parte->tiempo ?? '' }} min. - {{ $parte->tema ?? $parte->parte_nombre }}
+                                    </div>
+                                    <div class="parte-asignado">
+                                        {{ $parte->encargado_nombre ?? 'Sin asignar' }}
+                                    </div>
                                 </div>
                             @endforeach
                         @endif
-                        
-                        <!-- SEAMOS MEJORES MAESTROS -->
-                        @if($mejoresMaestros->count() > 0)
+
+                        <!-- SEAMOS MEJORES MAESTROS - SALA PRINCIPAL -->
+                        @if($mejoresMaestrosPrincipal->count() > 0)
                             <div class="seccion-header mejores-maestros">
-                                SEAMOS MEJORES MAESTROS
+                                SEAMOS MEJORES MAESTROS - SALA PRINCIPAL
                             </div>
-                            @foreach($mejoresMaestros as $parte)
+                            @foreach($mejoresMaestrosPrincipal as $parte)
                                 <div class="parte-item">
-                                    {{ $parte->tiempo ?? '' }}min. - {{ $parte->tema ?? $parte->parte_nombre }} 
-                                    - {{ $parte->encargado_nombre ?? 'Sin asignar' }}
-                                    @if($parte->ayudante_nombre)
-                                        | {{ $parte->ayudante_nombre }}
-                                    @endif
+                                    <div class="parte-content">
+                                        {{ $parte->tiempo ?? '' }} min. - {{ $parte->tema ?? $parte->parte_nombre }}
+                                    </div>
+                                    <div class="parte-asignado">
+                                        {{ $parte->encargado_nombre ?? 'Sin asignar' }}
+                                        @if($parte->ayudante_nombre)
+                                            | {{ str_pad($parte->ayudante_nombre, 20, '.', STR_PAD_RIGHT) }}
+                                        @endif
+                                    </div>
                                 </div>
                             @endforeach
                         @endif
-                        
+
+                        <!-- SEAMOS MEJORES MAESTROS - SALA AUXILIAR 1 -->
+                        @if($mejoresMaestrosAuxiliar->count() > 0)
+                            <div class="seccion-header mejores-maestros">
+                                SEAMOS MEJORES MAESTROS - SALA AUXILIAR 1
+                            </div>
+                            @foreach($mejoresMaestrosAuxiliar as $parte)
+                                <div class="parte-item">
+                                    <div class="parte-content">
+                                        {{ $parte->tiempo ?? '' }} min. - {{ $parte->tema ?? $parte->parte_nombre }}
+                                    </div>
+                                    <div class="parte-asignado">
+                                        {{ $parte->encargado_nombre ?? 'Sin asignar' }}
+                                        @if($parte->ayudante_nombre)
+                                            | {{ str_pad($parte->ayudante_nombre, 20, '&nbsp;', STR_PAD_RIGHT) }}
+                                        @endif
+                                    </div>
+                                </div>
+                            @endforeach
+                        @endif
+
                         <!-- NUESTRA VIDA CRISTIANA -->
                         @if($vidaCristiana->count() > 0)
                             <div class="seccion-header vida-cristiana">
@@ -133,39 +196,71 @@
                             </div>
                             @foreach($vidaCristiana as $parte)
                                 <div class="parte-item">
-                                    {{ $parte->tiempo ?? '' }}min. - {{ $parte->tema ?? $parte->parte_nombre }} 
-                                    - {{ $parte->encargado_nombre ?? 'Sin asignar' }}
+                                    <div class="parte-content">
+                                        {{ $parte->tiempo ?? '' }} min. - {{ $parte->tema ?? $parte->parte_nombre }}
+                                    </div>
+                                    <div class="parte-asignado">
+                                        {{ $parte->encargado_nombre ?? 'Sin asignar' }}
+                                    </div>
                                 </div>
                             @endforeach
                         @endif
-                        
+
                         <!-- Presidencia y oración final -->
                         <div class="parte-item" style="margin-top: 5px;">
-                            Presidente: {{ $programa->nombre_presidencia ?? 'Sin asignar' }}
+                            <div class="parte-content">
+                                Presidente
+                            </div>
+                            <div class="parte-asignado">
+                                {{ $programa->nombre_presidencia ?? 'Sin asignar' }}
+                            </div>
                         </div>
                         @if($programa->nombre_orador_final)
                             <div class="parte-item">
-                                Oración final: {{ $programa->nombre_orador_final }}
+                                <div class="parte-content">
+                                    Oración final
+                                </div>
+                                <div class="parte-asignado">
+                                    {{ $programa->nombre_orador_final }}
+                                </div>
                             </div>
                         @endif
-                        
+
                     @else
                         <!-- Si no hay partes, mostrar datos básicos -->
                         <div class="parte-item">
-                            Presidente: {{ $programa->nombre_presidencia ?? 'Sin asignar' }}
+                            <div class="parte-content">
+                                Presidente
+                            </div>
+                            <div class="parte-asignado">
+                                {{ $programa->nombre_presidencia ?? 'Sin asignar' }}
+                            </div>
                         </div>
                         <div class="parte-item">
-                            Orador inicial: {{ $programa->nombre_orador_inicial ?? 'Sin asignar' }}
+                            <div class="parte-content">
+                                Orador inicial
+                            </div>
+                            <div class="parte-asignado">
+                                {{ $programa->nombre_orador_inicial ?? 'Sin asignar' }}
+                            </div>
                         </div>
                         @if($programa->nombre_orador_final)
                             <div class="parte-item">
-                                Oración final: {{ $programa->nombre_orador_final }}
+                                <div class="parte-content">
+                                    Oración final
+                                </div>
+                                <div class="parte-asignado">
+                                    {{ $programa->nombre_orador_final }}
+                                </div>
                             </div>
                         @endif
                     @endif
                 </div>
             @endforeach
+            <!--Si hay más programas, forzar salto de página-->
+            @if(!$loop->last)
             <div class="clear page-break"></div>
+            @endif
         @endforeach
     @else
         <div style="text-align: center; padding: 40px;">

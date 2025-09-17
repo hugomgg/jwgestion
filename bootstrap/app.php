@@ -23,6 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             \App\Http\Middleware\LoadUserProfile::class,
             \App\Http\Middleware\CheckUserStatusMiddleware::class,
+            \App\Http\Middleware\SqlLoggingMiddleware::class,
         ]);
     })
     ->withProviders([
