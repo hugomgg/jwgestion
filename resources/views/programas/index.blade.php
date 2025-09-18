@@ -356,8 +356,8 @@ $(document).ready(function() {
     handleModalEventsForSelect2();
     @endif
     
-    // Inicializar Select2 para filtros de año y mes
-    initializeFiltrosSelect2();
+    // Inicializar Select2 para filtros de año y mes (ya se hace en programas-index.js)
+    // initializeFiltrosSelect2(); // REMOVIDO: Ya se inicializa en el archivo JS
     
     // Función para manejar el estado del botón Exportar PDF
     function actualizarBotonExportarPDF() {
