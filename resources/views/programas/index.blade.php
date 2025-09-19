@@ -28,12 +28,23 @@
                                     </select>
                                 </div>
                                 
-                                <!-- Select2 para filtrar por Mes -->
+                                <!-- Dropdown para filtrar por Mes -->
                                 <div class="d-flex align-items-center gap-2">
-                                    <label for="filtro_mes" class="form-label mb-0 me-2">Mes:</label>
-                                    <select class="form-select" id="filtro_mes" style="width: 140px;" disabled>
-                                        <option value="">Seleccionar mes</option>
-                                    </select>
+                                    <label class="form-label mb-0 me-2">Mes:</label>
+                                    <div class="dropdown">
+                                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="mesDropdownBtn" data-bs-toggle="dropdown" aria-expanded="false" disabled style="width: 180px;">
+                                            Seleccionar meses
+                                        </button>
+                                        <ul class="dropdown-menu p-3" aria-labelledby="mesDropdownBtn" id="mesDropdownMenu" style="min-width: 200px;">
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li class="px-2">
+                                                <button type="button" class="btn btn-sm btn-outline-secondary w-100" id="seleccionarTodosMeses">Seleccionar Todos</button>
+                                            </li>
+                                            <li class="px-2 mt-2">
+                                                <button type="button" class="btn btn-sm btn-outline-secondary w-100" id="limpiarMeses">Limpiar Selección</button>
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </div>
                                 
                                 <!-- Botón Exportar PDF -->
@@ -362,13 +373,21 @@ $(document).ready(function() {
     // Función para manejar el estado del botón Exportar PDF
     function actualizarBotonExportarPDF() {
         const anioSeleccionado = $('#filtro_anio').val();
-        const mesSeleccionado = $('#filtro_mes').val();
+        const mesesSeleccionados = $('#mesDropdownMenu input[type="checkbox"]:checked').map(function() {
+            return $(this).val();
+        }).get();
         const $btnExportar = $('#exportPdfBtn');
-        
-        if (anioSeleccionado && mesSeleccionado) {
+
+        if (anioSeleccionado && mesesSeleccionados.length > 0) {
             // Habilitar botón y actualizar URL
             $btnExportar.removeClass('disabled').prop('disabled', false);
-            const url = "{{ route('programas.export.pdf') }}?anio=" + anioSeleccionado + "&mes=" + mesSeleccionado;
+
+            // Construir URL con múltiples meses
+            let url = "{{ route('programas.export.pdf') }}?anio=" + anioSeleccionado;
+            mesesSeleccionados.forEach(function(mes) {
+                url += "&mes[]=" + mes;
+            });
+
             $btnExportar.attr('href', url);
         } else {
             // Deshabilitar botón
@@ -376,9 +395,17 @@ $(document).ready(function() {
             $btnExportar.attr('href', '#');
         }
     }
+
+    // Hacer la función disponible globalmente
+    window.actualizarBotonExportarPDF = actualizarBotonExportarPDF;
     
     // Escuchar cambios en los filtros para actualizar el botón
-    $('#filtro_anio, #filtro_mes').on('change', function() {
+    $('#filtro_anio').on('change', function() {
+        actualizarBotonExportarPDF();
+    });
+
+    // Escuchar cambios en los checkboxes de meses
+    $(document).on('change', '#mesDropdownMenu input[type="checkbox"]', function() {
         actualizarBotonExportarPDF();
     });
     

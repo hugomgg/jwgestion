@@ -359,8 +359,8 @@ function initializeFiltrosSelect2() {
         console.error('Elemento #filtro_anio no encontrado');
         return;
     }
-    if (!$('#filtro_mes').length) {
-        console.error('Elemento #filtro_mes no encontrado');
+    if (!$('#mesDropdownBtn').length) {
+        console.error('Elemento #mesDropdownBtn no encontrado');
         return;
     }
 
@@ -374,35 +374,68 @@ function initializeFiltrosSelect2() {
         width: '120px'
     });
 
-    // Inicializar Select2 para el filtro de mes
-    $('#filtro_mes').select2({
-        theme: 'bootstrap-5',
-        placeholder: "Seleccionar mes",
-        allowClear: true,
-        width: '140px'
-    });
-
     // Cargar años disponibles
-    cargarAniosDisponibles();    // Evento cuando cambia el año seleccionado
+    cargarAniosDisponibles();
+
+    // Evento cuando cambia el año seleccionado
     $('#filtro_anio').on('change', function() {
         const anioSeleccionado = $(this).val();
 
         if (anioSeleccionado) {
-            // Habilitar el select de mes y cargar meses disponibles
-            $('#filtro_mes').prop('disabled', false);
-            cargarMesesDisponibles(anioSeleccionado);
+            // Habilitar el dropdown de mes y cargar meses disponibles
+            $('#mesDropdownBtn').prop('disabled', false);
+
+            // Pequeño delay para evitar conflictos con el dropdown
+            setTimeout(function() {
+                cargarMesesDisponibles(anioSeleccionado);
+            }, 100);
         } else {
-            // Deshabilitar el select de mes y limpiar opciones
-            $('#filtro_mes').prop('disabled', true).val('').trigger('change');
+            // Deshabilitar el dropdown de mes y limpiar selección
+            $('#mesDropdownBtn').prop('disabled', true);
+            limpiarSeleccionMeses();
         }
 
         // Aplicar filtro a la tabla
         aplicarFiltroTabla();
+
+        // Actualizar estado del botón Exportar PDF
+        if (window.actualizarBotonExportarPDF) {
+            window.actualizarBotonExportarPDF();
+        }
     });
 
-    // Evento cuando cambia el mes seleccionado
-    $('#filtro_mes').on('change', function() {
+    // Evento para manejar cambios en los checkboxes de meses
+    $(document).on('change', '#mesDropdownMenu input[type="checkbox"]', function() {
+        actualizarTextoBotonMeses();
         aplicarFiltroTabla();
+        // Actualizar estado del botón Exportar PDF
+        if (window.actualizarBotonExportarPDF) {
+            window.actualizarBotonExportarPDF();
+        }
+    });
+
+    // Evento para seleccionar todos los meses
+    $(document).on('click', '#seleccionarTodosMeses', function(e) {
+        e.stopPropagation();
+        $('#mesDropdownMenu input[type="checkbox"]').prop('checked', true);
+        actualizarTextoBotonMeses();
+        aplicarFiltroTabla();
+        // Actualizar estado del botón Exportar PDF
+        if (window.actualizarBotonExportarPDF) {
+            window.actualizarBotonExportarPDF();
+        }
+    });
+
+    // Evento para limpiar selección de meses
+    $(document).on('click', '#limpiarMeses', function(e) {
+        e.stopPropagation();
+        $('#mesDropdownMenu input[type="checkbox"]').prop('checked', false);
+        actualizarTextoBotonMeses();
+        aplicarFiltroTabla();
+        // Actualizar estado del botón Exportar PDF
+        if (window.actualizarBotonExportarPDF) {
+            window.actualizarBotonExportarPDF();
+        }
     });
 }
 
@@ -478,20 +511,54 @@ function cargarMesesDisponibles(anio) {
         },
         success: function(response) {
             if (response && response.success) {
-                const $selectMes = $('#filtro_mes');
+                const $dropdownMenu = $('#mesDropdownMenu');
 
-                // Limpiar opciones existentes
-                $selectMes.find('option:not([value=""])').remove();
+                // Limpiar completamente el dropdown y reconstruirlo
+                const originalContent = `
+                    <li><hr class="dropdown-divider"></li>
+                    <li class="px-2">
+                        <button type="button" class="btn btn-sm btn-outline-secondary w-100" id="seleccionarTodosMeses">Seleccionar Todos</button>
+                    </li>
+                    <li class="px-2 mt-2">
+                        <button type="button" class="btn btn-sm btn-outline-secondary w-100" id="limpiarMeses">Limpiar Selección</button>
+                    </li>
+                `;
 
-                // Agregar meses disponibles
+                $dropdownMenu.html(originalContent);
+
+                // Agregar meses disponibles como checkboxes
                 if (response.meses && Array.isArray(response.meses)) {
                     response.meses.forEach(function(mes) {
-                        $selectMes.append(`<option value="${mes.numero_mes}">${mes.nombre}</option>`);
+                        const checkboxHtml = `
+                            <li class="px-2">
+                                <div class="form-check">
+                                    <input class="form-check-input mes-checkbox" type="checkbox" value="${mes.numero_mes}" id="mes_${mes.numero_mes}">
+                                    <label class="form-check-label" for="mes_${mes.numero_mes}">
+                                        ${mes.nombre}
+                                    </label>
+                                </div>
+                            </li>
+                        `;
+
+                        // Insertar checkbox antes del primer botón
+                        const $primerBoton = $dropdownMenu.find('button').first();
+
+                        if ($primerBoton.length > 0) {
+                            $primerBoton.closest('li').before(checkboxHtml);
+                        } else {
+                            // Fallback: insertar al final del dropdown
+                            $dropdownMenu.append(checkboxHtml);
+                        }
                     });
                 }
 
-                // Resetear selección
-                $selectMes.val('').trigger('change');
+                // Actualizar texto del botón
+                actualizarTextoBotonMeses();
+
+                // Actualizar estado del botón Exportar PDF
+                if (window.actualizarBotonExportarPDF) {
+                    window.actualizarBotonExportarPDF();
+                }
             } else {
                 const errorMessage = response && response.message ? response.message : 'Respuesta inválida del servidor';
                 mostrarAlerta('Error al cargar meses disponibles: ' + errorMessage, 'danger');
@@ -520,7 +587,9 @@ function cargarMesesDisponibles(anio) {
 // Función para aplicar filtro a la tabla DataTable
 function aplicarFiltroTabla() {
     const anioSeleccionado = $('#filtro_anio').val();
-    const mesSeleccionado = $('#filtro_mes').val();
+    const mesesSeleccionados = $('#mesDropdownMenu input[type="checkbox"]:checked').map(function() {
+        return $(this).val();
+    }).get();
 
     // Si DataTable está inicializado
     if ($.fn.DataTable.isDataTable('#programasTable')) {
@@ -536,7 +605,7 @@ function aplicarFiltroTabla() {
 
             if (fechaParts.length === 3) {
                 const dia = fechaParts[0];
-                const mes = fechaParts[1];
+                const mes = fechaParts[1].padStart(2, '0'); // Asegurar formato de 2 dígitos
                 const anio = fechaParts[2];
 
                 // Verificar filtro de año
@@ -544,8 +613,8 @@ function aplicarFiltroTabla() {
                     return false;
                 }
 
-                // Verificar filtro de mes
-                if (mesSeleccionado && mes !== mesSeleccionado) {
+                // Verificar filtro de meses (si hay meses seleccionados)
+                if (mesesSeleccionados.length > 0 && !mesesSeleccionados.includes(mes)) {
                     return false;
                 }
             }
@@ -573,4 +642,34 @@ function mostrarAlerta(mensaje, tipo) {
     setTimeout(function() {
         $('.alert').fadeOut();
     }, 5000);
+}
+
+// Función para limpiar la selección de meses
+function limpiarSeleccionMeses() {
+    $('#mesDropdownMenu input[type="checkbox"]').prop('checked', false);
+    actualizarTextoBotonMeses();
+    // Actualizar estado del botón Exportar PDF
+    if (window.actualizarBotonExportarPDF) {
+        window.actualizarBotonExportarPDF();
+    }
+}
+
+// Función para actualizar el texto del botón de meses
+function actualizarTextoBotonMeses() {
+    const $button = $('#mesDropdownBtn');
+    const $checkedBoxes = $('#mesDropdownMenu input[type="checkbox"]:checked');
+
+    if ($checkedBoxes.length === 0) {
+        $button.text('Seleccionar meses');
+    } else if ($checkedBoxes.length === 1) {
+        const mesNombre = $checkedBoxes.closest('li').find('label').text().trim();
+        $button.text(mesNombre);
+    } else {
+        $button.text(`${$checkedBoxes.length} meses seleccionados`);
+    }
+
+    // Actualizar estado del botón Exportar PDF
+    if (window.actualizarBotonExportarPDF) {
+        window.actualizarBotonExportarPDF();
+    }
 }

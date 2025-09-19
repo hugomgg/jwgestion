@@ -705,7 +705,12 @@ class ProgramaController extends Controller
 
             // Obtener parámetros de filtro
             $anio = $request->get('anio');
-            $mes = $request->get('mes');
+            $meses = $request->get('mes'); // Ahora puede ser un array
+
+            // Si meses es un string, convertirlo a array para consistencia
+            if (is_string($meses)) {
+                $meses = [$meses];
+            }
 
             // Consulta base de programas
             $query = DB::table('programas as p')
@@ -716,9 +721,17 @@ class ProgramaController extends Controller
                 ->where('presidente.congregacion', $currentUser->congregacion);
 
             // Aplicar filtros de fecha si se proporcionan
-            if ($anio && $mes) {
-                $query->whereYear('p.fecha', $anio)
-                      ->whereMonth('p.fecha', $mes);
+            if ($anio) {
+                $query->whereYear('p.fecha', $anio);
+
+                // Si hay meses específicos seleccionados, filtrar por ellos
+                if ($meses && is_array($meses) && !empty($meses)) {
+                    $query->where(function($q) use ($meses) {
+                        foreach ($meses as $mes) {
+                            $q->orWhereMonth('p.fecha', $mes);
+                        }
+                    });
+                }
             }
 
             $programas = $query->select(
@@ -769,8 +782,15 @@ class ProgramaController extends Controller
 
             // Preparar nombre del archivo
             $fileName = 'programas';
-            if ($anio && $mes) {
-                $fileName .= '_' . $anio . '_' . str_pad($mes, 2, '0', STR_PAD_LEFT);
+            if ($anio && $meses && is_array($meses) && !empty($meses)) {
+                // Si hay múltiples meses, usar el primer mes para el nombre del archivo
+                $primerMes = min($meses); // Usar el mes más pequeño
+                $fileName .= '_' . $anio . '_' . str_pad($primerMes, 2, '0', STR_PAD_LEFT);
+
+                // Si hay más de un mes, agregar indicador
+                if (count($meses) > 1) {
+                    $fileName .= '_multiple';
+                }
             } else {
                 $fileName .= '_' . date('Y-m-d');
             }
