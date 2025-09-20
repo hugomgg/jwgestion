@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ProgramaController extends Controller
 {
@@ -811,6 +812,154 @@ class ProgramaController extends Controller
 
             return redirect()->route('programas.index')
                 ->with('error', 'Error al generar el PDF: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Exportar programas a XLS (para coordinadores - perfil 3)
+     */
+    public function exportXls(Request $request)
+    {
+        try {
+            $currentUser = Auth::user();
+
+            // Obtener parámetros de filtro
+            $anio = $request->get('anio');
+            $meses = $request->get('mes'); // Ahora puede ser un array
+
+            // Si meses es un string, convertirlo a array para consistencia
+            if (is_string($meses)) {
+                $meses = [$meses];
+            }
+
+            // Consulta para obtener los programas con sus partes
+            $query = DB::table('programas as p')
+                ->leftJoin('users as presidente', 'p.presidencia', '=', 'presidente.id')
+                ->leftJoin('congregaciones as c', 'presidente.congregacion', '=', 'c.id')
+                ->where('presidente.congregacion', $currentUser->congregacion)
+                ->whereNotNull('p.fecha');
+
+            // Aplicar filtros de fecha si se proporcionan
+            if ($anio) {
+                $query->whereYear('p.fecha', $anio);
+
+                // Si hay meses específicos seleccionados, filtrar por ellos
+                if ($meses && is_array($meses) && !empty($meses)) {
+                    $query->where(function($q) use ($meses) {
+                        foreach ($meses as $mes) {
+                            $q->orWhereMonth('p.fecha', $mes);
+                        }
+                    });
+                }
+            }
+
+            $programas = $query->select(
+                    'p.id',
+                    'p.fecha',
+                    'p.presidencia',
+                    'c.nombre as congregacion_nombre',
+                    'presidente.name as presidente_nombre'
+                )
+                ->orderBy('p.fecha', 'asc')
+                ->get();
+
+            // Agregar las partes a cada programa
+            foreach ($programas as &$programa) {
+                $programa->partes = DB::table('partes_programa as pp')
+                    ->leftJoin('users as encargado', 'pp.encargado_id', '=', 'encargado.id')
+                    ->leftJoin('users as ayudante', 'pp.ayudante_id', '=', 'ayudante.id')
+                    ->leftJoin('partes_seccion as ps', 'pp.parte_id', '=', 'ps.id')
+                    ->where('pp.programa_id', $programa->id)
+                    ->select(
+                        'pp.tema',
+                        'pp.tiempo',
+                        'ps.abreviacion as parte_abreviacion',
+                        'encargado.name as nombre_encargado',
+                        'ayudante.name as nombre_ayudante'
+                    )
+                    ->orderByRaw('CASE WHEN pp.parte_id = 3 THEN 99 ELSE pp.orden END')
+                    ->get();
+            }
+
+            // Verificar si hay programas para exportar
+            if ($programas->isEmpty()) {
+                return redirect()->route('programas.index')
+                    ->with('error', 'No hay programas disponibles para el período seleccionado.');
+            }
+
+            // Preparar nombre del archivo
+            $fileName = 'programas_partes';
+            if ($anio && $meses && is_array($meses) && !empty($meses)) {
+                // Si hay múltiples meses, usar el primer mes para el nombre del archivo
+                $primerMes = min($meses); // Usar el mes más pequeño
+                $fileName .= '_' . $anio . '_' . str_pad($primerMes, 2, '0', STR_PAD_LEFT);
+
+                // Si hay más de un mes, agregar indicador
+                if (count($meses) > 1) {
+                    $fileName .= '_multiple';
+                }
+            } else {
+                $fileName .= '_' . date('Y-m-d');
+            }
+
+            // Crear Excel usando Laravel Excel
+            return Excel::download(new class($programas) implements \Maatwebsite\Excel\Concerns\FromCollection, \Maatwebsite\Excel\Concerns\WithHeadings {
+                private $programas;
+
+                public function __construct($programas)
+                {
+                    $this->programas = $programas;
+                }
+
+                public function collection()
+                {
+                    $data = collect();
+
+                    foreach ($this->programas as $programa) {
+                        foreach ($programa->partes as $parte) {
+                            // Agregar fila para el encargado (Estudiante)
+                            $data->push([
+                                'Fecha' => $programa->fecha,
+                                'Parte' => $parte->parte_abreviacion ?: 'N/A',
+                                'Nombre' => $parte->nombre_encargado ?: 'N/A',
+                                'Rol' => 'Estudiante',
+                                'Tema' => $parte->tema ?: '',
+                                'Tiempo' => $parte->tiempo ?: '',
+                            ]);
+
+                            // Si hay ayudante, agregar fila adicional para el ayudante
+                            if ($parte->nombre_ayudante) {
+                                $data->push([
+                                    'Fecha' => $programa->fecha,
+                                    'Parte' => $parte->parte_abreviacion ?: 'N/A',
+                                    'Nombre' => $parte->nombre_ayudante,
+                                    'Rol' => 'Ayudante',
+                                    'Tema' => $parte->tema ?: '',
+                                    'Tiempo' => $parte->tiempo ?: '',
+                                ]);
+                            }
+                        }
+                    }
+
+                    return $data;
+                }
+
+                public function headings(): array
+                {
+                    return [
+                        'Fecha',
+                        'Parte',
+                        'Nombre',
+                        'Rol',
+                        'Tema',
+                        'Tiempo (min)',
+                    ];
+                }
+            }, $fileName . '.xlsx');
+
+        } catch (\Exception $e) {
+            return redirect()->route('programas.index')
+                ->with('error', 'Error al exportar XLS: ' . $e->getMessage());
         }
     }
 }

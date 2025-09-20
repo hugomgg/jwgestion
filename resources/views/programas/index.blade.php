@@ -51,6 +51,11 @@
                                 <a href="#" class="btn btn-success disabled" id="exportPdfBtn" target="_blank" disabled>
                                     <i class="fas fa-file-pdf me-2"></i>Exportar PDF
                                 </a>
+
+                                <!-- Botón Exportar XLS -->
+                                <a href="#" class="btn btn-primary disabled" id="exportXlsBtn" target="_blank" disabled>
+                                    <i class="fas fa-file-excel me-2"></i>Exportar XLS
+                                </a>
                                 
                                 <!-- Botón Nuevo Programa -->
                                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProgramaModal">
@@ -370,47 +375,55 @@ $(document).ready(function() {
     // Inicializar Select2 para filtros de año y mes (ya se hace en programas-index.js)
     // initializeFiltrosSelect2(); // REMOVIDO: Ya se inicializa en el archivo JS
     
-    // Función para manejar el estado del botón Exportar PDF
-    function actualizarBotonExportarPDF() {
+    // Función para manejar el estado de los botones de exportación
+    function actualizarBotonesExportacion() {
         const anioSeleccionado = $('#filtro_anio').val();
         const mesesSeleccionados = $('#mesDropdownMenu input[type="checkbox"]:checked').map(function() {
             return $(this).val();
         }).get();
-        const $btnExportar = $('#exportPdfBtn');
+        const $btnPdf = $('#exportPdfBtn');
+        const $btnXls = $('#exportXlsBtn');
 
         if (anioSeleccionado && mesesSeleccionados.length > 0) {
-            // Habilitar botón y actualizar URL
-            $btnExportar.removeClass('disabled').prop('disabled', false);
+            // Habilitar botones y actualizar URLs
+            $btnPdf.removeClass('disabled').prop('disabled', false);
+            $btnXls.removeClass('disabled').prop('disabled', false);
 
-            // Construir URL con múltiples meses
-            let url = "{{ route('programas.export.pdf') }}?anio=" + anioSeleccionado;
+            // Construir URLs con múltiples meses
+            let baseUrl = "?anio=" + anioSeleccionado;
             mesesSeleccionados.forEach(function(mes) {
-                url += "&mes[]=" + mes;
+                baseUrl += "&mes[]=" + mes;
             });
 
-            $btnExportar.attr('href', url);
+            const pdfUrl = "{{ route('programas.export.pdf') }}" + baseUrl;
+            const xlsUrl = "{{ route('programas.export.xls') }}" + baseUrl;
+
+            $btnPdf.attr('href', pdfUrl);
+            $btnXls.attr('href', xlsUrl);
         } else {
-            // Deshabilitar botón
-            $btnExportar.addClass('disabled').prop('disabled', true);
-            $btnExportar.attr('href', '#');
+            // Deshabilitar botones
+            $btnPdf.addClass('disabled').prop('disabled', true);
+            $btnXls.addClass('disabled').prop('disabled', true);
+            $btnPdf.attr('href', '#');
+            $btnXls.attr('href', '#');
         }
     }
 
     // Hacer la función disponible globalmente
-    window.actualizarBotonExportarPDF = actualizarBotonExportarPDF;
+    window.actualizarBotonesExportacion = actualizarBotonesExportacion;
     
-    // Escuchar cambios en los filtros para actualizar el botón
+    // Escuchar cambios en los filtros para actualizar los botones
     $('#filtro_anio').on('change', function() {
-        actualizarBotonExportarPDF();
+        actualizarBotonesExportacion();
     });
 
     // Escuchar cambios en los checkboxes de meses
     $(document).on('change', '#mesDropdownMenu input[type="checkbox"]', function() {
-        actualizarBotonExportarPDF();
+        actualizarBotonesExportacion();
     });
-    
-    // Inicializar estado del botón
-    actualizarBotonExportarPDF();
+
+    // Inicializar estado de los botones
+    actualizarBotonesExportacion();
 });
 </script>
 @endpush

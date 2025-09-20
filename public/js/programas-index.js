@@ -399,8 +399,8 @@ function initializeFiltrosSelect2() {
         aplicarFiltroTabla();
 
         // Actualizar estado del botón Exportar PDF
-        if (window.actualizarBotonExportarPDF) {
-            window.actualizarBotonExportarPDF();
+        if (window.actualizarBotonesExportacion) {
+            window.actualizarBotonesExportacion();
         }
     });
 
@@ -409,8 +409,8 @@ function initializeFiltrosSelect2() {
         actualizarTextoBotonMeses();
         aplicarFiltroTabla();
         // Actualizar estado del botón Exportar PDF
-        if (window.actualizarBotonExportarPDF) {
-            window.actualizarBotonExportarPDF();
+        if (window.actualizarBotonesExportacion) {
+            window.actualizarBotonesExportacion();
         }
     });
 
@@ -421,8 +421,8 @@ function initializeFiltrosSelect2() {
         actualizarTextoBotonMeses();
         aplicarFiltroTabla();
         // Actualizar estado del botón Exportar PDF
-        if (window.actualizarBotonExportarPDF) {
-            window.actualizarBotonExportarPDF();
+        if (window.actualizarBotonesExportacion) {
+            window.actualizarBotonesExportacion();
         }
     });
 
@@ -433,8 +433,8 @@ function initializeFiltrosSelect2() {
         actualizarTextoBotonMeses();
         aplicarFiltroTabla();
         // Actualizar estado del botón Exportar PDF
-        if (window.actualizarBotonExportarPDF) {
-            window.actualizarBotonExportarPDF();
+        if (window.actualizarBotonesExportacion) {
+            window.actualizarBotonesExportacion();
         }
     });
 }
@@ -556,8 +556,8 @@ function cargarMesesDisponibles(anio) {
                 actualizarTextoBotonMeses();
 
                 // Actualizar estado del botón Exportar PDF
-                if (window.actualizarBotonExportarPDF) {
-                    window.actualizarBotonExportarPDF();
+                if (window.actualizarBotonesExportacion) {
+                    window.actualizarBotonesExportacion();
                 }
             } else {
                 const errorMessage = response && response.message ? response.message : 'Respuesta inválida del servidor';
@@ -649,8 +649,8 @@ function limpiarSeleccionMeses() {
     $('#mesDropdownMenu input[type="checkbox"]').prop('checked', false);
     actualizarTextoBotonMeses();
     // Actualizar estado del botón Exportar PDF
-    if (window.actualizarBotonExportarPDF) {
-        window.actualizarBotonExportarPDF();
+    if (window.actualizarBotonesExportacion) {
+        window.actualizarBotonesExportacion();
     }
 }
 
@@ -669,7 +669,7 @@ function actualizarTextoBotonMeses() {
     }
 
     // Actualizar estado del botón Exportar PDF
-    if (window.actualizarBotonExportarPDF) {
-        window.actualizarBotonExportarPDF();
+    if (window.actualizarBotonesExportacion) {
+        window.actualizarBotonesExportacion();
     }
 }
