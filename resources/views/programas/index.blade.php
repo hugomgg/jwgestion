@@ -56,6 +56,11 @@
                                 <a href="#" class="btn btn-primary disabled" id="exportXlsBtn" target="_blank" disabled>
                                     <i class="fas fa-file-excel me-2"></i>Exportar XLS
                                 </a>
+
+                                <!-- Botón Exportar Asignaciones -->
+                                <a href="#" class="btn btn-secondary disabled" id="exportAsignacionesBtn" target="_blank" disabled>
+                                    <i class="fas fa-file-export me-2"></i>Exportar Asignaciones
+                                </a>
                                 
                                 <!-- Botón Nuevo Programa -->
                                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProgramaModal">
@@ -383,11 +388,13 @@ $(document).ready(function() {
         }).get();
         const $btnPdf = $('#exportPdfBtn');
         const $btnXls = $('#exportXlsBtn');
+        const $btnAsignaciones = $('#exportAsignacionesBtn');
 
         if (anioSeleccionado && mesesSeleccionados.length > 0) {
             // Habilitar botones y actualizar URLs
             $btnPdf.removeClass('disabled').prop('disabled', false);
             $btnXls.removeClass('disabled').prop('disabled', false);
+            $btnAsignaciones.removeClass('disabled').prop('disabled', false);
 
             // Construir URLs con múltiples meses
             let baseUrl = "?anio=" + anioSeleccionado;
@@ -397,15 +404,19 @@ $(document).ready(function() {
 
             const pdfUrl = "{{ route('programas.export.pdf') }}" + baseUrl;
             const xlsUrl = "{{ route('programas.export.xls') }}" + baseUrl;
+            const asignacionesUrl = "{{ route('programas.export.asignaciones') }}" + baseUrl;
 
             $btnPdf.attr('href', pdfUrl);
             $btnXls.attr('href', xlsUrl);
+            $btnAsignaciones.attr('href', asignacionesUrl);
         } else {
             // Deshabilitar botones
             $btnPdf.addClass('disabled').prop('disabled', true);
             $btnXls.addClass('disabled').prop('disabled', true);
+            $btnAsignaciones.addClass('disabled').prop('disabled', true);
             $btnPdf.attr('href', '#');
             $btnXls.attr('href', '#');
+            $btnAsignaciones.attr('href', '#');
         }
     }
 

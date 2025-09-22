@@ -29,6 +29,9 @@ Route::middleware('auth')->group(function () {
 
     // Exportar XLS de programas (para coordinadores)
     Route::get('/programas/exportar-xls', [App\Http\Controllers\ProgramaController::class, 'exportXls'])->name('programas.export.xls');
+
+    // Exportar Asignaciones de programas (para coordinadores)
+    Route::get('/programas/exportar-asignaciones', [App\Http\Controllers\ProgramaController::class, 'exportAsignaciones'])->name('programas.export.asignaciones');
     
 // Ruta de prueba para generar error SQL (temporal - sin auth para testing)
 Route::get('/test-sql-error-public', [App\Http\Controllers\ProgramaController::class, 'testSqlError'])->name('test.sql.error.public');

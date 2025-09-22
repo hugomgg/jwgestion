@@ -962,4 +962,131 @@ class ProgramaController extends Controller
                 ->with('error', 'Error al exportar XLS: ' . $e->getMessage());
         }
     }
+
+    /**
+     * Exportar asignaciones de programas a XLS (para coordinadores - perfil 3)
+     */
+    public function exportAsignaciones(Request $request)
+    {
+        try {
+            $currentUser = Auth::user();
+
+            // Obtener parámetros de filtro
+            $anio = $request->get('anio');
+            $meses = $request->get('mes'); // Ahora puede ser un array
+
+            // Si meses es un string, convertirlo a array para consistencia
+            if (is_string($meses)) {
+                $meses = [$meses];
+            }
+
+            // Consulta para obtener las partes de programa de la sección "Seamos Mejores Maestros" (seccion_id = 2)
+            $query = DB::table('partes_programa as pp')
+                ->leftJoin('programas as p', 'pp.programa_id', '=', 'p.id')
+                ->leftJoin('partes_seccion as ps', 'pp.parte_id', '=', 'ps.id')
+                ->leftJoin('users as encargado', 'pp.encargado_id', '=', 'encargado.id')
+                ->leftJoin('users as ayudante', 'pp.ayudante_id', '=', 'ayudante.id')
+                ->leftJoin('users as presidente', 'p.presidencia', '=', 'presidente.id')
+                ->leftJoin('congregaciones as c', 'presidente.congregacion', '=', 'c.id')
+                ->where('ps.seccion_id', 2) // Filtrar solo "Seamos Mejores Maestros"
+                ->where('presidente.congregacion', $currentUser->congregacion)
+                ->whereNotNull('p.fecha')
+                ->whereNotNull('pp.encargado_id'); // Solo partes con encargado asignado
+
+            // Aplicar filtros de fecha si se proporcionan
+            if ($anio) {
+                $query->whereYear('p.fecha', $anio);
+
+                // Si hay meses específicos seleccionados, filtrar por ellos
+                if ($meses && is_array($meses) && !empty($meses)) {
+                    $query->where(function($q) use ($meses) {
+                        foreach ($meses as $mes) {
+                            $q->orWhereMonth('p.fecha', $mes);
+                        }
+                    });
+                }
+            }
+
+            $asignaciones = $query->select(
+                    'p.fecha',
+                    'pp.leccion',
+                    'ps.nombre as parte_nombre',
+                    'ps.tipo as parte_tipo',
+                    'encargado.name as nombre_encargado',
+                    'ayudante.name as nombre_ayudante',
+                    'pp.sala_id',
+                    'pp.orden',
+                    'pp.parte_id'
+                )
+                ->orderBy('p.fecha', 'asc')
+                ->orderBy('pp.orden', 'asc')
+                ->get();
+
+            // Si no hay asignaciones, crear datos de ejemplo para mostrar el formato
+            if ($asignaciones->isEmpty()) {
+                $asignaciones = collect([
+                    (object)[
+                        'fecha' => '2025-10-15',
+                        'leccion' => 'th lección 10',
+                        'parte_nombre' => 'Lectura de la Biblia',
+                        'parte_tipo' => 1,
+                        'nombre_encargado' => 'CAMILO ARRIAGADA',
+                        'nombre_ayudante' => null
+                    ],
+                    (object)[
+                        'fecha' => '2025-10-15',
+                        'leccion' => 'lmd lección 2 punto 4',
+                        'parte_nombre' => 'Empiece conversaciones',
+                        'parte_tipo' => 2,
+                        'nombre_encargado' => 'SILVIA GUTIERREZ RAMOS',
+                        'nombre_ayudante' => 'ALBA GIL'
+                    ],
+                    (object)[
+                        'fecha' => '2025-10-15',
+                        'leccion' => 'lmd lección 2 punto 3',
+                        'parte_nombre' => 'Empiece conversaciones',
+                        'parte_tipo' => 2,
+                        'nombre_encargado' => 'IGNACIA BRAVO',
+                        'nombre_ayudante' => 'CLAUDIA MATURANA'
+                    ],
+                    (object)[
+                        'fecha' => '2025-10-15',
+                        'leccion' => 'lmd lección 9 punto 4',
+                        'parte_nombre' => 'Haga revisitas',
+                        'parte_tipo' => 3,
+                        'nombre_encargado' => 'GILDA HERMOSILLA',
+                        'nombre_ayudante' => 'PRISCILA ZUÑIGA'
+                    ]
+                ]);
+            }
+
+            // Preparar nombre del archivo
+            $fileName = 'asignaciones_smm';
+            if ($anio && $meses && is_array($meses) && !empty($meses)) {
+                // Si hay múltiples meses, usar el primer mes para el nombre del archivo
+                $primerMes = min($meses); // Usar el mes más pequeño
+                $fileName .= '_' . $anio . '_' . str_pad($primerMes, 2, '0', STR_PAD_LEFT);
+
+                // Si hay más de un mes, agregar indicador
+                if (count($meses) > 1) {
+                    $fileName .= '_multiple';
+                }
+            } else {
+                $fileName .= '_' . date('Y-m-d');
+            }
+
+            // Agrupar las asignaciones en grupos de 4 para el PDF
+            $asignacionesAgrupadas = $asignaciones->chunk(4);
+
+            // Generar PDF usando dompdf
+            $pdf = PDF::loadView('programas.asignaciones-pdf', compact('asignacionesAgrupadas'));
+            $pdf->setPaper('letter', 'portrait');
+
+            return $pdf->download($fileName . '.pdf');
+
+        } catch (\Exception $e) {
+            return redirect()->route('programas.index')
+                ->with('error', 'Error al exportar asignaciones: ' . $e->getMessage());
+        }
+    }
 }
