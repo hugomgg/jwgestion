@@ -228,7 +228,7 @@
 
                             <div class="field-row">
                                 <span class="field-label">Intervención núm.:</span>
-                                <span class="field-value">{{ $asignacion->orden ?? '' }}</span>
+                                <span class="field-value">{{ $asignacion->numero_intervencion ?? '' }}</span>
                             </div>
                             <br>
                             <div class="presenta-en">
@@ -295,7 +295,7 @@
 
                             <div class="field-row">
                                 <span class="field-label">Intervención núm.:</span>
-                                <span class="field-value">{{ $asignacion->orden ?? '' }}</span>
+                                <span class="field-value">{{ $asignacion->numero_intervencion ?? '' }}</span>
                             </div>
                             <br>
                             <div class="presenta-en">

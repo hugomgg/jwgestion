@@ -1019,8 +1019,26 @@ class ProgramaController extends Controller
                     'pp.parte_id'
                 )
                 ->orderBy('p.fecha', 'asc')
+                ->orderBy('pp.sala_id', 'asc')
                 ->orderBy('pp.orden', 'asc')
                 ->get();
+
+            // Calcular números de intervención por programa
+            $asignaciones = $asignaciones->groupBy('fecha')->map(function ($asignacionesPorFecha) {
+                $numeroIntervencion = 4; // Empezar desde 4
+
+                return $asignacionesPorFecha->map(function ($asignacion) use (&$numeroIntervencion) {
+                    if ($asignacion->parte_id == 3) {
+                        // Si es parte_id=3 (Lectura de la Biblia), mostrar 3
+                        $asignacion->numero_intervencion = 3;
+                    } else {
+                        // Para los demás, asignar números consecutivos empezando desde 4
+                        $asignacion->numero_intervencion = $numeroIntervencion;
+                        $numeroIntervencion++;
+                    }
+                    return $asignacion;
+                });
+            })->flatten();
 
             // Si no hay asignaciones, crear datos de ejemplo para mostrar el formato
             if ($asignaciones->isEmpty()) {
@@ -1030,32 +1048,40 @@ class ProgramaController extends Controller
                         'leccion' => 'th lección 10',
                         'parte_nombre' => 'Lectura de la Biblia',
                         'parte_tipo' => 1,
+                        'parte_id' => 3,
                         'nombre_encargado' => 'CAMILO ARRIAGADA',
-                        'nombre_ayudante' => null
+                        'nombre_ayudante' => null,
+                        'numero_intervencion' => 3
                     ],
                     (object)[
                         'fecha' => '2025-10-15',
                         'leccion' => 'lmd lección 2 punto 4',
                         'parte_nombre' => 'Empiece conversaciones',
                         'parte_tipo' => 2,
+                        'parte_id' => 12,
                         'nombre_encargado' => 'SILVIA GUTIERREZ RAMOS',
-                        'nombre_ayudante' => 'ALBA GIL'
+                        'nombre_ayudante' => 'ALBA GIL',
+                        'numero_intervencion' => 4
                     ],
                     (object)[
                         'fecha' => '2025-10-15',
                         'leccion' => 'lmd lección 2 punto 3',
                         'parte_nombre' => 'Empiece conversaciones',
                         'parte_tipo' => 2,
+                        'parte_id' => 12,
                         'nombre_encargado' => 'IGNACIA BRAVO',
-                        'nombre_ayudante' => 'CLAUDIA MATURANA'
+                        'nombre_ayudante' => 'CLAUDIA MATURANA',
+                        'numero_intervencion' => 5
                     ],
                     (object)[
                         'fecha' => '2025-10-15',
                         'leccion' => 'lmd lección 9 punto 4',
                         'parte_nombre' => 'Haga revisitas',
                         'parte_tipo' => 3,
+                        'parte_id' => 13,
                         'nombre_encargado' => 'GILDA HERMOSILLA',
-                        'nombre_ayudante' => 'PRISCILA ZUÑIGA'
+                        'nombre_ayudante' => 'PRISCILA ZUÑIGA',
+                        'numero_intervencion' => 6
                     ]
                 ]);
             }
