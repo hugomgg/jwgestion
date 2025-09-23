@@ -1624,51 +1624,41 @@ class ParteProgramaController extends Controller
             }
 
             // Primera parte del UNION: usuarios que nunca han participado
-            $usuariosPrimeraVez = DB::select("
-                SELECT 'Primera vez' as fecha, '__' as abreviacion_parte, '__' as sala_abreviacion, u.name, 'ninguno' as tipo, a.abreviacion as asignacion_abrev, u.id
+            $usuariosPrimeraVez = DB::select("SELECT
+                'Primera vez' as fecha,
+                '__' as abreviacion_parte,
+                '__' as sala_abreviacion,
+                u.name, 'ninguno' as tipo,
+                a.abreviacion as asignacion_abrev, u.id
                 FROM users u
                 INNER JOIN asignaciones_users au ON au.user_id = u.id
                 INNER JOIN asignaciones a ON a.id = au.asignacion_id
                 INNER JOIN partes_seccion ps ON ps.asignacion_id = a.id
-                LEFT JOIN partes_programa pp ON pp.encargado_id = u.id OR pp.ayudante_id = u.id
+                LEFT JOIN (SELECT encargado_id,parte_id FROM partes_programa WHERE parte_id = ?) pp ON pp.encargado_id = u.id
                 WHERE pp.encargado_id IS NULL
-                    AND pp.ayudante_id IS NULL
                     AND ps.id = ?
                     AND u.congregacion = ?
                     AND u.estado = 1
-            ", [$parteId, $user->congregacion]);
+            ", [$parteId,$parteId,$user->congregacion]);
 
             // Segunda parte del UNION: usuarios con historial de participación
-            $usuariosConHistorial = DB::select("
-                SELECT * FROM (
-                    SELECT max(p.fecha) as fecha_raw,
-                           ps.abreviacion as abreviacion_parte,
-                           s.abreviacion as sala_abreviacion,
-                           u.name,
-                           CASE
-                               WHEN pp.encargado_id > 0 AND u.id = pp.ayudante_id THEN 'Ayudante'
-                               WHEN u.id = pp.encargado_id THEN 'Encargado'
-                               ELSE 'Encargado'
-                           END as tipo,
-                           a.abreviacion as asignacion_abrev,
-                           u.id
-                    FROM partes_programa pp
-                    INNER JOIN programas p ON p.id = pp.programa_id
-                    INNER JOIN partes_seccion ps ON pp.parte_id = ps.id
-                    INNER JOIN salas s ON pp.sala_id = s.id
-                    INNER JOIN users u ON u.id = pp.encargado_id OR u.id = pp.ayudante_id
-                    INNER JOIN asignaciones_users au ON au.user_id = u.id
-                    INNER JOIN asignaciones a ON a.id = au.asignacion_id
-                    INNER JOIN (
-                        SELECT asignacion_id
-                        FROM partes_seccion ps
-                        WHERE ps.id = ?
-                    ) ap ON ap.asignacion_id = a.id
-                    WHERE u.congregacion = ?
-                        AND u.estado = 1
-                    GROUP BY u.id
-                    ORDER BY fecha_raw ASC
-                )
+            $usuariosConHistorial = DB::select("SELECT max(p.fecha) as fecha_raw,
+                ps.abreviacion as abreviacion_parte,
+                        s.abreviacion as sala_abreviacion,
+                        u.name,
+                        'Encargado' as tipo,
+                        'AA' AS asignacion_abrev,
+                        u.id
+                FROM partes_programa pp
+                INNER JOIN programas p ON p.id = pp.programa_id
+                INNER JOIN partes_seccion ps ON pp.parte_id = ps.id
+                INNER JOIN salas s ON pp.sala_id = s.id
+                INNER JOIN users u ON u.id = pp.encargado_id OR u.id = pp.ayudante_id  
+                WHERE pp.parte_id = ?
+                    AND u.congregacion = ?
+                    AND u.estado = 1
+                GROUP BY u.id
+                ORDER BY fecha_raw ASC
             ", [$parteId, $user->congregacion]);
 
             // Combinar ambos resultados
@@ -1689,15 +1679,10 @@ class ParteProgramaController extends Controller
                 // Obtener la abreviación de la sala
                 $salaAbreviacion = isset($usuario->sala_abreviacion) ? $usuario->sala_abreviacion : '__';
 
-                // Limpiar posibles sufijos como " (Ayudante)" en el nombre
-                // Limpiar cualquier aparición de "(Ayudante)" o "Ayudante" en cualquier parte del nombre
-                $nombreLimpio = preg_replace('/\s*\(Ayudante\)|Ayudante/i', '', $usuario->name);
-                $nombreLimpio = trim($nombreLimpio);
-
                 return [
                     'id' => $usuario->id,
-                    'name' => $nombreLimpio,
-                    'display_text' => $fechaDisplay . '|' . $salaAbreviacion . '|' . $usuario->abreviacion_parte . '|' . $nombreLimpio,
+                    'name' => $usuario->name,
+                    'display_text' => $fechaDisplay . '|' . $usuario->abreviacion_parte . '|' . $usuario->name,
                     'fecha' => $fechaDisplay,
                     'sala_abreviacion' => $salaAbreviacion,
                     'parte_abreviacion' => $usuario->abreviacion_parte,

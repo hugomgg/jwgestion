@@ -4172,16 +4172,7 @@ $(document).ready(function() {
 
                     // Agregar opciones con el formato: fecha (dd/mm/AAAA) - Nombre del usuario
                     response.data.forEach(function(usuario) {
-                        let fechaTexto = 'Primera vez';
-                        if (usuario.ultima_fecha) {
-                            const fecha = new Date(usuario.ultima_fecha);
-                            const dia = String(fecha.getDate()).padStart(2, '0');
-                            const mes = String(fecha.getMonth() + 1).padStart(2, '0');
-                            const año = fecha.getFullYear();
-                            fechaTexto = `${dia}/${mes}/${año}`;
-                        }
-                        const textoOpcion = `${fechaTexto} - ${usuario.name}`;
-                        select.append(`<option value="${usuario.id}">${textoOpcion}</option>`);
+                        select.append(`<option value="${usuario.id}">${usuario.display_text}</option>`);
                     });
 
                     // Inicializar el select de historial si no está inicializado
@@ -4297,8 +4288,8 @@ $(document).ready(function() {
 
         // Extraer solo el nombre del formato "fecha - nombre"
         let nombreEncargado = textoSeleccionado;
-        if (textoSeleccionado.includes(' - ')) {
-            nombreEncargado = textoSeleccionado.split(' - ')[1];
+        if (textoSeleccionado.includes('|')) {
+            nombreEncargado = textoSeleccionado.split('|')[2];
         }
 
         // Actualizar los campos
@@ -4369,8 +4360,8 @@ $(document).ready(function() {
 
         // Extraer solo el nombre del formato "fecha - nombre"
         let nombreEncargado = textoSeleccionado;
-        if (textoSeleccionado.includes(' - ')) {
-            nombreEncargado = textoSeleccionado.split(' - ')[1];
+        if (textoSeleccionado.includes('|')) {
+            nombreEncargado = textoSeleccionado.split('|')[2];
         }
 
         // Actualizar los campos
@@ -5110,16 +5101,7 @@ function buscarEncargadoParteNV() {
 
                 // Agregar opciones con el formato: fecha (dd/mm/AAAA) - Nombre del usuario
                 response.data.forEach(function(usuario) {
-                    let fechaTexto = 'Primera vez';
-                    if (usuario.ultima_fecha) {
-                        const fecha = new Date(usuario.ultima_fecha);
-                        const dia = String(fecha.getDate()).padStart(2, '0');
-                        const mes = String(fecha.getMonth() + 1).padStart(2, '0');
-                        const año = fecha.getFullYear();
-                        fechaTexto = `${dia}/${mes}/${año}`;
-                    }
-                    const textoOpcion = `${fechaTexto} - ${usuario.name}`;
-                    select.append(`<option value="${usuario.id}">${textoOpcion}</option>`);
+                    select.append(`<option value="${usuario.id}">${usuario.display_text}</option>`);
                 });
 
                 // Inicializar el select de historial si no está inicializado
