@@ -1869,7 +1869,7 @@ $(document).ready(function() {
 
             // Cargar historial del encargado seleccionado
             if (val) {
-                loadHistorialEncargadoSegundaSeccion(val);
+                loadHistorialEncargadoSegundaSeccion(val,parteId);
             } else {
                 clearHistorialEncargadoSegundaSeccion();
             }
@@ -1877,7 +1877,7 @@ $(document).ready(function() {
 
         // Cargar usuarios que han participado como encargados en esta parte
         $.ajax({
-            url: `/encargados-por-parte-programa/${parteId}`,
+            url: `/encargados-por-parte-programa-smm/${parteId}`,
             method: 'GET',
             success: function(response) {
                 if (response.success) {
@@ -1976,7 +1976,7 @@ $(document).ready(function() {
 
             // Cargar historial del ayudante seleccionado
             if (val) {
-                loadHistorialAyudanteSegundaSeccion(val);
+                loadHistorialAyudanteSegundaSeccion(val, parteId);
             } else {
                 clearHistorialAyudanteSegundaSeccion();
             }
@@ -4368,7 +4368,7 @@ $(document).ready(function() {
     });
 
     // Función para cargar el historial del encargado en la segunda sección
-    function loadHistorialEncargadoSegundaSeccion(encargadoId) {
+    function loadHistorialEncargadoSegundaSeccion(encargadoId,parteId) {
         const selectHistorial = $('#select_historial_encargado_segunda_seccion');
 
         // Limpiar el select y mostrar "Cargando..."
@@ -4376,7 +4376,7 @@ $(document).ready(function() {
         selectHistorial.prop('disabled', false);
 
         $.ajax({
-            url: `/usuarios/${encargadoId}/historial-segunda-seccion`,
+            url: `/usuarios/${encargadoId}/${parteId}/historial-segunda-seccion`,
             method: 'GET',
             success: function(response) {
                 if (response.success) {
@@ -4434,7 +4434,7 @@ $(document).ready(function() {
     }
 
     // Función para cargar el historial del ayudante en la segunda sección
-    function loadHistorialAyudanteSegundaSeccion(ayudanteId) {
+    function loadHistorialAyudanteSegundaSeccion(ayudanteId,parteId) {
         const selectHistorial = $('#select_historial_ayudante_segunda_seccion');
 
         // Limpiar el select y mostrar "Cargando..."
@@ -4442,7 +4442,7 @@ $(document).ready(function() {
         selectHistorial.prop('disabled', false);
 
         $.ajax({
-            url: `/usuarios/${ayudanteId}/historial-segunda-seccion`,
+            url: `/usuarios/${ayudanteId}/${parteId}/historial-segunda-seccion`,
             method: 'GET',
             success: function(response) {
                 if (response.success) {

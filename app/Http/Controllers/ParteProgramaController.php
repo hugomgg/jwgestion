@@ -1628,8 +1628,8 @@ class ParteProgramaController extends Controller
                 'Primera vez' as fecha,
                 '__' as abreviacion_parte,
                 '__' as sala_abreviacion,
-                u.name, 'ninguno' as tipo,
-                a.abreviacion as asignacion_abrev, u.id
+                u.name,
+                u.id
                 FROM users u
                 INNER JOIN asignaciones_users au ON au.user_id = u.id
                 INNER JOIN asignaciones a ON a.id = au.asignacion_id
@@ -1646,14 +1646,12 @@ class ParteProgramaController extends Controller
                 ps.abreviacion as abreviacion_parte,
                         s.abreviacion as sala_abreviacion,
                         u.name,
-                        'Encargado' as tipo,
-                        'AA' AS asignacion_abrev,
                         u.id
                 FROM partes_programa pp
                 INNER JOIN programas p ON p.id = pp.programa_id
                 INNER JOIN partes_seccion ps ON pp.parte_id = ps.id
                 INNER JOIN salas s ON pp.sala_id = s.id
-                INNER JOIN users u ON u.id = pp.encargado_id OR u.id = pp.ayudante_id  
+                INNER JOIN users u ON u.id = pp.encargado_id OR u.id = pp.ayudante_id
                 WHERE pp.parte_id = ?
                     AND u.congregacion = ?
                     AND u.estado = 1
@@ -1686,7 +1684,121 @@ class ParteProgramaController extends Controller
                     'fecha' => $fechaDisplay,
                     'sala_abreviacion' => $salaAbreviacion,
                     'parte_abreviacion' => $usuario->abreviacion_parte,
-                    'asignacion_abreviacion' => $usuario->asignacion_abrev,
+                    'ultima_fecha' => $fechaDisplay === 'Primera vez' ? null : (isset($usuario->fecha_raw) ? $usuario->fecha_raw : null)
+                ];
+            }, $usuarios);
+
+            // Ordenar: "Primera vez" primero, luego por fecha más antigua
+            usort($usuariosFormateados, function($a, $b) {
+                if ($a['fecha'] === 'Primera vez' && $b['fecha'] !== 'Primera vez') {
+                    return -1;
+                }
+                if ($b['fecha'] === 'Primera vez' && $a['fecha'] !== 'Primera vez') {
+                    return 1;
+                }
+                if ($a['fecha'] === 'Primera vez' && $b['fecha'] === 'Primera vez') {
+                    return 0;
+                }
+
+                // Convertir fechas para comparación
+                $fechaA = \DateTime::createFromFormat('d-m-Y', $a['fecha']);
+                $fechaB = \DateTime::createFromFormat('d-m-Y', $b['fecha']);
+
+                return $fechaA <=> $fechaB;
+            });
+
+            return response()->json([
+                'success' => true,
+                'data' => $usuariosFormateados
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al obtener los encargados: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getEncargadosByParteProgramaSmm($parteId, Request $request)
+    {
+        try {
+            $user = Auth::user();
+
+            // Verificar que el usuario autenticado tenga perfil=3 (coordinador)
+            if ($user->perfil != 3) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No tiene permisos para acceder a esta información.'
+                ], 403);
+            }
+
+            // Primera parte del UNION: usuarios que nunca han participado
+            $usuariosPrimeraVez = DB::select("SELECT
+                    'Primera vez' as fecha,
+                    '__' as abreviacion_parte,
+                    '__' as sala_abreviacion,
+                    u.name,
+                    '__' as tipo,
+                    au.asignacion_id AS as1,
+                    u.id
+                FROM users u
+                INNER JOIN asignaciones_users au ON au.user_id = u.id
+                INNER JOIN partes_seccion ps ON ps.asignacion_id = au.asignacion_id
+                LEFT JOIN (SELECT pp.encargado_id,pp.ayudante_id,pp.parte_id,ps.asignacion_id
+                            FROM partes_programa pp
+                            INNER JOIN partes_seccion ps ON ps.id=pp.parte_id
+                            ) spp ON (spp.encargado_id = u.id or spp.ayudante_id = u.id) AND spp.asignacion_id = ps.asignacion_id
+                WHERE (spp.encargado_id IS NULL and spp.ayudante_id IS NULL )
+                    AND ps.id= ?
+                    AND u.congregacion = ?
+                    AND u.estado = 1
+            ", [$parteId,$user->congregacion]);
+
+            // Segunda parte del UNION: usuarios con historial de participación
+            $usuariosConHistorial = DB::select("SELECT max(p.fecha) as fecha_raw,
+                    ps.abreviacion as abreviacion_parte,
+                    s.abreviacion as sala_abreviacion,
+                    u.name,
+                    CASE WHEN pp.encargado_id=u.id THEN 'ES' ELSE 'AY' END AS tipo,
+                    u.id
+                FROM partes_programa pp
+                INNER JOIN programas p ON p.id = pp.programa_id
+                INNER JOIN partes_seccion ps ON pp.parte_id = ps.id
+                INNER JOIN salas s ON pp.sala_id = s.id
+                INNER JOIN users u ON u.id = pp.encargado_id OR u.id = pp.ayudante_id
+                INNER JOIN (SELECT asignacion_id FROM partes_seccion ps WHERE ps.id = ?) pa ON pa.asignacion_id = ps.asignacion_id
+                WHERE
+                    u.congregacion = ?
+                    AND u.estado = 1
+                GROUP BY u.id
+                ORDER BY fecha_raw ASC
+            ", [$parteId, $user->congregacion]);
+
+            // Combinar ambos resultados
+            $usuarios = array_merge($usuariosPrimeraVez, $usuariosConHistorial);
+
+            // Formatear los datos para el select2
+            $usuariosFormateados = array_map(function($usuario) {
+                // Formatear la fecha si no es "Primera vez"
+                if (isset($usuario->fecha_raw) && $usuario->fecha_raw) {
+                    // Convertir la fecha a formato dd-mm-yyyy
+                    $fechaFormateada = \Carbon\Carbon::parse($usuario->fecha_raw)->format('d-m-Y');
+                    $fechaDisplay = $fechaFormateada;
+                } else {
+                    $fechaFormateada = isset($usuario->fecha) ? $usuario->fecha : 'Primera vez';
+                    $fechaDisplay = $fechaFormateada;
+                }
+
+                // Obtener la abreviación de la sala
+                $salaAbreviacion = isset($usuario->sala_abreviacion) ? $usuario->sala_abreviacion : '__';
+
+                return [
+                    'id' => $usuario->id,
+                    'name' => $usuario->name,
+                    'display_text' => $fechaDisplay. '|' . $salaAbreviacion . '|' . $usuario->abreviacion_parte . '|' . $usuario->tipo . '|' . $usuario->name,
+                    'fecha' => $fechaDisplay,
+                    'sala_abreviacion' => $salaAbreviacion,
+                    'parte_abreviacion' => $usuario->abreviacion_parte,
                     'ultima_fecha' => $fechaDisplay === 'Primera vez' ? null : (isset($usuario->fecha_raw) ? $usuario->fecha_raw : null)
                 ];
             }, $usuarios);
@@ -1905,7 +2017,7 @@ class ParteProgramaController extends Controller
                         $query->where('pp.encargado_id', $usuario->id)
                               ->orWhere('pp.ayudante_id', $usuario->id);
                     })
-                    ->where('ps.seccion_id', 2); // Solo segunda sección
+                    ->where('ps.asignacion_id', $asignacionId); // Solo segunda sección
 
                 // Excluir la parte que se está editando si corresponde
                 if ($editingId) {

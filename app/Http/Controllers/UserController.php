@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\ParteSeccion;
 use App\Models\Perfil;
 use App\Models\Congregacion;
 use App\Models\Sexo;
@@ -27,7 +28,7 @@ class UserController extends Controller
     public function index()
     {
         $currentUser = auth()->user();
-        
+
         // Consulta base con JOIN explícito para obtener el nombre del perfil, congregación, nombramiento, servicio, grupo, estado espiritual y datos de auditoría
         $query = DB::table('users')
             ->join('perfiles', 'users.perfil', '=', 'perfiles.id')
@@ -68,7 +69,7 @@ class UserController extends Controller
         }
 
         $users = $query->get();
-        
+
         // Cargar las asignaciones para cada usuario (solo para coordinadores, organizadores y suborganizadores que necesitan verlas)
         if ($currentUser->isCoordinator() || $currentUser->isOrganizer() || $currentUser->isSuborganizer()) {
             $users = $users->map(function($user) {
@@ -89,7 +90,7 @@ class UserController extends Controller
             // Administradores y supervisores ven todos los perfiles en el filtro
             $perfiles = Perfil::all();
         }
-        
+
         // Filtrar perfiles para el modal CREAR (solo perfiles activos)
         if ($currentUser->isSecretary()) {
             // Secretarios no pueden crear usuarios con perfiles 1, 2, 3, 4, 7, 8
@@ -107,7 +108,7 @@ class UserController extends Controller
             // Administradores y supervisores ven todos los perfiles activos
             $perfilesModal = Perfil::where('estado', 1)->get();
         }
-        
+
         // Filtrar perfiles para el modal EDITAR (perfiles activos e inactivos)
         if ($currentUser->isSecretary()) {
             // Secretarios no pueden editar usuarios con perfiles 1, 2, 3, 4, 7, 8
@@ -131,14 +132,14 @@ class UserController extends Controller
         $esperanzas = Esperanza::where('estado', 1)->get();
         $asignaciones = Asignacion::where('estado', 1)->get();
         $estadosEspirituales = EstadoEspiritual::where('estado', 1)->get();
-        
+
         // Si es coordinador, subcoordinador, secretario u organizador, solo mostrar su congregación
         if ($currentUser->isCoordinator() || $currentUser->isSubcoordinator() || $currentUser->isSecretary() || $currentUser->isOrganizer()) {
             $congregaciones = Congregacion::where('id', $currentUser->congregacion)->where('estado', 1)->get();
         } else {
             $congregaciones = Congregacion::where('estado', 1)->get();
         }
-        
+
         // Para el filtro de la vista principal, coordinadores, subcoordinadores, secretarios, subsecretarios, organizadores y suborganizadores solo ven grupos asignados a usuarios de su congregación
         if ($currentUser->isCoordinator() || $currentUser->isSubcoordinator() || $currentUser->isSecretary() || $currentUser->isSubsecretary() || $currentUser->isOrganizer() || $currentUser->isSuborganizer()) {
             // Obtener solo los grupos que están asignados a usuarios de la congregación del coordinador/subcoordinador/secretario/subsecretario/organizador/suborganizador
@@ -151,10 +152,10 @@ class UserController extends Controller
         } else {
             $gruposParaFiltro = Grupo::where('estado', 1)->get();
         }
-            
+
         // Para modales crear/editar, todos los usuarios ven todos los grupos activos
         $grupos = Grupo::where('estado', 1)->get();
-        
+
         return view('users.index', compact('users', 'perfiles', 'perfilesModal', 'perfilesModalEdit', 'congregaciones', 'sexos', 'servicios', 'nombramientos', 'esperanzas', 'grupos', 'gruposParaFiltro', 'asignaciones', 'estadosEspirituales'));
     }
 
@@ -164,7 +165,7 @@ class UserController extends Controller
     public function create()
     {
         $currentUser = auth()->user();
-        
+
         // Filtrar perfiles según el tipo de usuario
         if ($currentUser->isSecretary()) {
             // Secretarios no pueden ver perfiles 1, 2, 3, 4, 7, 8
@@ -176,7 +177,7 @@ class UserController extends Controller
             // Administradores y supervisores ven todos los perfiles
             $perfiles = Perfil::all();
         }
-        
+
         // Obtener datos para dropdowns en formulario de creación
         $congregaciones = Congregacion::where('estado', 1)->get();
         $sexos = Sexo::where('estado', 1)->get();
@@ -185,7 +186,7 @@ class UserController extends Controller
         $esperanzas = Esperanza::where('estado', 1)->get();
         $asignaciones = Asignacion::where('estado', 1)->get();
         $estadosEspirituales = EstadoEspiritual::where('estado', 1)->get();
-        
+
         // Para el filtro de la vista principal, coordinadores, subcoordinadores y secretarios solo ven grupos asignados a usuarios de su congregación
         if ($currentUser->isCoordinator() || $currentUser->isSubcoordinator() || $currentUser->isSecretary()) {
             // Obtener solo los grupos que están asignados a usuarios de la congregación del coordinador/subcoordinador/secretario
@@ -198,10 +199,10 @@ class UserController extends Controller
         } else {
             $gruposParaFiltro = Grupo::where('estado', 1)->get();
         }
-        
+
         // Para modales crear/editar, todos los usuarios ven todos los grupos activos
         $grupos = Grupo::where('estado', 1)->get();
-            
+
         return view('users.create', compact('perfiles', 'congregaciones', 'sexos', 'servicios', 'nombramientos', 'esperanzas', 'grupos', 'gruposParaFiltro', 'asignaciones', 'estadosEspirituales'));
     }
 
@@ -213,14 +214,14 @@ class UserController extends Controller
         try {
             $currentUser = auth()->user();
             $user = User::with(['perfil', 'congregacion', 'sexo', 'servicio', 'nombramiento', 'esperanza', 'grupo', 'estadoEspiritual', 'asignaciones', 'creador', 'modificador'])->findOrFail($id);
-            
+
             // Si es coordinador, subcoordinador, secretario, subsecretario, organizador o suborganizador, verificar que el usuario pertenezca a la misma congregación
             if (($currentUser->isCoordinator() || $currentUser->isSubcoordinator() || $currentUser->isSecretary() || $currentUser->isSubsecretary() || $currentUser->isOrganizer() || $currentUser->isSuborganizer()) && $user->congregacion != $currentUser->congregacion) {
                 return redirect()->route('users.index')->with('error', 'No tiene permisos para ver este usuario.');
             }
-            
+
             return view('users.show', compact('user'));
-            
+
         } catch (\Exception $e) {
             return redirect()->route('users.index')->with('error', 'Usuario no encontrado.');
         }
@@ -232,11 +233,11 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $currentUser = auth()->user();
-        
+
         // Si es coordinador, forzar que la congregación sea la suya y validar perfil
         if ($currentUser->isCoordinator()) {
             $request->merge(['congregacion' => $currentUser->congregacion]);
-            
+
             // Coordinadores no pueden crear usuarios con perfiles 1, 2
             if (in_array($request->perfil, [1, 2])) {
                 return response()->json([
@@ -245,11 +246,11 @@ class UserController extends Controller
                 ], 403);
             }
         }
-        
+
         // Si es secretario, forzar que la congregación sea la suya y validar perfil
         if ($currentUser->isSecretary()) {
             $request->merge(['congregacion' => $currentUser->congregacion]);
-            
+
             // Secretarios no pueden crear usuarios con perfiles 1, 2, 3, 4, 7, 8
             if (in_array($request->perfil, [1, 2, 3, 4, 7, 8])) {
                 return response()->json([
@@ -258,11 +259,11 @@ class UserController extends Controller
                 ], 403);
             }
         }
-        
+
         // Si es organizador, forzar que la congregación sea la suya y validar perfil
         if ($currentUser->isOrganizer()) {
             $request->merge(['congregacion' => $currentUser->congregacion]);
-            
+
             // Organizadores no pueden crear usuarios con perfiles 1, 2, 3, 4, 5, 6
             if (in_array($request->perfil, [1, 2, 3, 4, 5, 6])) {
                 return response()->json([
@@ -271,7 +272,7 @@ class UserController extends Controller
                 ], 403);
             }
         }
-        
+
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'nombre_completo' => 'nullable|string|max:255',
@@ -399,7 +400,7 @@ class UserController extends Controller
         try {
             $currentUser = auth()->user();
             $user = User::with(['creador', 'modificador', 'asignaciones', 'grupo'])->findOrFail($id);
-            
+
             // Si es coordinador, verificar que el usuario pertenezca a la misma congregación
             if ($currentUser->isCoordinator() && $user->congregacion != $currentUser->congregacion) {
                 return response()->json([
@@ -407,7 +408,7 @@ class UserController extends Controller
                     'message' => 'No tiene permisos para editar este usuario.'
                 ], 403);
             }
-            
+
             // Formatear la información de auditoría
             $userData = $user->toArray();
             $userData['creado_por_nombre'] = $user->creador ? $user->creador->name : null;
@@ -416,22 +417,22 @@ class UserController extends Controller
                 $user->creado_por_timestamp->format('d/m/Y H:i:s') : null;
             $userData['modificado_por_timestamp'] = $user->modificado_por_timestamp ?
                 $user->modificado_por_timestamp->format('d/m/Y H:i:s') : null;
-            
+
             // Preservar el ID del grupo (se pierde con toArray() al cargar la relación)
             $userData['grupo_id'] = $user->getAttributes()['grupo'];
-            
+
             // Preservar el ID del estado espiritual
             $userData['estado_espiritual'] = $user->getAttributes()['estado_espiritual'];
-            
+
             // Agregar IDs de asignaciones
             $userData['asignaciones'] = $user->asignaciones->pluck('id')->toArray();
-            
+
             // Agregar opciones de congregaciones y grupos para el coordinador
             if ($currentUser->isCoordinator()) {
                 $userData['congregaciones_disponibles'] = Congregacion::where('id', $currentUser->congregacion)->where('estado', 1)->get();
                 $userData['grupos_disponibles'] = Grupo::where('congregacion_id', $currentUser->congregacion)->where('estado', 1)->get();
             }
-            
+
             return response()->json([
                 'success' => true,
                 'user' => $userData
@@ -452,7 +453,7 @@ class UserController extends Controller
         try {
             $currentUser = auth()->user();
             $user = User::findOrFail($id);
-            
+
             // Si es coordinador o secretario, verificar que el usuario pertenezca a la misma congregación
             if (($currentUser->isCoordinator() || $currentUser->isSecretary()) && $user->congregacion != $currentUser->congregacion) {
                 return response()->json([
@@ -460,11 +461,11 @@ class UserController extends Controller
                     'message' => 'No tiene permisos para actualizar este usuario.'
                 ], 403);
             }
-            
+
             // Si es coordinador, forzar que la congregación sea la suya y validar perfil
             if ($currentUser->isCoordinator()) {
                 $request->merge(['congregacion' => $currentUser->congregacion]);
-                
+
                 // Coordinadores no pueden actualizar usuarios con perfiles 1, 2
                 if (in_array($request->perfil, [1, 2])) {
                     return response()->json([
@@ -473,11 +474,11 @@ class UserController extends Controller
                     ], 403);
                 }
             }
-            
+
             // Si es secretario, forzar que la congregación sea la suya y validar perfil
             if ($currentUser->isSecretary()) {
                 $request->merge(['congregacion' => $currentUser->congregacion]);
-                
+
                 // Secretarios no pueden actualizar usuarios con perfiles 1, 2, 3, 4, 7, 8
                 if (in_array($request->perfil, [1, 2, 3, 4, 7, 8])) {
                     return response()->json([
@@ -486,11 +487,11 @@ class UserController extends Controller
                     ], 403);
                 }
             }
-            
+
             // Si es organizador, forzar que la congregación sea la suya y validar perfil
             if ($currentUser->isOrganizer()) {
                 $request->merge(['congregacion' => $currentUser->congregacion]);
-                
+
                 // Organizadores no pueden actualizar usuarios con perfiles 1, 2, 3, 4, 5, 6
                 if (in_array($request->perfil, [1, 2, 3, 4, 5, 6])) {
                     return response()->json([
@@ -499,7 +500,7 @@ class UserController extends Controller
                     ], 403);
                 }
             }
-            
+
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:255',
                 'nombre_completo' => 'nullable|string|max:255',
@@ -622,7 +623,7 @@ class UserController extends Controller
         try {
             $currentUser = auth()->user();
             $user = User::findOrFail($id);
-            
+
             // Si es coordinador, verificar que el usuario pertenezca a la misma congregación
             if ($currentUser->isCoordinator() && $user->congregacion != $currentUser->congregacion) {
                 return response()->json([
@@ -630,7 +631,7 @@ class UserController extends Controller
                     'message' => 'No tiene permisos para eliminar este usuario.'
                 ], 403);
             }
-            
+
             $user->delete();
 
             return response()->json([
@@ -653,7 +654,7 @@ class UserController extends Controller
     {
         try {
             $user = Auth::user();
-            
+
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:255',
                 'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
@@ -713,7 +714,7 @@ class UserController extends Controller
     {
         try {
             $currentUser = auth()->user();
-            
+
             // Verificar que el usuario sea administrador (perfil=1)
             if (!$currentUser->isAdmin()) {
                 abort(403, 'No tiene permisos para exportar PDF.');
@@ -777,13 +778,13 @@ class UserController extends Controller
             $users = $users->map(function($user) use ($request) {
                 $userModel = User::with('asignaciones')->find($user->id);
                 $user->asignaciones = $userModel ? $userModel->asignaciones : collect();
-                
+
                 // Filtrar por asignación si se especifica
                 if ($request->filled('asignacion')) {
                     $hasAsignacion = $user->asignaciones->contains('abreviacion', $request->asignacion);
                     return $hasAsignacion ? $user : null;
                 }
-                
+
                 return $user;
             })->filter();
 
@@ -804,7 +805,7 @@ class UserController extends Controller
             $filename = 'usuarios_' . now()->format('Y-m-d_H-i-s') . '.pdf';
 
             return $pdf->download($filename);
-            
+
         } catch (\Exception $e) {
             \Log::error('Error generando PDF: ' . $e->getMessage());
             return redirect()->route('users.index')->with('error', 'Error al generar PDF: ' . $e->getMessage());
@@ -857,21 +858,21 @@ class UserController extends Controller
     /**
      * Obtener historial de participaciones de un usuario en la segunda sección.
      */
-    public function getHistorialSegundaSeccion($encargadoId)
+    public function getHistorialSegundaSeccion($encargadoId,$parteId)
     {
         try {
             // Verificar que el usuario existe
             $usuario = User::findOrFail($encargadoId);
-            
+            $partesSeccion = ParteSeccion::findOrFail($parteId);
             // Obtener todas las participaciones del usuario en partes de la segunda sección
             $historial = DB::table('partes_programa as pp')
                 ->join('partes_seccion as ps', 'pp.parte_id', '=', 'ps.id')
-                ->join('secciones_reunion as sr', 'ps.seccion_id', '=', 'sr.id')
+                //->join('secciones_reunion as sr', 'ps.seccion_id', '=', 'sr.id')
                 ->join('programas as prog', 'pp.programa_id', '=', 'prog.id')
                 ->join('salas as s', 'pp.sala_id', '=', 's.id')
                 ->leftJoin('users as encargado', 'pp.encargado_id', '=', 'encargado.id')
                 ->leftJoin('users as ayudante', 'pp.ayudante_id', '=', 'ayudante.id')
-                ->where('sr.id', 2) // Segunda sección
+                ->where('ps.asignacion_id', $partesSeccion->asignacion_id) // Segunda sección
                 ->where(function($query) use ($encargadoId) {
                     $query->where('pp.encargado_id', $encargadoId)
                           ->orWhere('pp.ayudante_id', $encargadoId);
@@ -895,11 +896,11 @@ class UserController extends Controller
             // Formatear las fechas y nombres con padding
             $historial = $historial->map(function($item) {
                 $item->fecha_formateada = date('d/m/Y', strtotime($item->fecha));
-                
+
                 // Aplicar str_pad con puntos para los nombres (25 caracteres)
                 $item->encargado_nombre_formateado = $item->encargado_nombre ? str_pad($item->encargado_nombre, 25, '.') : str_pad('', 25, '.');
                 $item->ayudante_nombre_formateado = $item->ayudante_nombre ? str_pad($item->ayudante_nombre, 25, '.') : str_pad('', 25, '.');
-                
+
                 return $item;
             });
 

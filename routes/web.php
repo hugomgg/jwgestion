@@ -115,12 +115,13 @@ Route::get('/test-sql-error-public', [App\Http\Controllers\ProgramaController::c
         Route::get('/usuarios/{usuarioId}/historial-orador', [App\Http\Controllers\ProgramaController::class, 'getHistorialOrador'])->name('usuarios.historial-orador');
         Route::get('/usuarios-presidencia', [App\Http\Controllers\ProgramaController::class, 'getUsuariosPresidencia'])->name('usuarios-presidencia.get');
         Route::get('/usuarios/{usuarioId}/historial-presidencia', [App\Http\Controllers\ProgramaController::class, 'getHistorialPresidencia'])->name('usuarios.historial-presidencia');
-        Route::get('/usuarios/{encargadoId}/historial-segunda-seccion', [App\Http\Controllers\UserController::class, 'getHistorialSegundaSeccion'])->name('usuarios.historial-segunda-seccion');
+        Route::get('/usuarios/{encargadoId}/{parteId}/historial-segunda-seccion', [App\Http\Controllers\UserController::class, 'getHistorialSegundaSeccion'])->name('usuarios.historial-segunda-seccion');
         Route::get('/canciones-disponibles', [App\Http\Controllers\ProgramaController::class, 'getCancionesDisponibles'])->name('canciones-disponibles.get');
         Route::get('/usuarios/{usuarioId}/historial-participaciones', [App\Http\Controllers\ParteProgramaController::class, 'getHistorialParticipaciones'])->name('usuarios.historial-participaciones');
         Route::get('/verificar-sexos-usuarios', [App\Http\Controllers\ParteProgramaController::class, 'verificarSexosUsuarios'])->name('verificar-sexos-usuarios.get');
         Route::get('/ayudantes-por-parte/{parteId}', [App\Http\Controllers\ParteProgramaController::class, 'getAyudantesByParte'])->name('ayudantes-por-parte.get');
         Route::get('/encargados-por-parte-programa/{parteId}', [App\Http\Controllers\ParteProgramaController::class, 'getEncargadosByPartePrograma'])->name('encargados-por-parte-programa.get');
+        Route::get('/encargados-por-parte-programa-smm/{parteId}', [App\Http\Controllers\ParteProgramaController::class, 'getEncargadosByParteProgramaSmm'])->name('encargados-por-parte-programa-smm.get');
         Route::get('/ayudantes-por-parte-programa/{parteId}', [App\Http\Controllers\ParteProgramaController::class, 'getAyudantesByPartePrograma'])->name('ayudantes-por-parte-programa.get');
         Route::get('/usuarios-participantes-programa', [App\Http\Controllers\ParteProgramaController::class, 'getUsuariosParticipantesPrograma'])->name('usuarios-participantes-programa.get');
         Route::post('/partes-programa/{id}/move-up', [App\Http\Controllers\ParteProgramaController::class, 'moveUp'])->name('partes-programa.move-up');
