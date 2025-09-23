@@ -66,7 +66,7 @@
             padding-bottom: 2px;
             margin-left: 5px;
             color: #0000FF;
-            font-weight: bold;
+            font-weight: normal;
         }
 
         .tipo-intervencion {
@@ -130,7 +130,7 @@
         .codigo-seccion {
             font-size: 12px;
             color: #666;
-            text-align: right;
+            text-align: left;
             margin-top: 6px;
         }
 
@@ -212,13 +212,13 @@
                         </div>
                         <div class="assignment-content">
                             <div class="field-row">
-                                <span class="field-label">Encargado:</span>
-                                <span class="field-value">{{ $asignacion->nombre_encargado ?? '' }}</span>
+                                <span class="field-label">Nombre:</span>
+                                <span class="field-value">{{ ($asignacion->nombre_encargado) ? substr($asignacion->nombre_encargado, 0, 25) : '' }}</span>
                             </div>
 
                             <div class="field-row">
                                 <span class="field-label">Ayudante:</span>
-                                <span class="field-value">{{ $asignacion->nombre_ayudante ?? '' }}</span>
+                                <span class="field-value">{{ ($asignacion->nombre_ayudante) ? substr($asignacion->nombre_ayudante, 0, 25) : '' }}</span>
                             </div>
 
                             <div class="field-row">
@@ -271,7 +271,7 @@
             @if($grupo->count() > 2)
             <tr>
                 @foreach($grupo->skip(2)->take(2) as $index => $asignacion)
-                <td>
+                <td><br><br><br>
                     <div class="assignment-box">
                         <div class="assignment-header">
                             ASIGNACION PARA LA REUNIÓN<br>
@@ -279,13 +279,13 @@
                         </div>
                         <div class="assignment-content">
                             <div class="field-row">
-                                <span class="field-label">Encargado:</span>
-                                <span class="field-value">{{ $asignacion->nombre_encargado ?? '' }}</span>
+                                <span class="field-label">Nombre:</span>
+                                <span class="field-value">{{ ($asignacion->nombre_encargado) ? substr($asignacion->nombre_encargado, 0, 25) : '' }}</span>
                             </div>
 
                             <div class="field-row">
                                 <span class="field-label">Ayudante:</span>
-                                <span class="field-value">{{ $asignacion->nombre_ayudante ?? '' }}</span>
+                                <span class="field-value">{{ ($asignacion->nombre_ayudante) ? substr($asignacion->nombre_ayudante, 0, 25) : '' }}</span>
                             </div>
 
                             <div class="field-row">
@@ -318,13 +318,12 @@
 
                             <div class="nota-section">
                                 <div class="nota-text">Nota al estudiante:</div>
-                                <div class="guia-text">En la <em>Guía de actividades</em> encontrará la información que necesita para su intervención así como el aspecto de la oratoria que debe preparar con la ayuda del folleto Maestros.</div>
+                                <div class="guia-text">En la <em>Guía de actividades</em> encontrará la información que necesita para su intervención. Repase también las indicaciones que se describen en las Instrucciones para la reunión Vida y Ministerio Cristianos (S-38).</div>
                             </div>
 
                             <div class="codigo-seccion">
                                 S-89-S 11/23
                             </div>
-                            <br><br><br>
                         </div>
                     </div>
                 </td>

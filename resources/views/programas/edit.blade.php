@@ -122,7 +122,7 @@
                                 <div class="card mb-4">
                                     <div class="card-header" style="background-color: #BBE6FC;">
                                         <div class="row align-items-center">
-                                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <div class="d-flex justify-content-between align-items-center mb-0">
                                                 <h6 class="mb-0">
                                                     <i class="fas fa-book me-2"></i>TESOROS DE LA BIBLIA
                                                 </h6>
@@ -160,11 +160,15 @@
                         @if(Auth::user()->perfil == 3)
                         <div class="row">
                             <div class="col-12">
-                                <div class="card mb-4" >
-                                    <div class="card-header" style="background-color: #FCF2BB;">
-                                        <h6 class="mb-0">
-                                            <i class="fas fa-graduation-cap me-2"></i>ESCUELA SEAMOS MEJORES MAESTROS
-                                        </h6><br>
+                                <div class="card mb-4">
+                                    <div class="card-header mb-0" style="background-color: #FCF2BB;">
+                                        <div class="row align-items-center">
+                                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                                <h6 class="mb-0" style="margin-top:10px;">
+                                                    <i class="fas fa-graduation-cap me-2"></i>ESCUELA SEAMOS MEJORES MAESTROS
+                                                </h6>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="card-body">
                                         <!-- Nav tabs -->
@@ -185,7 +189,7 @@
                                         <div class="tab-content mt-3" id="escuelaTabsContent">
                                             <!-- Tab Escuela (SP) -->
                                             <div class="tab-pane fade show active" id="escuela-sp" role="tabpanel" aria-labelledby="escuela-sp-tab">
-                                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                                <div class="d-flex justify-content-between align-items-center mb-0">
                                                     <h6 class="mb-0">Asignaciones de Seamos Mejores Maestros (Sala Principal)</h6>
                                                     <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#parteProgramaSegundaSeccionModal" onclick="openCreateParteSegundaSeccionModal(false)">
                                                         <i class="fas fa-plus me-2"></i>Nueva Asignación SMM (SP)
@@ -249,7 +253,7 @@
                                 <div class="card mb-4">
                                     <div class="card-header" style="background-color: #FCBBBF;">
                                         <div class="row align-items-center">
-                                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <div class="d-flex justify-content-between align-items-center mb-0">
                                                 <h6 class="mb-0">
                                                     <i class="fas fa-briefcase me-2"></i>NUESTRA VIDA CRISTIANA
                                                 </h6>

@@ -875,9 +875,12 @@ class ProgramaController extends Controller
                         'pp.tiempo',
                         'ps.abreviacion as parte_abreviacion',
                         'encargado.name as nombre_encargado',
-                        'ayudante.name as nombre_ayudante'
+                        'ayudante.name as nombre_ayudante',
+                        DB::raw('CASE WHEN pp.parte_id = 3 THEN 99 ELSE pp.orden END as orden')
                     )
-                    ->orderByRaw('CASE WHEN pp.parte_id = 3 THEN 99 ELSE pp.orden END')
+                    ->orderBy('ps.seccion_id', 'asc')
+                    ->orderBy('pp.sala_id', 'asc')
+                    ->orderBy('pp.orden', 'asc')
                     ->get();
             }
 
