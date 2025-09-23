@@ -413,6 +413,9 @@ $(document).ready(function() {
         $('#saveParteBtn').text('Guardar Asignación');
         $('#parteProgramaForm')[0].reset();
 
+        // Limpiar alertas del modal
+        $('#modal-alert-container').empty();
+
         // Mostrar select y ocultar input de texto para "Asignación" en modo "nuevo"
         $('#parte_id').show();
         $('#parte_display').hide();
@@ -447,6 +450,9 @@ $(document).ready(function() {
         isEditMode = true;
         $('#parteProgramaModalLabel').text('Editar Asignación del Programa');
         $('#saveParteBtn').text('Actualizar Asignación');
+
+        // Limpiar alertas del modal
+        $('#modal-alert-container').empty();
 
         // Ocultar select y mostrar input de texto para "Asignación" en modo "editar"
         $('#parte_id').hide();
@@ -518,6 +524,9 @@ $(document).ready(function() {
         $('.is-invalid').removeClass('is-invalid');
         $('.invalid-feedback').text('');
 
+        // Limpiar alertas del modal
+        $('#modal-alert-container').empty();
+
         // Validar campo tiempo
         const tiempoValue = $('#tiempo_parte').val();
         if (!tiempoValue || tiempoValue < 1) {
@@ -552,6 +561,16 @@ $(document).ready(function() {
         if (leccionFieldId && (!leccionValue || leccionValue.trim() === '')) {
             $(`#${leccionFieldId}`).addClass('is-invalid');
             $(`#${leccionFieldId}`).siblings('.invalid-feedback').text('El campo Lección es obligatorio.');
+            submitBtn.prop('disabled', false);
+            spinner.addClass('d-none');
+            return;
+        }
+
+        // Validar que el encargado y el encargado reemplazado sean distintos
+        const encargadoId = $('#encargado_id').val();
+        const encargadoReemplazadoId = $('#encargado_reemplazado_id').val();
+        if (encargadoId && encargadoReemplazadoId && encargadoId === encargadoReemplazadoId) {
+            showAlert('modal-alert-container', 'warning', 'El Encargado y el Encargado Reemplazado no pueden ser la misma persona.');
             submitBtn.prop('disabled', false);
             spinner.addClass('d-none');
             return;
@@ -633,6 +652,16 @@ $(document).ready(function() {
         if (!tiempoValue || tiempoValue < 1) {
             $('#tiempo_parte_nv').addClass('is-invalid');
             $('#tiempo_parte_nv').siblings('.invalid-feedback').text('El campo Tiempo es obligatorio y debe ser mayor a 0.');
+            submitBtn.prop('disabled', false);
+            spinner.addClass('d-none');
+            return;
+        }
+
+        // Validar que el encargado y el encargado reemplazado sean distintos
+        const encargadoId = $('#encargado_id_nv').val();
+        const encargadoReemplazadoId = $('#encargado_reemplazado_id_nv').val();
+        if (encargadoId && encargadoReemplazadoId && encargadoId === encargadoReemplazadoId) {
+            showAlert('modal-alert-container-nv', 'warning', 'El Encargado y el Encargado Reemplazado no pueden ser la misma persona.');
             submitBtn.prop('disabled', false);
             spinner.addClass('d-none');
             return;
@@ -4596,8 +4625,12 @@ $(document).ready(function() {
     function openCreateParteNVModal() {
         isEditMode = false;
         $('#parteProgramaNVModalLabel').text('Nueva Asignación de Nuestra Vida Cristiana');
+        $('#saveParteNVBtn').text('Guardar Asignación');
         $('#parteProgramaNVForm')[0].reset();
         $('#programa_id_parte_nv').val($('#programa_id').val());
+
+        // Limpiar alertas del modal
+        $('#modal-alert-container-nv').empty();
 
         // Mostrar select y ocultar input de texto para "Asignación" en modo "nuevo"
         $('#parte_id_nv').show();
@@ -4635,6 +4668,10 @@ $(document).ready(function() {
     function openEditParteNVModal(id) {
         isEditMode = true;
         $('#parteProgramaNVModalLabel').text('Editar Asignación de Nuestra Vida Cristiana');
+        $('#saveParteNVBtn').text('Actualizar Asignación');
+
+        // Limpiar alertas del modal
+        $('#modal-alert-container-nv').empty();
 
         // Ocultar select y mostrar input de texto para "Asignación" en modo "editar"
             $('#parte_id_nv').hide();

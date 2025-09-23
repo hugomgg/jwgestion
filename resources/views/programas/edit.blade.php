@@ -405,6 +405,7 @@
             </div>
             <form id="parteProgramaForm">
                 <div class="modal-body">
+                    <div id="modal-alert-container"></div>
                     @csrf
                     <input type="hidden" id="parte_programa_id" name="parte_programa_id">
                     <input type="hidden" id="programa_id_parte" name="programa_id" value="{{ $programa->id }}">
@@ -762,7 +763,7 @@
                     @csrf
                     <input type="hidden" id="parte_programa_nv_id" name="parte_programa_id">
                     <input type="hidden" id="programa_id_parte_nv" name="programa_id" value="{{ $programa->id }}">
-
+                    <div id="modal-alert-container-nv"></div>
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
@@ -842,6 +843,7 @@
                         </div>
                         @endif
                     </div>
+                    
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
