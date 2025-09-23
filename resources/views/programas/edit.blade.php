@@ -478,12 +478,10 @@
                                 <input type="hidden" id="encargado_reemplazado_id" name="encargado_reemplazado_id">
                             </div>
                         </div>
-                        @endif
-                        @if(!Auth::user()->isCoordinator())
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="leccion_parte" class="form-label">Lección <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="leccion_parte" name="leccion" maxlength="500" required>
+                                <label for="leccion_parte" class="form-label">Lección </label>
+                                <input type="text" class="form-control" id="leccion_parte" name="leccion" maxlength="500">
                                 <div class="invalid-feedback"></div>
                             </div>
                         </div>
@@ -614,8 +612,8 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="leccion_segunda_seccion" class="form-label">Lección <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="leccion_segunda_seccion" name="leccion" maxlength="500" required>
+                        <label for="leccion_segunda_seccion" class="form-label">Lección </label>
+                        <input type="text" class="form-control" id="leccion_segunda_seccion" name="leccion" maxlength="500">
                         <div class="invalid-feedback"></div>
                     </div>
                 </div>
@@ -732,8 +730,8 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="leccion_tercera_seccion" class="form-label">Lección <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="leccion_tercera_seccion" name="leccion" maxlength="500" required>
+                        <label for="leccion_tercera_seccion" class="form-label">Lección </label>
+                        <input type="text" class="form-control" id="leccion_tercera_seccion" name="leccion" maxlength="500">
                         <div class="invalid-feedback"></div>
                     </div>
                 </div>
@@ -836,8 +834,8 @@
                         @if(!Auth::user()->isCoordinator())
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="leccion_parte_nv" class="form-label">Lección <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="leccion_parte_nv" name="leccion" maxlength="500" required>
+                                <label for="leccion_parte_nv" class="form-label">Lección </label>
+                                <input type="text" class="form-control" id="leccion_parte_nv" name="leccion" maxlength="500">
                                 <div class="invalid-feedback"></div>
                             </div>
                         </div>

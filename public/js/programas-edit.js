@@ -453,6 +453,8 @@ $(document).ready(function() {
 
         // Limpiar alertas del modal
         $('#modal-alert-container').empty();
+        $('#encargado_reemplazado_id').val('');
+        $('#encargado_reemplazado_display').val('');
 
         // Ocultar select y mostrar input de texto para "Asignación" en modo "editar"
         $('#parte_id').hide();
@@ -1319,6 +1321,20 @@ $(document).ready(function() {
 
         if (encargadoId && ayudanteId && encargadoId === ayudanteId) {
             showAlert('modal-alert-container-segunda-seccion', 'warning', 'El Encargado y el Ayudante no pueden ser la misma persona.');
+            return;
+        }
+
+        // Validar que el encargado y el encargado reemplazado sean distintos
+        const encargadoReemplazadoId = $('#encargado_reemplazado_id_segunda_seccion').val();
+        if (encargadoId && encargadoReemplazadoId && encargadoId === encargadoReemplazadoId) {
+            showAlert('modal-alert-container-segunda-seccion', 'warning', 'El Encargado y el Encargado Reemplazado no pueden ser la misma persona.');
+            return;
+        }
+
+        // Validar que el ayudante y el ayudante reemplazado sean distintos
+        const ayudanteReemplazadoId = $('#ayudante_reemplazado_id_segunda_seccion').val();
+        if (ayudanteId && ayudanteReemplazadoId && ayudanteId === ayudanteReemplazadoId) {
+            showAlert('modal-alert-container-segunda-seccion', 'warning', 'El Ayudante y el Ayudante Reemplazado no pueden ser la misma persona.');
             return;
         }
 
@@ -4674,8 +4690,11 @@ $(document).ready(function() {
         $('#modal-alert-container-nv').empty();
 
         // Ocultar select y mostrar input de texto para "Asignación" en modo "editar"
-            $('#parte_id_nv').hide();
-            $('#parte_display_nv').show();
+        $('#parte_id_nv').hide();
+        $('#parte_display_nv').show();
+
+        $('#encargado_reemplazado_display_nv').val('');
+        $('#encargado_reemplazado_id_nv').val('');
 
         // Mostrar el campo Encargado Reemplazado y el botón Agregar Reemplazado cuando se edita
         $('#encargado_reemplazado_display_nv').closest('.col-md-6').show();
