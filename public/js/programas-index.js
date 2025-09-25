@@ -9,7 +9,7 @@ $(document).ready(function() {
     // Inicializar DataTable
     $('#programasTable').DataTable({
         language: {
-            url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
+            url: '/js/datatables-es-ES.json'
         },
         responsive: true,
         order: [[0, 'desc']], // Ordenar por fecha descendente

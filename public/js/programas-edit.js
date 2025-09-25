@@ -206,7 +206,7 @@ $(document).ready(function() {
     function initPartesDataTable() {
         partesTable = $('#partesTable').DataTable({
             language: {
-                url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
+                url: '/js/datatables-es-ES.json'
             },
             responsive: true,
             paging: false,
@@ -219,7 +219,7 @@ $(document).ready(function() {
     function initPartesSegundaSeccionDataTable() {
         partesSegundaSeccionTable = $('#partesSegundaSeccionTable').DataTable({
             language: {
-                url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
+                url: '/js/datatables-es-ES.json'
             },
             responsive: true,
             paging: false,

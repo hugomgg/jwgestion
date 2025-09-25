@@ -34,6 +34,7 @@ div.select2-container--bootstrap-5 .select2-selection__rendered {
 }
 
 /* Estilos para asegurar que ambas tablas de escuela tengan el mismo ancho */
+
 #partesSegundaSeccionTable,
 #partesTerceraSeccionTable {
     width: 100% !important;
@@ -88,7 +89,7 @@ div.select2-container--bootstrap-5 .select2-selection__rendered {
 
 #partesSegundaSeccionTable th:nth-child(6),
 #partesTerceraSeccionTable th:nth-child(6) {
-    width: auto !important;
+    width: 100px !important;
     min-width: 100px !important;
 }
 
@@ -125,7 +126,7 @@ div.select2-container--bootstrap-5 .select2-selection__rendered {
 
 #partesSegundaSeccionTable td:nth-child(6),
 #partesTerceraSeccionTable td:nth-child(6) {
-    width: auto !important;
+    width: 100px !important;
     max-width: 100px !important;
 }
 
