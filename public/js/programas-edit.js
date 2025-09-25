@@ -1,7 +1,6 @@
 // Variables globales que serán definidas desde el Blade template
 // let partesTable; - Declarado en Blade template
 // let partesSegundaSeccionTable; - Declarado en Blade template
-// let partesTerceraSeccionTable; - Declarado en Blade template
 // let isEditMode = false; - Declarado en Blade template
 // window.editingParteTwoData = false; - Declarado en Blade template
 // let programmaticChange = false; - Declarado en Blade template
@@ -15,13 +14,10 @@ $(document).ready(function() {
 
     // Inicializar DataTable para partes de la segunda sección
     initPartesSegundaSeccionDataTable();
-    initPartesTerceraSeccionDataTable();
     initPartesNVDataTable();
 
     // Cargar partes de la segunda sección
     loadPartesSegundaSeccion();
-    // Cargar partes de la tercera sección
-    loadPartesTerceraSeccion();
     // Cargar partes de Nuestra Vida Cristiana
     loadPartesNV();
 
@@ -229,20 +225,6 @@ $(document).ready(function() {
         });
     }
 
-    function initPartesTerceraSeccionDataTable() {
-        partesTerceraSeccionTable = $('#partesTerceraSeccionTable').DataTable({
-            language: {
-                emptyTable: "No hay partes asignadas en esta sección",
-                zeroRecords: "No se encontraron partes que coincidan con la búsqueda"
-            },
-            responsive: true,
-            ordering: false,
-            paging: false,
-            info: false,
-            searching: false
-        });
-    }
-
     function loadPartesSegundaSeccion() {
         const programaId = $('#programa_id').val();
 
@@ -274,7 +256,19 @@ $(document).ready(function() {
                             </div>
                         `;
 
+                        let salaBadge = '';
+                        if (parte.sala_abreviacion === 'SP') {
+                            salaBadge = `<span class="badge bg-primary">${parte.sala_abreviacion}</span>`;
+                        } else if (parte.sala_abreviacion === 'S1') {
+                            salaBadge = `<span class="badge bg-warning">${parte.sala_abreviacion}</span>`;
+                        } else if (parte.sala_abreviacion === 'S2') {
+                            salaBadge = `<span class="badge bg-success">${parte.sala_abreviacion}</span>`;
+                        } else {
+                            salaBadge = '<span class="badge bg-secondary">-</span>';
+                        }
+
                         let rowData = [
+                            salaBadge,
                             parte.tiempo || '-',
                             parte.parte_abreviacion || '-',
                             parte.encargado_nombre || '-',
@@ -293,63 +287,6 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 console.error('Error al cargar las partes de la segunda sección:', xhr.responseText);
-            }
-        });
-    }
-
-    function loadPartesTerceraSeccion() {
-        const programaId = $('#programa_id').val();
-
-        $.ajax({
-            url: `/programas/${programaId}/partes-tercera-seccion`,
-            method: 'GET',
-            success: function(response) {
-                if (response.success) {
-                    // Limpiar la tabla
-                    partesTerceraSeccionTable.clear();
-
-                    response.data.forEach(function(parte) {
-                        const upDisabled = parte.es_primero ? 'disabled' : '';
-                        const downDisabled = parte.es_ultimo ? 'disabled' : '';
-
-                        let acciones = `
-                            <div class="btn-group" role="group">
-                                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="moveParteTerceraSeccionUp(${parte.id})" title="Subir" ${upDisabled}>
-                                    <i class="fas fa-chevron-up"></i>
-                                </button>
-                                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="moveParteTerceraSeccionDown(${parte.id})" title="Bajar" ${downDisabled}>
-                                    <i class="fas fa-chevron-down"></i>
-                                </button>
-                                <button type="button" class="btn btn-sm btn-outline-primary" onclick="editParteSegundaSeccion(${parte.id})" title="Editar">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteParteTerceraSeccion(${parte.id})" title="Eliminar">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        `;
-
-                        let rowData = [
-                            parte.tiempo || '-',
-                            parte.parte_abreviacion || '-',
-                            parte.encargado_nombre || '-',
-                            parte.ayudante_nombre || '-',
-                            parte.leccion || '-',
-                            acciones
-                        ];
-
-                        partesTerceraSeccionTable.row.add(rowData);
-                    });
-
-                    // Dibujar la tabla
-                    partesTerceraSeccionTable.draw();
-                } else {
-                    console.error('Error en la respuesta:', response);
-                }
-            },
-            error: function(xhr) {
-                console.error('Error al cargar las partes de la tercera sección:', xhr.responseText);
-                showAlert('alert-container', 'danger', 'Error al cargar las partes de la tercera sección');
             }
         });
     }
@@ -920,6 +857,20 @@ $(document).ready(function() {
         }
     });
 
+    // Manejar cambio en el select de sala en la segunda sección
+    $(document).on('change', '#sala_id_segunda_seccion', function() {
+        const salaId = $(this).val();
+        const selectedOption = $(this).find('option:selected');
+        const salaNombre = selectedOption.text();
+
+        // Actualizar el título del modal
+        if (salaId) {
+            $('#parteProgramaSegundaSeccionModalLabel').text('Nueva Asignación (' + salaNombre.split(' - ')[1] + ')');
+        } else {
+            $('#parteProgramaSegundaSeccionModalLabel').text('Nueva Asignación');
+        }
+    });
+
     // Función para continuar el cambio de encargado
     function continueEncargadoChange(encargadoSeleccionado, parteSeleccionada, ayudanteSelect) {
         if (encargadoSeleccionado && parteSeleccionada) {
@@ -1060,18 +1011,28 @@ $(document).ready(function() {
         continueAyudanteChangeTercera(ayudanteSeleccionado, encargadoSelect);
     });
 
-    function openCreateParteSegundaSeccionModal(isSalaAuxiliar = false) {
+    function openCreateParteSegundaSeccionModal(isSalaAuxiliar = null) {
         isEditMode = false;
 
-        if (isSalaAuxiliar) {
-            $('#parteProgramaSegundaSeccionModalLabel').text('Nueva Asignación (Sala Auxiliar 1)');
-            // Cambiar sala_id a 2 para sala auxiliar
-            $('#parteProgramaSegundaSeccionForm input[name="sala_id"]').val('2');
-        } else {
-            $('#parteProgramaSegundaSeccionModalLabel').text('Nueva Asignación (Sala Principal)');
-            // Mantener sala_id en 1 para sala principal
-            $('#parteProgramaSegundaSeccionForm input[name="sala_id"]').val('1');
+        // Si no se especifica la sala, siempre usar Sala Principal (SP) para el botón principal
+        if (isSalaAuxiliar === null) {
+            isSalaAuxiliar = false; // Siempre SP para el botón principal
         }
+
+        // Determinar el sala_id basado en el parámetro
+        let salaId = 1; // Por defecto Sala Principal
+        let salaNombre = 'Sala Principal';
+
+        if (isSalaAuxiliar) {
+            salaId = 2; // Sala Auxiliar 1
+            salaNombre = 'Sala Auxiliar 1';
+        }
+
+        // Establecer el valor en el select de sala
+        $('#sala_id_segunda_seccion').val(salaId);
+
+        // Actualizar el título del modal
+        $('#parteProgramaSegundaSeccionModalLabel').text('Nueva Asignación (' + salaNombre + ')');
 
         $('#parteProgramaSegundaSeccionForm')[0].reset();
         $('#parte_programa_segunda_seccion_id').val('');
@@ -1182,10 +1143,10 @@ $(document).ready(function() {
                     // Establecer el sala_id correcto y actualizar el título del modal
                     if (parte.sala_id == 2) {
                         $('#parteProgramaSegundaSeccionModalLabel').text('Editar Asignación (Sala Auxiliar 1)');
-                        $('#parteProgramaSegundaSeccionForm input[name="sala_id"]').val('2');
+                        $('#sala_id_segunda_seccion').val('2');
                     } else {
                         $('#parteProgramaSegundaSeccionModalLabel').text('Editar Asignación (Sala Principal)');
-                        $('#parteProgramaSegundaSeccionForm input[name="sala_id"]').val('1');
+                        $('#sala_id_segunda_seccion').val('1');
                     }
                     $('#parte_id_segunda_seccion').val(parte.parte_id);
                     $('#tiempo_segunda_seccion').val(parte.tiempo);
@@ -1299,9 +1260,8 @@ $(document).ready(function() {
                         // Determinar qué datatable actualizar según el sala_id de la parte eliminada
                         // Como estamos eliminando desde la tabla de segunda sección, pero puede ser sala auxiliar,
                         // necesitamos verificar si hay una manera de determinar el sala_id
-                        // Por ahora, recargamos ambas tablas para asegurar consistencia
+                        // Por ahora, recargamos la tabla de segunda sección
                         loadPartesSegundaSeccion();
-                        loadPartesTerceraSeccion();
                         $('#confirmDeleteModal').modal('hide');
                     }
                 },
@@ -1394,13 +1354,8 @@ $(document).ready(function() {
                 if (response.success) {
                     $('#parteProgramaSegundaSeccionModal').modal('hide');
 
-                    // Determinar qué datatable actualizar según el sala_id
-                    const salaId = $('#parteProgramaSegundaSeccionForm input[name="sala_id"]').val();
-                    if (salaId == '2') {
-                        loadPartesTerceraSeccion(); // Sala auxiliar → actualizar tabla de tercera sección
-                    } else {
-                        loadPartesSegundaSeccion(); // Sala principal → actualizar tabla de segunda sección
-                    }
+                    // Solo actualizar tabla de segunda sección
+                    loadPartesSegundaSeccion();
 
                     showAlert('alert-container', 'success', response.message);
                 }
@@ -4995,3 +4950,8 @@ $(document).ready(function() {
         $('#btn-eliminar-reemplazado-nv').prop('disabled', true);
     }
 });
+
+// Función vacía para evitar errores si se llama accidentalmente
+function loadPartesTerceraSeccion() {
+    // Tabla eliminada - no hacer nada
+}

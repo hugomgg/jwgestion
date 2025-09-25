@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Cancion;
 use App\Models\ParteSeccion;
 use App\Models\SeccionReunion;
+use App\Models\Sala;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -136,6 +137,11 @@ class ProgramaController extends Controller
                 ->orderBy('numero')
                 ->get();
 
+            // Obtener salas activas
+            $salas = Sala::activas()
+                ->orderBy('id')
+                ->get();
+
             // Para coordinadores (perfil=3), obtener usuarios especiales para presidencia y orador inicial
             $usuariosPresidencia = [];
             $usuariosOradorInicial = [];
@@ -191,7 +197,7 @@ class ProgramaController extends Controller
             // Obtener la sección de reunión con id=1 para el título
             $seccionReunion = SeccionReunion::find(1);
 
-            return view('programas.edit', compact('programa', 'usuarios', 'canciones', 'seccionReunion', 'usuariosPresidencia', 'usuariosOradorInicial'));
+            return view('programas.edit', compact('programa', 'usuarios', 'canciones', 'seccionReunion', 'usuariosPresidencia', 'usuariosOradorInicial', 'salas'));
         } catch (\Exception $e) {
             return redirect()->route('programas.index')
                 ->with('error', 'Programa no encontrado.');
@@ -423,7 +429,6 @@ class ProgramaController extends Controller
                 ->leftJoin('salas as s', 'pp.sala_id', '=', 's.id')
                 ->where('pp.programa_id', $programaId)
                 ->where('ps.seccion_id', 2)
-                ->where('pp.sala_id', 1)
                 ->select(
                     'pp.id',
                     'ps.nombre as parte_nombre',
@@ -434,19 +439,29 @@ class ProgramaController extends Controller
                     'u.name as encargado_nombre',
                     'u_ayudante.name as ayudante_nombre',
                     's.nombre as sala_nombre',
+                    's.abreviacion as sala_abreviacion',
                     'pp.leccion',
-                    'pp.orden'
+                    'pp.orden',
+                    'pp.sala_id'
                 )
+                ->orderBy('pp.sala_id', 'asc')
                 ->orderBy('pp.orden', 'asc')
                 ->get();
 
             // Agregar información sobre posición (primero/último) para cada parte
             $partesCollection = collect($partes);
-            $partesCollection = $partesCollection->map(function ($parte, $index) use ($partesCollection) {
-                $parte->es_primero = $index === 0;
-                $parte->es_ultimo = $index === ($partesCollection->count() - 1);
-                return $parte;
-            });
+            $partesCollection = $partesCollection
+                ->groupBy('sala_id') // agrupamos por sala_id
+                ->flatMap(function ($grupo) {
+                    // $grupo es la subcolección de una sala_id
+                    $total = $grupo->count();
+
+                    return $grupo->values()->map(function ($parte, $index) use ($total) {
+                        $parte->es_primero = $index === 0;
+                        $parte->es_ultimo  = $index === ($total - 1);
+                        return $parte;
+                    });
+                });
 
             return response()->json([
                 'success' => true,

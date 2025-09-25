@@ -124,6 +124,12 @@ div.select2-container--bootstrap-5 .select2-selection__rendered {
     width: 100px !important;
     min-width: 100px !important;
 }
+#partesSegundaSeccionTable th:nth-child(7),
+#partesTerceraSeccionTable th:nth-child(7) {
+    width: 100px !important;
+    min-width: 100px !important;
+}
+
 
 /* Aplicar los mismos estilos a las celdas del cuerpo de la tabla */
 #partesSegundaSeccionTable td:nth-child(1),
@@ -158,6 +164,11 @@ div.select2-container--bootstrap-5 .select2-selection__rendered {
 
 #partesSegundaSeccionTable td:nth-child(6),
 #partesTerceraSeccionTable td:nth-child(6) {
+    width: 100px !important;
+    max-width: 100px !important;
+}
+#partesSegundaSeccionTable td:nth-child(7),
+#partesTerceraSeccionTable td:nth-child(7) {
     width: 100px !important;
     max-width: 100px !important;
 }

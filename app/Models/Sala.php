@@ -8,6 +8,7 @@ class Sala extends Model
 {
     protected $fillable = [
         'nombre',
+        'abreviacion',
         'estado',
         'creador_id',
         'modificador_id'

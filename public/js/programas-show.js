@@ -2,11 +2,8 @@ function initProgramasShow(programaId) {
     // Cargar partes de la primera sección (TB)
     loadPartes(programaId);
 
-    // Cargar partes de la segunda sección (Escuela SP)
-    loadPartesSegundaSeccion(programaId, false);
-
-    // Cargar partes de la tercera sección (Escuela S1)
-    loadPartesSegundaSeccion(programaId, true);
+    // Cargar partes de la segunda sección (Escuela)
+    loadPartesSegundaSeccion(programaId);
 
     // Cargar partes de NVC
     loadPartesNV(programaId);
@@ -44,16 +41,13 @@ function loadPartes(programaId) {
     });
 }
 
-function loadPartesSegundaSeccion(programaId, isTerceraSeccion) {
-    const tableBody = isTerceraSeccion ? '#partesTerceraSeccionTableBody' : '#partesSegundaSeccionTableBody';
-    const url = isTerceraSeccion
-        ? '/programas/' + programaId + '/partes-tercera-seccion'
-        : '/programas/' + programaId + '/partes-segunda-seccion';
+function loadPartesSegundaSeccion(programaId) {
+    const tableBody = '#partesSegundaSeccionTableBody';
+    const url = '/programas/' + programaId + '/partes-segunda-seccion';
 
     $.ajax({
         url: url,
         method: 'GET',
-        data: isTerceraSeccion ? {} : { is_tercera_seccion: isTerceraSeccion },
         success: function(response) {
             let html = '';
             if (response.success && response.data && response.data.length > 0) {
@@ -62,8 +56,21 @@ function loadPartesSegundaSeccion(programaId, isTerceraSeccion) {
                     const encargadoNombre = parte.encargado?.name || parte.encargado_nombre || '-';
                     const ayudanteNombre = parte.ayudante?.name || parte.ayudante_nombre || '-';
 
+                    // Crear badge para la sala
+                    let salaBadge = '';
+                    if (parte.sala_abreviacion === 'SP') {
+                        salaBadge = `<span class="badge bg-primary">${parte.sala_abreviacion}</span>`;
+                    } else if (parte.sala_abreviacion === 'S1') {
+                        salaBadge = `<span class="badge bg-warning">${parte.sala_abreviacion}</span>`;
+                    } else if (parte.sala_abreviacion === 'S2') {
+                        salaBadge = `<span class="badge bg-success">${parte.sala_abreviacion}</span>`;
+                    } else {
+                        salaBadge = '<span class="badge bg-secondary">-</span>';
+                    }
+
                     html += `
                         <tr>
+                            <td>${salaBadge}</td>
                             <td>${parte.tiempo || '-'}</td>
                             <td>${parte.parte_nombre || parte.parte_abreviacion || '-'}</td>
                             <td>${encargadoNombre}</td>
@@ -73,13 +80,13 @@ function loadPartesSegundaSeccion(programaId, isTerceraSeccion) {
                     `;
                 });
             } else {
-                html = '<tr><td colspan="5" class="text-center">No hay asignaciones</td></tr>';
+                html = '<tr><td colspan="6" class="text-center">No hay asignaciones</td></tr>';
             }
             $(tableBody).html(html);
         },
         error: function(xhr, status, error) {
             console.error('Error al cargar partes segunda sección:', error);
-            $(tableBody).html('<tr><td colspan="5" class="text-center text-danger">Error al cargar los datos</td></tr>');
+            $(tableBody).html('<tr><td colspan="6" class="text-center text-danger">Error al cargar los datos</td></tr>');
         }
     });
 }

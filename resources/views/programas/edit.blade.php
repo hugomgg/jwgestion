@@ -167,78 +167,34 @@
                                                 <h6 class="mb-0" style="margin-top:10px;">
                                                     <i class="fas fa-graduation-cap me-2"></i>ESCUELA SEAMOS MEJORES MAESTROS
                                                 </h6>
+                                                <div class="d-flex justify-content-end">
+                                                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#parteProgramaSegundaSeccionModal" onclick="openCreateParteSegundaSeccionModal()">
+                                                        <i class="fas fa-plus me-2"></i>Nueva Asignación SMM
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="card-body">
-                                        <!-- Nav tabs -->
-                                        <ul class="nav nav-tabs" id="escuelaTabs" role="tablist">
-                                            <li class="nav-item" role="presentation">
-                                                <button class="nav-link active" id="escuela-sp-tab" data-bs-toggle="tab" data-bs-target="#escuela-sp" type="button" role="tab" aria-controls="escuela-sp" aria-selected="true">
-                                                    <i class="fas fa-chalkboard-teacher me-2"></i>Escuela (SP)
-                                                </button>
-                                            </li>
-                                            <li class="nav-item" role="presentation">
-                                                <button class="nav-link" id="escuela-s1-tab" data-bs-toggle="tab" data-bs-target="#escuela-s1" type="button" role="tab" aria-controls="escuela-s1" aria-selected="false">
-                                                    <i class="fas fa-chalkboard-teacher me-2"></i>Escuela (S1)
-                                                </button>
-                                            </li>
-                                        </ul>
-
-                                        <!-- Tab content -->
-                                        <div class="tab-content mt-3" id="escuelaTabsContent">
-                                            <!-- Tab Escuela (SP) -->
-                                            <div class="tab-pane fade show active" id="escuela-sp" role="tabpanel" aria-labelledby="escuela-sp-tab">
-                                                <div class="d-flex justify-content-between align-items-center mb-0">
-                                                    <h6 class="mb-0">Asignaciones de Seamos Mejores Maestros (Sala Principal)</h6>
-                                                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#parteProgramaSegundaSeccionModal" onclick="openCreateParteSegundaSeccionModal(false)">
-                                                        <i class="fas fa-plus me-2"></i>Nueva Asignación SMM (SP)
-                                                    </button>
-                                                </div>
-                                                <div class="table-responsive">
-                                                    <table id="partesSegundaSeccionTable" class="table table-striped table-hover">
-                                                        <thead>
-                                                            <tr>
-                                                                <th style="width: 10%">Tiempo (min)</th>
-                                                                <th style="width: 10%">Parte</th>
-                                                                <th style="width: 30%">Encargado</th>
-                                                                <th style="width: 30%">Ayudante</th>
-                                                                <th style="width: 10%">Lección</th>
-                                                                <th style="width: 10%;">Acciones</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            <!-- Los datos se cargarán vía AJAX -->
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            </div>
-
-                                            <!-- Tab Escuela (S1) -->
-                                            <div class="tab-pane fade" id="escuela-s1" role="tabpanel" aria-labelledby="escuela-s1-tab">
-                                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                                    <h6 class="mb-0">Asignaciones de Seamos Mejores Maestros (Sala Auxiliar 1)</h6>
-                                                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#parteProgramaSegundaSeccionModal" onclick="openCreateParteSegundaSeccionModal(true)">
-                                                        <i class="fas fa-plus me-2"></i>Nueva Asignación SMM (S1)
-                                                    </button>
-                                                </div>
-                                                <div class="table-responsive">
-                                                    <table id="partesTerceraSeccionTable" class="table table-striped table-hover">
-                                                        <thead>
-                                                            <tr>
-                                                                <th style="width: 10%">Tiempo (min)</th>
-                                                                <th style="width: 10%">Parte</th>
-                                                                <th style="width: 30%">Encargado</th>
-                                                                <th style="width: 30%">Ayudante</th>
-                                                                <th style="width: 10%">Lección</th>
-                                                                <th style="width: 10%;">Acciones</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            <!-- Los datos se cargan dinámicamente -->
-                                                        </tbody>
-                                                    </table>
-                                                </div>
+                                        <!-- Tabla principal de Sala Principal -->
+                                        <div class="mb-4">
+                                            <div class="table-responsive">
+                                                <table id="partesSegundaSeccionTable" class="table table-striped table-hover">
+                                                    <thead>
+                                                        <tr>
+                                                            <th style="width: 8%">Sala</th>
+                                                            <th style="width: 10%">Tiempo (min)</th>
+                                                            <th style="width: 10%">Parte</th>
+                                                            <th style="width: 28%">Encargado</th>
+                                                            <th style="width: 28%">Ayudante</th>
+                                                            <th style="width: 8%">Lección</th>
+                                                            <th style="width: 8%;">Acciones</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <!-- Los datos se cargarán vía AJAX -->
+                                                    </tbody>
+                                                </table>
                                             </div>
                                         </div>
                                     </div>
@@ -517,22 +473,26 @@
                     @csrf
                     <input type="hidden" id="parte_programa_segunda_seccion_id" name="parte_programa_id">
                     <input type="hidden" id="programa_id_segunda_seccion" name="programa_id" value="{{ $programa->id }}">
-                    <input type="hidden" name="sala_id" value="1">
 
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="parte_id_segunda_seccion" class="form-label">Asignación <span class="text-danger">*</span></label>
-                                <select class="form-select" id="parte_id_segunda_seccion" name="parte_id" required>
-                                    <option value="">Cargando...</option>
+                                <label for="sala_id_segunda_seccion" class="form-label">Sala <span class="text-danger">*</span></label>
+                                <select class="form-select" id="sala_id_segunda_seccion" name="sala_id" required>
+                                    <option value="">Seleccionar...</option>
+                                    @foreach($salas as $sala)
+                                        <option value="{{ $sala->id }}" {{ $sala->id == 1 ? 'selected' : '' }}>{{ $sala->abreviacion }} - {{ $sala->nombre }}</option>
+                                    @endforeach
                                 </select>
                                 <div class="invalid-feedback"></div>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="tiempo_segunda_seccion" class="form-label">Tiempo (minutos) <span class="text-danger">*</span></label>
-                                <input type="number" class="form-control" id="tiempo_segunda_seccion" name="tiempo" min="1" max="60" required>
+                                <label for="parte_id_segunda_seccion" class="form-label">Asignación <span class="text-danger">*</span></label>
+                                <select class="form-select" id="parte_id_segunda_seccion" name="parte_id" required>
+                                    <option value="">Cargando...</option>
+                                </select>
                                 <div class="invalid-feedback"></div>
                             </div>
                         </div>
@@ -611,10 +571,21 @@
                         </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="leccion_segunda_seccion" class="form-label">Lección </label>
-                        <input type="text" class="form-control" id="leccion_segunda_seccion" name="leccion" maxlength="500">
-                        <div class="invalid-feedback"></div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="tiempo_segunda_seccion" class="form-label">Tiempo (minutos) <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="tiempo_segunda_seccion" name="tiempo" min="1" max="60" required>
+                                <div class="invalid-feedback"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="leccion_segunda_seccion" class="form-label">Lección </label>
+                                <input type="text" class="form-control" id="leccion_segunda_seccion" name="leccion" maxlength="500">
+                                <div class="invalid-feedback"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -647,7 +618,6 @@
                     @csrf
                     <input type="hidden" id="parte_programa_tercera_seccion_id" name="parte_programa_id">
                     <input type="hidden" id="programa_id_tercera_seccion" name="programa_id" value="{{ $programa->id }}">
-                    <input type="hidden" name="sala_id" value="2">
 
                     <div class="row">
                         <div class="col-md-6">

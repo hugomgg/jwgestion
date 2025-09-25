@@ -103,63 +103,22 @@
                                     </h6>
                                 </div>
                                 <div class="card-body">
-                                    <!-- Nav tabs -->
-                                    <ul class="nav nav-tabs" id="escuelaTabs" role="tablist">
-                                        <li class="nav-item" role="presentation">
-                                            <button class="nav-link active" id="escuela-sp-tab" data-bs-toggle="tab" data-bs-target="#escuela-sp" type="button" role="tab" aria-controls="escuela-sp" aria-selected="true">
-                                                <i class="fas fa-chalkboard-teacher me-2"></i>Escuela (SP)
-                                            </button>
-                                        </li>
-                                        <li class="nav-item" role="presentation">
-                                            <button class="nav-link" id="escuela-s1-tab" data-bs-toggle="tab" data-bs-target="#escuela-s1" type="button" role="tab" aria-controls="escuela-s1" aria-selected="false">
-                                                <i class="fas fa-chalkboard-teacher me-2"></i>Escuela (S1)
-                                            </button>
-                                        </li>
-                                    </ul>
-
-                                    <!-- Tab content -->
-                                    <div class="tab-content mt-3" id="escuelaTabsContent">
-                                        <!-- Tab Escuela (SP) -->
-                                        <div class="tab-pane fade show active" id="escuela-sp" role="tabpanel" aria-labelledby="escuela-sp-tab">
-                                            <h6 class="mb-3">Asignaciones de Seamos Mejores Maestros (Sala Principal)</h6>
-                                            <div class="table-responsive">
-                                                <table class="table table-striped table-hover">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>Tiempo (min)</th>
-                                                            <th>Parte</th>
-                                                            <th>Encargado</th>
-                                                            <th>Ayudante</th>
-                                                            <th>Lección</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody id="partesSegundaSeccionTableBody">
-                                                        <!-- Los datos se cargan dinámicamente -->
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-
-                                        <!-- Tab Escuela (S1) -->
-                                        <div class="tab-pane fade" id="escuela-s1" role="tabpanel" aria-labelledby="escuela-s1-tab">
-                                            <h6 class="mb-3">Asignaciones de Seamos Mejores Maestros (Sala Auxiliar 1)</h6>
-                                            <div class="table-responsive">
-                                                <table class="table table-striped table-hover">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>Tiempo (min)</th>
-                                                            <th>Parte</th>
-                                                            <th>Encargado</th>
-                                                            <th>Ayudante</th>
-                                                            <th>Lección</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody id="partesTerceraSeccionTableBody">
-                                                        <!-- Los datos se cargan dinámicamente -->
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
+                                    <div class="table-responsive">
+                                        <table class="table table-striped table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Sala</th>
+                                                    <th>Tiempo (min)</th>
+                                                    <th>Parte</th>
+                                                    <th>Encargado</th>
+                                                    <th>Ayudante</th>
+                                                    <th>Lección</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="partesSegundaSeccionTableBody">
+                                                <!-- Los datos se cargan dinámicamente -->
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                             </div>

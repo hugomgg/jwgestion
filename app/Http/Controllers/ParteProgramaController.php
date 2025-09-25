@@ -29,10 +29,10 @@ class ParteProgramaController extends Controller
                 ->where('pp.programa_id', $programaId)
                 ->where('ps.seccion_id', 1);
 
-            // Si el usuario es coordinador (perfil 3), filtrar solo por sala_id = 1
-            if ($user && $user->isCoordinator()) {
-                $query->where('pp.sala_id', 1);
-            }
+            // Los coordinadores ahora pueden ver todas las salas
+            // if ($user && $user->isCoordinator()) {
+            //     $query->where('pp.sala_id', 1);
+            // }
 
             $partes = $query->select(
                     'pp.id',
@@ -116,6 +116,7 @@ class ParteProgramaController extends Controller
                 ->join('partes_seccion as ps', 'pp.parte_id', '=', 'ps.id')
                 ->leftJoin('users as encargado', 'pp.encargado_id', '=', 'encargado.id')
                 ->leftJoin('users as ayudante', 'pp.ayudante_id', '=', 'ayudante.id')
+                ->leftJoin('salas as s', 'pp.sala_id', '=', 's.id')
                 ->where('pp.programa_id', $programaId)
                 ->where('pp.sala_id', 2)
                 ->where('pp.estado', true)
@@ -126,6 +127,7 @@ class ParteProgramaController extends Controller
                     'pp.tema',
                     'pp.leccion',
                     'ps.abreviacion as parte_abreviacion',
+                    's.abreviacion as sala_abreviacion',
                     'encargado.name as encargado_nombre',
                     'ayudante.name as ayudante_nombre'
                 )
@@ -312,7 +314,7 @@ class ParteProgramaController extends Controller
             'leccion' => 'nullable|string|max:500',
             'encargado_reemplazado_id' => 'nullable|exists:users,id',
             'ayudante_reemplazado_id' => 'nullable|exists:users,id',
-            'sala_id' => 'nullable|integer|in:1,2'
+            'sala_id' => 'required|integer|in:1,2'
         ]);
 
         if ($validator->fails()) {
@@ -371,10 +373,8 @@ class ParteProgramaController extends Controller
             $partePrograma->ayudante_reemplazado_id = $request->ayudante_reemplazado_id;
             $partePrograma->estado = true; // Por defecto activo
 
-            // Si es coordinador, usar el sala_id del formulario o por defecto 1
-            if ($user && $user->isCoordinator()) {
-                $partePrograma->sala_id = $request->sala_id ?? 1;
-            }
+            // Asignar sala_id del formulario para todos los usuarios
+            $partePrograma->sala_id = $request->sala_id;
 
             $partePrograma->creador_id = Auth::id();
             $partePrograma->modificador_id = Auth::id();
@@ -486,7 +486,8 @@ class ParteProgramaController extends Controller
             'ayudante_id' => 'nullable|exists:users,id',
             'leccion' => 'nullable|string|max:500',
             'encargado_reemplazado_id' => 'nullable|exists:users,id',
-            'ayudante_reemplazado_id' => 'nullable|exists:users,id'
+            'ayudante_reemplazado_id' => 'nullable|exists:users,id',
+            'sala_id' => 'required|integer|in:1,2'
         ]);
 
         if ($validator->fails()) {
@@ -535,6 +536,10 @@ class ParteProgramaController extends Controller
             $partePrograma->leccion = $request->leccion;
             $partePrograma->encargado_reemplazado_id = $request->encargado_reemplazado_id;
             $partePrograma->ayudante_reemplazado_id = $request->ayudante_reemplazado_id;
+
+            // Asignar sala_id del formulario para todos los usuarios
+            $partePrograma->sala_id = $request->sala_id;
+
             $partePrograma->modificador_id = Auth::id();
             // El campo estado no se modifica en el update
             $partePrograma->save();
@@ -589,18 +594,18 @@ class ParteProgramaController extends Controller
                 $query->where('estado', 1);
             }
 
-            // Si es coordinador y se proporciona programa_id, excluir partes que ya existen con sala_id=1
-            if ($user && $user->isCoordinator() && $programaId) {
-                $partesExistentes = DB::table('partes_programa')
-                    ->where('programa_id', $programaId)
-                    ->where('sala_id', 1)
-                    ->pluck('parte_id')
-                    ->toArray();
+            // Los coordinadores ahora pueden crear partes en cualquier sala
+            // if ($user && $user->isCoordinator() && $programaId) {
+            //     $partesExistentes = DB::table('partes_programa')
+            //         ->where('programa_id', $programaId)
+            //         ->where('sala_id', 1)
+            //         ->pluck('parte_id')
+            //         ->toArray();
 
-                if (!empty($partesExistentes)) {
-                    $query->whereNotIn('id', $partesExistentes);
-                }
-            }
+            //     if (!empty($partesExistentes)) {
+            //         $query->whereNotIn('id', $partesExistentes);
+            //     }
+            // }
 
             $partes = $query->orderBy('orden')
                 ->get(['id', 'nombre', 'abreviacion', 'tiempo']);

@@ -16,18 +16,21 @@ class SalasSeeder extends Seeder
         $salas = [
             [
                 'nombre' => Sala::PRINCIPAL,
+                'abreviacion' => 'SP',
                 'estado' => true,
                 'creador_id' => 1,
                 'modificador_id' => 1,
             ],
             [
                 'nombre' => Sala::AUXILIAR_1,
+                'abreviacion' => 'S1',
                 'estado' => true,
                 'creador_id' => 1,
                 'modificador_id' => 1,
             ],
             [
                 'nombre' => Sala::AUXILIAR_2,
+                'abreviacion' => 'S2',
                 'estado' => true,
                 'creador_id' => 1,
                 'modificador_id' => 1,
