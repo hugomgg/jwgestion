@@ -34,15 +34,19 @@ div.select2-container--bootstrap-5 .select2-selection__rendered {
 }
 
 /* Estilos para asegurar que ambas tablas de escuela tengan el mismo ancho */
-
+#partesTable,
+#partesNVTable,
 #partesSegundaSeccionTable,
 #partesTerceraSeccionTable {
     width: 100% !important;
     table-layout: fixed !important;
 }
-
+#partesTable th,
+#partesNVTable th,
 #partesSegundaSeccionTable th,
 #partesTerceraSeccionTable th,
+#partesTable td,
+#partesNVTable td,
 #partesSegundaSeccionTable td,
 #partesTerceraSeccionTable td {
     word-wrap: break-word;
@@ -55,6 +59,34 @@ div.select2-container--bootstrap-5 .select2-selection__rendered {
     width: 100% !important;
     overflow-x: auto;
 }
+
+/* Estilos específicos para las columnas de las tablas de escuela */
+#partesTable th:nth-child(1),
+#partesNVTable th:nth-child(1) {
+    width: 100px !important;
+    min-width: 100px !important;
+}
+#partesTable th:nth-child(2),
+#partesNVTable th:nth-child(2) {
+    width: 100px !important;
+    min-width: 100px !important;
+}
+#partesTable th:nth-child(3),
+#partesNVTable th:nth-child(3) {
+    width: 300px !important;
+    min-width: 300px !important;
+}
+#partesTable th:nth-child(4),
+#partesNVTable th:nth-child(4) {
+    width: 300px !important;
+    min-width: 300px !important;
+}
+#partesTable th:nth-child(5),
+#partesNVTable th:nth-child(5) {
+    width: 100px !important;
+    min-width: 100px !important;
+}
+
 
 /* Estilos específicos para las columnas de las tablas de escuela */
 #partesSegundaSeccionTable th:nth-child(1),
