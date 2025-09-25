@@ -595,17 +595,17 @@ class ParteProgramaController extends Controller
             }
 
             // Los coordinadores ahora pueden crear partes en cualquier sala
-            // if ($user && $user->isCoordinator() && $programaId) {
-            //     $partesExistentes = DB::table('partes_programa')
-            //         ->where('programa_id', $programaId)
-            //         ->where('sala_id', 1)
-            //         ->pluck('parte_id')
-            //         ->toArray();
+            if ($user && $user->isCoordinator() && $programaId) {
+                $partesExistentes = DB::table('partes_programa')
+                    ->where('programa_id', $programaId)
+                    ->where('sala_id', 1)
+                    ->pluck('parte_id')
+                    ->toArray();
 
-            //     if (!empty($partesExistentes)) {
-            //         $query->whereNotIn('id', $partesExistentes);
-            //     }
-            // }
+                if (!empty($partesExistentes)) {
+                    $query->whereNotIn('id', $partesExistentes);
+                }
+            }
 
             $partes = $query->orderBy('orden')
                 ->get(['id', 'nombre', 'abreviacion', 'tiempo']);
