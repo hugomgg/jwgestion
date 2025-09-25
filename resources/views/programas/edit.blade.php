@@ -139,11 +139,11 @@
                                             <table id="partesTable" class="table table-striped table-hover">
                                                 <thead>
                                                     <tr>
-                                                        <th style="width: 120px;">Tiempo (min)</th>
-                                                        <th style="width: 120px;">Parte</th>
-                                                        <th style="width: 400px;">Encargado</th>
-                                                        <th>Tema</th>
-                                                        <th style="width: 140px;">Acciones</th>
+                                                        <th style="width: 15%;">Tiempo (min)</th>
+                                                        <th style="width: 15%;">Parte</th>
+                                                        <th style="width: 20%;">Encargado</th>
+                                                        <th style="width: 35%;">Tema</th>
+                                                        <th style="width: 25%;">Acciones</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -199,12 +199,12 @@
                                                     <table id="partesSegundaSeccionTable" class="table table-striped table-hover">
                                                         <thead>
                                                             <tr>
-                                                                <th style="width: 120px;">Tiempo (min)</th>
-                                                                <th style="width: 80px;">Parte</th>
-                                                                <th style="width: 400px;">Encargado</th>
-                                                                <th style="width: 400px;">Ayudante</th>
-                                                                <th>Lección</th>
-                                                                <th style="width: 140px;">Acciones</th>
+                                                                <th style="width: 10%">Tiempo (min)</th>
+                                                                <th style="width: 10%">Parte</th>
+                                                                <th style="width: 30%">Encargado</th>
+                                                                <th style="width: 30%">Ayudante</th>
+                                                                <th style="width: 10%">Lección</th>
+                                                                <th style="width: 10%;">Acciones</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
@@ -226,12 +226,12 @@
                                                     <table id="partesTerceraSeccionTable" class="table table-striped table-hover">
                                                         <thead>
                                                             <tr>
-                                                                <th style="width: 120px;">Tiempo (min)</th>
-                                                                <th style="width: 80px;">Parte</th>
-                                                                <th style="width: 400px;">Encargado</th>
-                                                                <th style="width: 400px;">Ayudante</th>
-                                                                <th>Lección</th>
-                                                                <th style="width: 140px;">Acciones</th>
+                                                                <th style="width: 10%">Tiempo (min)</th>
+                                                                <th style="width: 10%">Parte</th>
+                                                                <th style="width: 30%">Encargado</th>
+                                                                <th style="width: 30%">Ayudante</th>
+                                                                <th style="width: 10%">Lección</th>
+                                                                <th style="width: 10%;">Acciones</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
@@ -271,11 +271,11 @@
                                             <table id="partesNVTable" class="table table-striped table-hover">
                                                 <thead>
                                                     <tr>
-                                                        <th style="width: 120px;">Tiempo (min)</th>
-                                                        <th style="width: 120px;">Parte</th>
-                                                        <th style="width: 400px;">Encargado</th>
-                                                        <th>Tema</th>
-                                                        <th style="width: 140px;">Acciones</th>
+                                                        <th style="width: 15%;">Tiempo (min)</th>
+                                                        <th style="width: 15%;">Parte</th>
+                                                        <th style="width: 20%;">Encargado</th>
+                                                        <th style="width: 35%;">Tema</th>
+                                                        <th style="width: 25%;">Acciones</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>

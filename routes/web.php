@@ -171,35 +171,41 @@ Route::get('/test-sql-error-public', [App\Http\Controllers\ProgramaController::c
         Route::delete('/servicios/{id}', [App\Http\Controllers\ServicioController::class, 'destroy'])->name('servicios.destroy');
 
         // Gesti?n de Congregaciones - Solo para administradores (perfil 1) - ESCRITURA
+        Route::get('/congregaciones', [App\Http\Controllers\CongregacionController::class, 'index'])->name('congregaciones.index');
         Route::post('/congregaciones', [App\Http\Controllers\CongregacionController::class, 'store'])->name('congregaciones.store');
         Route::get('/congregaciones/{id}/edit', [App\Http\Controllers\CongregacionController::class, 'edit'])->name('congregaciones.edit');
         Route::put('/congregaciones/{id}', [App\Http\Controllers\CongregacionController::class, 'update'])->name('congregaciones.update');
         Route::delete('/congregaciones/{id}', [App\Http\Controllers\CongregacionController::class, 'destroy'])->name('congregaciones.destroy');
 
         // Gesti?n de Canciones - Solo para administradores (perfil 1) - ESCRITURA
+        Route::get('/canciones', [App\Http\Controllers\CancionController::class, 'index'])->name('canciones.index');
         Route::post('/canciones', [App\Http\Controllers\CancionController::class, 'store'])->name('canciones.store');
         Route::get('/canciones/{cancion}/edit', [App\Http\Controllers\CancionController::class, 'edit'])->name('canciones.edit');
         Route::put('/canciones/{cancion}', [App\Http\Controllers\CancionController::class, 'update'])->name('canciones.update');
         Route::delete('/canciones/{cancion}', [App\Http\Controllers\CancionController::class, 'destroy'])->name('canciones.destroy');
 
         // Gesti?n de Grupos - Solo para administradores (perfil 1) - ESCRITURA
+        Route::get('/grupos', [App\Http\Controllers\GrupoController::class, 'index'])->name('grupos.index');
         Route::post('/grupos', [App\Http\Controllers\GrupoController::class, 'store'])->name('grupos.store');
         Route::get('/grupos/{id}', [App\Http\Controllers\GrupoController::class, 'show'])->name('grupos.show');
         Route::put('/grupos/{id}', [App\Http\Controllers\GrupoController::class, 'update'])->name('grupos.update');
         Route::delete('/grupos/{id}', [App\Http\Controllers\GrupoController::class, 'destroy'])->name('grupos.destroy');
 
         // Gesti?n de Estados Espirituales - Solo para administradores (perfil 1) - ESCRITURA
+        Route::get('/estados-espirituales', [App\Http\Controllers\EstadoEspiritualController::class, 'index'])->name('estados-espirituales.index');
         Route::post('/estados-espirituales', [App\Http\Controllers\EstadoEspiritualController::class, 'store'])->name('estados-espirituales.store');
         Route::get('/estados-espirituales/{id}/edit', [App\Http\Controllers\EstadoEspiritualController::class, 'edit'])->name('estados-espirituales.edit');
         Route::put('/estados-espirituales/{id}', [App\Http\Controllers\EstadoEspiritualController::class, 'update'])->name('estados-espirituales.update');
 
         // Gestión de Secciones Reunión - Solo para administradores (perfil 1) - ESCRITURA
+        Route::get('/secciones-reunion', [App\Http\Controllers\SeccionReunionController::class, 'index'])->name('secciones-reunion.index');
         Route::post('/secciones-reunion', [App\Http\Controllers\SeccionReunionController::class, 'store'])->name('secciones-reunion.store');
         Route::get('/secciones-reunion/{id}/edit', [App\Http\Controllers\SeccionReunionController::class, 'edit'])->name('secciones-reunion.edit');
         Route::put('/secciones-reunion/{id}', [App\Http\Controllers\SeccionReunionController::class, 'update'])->name('secciones-reunion.update');
         Route::delete('/secciones-reunion/{id}', [App\Http\Controllers\SeccionReunionController::class, 'destroy'])->name('secciones-reunion.destroy');
 
         // Gestión de Partes Sección - Solo para administradores (perfil 1) - ESCRITURA
+        Route::get('/partes-seccion', [App\Http\Controllers\ParteSeccionController::class, 'index'])->name('partes-seccion.index');
         Route::post('/partes-seccion', [App\Http\Controllers\ParteSeccionController::class, 'store'])->name('partes-seccion.store');
         Route::get('/partes-seccion/{id}/edit', [App\Http\Controllers\ParteSeccionController::class, 'edit'])->name('partes-seccion.edit');
         Route::put('/partes-seccion/{id}', [App\Http\Controllers\ParteSeccionController::class, 'update'])->name('partes-seccion.update');

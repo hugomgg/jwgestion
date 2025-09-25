@@ -58,75 +58,75 @@ div.select2-container--bootstrap-5 .select2-selection__rendered {
 /* Estilos específicos para las columnas de las tablas de escuela */
 #partesSegundaSeccionTable th:nth-child(1),
 #partesTerceraSeccionTable th:nth-child(1) {
-    width: 120px !important;
-    min-width: 120px !important;
+    width: 100px !important;
+    min-width: 100px !important;
 }
 
 #partesSegundaSeccionTable th:nth-child(2),
 #partesTerceraSeccionTable th:nth-child(2) {
-    width: 120px !important;
-    min-width: 120px !important;
+    width: 100px !important;
+    min-width: 100px !important;
 }
 
 #partesSegundaSeccionTable th:nth-child(3),
 #partesTerceraSeccionTable th:nth-child(3) {
-    width: 400px !important;
-    min-width: 400px !important;
+    width: 300px !important;
+    min-width: 300px !important;
 }
 
 #partesSegundaSeccionTable th:nth-child(4),
 #partesTerceraSeccionTable th:nth-child(4) {
-    width: 400px !important;
-    min-width: 400px !important;
+    width: 300px !important;
+    min-width: 300px !important;
 }
 
 #partesSegundaSeccionTable th:nth-child(5),
 #partesTerceraSeccionTable th:nth-child(5) {
-    width: auto !important;
-    min-width: 200px !important;
+    width: 100px !important;
+    min-width: 100px !important;
 }
 
 #partesSegundaSeccionTable th:nth-child(6),
 #partesTerceraSeccionTable th:nth-child(6) {
-    width: 140px !important;
-    min-width: 140px !important;
+    width: auto !important;
+    min-width: 100px !important;
 }
 
 /* Aplicar los mismos estilos a las celdas del cuerpo de la tabla */
 #partesSegundaSeccionTable td:nth-child(1),
 #partesTerceraSeccionTable td:nth-child(1) {
-    width: 120px !important;
-    max-width: 120px !important;
+    width: 100px !important;
+    max-width: 100px !important;
 }
 
 #partesSegundaSeccionTable td:nth-child(2),
 #partesTerceraSeccionTable td:nth-child(2) {
-    width: 120px !important;
-    max-width: 120px !important;
+    width: 100px !important;
+    max-width: 100px !important;
 }
 
 #partesSegundaSeccionTable td:nth-child(3),
 #partesTerceraSeccionTable td:nth-child(3) {
-    width: 400px !important;
-    max-width: 400px !important;
+    width: 300px !important;
+    max-width: 300px !important;
 }
 
 #partesSegundaSeccionTable td:nth-child(4),
 #partesTerceraSeccionTable td:nth-child(4) {
-    width: 400px !important;
-    max-width: 400px !important;
+    width: 300px !important;
+    max-width: 300px !important;
 }
 
 #partesSegundaSeccionTable td:nth-child(5),
 #partesTerceraSeccionTable td:nth-child(5) {
-    width: auto !important;
-    min-width: 200px !important;
+    width: 100px !important;
+    min-width: 100px !important;
 }
 
 #partesSegundaSeccionTable td:nth-child(6),
 #partesTerceraSeccionTable td:nth-child(6) {
-    width: 140px !important;
-    max-width: 140px !important;
+    width: auto !important;
+    max-width: 100px !important;
 }
 
 /* Estilos para los tabs de Escuela - Más específicos y robustos */
