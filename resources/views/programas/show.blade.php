@@ -141,7 +141,6 @@
                                         <table class="table table-striped table-hover">
                                             <thead>
                                                 <tr>
-                                                    <th>Número</th>
                                                     <th>Tiempo (min)</th>
                                                     <th>Parte</th>
                                                     <th>Encargado</th>

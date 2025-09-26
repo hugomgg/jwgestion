@@ -350,6 +350,62 @@ $(document).ready(function() {
             $('#addProgramaForm')[0].reset();
         });
     };
+
+    // Función para manejar el estado de los botones de exportación
+    function actualizarBotonesExportacion() {
+        const anioSeleccionado = $('#filtro_anio').val();
+        const mesesSeleccionados = $('#mesDropdownMenu input[type="checkbox"]:checked').map(function() {
+            return $(this).val();
+        }).get();
+        const $btnPdf = $('#exportPdfBtn');
+        const $btnXls = $('#exportXlsBtn');
+        const $btnAsignaciones = $('#exportAsignacionesBtn');
+
+        if (anioSeleccionado && mesesSeleccionados.length > 0) {
+            // Habilitar botones y actualizar URLs
+            $btnPdf.removeClass('disabled').prop('disabled', false);
+            $btnXls.removeClass('disabled').prop('disabled', false);
+            $btnAsignaciones.removeClass('disabled').prop('disabled', false);
+
+            // Construir URLs con múltiples meses
+            let baseUrl = "?anio=" + anioSeleccionado;
+            mesesSeleccionados.forEach(function(mes) {
+                baseUrl += "&mes[]=" + mes;
+            });
+
+            const pdfUrl = "{{ route('programas.export.pdf') }}" + baseUrl;
+            const xlsUrl = "{{ route('programas.export.xls') }}" + baseUrl;
+            const asignacionesUrl = "{{ route('programas.export.asignaciones') }}" + baseUrl;
+
+            $btnPdf.attr('href', pdfUrl);
+            $btnXls.attr('href', xlsUrl);
+            $btnAsignaciones.attr('href', asignacionesUrl);
+        } else {
+            // Deshabilitar botones
+            $btnPdf.addClass('disabled').prop('disabled', true);
+            $btnXls.addClass('disabled').prop('disabled', true);
+            $btnAsignaciones.addClass('disabled').prop('disabled', true);
+            $btnPdf.attr('href', '#');
+            $btnXls.attr('href', '#');
+            $btnAsignaciones.attr('href', '#');
+        }
+    }
+
+    // Hacer la función disponible globalmente
+    window.actualizarBotonesExportacion = actualizarBotonesExportacion;
+
+    // Escuchar cambios en los filtros para actualizar los botones
+    $('#filtro_anio').on('change', function() {
+        actualizarBotonesExportacion();
+    });
+
+    // Escuchar cambios en los checkboxes de meses
+    $(document).on('change', '#mesDropdownMenu input[type="checkbox"]', function() {
+        actualizarBotonesExportacion();
+    });
+
+    // Inicializar estado de los botones
+    actualizarBotonesExportacion();
 });
 
 // Función para inicializar los filtros de año y mes
