@@ -23,7 +23,11 @@ class ProgramaController extends Controller
     public function index()
     {
         $currentUser = auth()->user();
-
+        //No pernmite ver programas si $currentUser->perfil no es 3
+        if ($currentUser->perfil != 3) {
+            return redirect()->route('home')
+                ->with('error', 'No tienes permiso para acceder a esta sección.');
+        }
         // Consulta base con JOIN para obtener los nombres relacionados
         $query = DB::table('programas')
             ->leftJoin('users as orador_inicial', 'programas.orador_inicial', '=', 'orador_inicial.id')
@@ -63,7 +67,92 @@ class ProgramaController extends Controller
         // Para coordinadores (perfil=3), obtener usuarios especiales para presidencia y orador inicial
         $usuariosPresidencia = [];
         $usuariosOradorInicial = [];
-        if ($currentUser->perfil == 3) {
+
+        // Usuarios para Presidencia (asignacion_id=1)
+        $usuariosPresidencia = DB::table('users as u')
+            ->join('asignaciones_users as au', 'u.id', '=', 'au.user_id')
+            ->leftJoin(DB::raw('(
+                SELECT presidencia as user_id, MAX(fecha) as ultima_fecha
+                FROM programas
+                WHERE presidencia IS NOT NULL
+                GROUP BY presidencia
+            ) as ultima_presidencia'), 'u.id', '=', 'ultima_presidencia.user_id')
+            ->where('au.asignacion_id', 1)
+            ->where('u.congregacion', $currentUser->congregacion)
+            ->where('u.estado', 1)
+            ->select(
+                'u.id',
+                'u.name',
+                'ultima_presidencia.ultima_fecha'
+            )
+            ->orderByRaw('ultima_presidencia.ultima_fecha IS NULL DESC, ultima_presidencia.ultima_fecha ASC, u.name ASC')
+            ->get();
+
+        // Usuarios para Orador Inicial (asignacion_id=23)
+        $usuariosOradorInicial = DB::table('users as u')
+            ->join('asignaciones_users as au', 'u.id', '=', 'au.user_id')
+            ->leftJoin(DB::raw('(
+                SELECT user_id, MAX(fecha) as ultima_fecha
+                FROM (
+                    SELECT orador_inicial as user_id, fecha
+                    FROM programas
+                    WHERE orador_inicial IS NOT NULL
+                    UNION ALL
+                    SELECT orador_final as user_id, fecha
+                    FROM programas
+                    WHERE orador_final IS NOT NULL
+                ) as oradores
+                GROUP BY user_id
+            ) as ultima_oracion'), 'u.id', '=', 'ultima_oracion.user_id')
+            ->where('au.asignacion_id', 23)
+            ->where('u.congregacion', $currentUser->congregacion)
+            ->where('u.estado', 1)
+            ->select(
+                'u.id',
+                'u.name',
+                'ultima_oracion.ultima_fecha'
+            )
+            ->orderByRaw('ultima_oracion.ultima_fecha IS NULL DESC, ultima_oracion.ultima_fecha ASC, u.name ASC')
+            ->get();
+
+        $canciones = Cancion::where('estado', true)
+            ->orderBy('numero')
+            ->get();
+
+        return view('programas.index', compact('programas', 'usuarios', 'canciones', 'usuariosPresidencia', 'usuariosOradorInicial'));
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit($id)
+    {
+        try {
+            $programa = Programa::with(['oradorInicial', 'presidenciaUsuario', 'oradorFinal'])->findOrFail($id);
+            $currentUser = auth()->user();
+            //No pernmite ver programas si $currentUser->perfil no es 3
+            if ($currentUser->perfil != 3) {
+                return redirect()->route('home')
+                    ->with('error', 'No tienes permiso para acceder a esta sección.');
+            }
+            // Obtener datos para los selects del formulario principal
+            $usuarios = User::where('estado', true)
+                ->orderBy('name')
+                ->get();
+
+            $canciones = Cancion::where('estado', true)
+                ->orderBy('numero')
+                ->get();
+
+            // Obtener salas activas
+            $salas = Sala::activas()
+                ->orderBy('id')
+                ->get();
+
+            // Para coordinadores (perfil=3), obtener usuarios especiales para presidencia y orador inicial
+            $usuariosPresidencia = [];
+            $usuariosOradorInicial = [];
+
             // Usuarios para Presidencia (asignacion_id=1)
             $usuariosPresidencia = DB::table('users as u')
                 ->join('asignaciones_users as au', 'u.id', '=', 'au.user_id')
@@ -110,89 +199,6 @@ class ProgramaController extends Controller
                 )
                 ->orderByRaw('ultima_oracion.ultima_fecha IS NULL DESC, ultima_oracion.ultima_fecha ASC, u.name ASC')
                 ->get();
-        }
-
-        $canciones = Cancion::where('estado', true)
-            ->orderBy('numero')
-            ->get();
-
-        return view('programas.index', compact('programas', 'usuarios', 'canciones', 'usuariosPresidencia', 'usuariosOradorInicial'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit($id)
-    {
-        try {
-            $programa = Programa::with(['oradorInicial', 'presidenciaUsuario', 'oradorFinal'])->findOrFail($id);
-            $currentUser = auth()->user();
-
-            // Obtener datos para los selects del formulario principal
-            $usuarios = User::where('estado', true)
-                ->orderBy('name')
-                ->get();
-
-            $canciones = Cancion::where('estado', true)
-                ->orderBy('numero')
-                ->get();
-
-            // Obtener salas activas
-            $salas = Sala::activas()
-                ->orderBy('id')
-                ->get();
-
-            // Para coordinadores (perfil=3), obtener usuarios especiales para presidencia y orador inicial
-            $usuariosPresidencia = [];
-            $usuariosOradorInicial = [];
-            if ($currentUser->perfil == 3) {
-                // Usuarios para Presidencia (asignacion_id=1)
-                $usuariosPresidencia = DB::table('users as u')
-                    ->join('asignaciones_users as au', 'u.id', '=', 'au.user_id')
-                    ->leftJoin(DB::raw('(
-                        SELECT presidencia as user_id, MAX(fecha) as ultima_fecha
-                        FROM programas
-                        WHERE presidencia IS NOT NULL
-                        GROUP BY presidencia
-                    ) as ultima_presidencia'), 'u.id', '=', 'ultima_presidencia.user_id')
-                    ->where('au.asignacion_id', 1)
-                    ->where('u.congregacion', $currentUser->congregacion)
-                    ->where('u.estado', 1)
-                    ->select(
-                        'u.id',
-                        'u.name',
-                        'ultima_presidencia.ultima_fecha'
-                    )
-                    ->orderByRaw('ultima_presidencia.ultima_fecha IS NULL DESC, ultima_presidencia.ultima_fecha ASC, u.name ASC')
-                    ->get();
-
-                // Usuarios para Orador Inicial (asignacion_id=23)
-                $usuariosOradorInicial = DB::table('users as u')
-                    ->join('asignaciones_users as au', 'u.id', '=', 'au.user_id')
-                    ->leftJoin(DB::raw('(
-                        SELECT user_id, MAX(fecha) as ultima_fecha
-                        FROM (
-                            SELECT orador_inicial as user_id, fecha
-                            FROM programas
-                            WHERE orador_inicial IS NOT NULL
-                            UNION ALL
-                            SELECT orador_final as user_id, fecha
-                            FROM programas
-                            WHERE orador_final IS NOT NULL
-                        ) as oradores
-                        GROUP BY user_id
-                    ) as ultima_oracion'), 'u.id', '=', 'ultima_oracion.user_id')
-                    ->where('au.asignacion_id', 23)
-                    ->where('u.congregacion', $currentUser->congregacion)
-                    ->where('u.estado', 1)
-                    ->select(
-                        'u.id',
-                        'u.name',
-                        'ultima_oracion.ultima_fecha'
-                    )
-                    ->orderByRaw('ultima_oracion.ultima_fecha IS NULL DESC, ultima_oracion.ultima_fecha ASC, u.name ASC')
-                    ->get();
-            }
 
             // Obtener la sección de reunión con id=1 para el título
             $seccionReunion = SeccionReunion::find(1);
@@ -514,6 +520,12 @@ class ProgramaController extends Controller
      */
     public function store(Request $request)
     {
+        $currentUser = auth()->user();
+        //No pernmite ver programas si $currentUser->perfil no es 3
+        if ($currentUser->perfil != 3) {
+            return redirect()->route('home')
+                ->with('error', 'No tienes permiso para acceder a esta sección.');
+        }
         $validator = Validator::make($request->all(), [
             'fecha' => 'required|date',
             'orador_inicial' => 'nullable|exists:users,id',
@@ -563,6 +575,12 @@ class ProgramaController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $currentUser = auth()->user();
+        //No pernmite ver programas si $currentUser->perfil no es 3
+        if ($currentUser->perfil != 3) {
+            return redirect()->route('home')
+                ->with('error', 'No tienes permiso para acceder a esta sección.');
+        }
         $validator = Validator::make($request->all(), [
             'fecha' => 'required|date',
             'orador_inicial' => 'nullable|exists:users,id',
@@ -611,6 +629,12 @@ class ProgramaController extends Controller
      */
     public function destroy($id)
     {
+        $currentUser = auth()->user();
+        //No pernmite ver programas si $currentUser->perfil no es 3
+        if ($currentUser->perfil != 3) {
+            return redirect()->route('home')
+                ->with('error', 'No tienes permiso para acceder a esta sección.');
+        }
         try {
             $programa = Programa::findOrFail($id);
             $programa->delete();

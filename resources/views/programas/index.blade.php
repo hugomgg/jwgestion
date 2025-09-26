@@ -255,11 +255,9 @@
 <script src="{{ asset('js/programas-index.js') }}"></script>
 <script>
 $(document).ready(function() {
-    // Inicializar Select2 para coordinadores
-    @if(Auth::user()->perfil == 3)
+    // Inicializar Select2
     initializeSelect2ForCoordinators();
     handleModalEventsForSelect2();
-    @endif
 });
 </script>
 @endpush

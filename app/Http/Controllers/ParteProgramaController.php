@@ -298,6 +298,12 @@ class ParteProgramaController extends Controller
      */
     public function store(Request $request)
     {
+        $currentUser = auth()->user();
+        //No pernmite ver programas si $currentUser->perfil no es 3
+        if ($currentUser->perfil != 3) {
+            return redirect()->route('home')
+                ->with('error', 'No tienes permiso para acceder a esta sección.');
+        }
         $validator = Validator::make($request->all(), [
             'programa_id' => 'required|exists:programas,id',
             'parte_id' => 'required|exists:partes_seccion,id',
@@ -458,7 +464,12 @@ class ParteProgramaController extends Controller
      */
     public function update(Request $request, $id)
     {
-
+        $currentUser = auth()->user();
+        //No pernmite ver programas si $currentUser->perfil no es 3
+        if ($currentUser->perfil != 3) {
+            return redirect()->route('home')
+                ->with('error', 'No tienes permiso para acceder a esta sección.');
+        }
         $validator = Validator::make($request->all(), [
             'parte_id' => 'required|exists:partes_seccion,id',
             'tiempo' => 'required|integer|min:1',
@@ -533,6 +544,12 @@ class ParteProgramaController extends Controller
      */
     public function destroy($id)
     {
+        $currentUser = auth()->user();
+        //No pernmite ver programas si $currentUser->perfil no es 3
+        if ($currentUser->perfil != 3) {
+            return redirect()->route('home')
+                ->with('error', 'No tienes permiso para acceder a esta sección.');
+        }
         try {
             $partePrograma = PartePrograma::findOrFail($id);
             $partePrograma->delete();
@@ -1018,11 +1035,6 @@ class ParteProgramaController extends Controller
                               ->orWhere('pp.ayudante_id', $usuario->id);
                     });
 
-                // Excluir la fecha de la parte programa que se está editando
-                if ($fechaEditando) {
-                    //$query->where('prog.fecha', '!=', $fechaEditando);
-                }
-
                 $ultimaParticipacion = $query->select(
                         'prog.fecha',
                         'ps.abreviacion',
@@ -1273,16 +1285,12 @@ class ParteProgramaController extends Controller
     public function moveUp($id)
     {
         try {
-            \Log::info('moveUp called with ID: ' . $id);
-            $user = Auth::user();
-            \Log::info('User perfil: ' . $user->perfil);
-
-            // Verificar que el usuario tenga perfil=3 (coordinador)
-            if ($user->perfil != 3) {
-                \Log::warning('User does not have coordinator profile');
+            $currentUser = auth()->user();
+            //No pernmite ver programas si $currentUser->perfil no es 3
+            if ($currentUser->perfil != 3) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'No tiene permisos para realizar esta acción.'
+                    'message' => 'No tienes permiso para acceder a esta sección.'
                 ], 403);
             }
 
@@ -1333,19 +1341,14 @@ class ParteProgramaController extends Controller
     public function moveDown($id)
     {
         try {
-            \Log::info('moveDown called with ID: ' . $id);
-            $user = Auth::user();
-            \Log::info('User perfil: ' . $user->perfil);
-
-            // Verificar que el usuario tenga perfil=3 (coordinador)
-            if ($user->perfil != 3) {
-                \Log::warning('User does not have coordinator profile');
+            $currentUser = auth()->user();
+            //No pernmite ver programas si $currentUser->perfil no es 3
+            if ($currentUser->perfil != 3) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'No tiene permisos para realizar esta acción.'
+                    'message' => 'No tienes permiso para acceder a esta sección.'
                 ], 403);
             }
-
             $partePrograma = PartePrograma::with('parte')->findOrFail($id);
 
             // Buscar la parte siguiente en el mismo programa y misma sección
@@ -1395,142 +1398,142 @@ class ParteProgramaController extends Controller
         try {
             $user = Auth::user();
 
-                // Verificar que el usuario autenticado tenga perfil=3 (coordinador)
-                if ($user->perfil != 3) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'No tiene permisos para acceder a esta información.'
-                    ], 403);
-                }
-
-                // Obtener usuarios únicos de la misma congregación que pueden ser ayudantes
-                $usuariosQuery = DB::table('users as u')
-                    ->join('asignaciones_users as au', 'u.id', '=', 'au.user_id')
-                    ->join('asignaciones as a', 'au.asignacion_id', '=', 'a.id')
-                    ->join('partes_seccion as ps', 'a.id', '=', 'ps.asignacion_id')
-                    ->where('ps.id', $parteId)
-                    ->where('u.congregacion', $user->congregacion)
-                    ->where('u.estado', 1);
-
-                $usuariosBase = $usuariosQuery->select('u.id', 'u.name', 'u.sexo')
-                    ->distinct()
-                    ->get();
-
-                // Obtener el ID de la parte programa que se está editando
-                $parteProgramaEditandoId = $request->query('editing_id');
-                $fechaEditando = null;
-                $ayudanteEditandoId = null;
-                $parteEditandoInfo = null;
-
-                // Si hay una parte editándose, obtener su información completa
-                if ($parteProgramaEditandoId) {
-                    $parteEditandoInfo = DB::table('partes_programa as pp')
-                        ->join('programas as prog', 'pp.programa_id', '=', 'prog.id')
-                        ->join('partes_seccion as ps', 'pp.parte_id', '=', 'ps.id')
-                        ->where('pp.id', $parteProgramaEditandoId)
-                        ->select('prog.fecha', 'pp.ayudante_id', 'ps.abreviacion', 'pp.id as partes_programa_id')
-                        ->first();
-
-                    if ($parteEditandoInfo) {
-                        $fechaEditando = $parteEditandoInfo->fecha;
-                        $ayudanteEditandoId = $parteEditandoInfo->ayudante_id;
-                    }
-                }
-
-                // Obtener historial de participaciones para cada usuario
-                $usuarios = collect();
-                foreach ($usuariosBase as $usuario) {
-                    // Buscar la participación más reciente en la segunda sección como encargado O ayudante
-                    $query = DB::table('partes_programa as pp')
-                        ->join('programas as prog', 'pp.programa_id', '=', 'prog.id')
-                        ->join('partes_seccion as ps', 'pp.parte_id', '=', 'ps.id')
-                        ->where('ps.seccion_id', 2)
-                        ->where(function($subQuery) use ($usuario) {
-                            $subQuery->where('pp.encargado_id', $usuario->id)
-                                    ->orWhere('pp.ayudante_id', $usuario->id);
-                        });
-
-                    // Excluir la fecha de la parte programa que se está editando
-                    if ($fechaEditando) {
-                        //$query->where('prog.fecha', '!=', $fechaEditando);
-                    }
-
-                    $ultimaParticipacion = $query->select(
-                            'prog.fecha',
-                            'ps.abreviacion',
-                            'pp.id as partes_programa_id',
-                            DB::raw('CASE
-                                WHEN pp.encargado_id = ' . $usuario->id . ' THEN "ES"
-                                WHEN pp.ayudante_id = ' . $usuario->id . ' THEN "AY"
-                                ELSE "AY"
-                            END as tipo_participacion')
-                        )
-                        ->orderBy('prog.fecha', 'desc')
-                        ->first();
-
-                    $usuarios->push((object)[
-                        'id' => $usuario->id,
-                        'name' => $usuario->name,
-                        'sexo' => $usuario->sexo,
-                        'ultima_fecha' => $ultimaParticipacion ? $ultimaParticipacion->fecha : null,
-                        'ultima_parte_abreviacion' => $ultimaParticipacion ? $ultimaParticipacion->abreviacion : null,
-                        'partes_programa_id' => $ultimaParticipacion ? $ultimaParticipacion->partes_programa_id : null,
-                        'tipo_participacion' => $ultimaParticipacion ? $ultimaParticipacion->tipo_participacion : 'AY'
-                    ]);
-                }
-
-                // Formatear los datos
-                $usuariosFormateados = [];
-                foreach ($usuarios as $usuario) {
-                    $fechaTexto = $usuario->ultima_fecha
-                        ? \Carbon\Carbon::parse($usuario->ultima_fecha)->format('d/m/Y')
-                        : 'Primera vez';
-
-                    $parteTexto = $usuario->ultima_parte_abreviacion ?? '__';
-                    $tipoTexto = $usuario->ultima_fecha ? ($usuario->tipo_participacion ?? 'AY') : '__'; // Si es primera vez, tipo es "__"
-
-                    $displayText = $fechaTexto . '|' . $parteTexto . '|' . $tipoTexto . '|' . $usuario->name;
-
-                    $usuariosFormateados[] = [
-                        'id' => $usuario->id,
-                        'name' => $usuario->name,
-                        'display_text' => $displayText,
-                        'sexo' => $usuario->sexo,
-                        'partes_programa_id' => $usuario->partes_programa_id
-                    ];
-                }
-
-                // Ordenar por fecha (Primera vez primero, luego más antiguos primero)
-                usort($usuariosFormateados, function($a, $b) {
-                    $fechaA = substr($a['display_text'], 0, 11); // Incluir "Primera vez"
-                    $fechaB = substr($b['display_text'], 0, 11);
-
-                    // Si alguno es "Primera vez", debe ir primero
-                    if ($fechaA === 'Primera vez' && $fechaB !== 'Primera vez') {
-                        return -1;
-                    }
-                    if ($fechaB === 'Primera vez' && $fechaA !== 'Primera vez') {
-                        return 1;
-                    }
-                    if ($fechaA === 'Primera vez' && $fechaB === 'Primera vez') {
-                        return 0;
-                    }
-
-                    // Si ninguno es "Primera vez", ordenar por fecha
-                    return strcmp($fechaA, $fechaB);
-                });
-
-                return response()->json([
-                    'success' => true,
-                    'data' => $usuariosFormateados
-                ]);
-            } catch (\Exception $e) {
+            // Verificar que el usuario autenticado tenga perfil=3 (coordinador)
+            if ($user->perfil != 3) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Error al obtener los ayudantes: ' . $e->getMessage()
-                ], 500);
+                    'message' => 'No tiene permisos para acceder a esta información.'
+                ], 403);
             }
+
+            // Obtener usuarios únicos de la misma congregación que pueden ser ayudantes
+            $usuariosQuery = DB::table('users as u')
+                ->join('asignaciones_users as au', 'u.id', '=', 'au.user_id')
+                ->join('asignaciones as a', 'au.asignacion_id', '=', 'a.id')
+                ->join('partes_seccion as ps', 'a.id', '=', 'ps.asignacion_id')
+                ->where('ps.id', $parteId)
+                ->where('u.congregacion', $user->congregacion)
+                ->where('u.estado', 1);
+
+            $usuariosBase = $usuariosQuery->select('u.id', 'u.name', 'u.sexo')
+                ->distinct()
+                ->get();
+
+            // Obtener el ID de la parte programa que se está editando
+            $parteProgramaEditandoId = $request->query('editing_id');
+            $fechaEditando = null;
+            $ayudanteEditandoId = null;
+            $parteEditandoInfo = null;
+
+            // Si hay una parte editándose, obtener su información completa
+            if ($parteProgramaEditandoId) {
+                $parteEditandoInfo = DB::table('partes_programa as pp')
+                    ->join('programas as prog', 'pp.programa_id', '=', 'prog.id')
+                    ->join('partes_seccion as ps', 'pp.parte_id', '=', 'ps.id')
+                    ->where('pp.id', $parteProgramaEditandoId)
+                    ->select('prog.fecha', 'pp.ayudante_id', 'ps.abreviacion', 'pp.id as partes_programa_id')
+                    ->first();
+
+                if ($parteEditandoInfo) {
+                    $fechaEditando = $parteEditandoInfo->fecha;
+                    $ayudanteEditandoId = $parteEditandoInfo->ayudante_id;
+                }
+            }
+
+            // Obtener historial de participaciones para cada usuario
+            $usuarios = collect();
+            foreach ($usuariosBase as $usuario) {
+                // Buscar la participación más reciente en la segunda sección como encargado O ayudante
+                $query = DB::table('partes_programa as pp')
+                    ->join('programas as prog', 'pp.programa_id', '=', 'prog.id')
+                    ->join('partes_seccion as ps', 'pp.parte_id', '=', 'ps.id')
+                    ->where('ps.seccion_id', 2)
+                    ->where(function($subQuery) use ($usuario) {
+                        $subQuery->where('pp.encargado_id', $usuario->id)
+                                ->orWhere('pp.ayudante_id', $usuario->id);
+                    });
+
+                // Excluir la fecha de la parte programa que se está editando
+                if ($fechaEditando) {
+                    //$query->where('prog.fecha', '!=', $fechaEditando);
+                }
+
+                $ultimaParticipacion = $query->select(
+                        'prog.fecha',
+                        'ps.abreviacion',
+                        'pp.id as partes_programa_id',
+                        DB::raw('CASE
+                            WHEN pp.encargado_id = ' . $usuario->id . ' THEN "ES"
+                            WHEN pp.ayudante_id = ' . $usuario->id . ' THEN "AY"
+                            ELSE "AY"
+                        END as tipo_participacion')
+                    )
+                    ->orderBy('prog.fecha', 'desc')
+                    ->first();
+
+                $usuarios->push((object)[
+                    'id' => $usuario->id,
+                    'name' => $usuario->name,
+                    'sexo' => $usuario->sexo,
+                    'ultima_fecha' => $ultimaParticipacion ? $ultimaParticipacion->fecha : null,
+                    'ultima_parte_abreviacion' => $ultimaParticipacion ? $ultimaParticipacion->abreviacion : null,
+                    'partes_programa_id' => $ultimaParticipacion ? $ultimaParticipacion->partes_programa_id : null,
+                    'tipo_participacion' => $ultimaParticipacion ? $ultimaParticipacion->tipo_participacion : 'AY'
+                ]);
+            }
+
+            // Formatear los datos
+            $usuariosFormateados = [];
+            foreach ($usuarios as $usuario) {
+                $fechaTexto = $usuario->ultima_fecha
+                    ? \Carbon\Carbon::parse($usuario->ultima_fecha)->format('d/m/Y')
+                    : 'Primera vez';
+
+                $parteTexto = $usuario->ultima_parte_abreviacion ?? '__';
+                $tipoTexto = $usuario->ultima_fecha ? ($usuario->tipo_participacion ?? 'AY') : '__'; // Si es primera vez, tipo es "__"
+
+                $displayText = $fechaTexto . '|' . $parteTexto . '|' . $tipoTexto . '|' . $usuario->name;
+
+                $usuariosFormateados[] = [
+                    'id' => $usuario->id,
+                    'name' => $usuario->name,
+                    'display_text' => $displayText,
+                    'sexo' => $usuario->sexo,
+                    'partes_programa_id' => $usuario->partes_programa_id
+                ];
+            }
+
+            // Ordenar por fecha (Primera vez primero, luego más antiguos primero)
+            usort($usuariosFormateados, function($a, $b) {
+                $fechaA = substr($a['display_text'], 0, 11); // Incluir "Primera vez"
+                $fechaB = substr($b['display_text'], 0, 11);
+
+                // Si alguno es "Primera vez", debe ir primero
+                if ($fechaA === 'Primera vez' && $fechaB !== 'Primera vez') {
+                    return -1;
+                }
+                if ($fechaB === 'Primera vez' && $fechaA !== 'Primera vez') {
+                    return 1;
+                }
+                if ($fechaA === 'Primera vez' && $fechaB === 'Primera vez') {
+                    return 0;
+                }
+
+                // Si ninguno es "Primera vez", ordenar por fecha
+                return strcmp($fechaA, $fechaB);
+            });
+
+            return response()->json([
+                'success' => true,
+                'data' => $usuariosFormateados
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al obtener los ayudantes: ' . $e->getMessage()
+            ], 500);
         }
+    }
 
     /**
      * Verificar los sexos de dos usuarios (encargado y ayudante)
@@ -2159,4 +2162,3 @@ class ParteProgramaController extends Controller
         }
     }
 }
-
