@@ -36,19 +36,16 @@ div.select2-container--bootstrap-5 .select2-selection__rendered {
 /* Estilos para asegurar que ambas tablas de escuela tengan el mismo ancho */
 #partesTable,
 #partesNVTable,
-#partesSegundaSeccionTable,
-#partesTerceraSeccionTable {
+#partesSegundaSeccionTable {
     width: 100% !important;
     table-layout: fixed !important;
 }
 #partesTable th,
 #partesNVTable th,
 #partesSegundaSeccionTable th,
-#partesTerceraSeccionTable th,
 #partesTable td,
 #partesNVTable td,
-#partesSegundaSeccionTable td,
-#partesTerceraSeccionTable td {
+#partesSegundaSeccionTable td {
     word-wrap: break-word;
     overflow-wrap: break-word;
     white-space: normal;
@@ -89,86 +86,72 @@ div.select2-container--bootstrap-5 .select2-selection__rendered {
 
 
 /* Estilos específicos para las columnas de las tablas de escuela */
-#partesSegundaSeccionTable th:nth-child(1),
-#partesTerceraSeccionTable th:nth-child(1) {
+#partesSegundaSeccionTable th:nth-child(1) {
     width: 100px !important;
     min-width: 100px !important;
 }
 
-#partesSegundaSeccionTable th:nth-child(2),
-#partesTerceraSeccionTable th:nth-child(2) {
+#partesSegundaSeccionTable th:nth-child(2) {
     width: 100px !important;
     min-width: 100px !important;
 }
 
-#partesSegundaSeccionTable th:nth-child(3),
-#partesTerceraSeccionTable th:nth-child(3) {
+#partesSegundaSeccionTable th:nth-child(3) {
     width: 300px !important;
     min-width: 300px !important;
 }
 
-#partesSegundaSeccionTable th:nth-child(4),
-#partesTerceraSeccionTable th:nth-child(4) {
+#partesSegundaSeccionTable th:nth-child(4) {
     width: 300px !important;
     min-width: 300px !important;
 }
 
-#partesSegundaSeccionTable th:nth-child(5),
-#partesTerceraSeccionTable th:nth-child(5) {
+#partesSegundaSeccionTable th:nth-child(5) {
     width: 100px !important;
     min-width: 100px !important;
 }
 
-#partesSegundaSeccionTable th:nth-child(6),
-#partesTerceraSeccionTable th:nth-child(6) {
+#partesSegundaSeccionTable th:nth-child(6) {
     width: 100px !important;
     min-width: 100px !important;
 }
-#partesSegundaSeccionTable th:nth-child(7),
-#partesTerceraSeccionTable th:nth-child(7) {
+#partesSegundaSeccionTable th:nth-child(7) {
     width: 100px !important;
     min-width: 100px !important;
 }
 
 
 /* Aplicar los mismos estilos a las celdas del cuerpo de la tabla */
-#partesSegundaSeccionTable td:nth-child(1),
-#partesTerceraSeccionTable td:nth-child(1) {
+#partesSegundaSeccionTable td:nth-child(1) {
     width: 100px !important;
     max-width: 100px !important;
 }
 
-#partesSegundaSeccionTable td:nth-child(2),
-#partesTerceraSeccionTable td:nth-child(2) {
+#partesSegundaSeccionTable td:nth-child(2) {
     width: 100px !important;
     max-width: 100px !important;
 }
 
-#partesSegundaSeccionTable td:nth-child(3),
-#partesTerceraSeccionTable td:nth-child(3) {
+#partesSegundaSeccionTable td:nth-child(3) {
     width: 300px !important;
     max-width: 300px !important;
 }
 
-#partesSegundaSeccionTable td:nth-child(4),
-#partesTerceraSeccionTable td:nth-child(4) {
+#partesSegundaSeccionTable td:nth-child(4) {
     width: 300px !important;
     max-width: 300px !important;
 }
 
-#partesSegundaSeccionTable td:nth-child(5),
-#partesTerceraSeccionTable td:nth-child(5) {
+#partesSegundaSeccionTable td:nth-child(5) {
     width: 100px !important;
     min-width: 100px !important;
 }
 
-#partesSegundaSeccionTable td:nth-child(6),
-#partesTerceraSeccionTable td:nth-child(6) {
+#partesSegundaSeccionTable td:nth-child(6) {
     width: 100px !important;
     max-width: 100px !important;
 }
-#partesSegundaSeccionTable td:nth-child(7),
-#partesTerceraSeccionTable td:nth-child(7) {
+#partesSegundaSeccionTable td:nth-child(7) {
     width: 100px !important;
     max-width: 100px !important;
 }

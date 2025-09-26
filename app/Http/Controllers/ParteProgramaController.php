@@ -29,11 +29,6 @@ class ParteProgramaController extends Controller
                 ->where('pp.programa_id', $programaId)
                 ->where('ps.seccion_id', 1);
 
-            // Los coordinadores ahora pueden ver todas las salas
-            // if ($user && $user->isCoordinator()) {
-            //     $query->where('pp.sala_id', 1);
-            // }
-
             $partes = $query->select(
                     'pp.id',
                     'pp.tiempo',
@@ -296,14 +291,6 @@ class ParteProgramaController extends Controller
      */
     public function store(Request $request)
     {
-        // Logging temporal para debug
-        \Log::info('=== PARTES PROGRAMA STORE DEBUG ===');
-        \Log::info('Request Method: ' . $request->method());
-        \Log::info('Request URL: ' . $request->url());
-        \Log::info('Request Data: ', $request->all());
-        \Log::info('User: ' . (auth()->user() ? auth()->user()->id . ' - ' . auth()->user()->name : 'No autenticado'));
-        \Log::info('CSRF Token: ' . $request->header('X-CSRF-TOKEN', $request->input('_token', 'no token')));
-
         $validator = Validator::make($request->all(), [
             'programa_id' => 'required|exists:programas,id',
             'parte_id' => 'required|exists:partes_seccion,id',
@@ -333,28 +320,14 @@ class ParteProgramaController extends Controller
             ], 422);
         }
 
-        // Validar sección según el contexto
-        $user = Auth::user();
-        if ($user && $user->isCoordinator()) {
-            // Para coordinadores, permitir secciones 1, 2 y 3
-            if (!in_array($parteSeccion->seccion_id, [1, 2, 3])) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'La parte seleccionada no es válida.'
-                ], 422);
-            }
-        } else {
-            // Para otros perfiles, secciones 1 y 3
-            if (!in_array($parteSeccion->seccion_id, [1, 3])) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'La parte seleccionada no pertenece a una sección válida.'
-                ], 422);
-            }
+        if (!in_array($parteSeccion->seccion_id, [1, 2, 3])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'La parte seleccionada no es válida.'
+            ], 422);
         }
 
         try {
-            $user = Auth::user();
 
             // Obtener el siguiente número de orden para este programa
             $maxOrden = PartePrograma::where('programa_id', $request->programa_id)->max('orden');
@@ -478,6 +451,7 @@ class ParteProgramaController extends Controller
      */
     public function update(Request $request, $id)
     {
+
         $validator = Validator::make($request->all(), [
             'parte_id' => 'required|exists:partes_seccion,id',
             'tiempo' => 'required|integer|min:1',
@@ -508,22 +482,12 @@ class ParteProgramaController extends Controller
 
         // Validar sección según el contexto
         $user = Auth::user();
-        if ($user && $user->isCoordinator()) {
-            // Para coordinadores, permitir secciones 1, 2 y 3
-            if (!in_array($parteSeccion->seccion_id, [1, 2, 3])) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'La parte seleccionada no es válida.'
-                ], 422);
-            }
-        } else {
-            // Para otros perfiles, secciones 1 y 3
-            if (!in_array($parteSeccion->seccion_id, [1, 3])) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'La parte seleccionada no pertenece a una sección válida.'
-                ], 422);
-            }
+        // Para coordinadores, permitir secciones 1, 2 y 3
+        if (!in_array($parteSeccion->seccion_id, [1, 2, 3])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'La parte seleccionada no es válida.'
+            ], 422);
         }
 
         try {
@@ -595,7 +559,7 @@ class ParteProgramaController extends Controller
             }
 
             // Los coordinadores ahora pueden crear partes en cualquier sala
-            if ($user && $user->isCoordinator() && $programaId) {
+            if ($user && $programaId) {
                 $partesExistentes = DB::table('partes_programa')
                     ->where('programa_id', $programaId)
                     ->where('sala_id', 1)

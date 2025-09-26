@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+@if(Auth::user()->perfil == 3)
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">
@@ -21,11 +22,9 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="card-body">
                     <!-- Contenedor para alertas -->
                     <div id="alert-container"></div>
-
                     <form id="editProgramaForm">
                         @csrf
                         @method('PUT')
@@ -42,7 +41,6 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="orador_inicial" class="form-label">Orador Inicial</label>
-                                    @if(Auth::user()->perfil == 3)
                                         <div class="input-group">
                                             <input type="text" class="form-control" id="orador_inicial_display" name="orador_inicial_display"
                                                    value="{{ $programa->oradorInicial ? $programa->oradorInicial->name : '' }}" disabled>
@@ -52,14 +50,6 @@
                                             </button>
                                         </div>
                                         <input type="hidden" id="orador_inicial" name="orador_inicial" value="{{ $programa->orador_inicial }}">
-                                    @else
-                                        <select class="form-select" id="orador_inicial" name="orador_inicial">
-                                            <option value="">Seleccionar...</option>
-                                            @foreach($usuarios as $usuario)
-                                                <option value="{{ $usuario->id }}" {{ $programa->orador_inicial == $usuario->id ? 'selected' : '' }}>{{ $usuario->name }}</option>
-                                            @endforeach
-                                        </select>
-                                    @endif
                                     <div class="invalid-feedback"></div>
                                 </div>
                             </div>
@@ -69,7 +59,6 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="cancion_pre" class="form-label">Canción Inicial</label>
-                                    @if(Auth::user()->perfil == 3)
                                         <div class="input-group">
                                             <input type="text" class="form-control" id="cancion_pre_display" name="cancion_pre_display"
                                                    value="{{ $programa->cancionPre ? ($programa->cancionPre->numero ? $programa->cancionPre->numero . ' - ' : '') . $programa->cancionPre->nombre : '' }}" disabled>
@@ -79,21 +68,12 @@
                                             </button>
                                         </div>
                                         <input type="hidden" id="cancion_pre" name="cancion_pre" value="{{ $programa->cancion_pre }}">
-                                    @else
-                                        <select class="form-select" id="cancion_pre" name="cancion_pre">
-                                            <option value="">Seleccionar...</option>
-                                            @foreach($canciones as $cancion)
-                                                <option value="{{ $cancion->id }}" {{ $programa->cancion_pre == $cancion->id ? 'selected' : '' }}>{{ $cancion->numero ? $cancion->numero . ' - ' : '' }}{{ $cancion->nombre }}</option>
-                                            @endforeach
-                                        </select>
-                                    @endif
                                     <div class="invalid-feedback"></div>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="presidencia" class="form-label">Presidencia</label>
-                                    @if(Auth::user()->perfil == 3)
                                         <div class="input-group">
                                             <input type="text" class="form-control" id="presidencia_display" name="presidencia_display"
                                                    value="{{ $programa->presidenciaUsuario ? $programa->presidenciaUsuario->name : '' }}" disabled>
@@ -103,14 +83,6 @@
                                             </button>
                                         </div>
                                         <input type="hidden" id="presidencia" name="presidencia" value="{{ $programa->presidencia }}">
-                                    @else
-                                        <select class="form-select" id="presidencia" name="presidencia">
-                                            <option value="">Seleccionar...</option>
-                                            @foreach($usuarios as $usuario)
-                                                <option value="{{ $usuario->id }}" {{ $programa->presidencia == $usuario->id ? 'selected' : '' }}>{{ $usuario->name }}</option>
-                                            @endforeach
-                                        </select>
-                                    @endif
                                     <div class="invalid-feedback"></div>
                                 </div>
                             </div>
@@ -156,8 +128,7 @@
                             </div>
                         </div>
 
-                        <!-- Sección de Escuela con Tabs -->
-                        @if(Auth::user()->perfil == 3)
+                        <!-- Sección de Escuela  -->
                         <div class="row">
                             <div class="col-12">
                                 <div class="card mb-4">
@@ -201,8 +172,6 @@
                                 </div>
                             </div>
                         </div>
-                        @endif
-
                         <!-- Sección Nuestra Vida Cristiana -->
                         <div class="row">
                             <div class="col-12">
@@ -213,7 +182,6 @@
                                                 <h6 class="mb-0">
                                                     <i class="fas fa-briefcase me-2"></i>NUESTRA VIDA CRISTIANA
                                                 </h6>
-                                            
                                                 <div class="d-flex justify-content-end">
                                                     <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#parteProgramaNVModal" onclick="openCreateParteNVModal()">
                                                         <i class="fas fa-plus me-2"></i>Nueva Asignación NVC
@@ -247,7 +215,6 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="cancion_en" class="form-label">Canción Intermedia</label>
-                                    @if(Auth::user()->perfil == 3)
                                         <div class="input-group">
                                             <input type="text" class="form-control" id="cancion_en_display" name="cancion_en_display"
                                                    value="{{ $programa->cancionEn ? ($programa->cancionEn->numero ? $programa->cancionEn->numero . ' - ' : '') . $programa->cancionEn->nombre : '' }}" disabled>
@@ -257,21 +224,12 @@
                                             </button>
                                         </div>
                                         <input type="hidden" id="cancion_en" name="cancion_en" value="{{ $programa->cancion_en }}">
-                                    @else
-                                        <select class="form-select" id="cancion_en" name="cancion_en">
-                                            <option value="">Seleccionar...</option>
-                                            @foreach($canciones as $cancion)
-                                                <option value="{{ $cancion->id }}" {{ $programa->cancion_en == $cancion->id ? 'selected' : '' }}>{{ $cancion->numero ? $cancion->numero . ' - ' : '' }}{{ $cancion->nombre }}</option>
-                                            @endforeach
-                                        </select>
-                                    @endif
                                     <div class="invalid-feedback"></div>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="cancion_post" class="form-label">Canción Final</label>
-                                    @if(Auth::user()->perfil == 3)
                                         <div class="input-group">
                                             <input type="text" class="form-control" id="cancion_post_display" name="cancion_post_display"
                                                    value="{{ $programa->cancionPost ? ($programa->cancionPost->numero ? $programa->cancionPost->numero . ' - ' : '') . $programa->cancionPost->nombre : '' }}" disabled>
@@ -281,14 +239,6 @@
                                             </button>
                                         </div>
                                         <input type="hidden" id="cancion_post" name="cancion_post" value="{{ $programa->cancion_post }}">
-                                    @else
-                                        <select class="form-select" id="cancion_post" name="cancion_post">
-                                            <option value="">Seleccionar...</option>
-                                            @foreach($canciones as $cancion)
-                                                <option value="{{ $cancion->id }}" {{ $programa->cancion_post == $cancion->id ? 'selected' : '' }}>{{ $cancion->numero ? $cancion->numero . ' - ' : '' }}{{ $cancion->nombre }}</option>
-                                            @endforeach
-                                        </select>
-                                    @endif
                                     <div class="invalid-feedback"></div>
                                 </div>
                             </div>
@@ -298,7 +248,6 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="orador_final" class="form-label">Orador Final</label>
-                                    @if(Auth::user()->perfil == 3)
                                         <div class="input-group">
                                             <input type="text" class="form-control" id="orador_final_display" name="orador_final_display"
                                                    value="{{ $programa->oradorFinal ? $programa->oradorFinal->name : '' }}" disabled>
@@ -308,14 +257,6 @@
                                             </button>
                                         </div>
                                         <input type="hidden" id="orador_final" name="orador_final" value="{{ $programa->orador_final }}">
-                                    @else
-                                        <select class="form-select" id="orador_final" name="orador_final">
-                                            <option value="">Seleccionar...</option>
-                                            @foreach($usuarios as $usuario)
-                                                <option value="{{ $usuario->id }}" {{ $programa->orador_final == $usuario->id ? 'selected' : '' }}>{{ $usuario->name }}</option>
-                                            @endforeach
-                                        </select>
-                                    @endif
                                     <div class="invalid-feedback"></div>
                                 </div>
                             </div>
@@ -351,12 +292,12 @@
     </div>
 </div>
 
-<!-- Modal para Crear/Editar Parte del Programa -->
+<!-- Modal para Crear/Editar Primera Parte del Programa -->
 <div class="modal fade" id="parteProgramaModal" tabindex="-1" aria-labelledby="parteProgramaModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="parteProgramaModalLabel">Nueva Asignación de {{ $seccionReunion ? $seccionReunion->nombre : 'Primera Sección' }}</h5>
+                <h5 class="modal-title" id="parteProgramaModalLabel">Nueva Asignación de Tesoros de la Biblia</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form id="parteProgramaForm">
@@ -365,7 +306,7 @@
                     @csrf
                     <input type="hidden" id="parte_programa_id" name="parte_programa_id">
                     <input type="hidden" id="programa_id_parte" name="programa_id" value="{{ $programa->id }}">
-
+                    <input type="hidden" id="sala_id" name="sala_id" value="1">
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
@@ -392,12 +333,10 @@
                         <textarea class="form-control" id="tema_parte" name="tema" rows="2" maxlength="500"></textarea>
                         <div class="invalid-feedback"></div>
                     </div>
-
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="encargado_id" class="form-label">Encargado <span class="text-danger">*</span></label>
-                                @if(Auth::user()->perfil == 3)
                                     <div class="input-group">
                                         <input type="text" class="form-control" id="encargado_display" name="encargado_display"
                                                placeholder="Seleccionar encargado..." disabled>
@@ -411,15 +350,9 @@
                                         </button>
                                     </div>
                                     <input type="hidden" id="encargado_id" name="encargado_id" required>
-                                @else
-                                    <select class="form-select select2" id="encargado_id" name="encargado_id" required>
-                                        <option value="">Seleccionar una parte primero...</option>
-                                    </select>
-                                @endif
                                 <div class="invalid-feedback"></div>
                             </div>
                         </div>
-                        @if(Auth::user()->perfil == 3)
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="encargado_reemplazado_display" class="form-label">Encargado Reemplazado</label>
@@ -434,14 +367,6 @@
                                 <input type="hidden" id="encargado_reemplazado_id" name="encargado_reemplazado_id">
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="leccion_parte" class="form-label">Lección </label>
-                                <input type="text" class="form-control" id="leccion_parte" name="leccion" maxlength="500">
-                                <div class="invalid-feedback"></div>
-                            </div>
-                        </div>
-                        @endif
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -455,14 +380,12 @@
         </div>
     </div>
 </div>
-
 <!-- Modal para Crear/Editar Parte de la Segunda Sección -->
-@if(Auth::user()->perfil == 3)
 <div class="modal fade" id="parteProgramaSegundaSeccionModal" tabindex="-1" aria-labelledby="parteProgramaSegundaSeccionModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="parteProgramaSegundaSeccionModalLabel">Nueva Asignación (Sala Principal)</h5>
+                <h5 class="modal-title" id="parteProgramaSegundaSeccionModalLabel">Nueva Asignación Seamos Mejores Maestros</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form id="parteProgramaSegundaSeccionForm">
@@ -599,9 +522,7 @@
         </div>
     </div>
 </div>
-@endif
 
-@if(Auth::user()->perfil == 3)
 <!-- Modal para Crear/Editar Parte de Seamos Mejores Maestros -->
 <div class="modal fade" id="parteProgramaTerceraSeccionModal" tabindex="-1" aria-labelledby="parteProgramaTerceraSeccionModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -716,7 +637,6 @@
         </div>
     </div>
 </div>
-@endif
 
 <!-- Modal para Crear/Editar Parte del Programa NVC -->
 <div class="modal fade" id="parteProgramaNVModal" tabindex="-1" aria-labelledby="parteProgramaNVModalLabel" aria-hidden="true">
@@ -730,6 +650,7 @@
                 <div class="modal-body">
                     @csrf
                     <input type="hidden" id="parte_programa_nv_id" name="parte_programa_id">
+                    <input type="hidden" id="sala_id_nv" name="sala_id_nv" value="1">
                     <input type="hidden" id="programa_id_parte_nv" name="programa_id" value="{{ $programa->id }}">
                     <div id="modal-alert-container-nv"></div>
                     <div class="row">
@@ -763,7 +684,6 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="encargado_id_nv" class="form-label">Encargado <span class="text-danger">*</span></label>
-                                @if(Auth::user()->perfil == 3)
                                     <div class="input-group">
                                         <input type="text" class="form-control" id="encargado_display_nv" name="encargado_display"
                                                placeholder="Seleccionar encargado..." disabled>
@@ -777,15 +697,9 @@
                                         </button>
                                     </div>
                                     <input type="hidden" id="encargado_id_nv" name="encargado_id" required>
-                                @else
-                                    <select class="form-select select2" id="encargado_id_nv" name="encargado_id" required>
-                                        <option value="">Seleccionar una parte primero...</option>
-                                    </select>
-                                @endif
                                 <div class="invalid-feedback"></div>
                             </div>
                         </div>
-                        @if(Auth::user()->perfil == 3)
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="encargado_reemplazado_display_nv" class="form-label">Encargado Reemplazado</label>
@@ -800,18 +714,7 @@
                                 <input type="hidden" id="encargado_reemplazado_id_nv" name="encargado_reemplazado_id">
                             </div>
                         </div>
-                        @endif
-                        @if(!Auth::user()->isCoordinator())
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="leccion_parte_nv" class="form-label">Lección </label>
-                                <input type="text" class="form-control" id="leccion_parte_nv" name="leccion" maxlength="500">
-                                <div class="invalid-feedback"></div>
-                            </div>
-                        </div>
-                        @endif
                     </div>
-                    
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -824,7 +727,6 @@
         </div>
     </div>
 </div>
-
 <!-- Modal de Confirmación para Eliminar Parte del Programa -->
 <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -923,8 +825,6 @@
     </div>
 </div>
 
-
-
 <!-- Modal para Buscar Presidencia -->
 <div class="modal fade" id="buscarPresidenciaModal" tabindex="-1" aria-labelledby="buscarPresidenciaModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -961,8 +861,6 @@
         </div>
     </div>
 </div>
-
-
 
 <!-- Modal para Buscar Canción Inicial -->
 <div class="modal fade" id="buscarCancionInicialModal" tabindex="-1" aria-labelledby="buscarCancionInicialModalLabel" aria-hidden="true">
@@ -1271,14 +1169,12 @@
         </div>
     </div>
 </div>
-
-
+@endif
 
 @push('scripts')
 <script>
 let partesTable;
 let partesSegundaSeccionTable;
-let partesTerceraSeccionTable;
 let partesNVTable;
 let isEditMode = false;
 const userIsCoordinator = {{ Auth::user()->isCoordinator() ? 'true' : 'false' }};
