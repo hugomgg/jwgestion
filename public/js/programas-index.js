@@ -14,7 +14,7 @@ $(document).ready(function() {
         responsive: true,
         order: [[0, 'desc']], // Ordenar por fecha descendente
         columnDefs: [
-            { targets: [8], orderable: false } // Columna de acciones no ordenable
+            { targets: [7], orderable: false } // Columna de acciones no ordenable
         ]
     });
 

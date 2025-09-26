@@ -80,15 +80,14 @@
                         <table class="table table-striped table-hover" id="programasTable">
                             <thead class="table-dark">
                                 <tr>
-                                    <th>Fecha</th>
-                                    <th>Orador Inicial</th>
-                                    <th>Presidencia</th>
-                                    <th>Canción Inicial</th>
-                                    <th>Canción Intermedia</th>
-                                    <th>Canción Final</th>
-                                    <th>Orador Final</th>
-                                    <th class="d-none">Estado</th>
-                                    <th>Acciones</th>
+                                    <th style="width: 10%;">Fecha</th>
+                                    <th style="width: 20%;">Orador Inicial</th>
+                                    <th style="width: 20%;">Presidente</th>
+                                    <th style="width: 10%;">Canción Inicial</th>
+                                    <th style="width: 10%;">Canción Intermedia</th>
+                                    <th style="width: 10%;">Canción Final</th>
+                                    <th style="width: 20%;">Orador Final</th>
+                                    <th style="width: 10%;">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -101,11 +100,6 @@
                                     <td>{{ $programa->numero_cancion_en ?? '-' }}</td>
                                     <td>{{ $programa->numero_cancion_post ?? '-' }}</td>
                                     <td>{{ $programa->nombre_orador_final ?? '-' }}</td>
-                                    <td class="d-none">
-                                        <span class="badge {{ $programa->estado ? 'bg-success' : 'bg-danger' }}">
-                                            {{ $programa->estado ? 'Activo' : 'Inactivo' }}
-                                        </span>
-                                    </td>
                                     <td>
                                         <div class="btn-group" role="group">
                                             <a href="{{ route('programas.show', $programa->id) }}" class="btn btn-sm btn-info"
