@@ -211,8 +211,13 @@ $(document).ready(function() {
             responsive: true,
             paging: false,
             ordering: false,
+            order: [[0, 'asc']], // Ordenar por la primera columna (Número) por defecto
             info: false,
-            searching: false
+            searching: false,
+            columnDefs: [
+                { orderable: false, targets: 0 }, // Columna Número ordenable
+                { orderable: false, targets: [1, 2, 3, 4, 5] } // Otras columnas no ordenables
+            ]
         });
     }
 
@@ -225,8 +230,13 @@ $(document).ready(function() {
             responsive: true,
             paging: false,
             ordering: false,
+            order: [[0, 'asc']], // Ordenar por la primera columna (Número) por defecto
             info: false,
-            searching: false
+            searching: false,
+            columnDefs: [
+                { orderable: false, targets: 0 }, // Columna Número ordenable
+                { orderable: false, targets: [1, 2, 3, 4, 5, 6, 7] } // Otras columnas no ordenables
+            ]
         });
     }
 
@@ -240,7 +250,8 @@ $(document).ready(function() {
                 if (response.success) {
                     partesSegundaSeccionTable.clear();
 
-                    response.data.forEach(function(parte) {
+                    response.data.forEach(function(parte, index) {
+                        const numero = parte.numero; // Número incremental empezando desde 1
                         const upDisabled = parte.es_primero ? 'disabled' : '';
                         const downDisabled = parte.es_ultimo ? 'disabled' : '';
 
@@ -273,6 +284,7 @@ $(document).ready(function() {
                         }
 
                         let rowData = [
+                            numero, // Columna Número
                             salaBadge,
                             parte.tiempo || '-',
                             parte.parte_abreviacion || '-',
@@ -306,7 +318,8 @@ $(document).ready(function() {
                 if (response.success) {
                     partesTable.clear();
 
-                    response.data.forEach(function(parte) {
+                    response.data.forEach(function(parte, index) {
+                        const numero = index + 1; // Número incremental empezando desde 1
                         const upDisabled = parte.es_primero ? 'disabled' : '';
                         const downDisabled = parte.es_ultimo ? 'disabled' : '';
 
@@ -328,6 +341,7 @@ $(document).ready(function() {
                         `;
 
                         let rowData = [
+                            numero, // Columna Número
                             parte.tiempo || '-',
                             parte.parte_abreviacion || '-',
                             parte.encargado_nombre || '-',
@@ -673,7 +687,7 @@ $(document).ready(function() {
         });
     }
 
-    function deleteParte(id) {
+    function deleteParte(id, callback = null) {
         // Mostrar el modal de confirmación
         $('#confirmDeleteModal').modal('show');
 
@@ -694,8 +708,21 @@ $(document).ready(function() {
                 success: function(response) {
                     if (response.success) {
                         $('#confirmDeleteModal').modal('hide');
-                        loadPartesPrograma();
-                        showAlert('alert-container', 'success', response.message);
+                        // Usar el callback proporcionado o loadPartesPrograma por defecto
+                        if (callback && typeof callback === 'function') {
+                            callback();
+                        } else {
+                            loadPartesPrograma();
+                        }
+                        
+                        // Actualizar y mostrar modal de éxito
+                        $('#successModalMessage').text('Asignación eliminada exitosamente');
+                        $('#successModal').modal('show');
+                        
+                        // Ocultar el modal automáticamente después de 2 segundos
+                        setTimeout(function() {
+                            $('#successModal').modal('hide');
+                        }, 2000);
                     }
                 },
                 error: function(xhr) {
@@ -1146,6 +1173,15 @@ $(document).ready(function() {
                         // Por ahora, recargamos la tabla de segunda sección
                         loadPartesSegundaSeccion();
                         $('#confirmDeleteModal').modal('hide');
+                        
+                        // Actualizar y mostrar modal de éxito
+                        $('#successModalMessage').text('Asignación eliminada exitosamente');
+                        $('#successModal').modal('show');
+                        
+                        // Ocultar el modal automáticamente después de 2 segundos
+                        setTimeout(function() {
+                            $('#successModal').modal('hide');
+                        }, 2000);
                     }
                 },
                 error: function(xhr) {
@@ -3844,7 +3880,10 @@ $(document).ready(function() {
             ordering: false,
             paging: false,
             info: false,
-            searching: false
+            searching: false,
+            columnDefs: [
+                { orderable: false, targets: '_all' } // Ninguna columna ordenable
+            ]
         });
     }
 
@@ -3859,7 +3898,8 @@ $(document).ready(function() {
                     // Limpiar la tabla
                     partesNVTable.clear();
 
-                    response.data.forEach(function(parte) {
+                    response.data.forEach(function(parte, index) {
+                        const numero = parte.numero; // Número incremental empezando desde 1
                         const upDisabled = parte.es_primero ? 'disabled' : '';
                         const downDisabled = parte.es_ultimo ? 'disabled' : '';
 
@@ -3881,6 +3921,7 @@ $(document).ready(function() {
                         `;
 
                         let rowData = [
+                            numero, // Columna Número
                             parte.tiempo || '-',
                             parte.parte_abreviacion || '-',
                             parte.encargado_nombre || '-',

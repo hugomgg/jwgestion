@@ -44,9 +44,9 @@ class ParteProgramaController extends Controller
                     'ps.abreviacion as parte_abreviacion',
                     'encargado.name as encargado_nombre',
                     'ayudante.name as ayudante_nombre',
-                    'encargado_reemplazado.name as encargado_reemplazado_nombre'
+                    'encargado_reemplazado.name as encargado_reemplazado_nombre',
+                    DB::raw('row_number() OVER (PARTITION BY pp.sala_id ORDER BY pp.orden) as numero')
                 )
-                ->orderBy('pp.orden')
                 ->get();
 
             // Agregar información sobre posición (primero/último) para cada parte
@@ -156,6 +156,13 @@ class ParteProgramaController extends Controller
     {
         try {
             $user = Auth::user();
+            //contar la cantidad de registros de la tabla partes_programa where seccion_id in (1,2)
+            $count = DB::table('partes_programa as pp')
+                ->join('partes_seccion as ps', 'pp.parte_id', '=', 'ps.id')
+                ->where('pp.programa_id', $programaId)
+                ->where('pp.sala_id', 1)
+                ->whereIn('seccion_id', [1, 2])
+                ->count();
 
             $query = DB::table('partes_programa as pp')
                 ->join('partes_seccion as ps', 'pp.parte_id', '=', 'ps.id')
@@ -182,9 +189,9 @@ class ParteProgramaController extends Controller
                     'ps.abreviacion as parte_abreviacion',
                     'encargado.name as encargado_nombre',
                     'ayudante.name as ayudante_nombre',
-                    'encargado_reemplazado.name as encargado_reemplazado_nombre'
+                    'encargado_reemplazado.name as encargado_reemplazado_nombre',
+                    DB::raw("(row_number() OVER (PARTITION BY pp.sala_id ORDER BY pp.sala_id, pp.orden)) + ${count} as numero")
                 )
-                ->orderBy('pp.orden')
                 ->get();
 
             // Agregar información sobre posición (primero/último) para cada parte

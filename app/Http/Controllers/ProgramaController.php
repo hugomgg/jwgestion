@@ -442,10 +442,9 @@ class ProgramaController extends Controller
                     's.abreviacion as sala_abreviacion',
                     'pp.leccion',
                     'pp.orden',
-                    'pp.sala_id'
+                    'pp.sala_id',
+                    DB::raw('(row_number() OVER (PARTITION BY pp.sala_id ORDER BY pp.sala_id, pp.orden))+2 as numero')
                 )
-                ->orderBy('pp.sala_id', 'asc')
-                ->orderBy('pp.orden', 'asc')
                 ->get();
 
             // Agregar información sobre posición (primero/último) para cada parte
