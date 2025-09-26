@@ -1169,6 +1169,21 @@
         </div>
     </div>
 </div>
+
+<!-- Modal de Éxito para Guardado -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body text-center p-4">
+                <div class="mb-3">
+                    <i class="fas fa-check-circle text-success" style="font-size: 3rem;"></i>
+                </div>
+                <h5 class="modal-title text-success" id="successModalLabel">¡Éxito!</h5>
+                <p class="mb-0" id="successModalMessage">Programa guardado exitosamente</p>
+            </div>
+        </div>
+    </div>
+</div>
 @endif
 
 @push('scripts')

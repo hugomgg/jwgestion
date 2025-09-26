@@ -117,9 +117,13 @@ $(document).ready(function() {
             },
             success: function(response) {
                 if (response.success) {
-                    console.log('Fecha guardada exitosamente');
-                    // Opcional: mostrar un mensaje de éxito sutil
-                    // alert('Fecha guardada exitosamente');
+                    // Mostrar modal de éxito
+                    $('#successModal').modal('show');
+                    
+                    // Ocultar el modal automáticamente después de 3 segundos con fade out
+                    setTimeout(function() {
+                        $('#successModal').modal('hide');
+                    }, 2000);
                 } else {
                     alert('Error al guardar la fecha: ' + (response.message || 'Error desconocido'));
                 }
@@ -542,7 +546,12 @@ $(document).ready(function() {
                 if (response.success) {
                     $('#parteProgramaModal').modal('hide');
                     loadPartesPrograma();
-                    showAlert('alert-container', 'success', response.message);
+                    // Mostrar modal de éxito
+                    $('#successModal').modal('show');
+                    // Ocultar el modal automáticamente después de 3 segundos con fade out
+                    setTimeout(function() {
+                        $('#successModal').modal('hide');
+                    }, 2000);
                 }
             },
             error: function(xhr) {
@@ -2133,6 +2142,14 @@ $(document).ready(function() {
 
                     // Cerrar modal
                     $('#buscarOradorInicialModal').modal('hide');
+                    
+                    // Mostrar modal de éxito
+                    $('#successModal').modal('show');
+                    
+                    // Ocultar el modal automáticamente después de 2 segundos con fade out
+                    setTimeout(function() {
+                        $('#successModal').modal('hide');
+                    }, 2000);
                 } else {
                     alert('Error al guardar el orador inicial: ' + (response.message || 'Error desconocido'));
                 }
@@ -2285,6 +2302,14 @@ $(document).ready(function() {
 
                     // Cerrar modal
                     $('#buscarOradorFinalModal').modal('hide');
+                    
+                    // Mostrar modal de éxito
+                    $('#successModal').modal('show');
+                    
+                    // Ocultar el modal automáticamente después de 2 segundos con fade out
+                    setTimeout(function() {
+                        $('#successModal').modal('hide');
+                    }, 2000);
                 } else {
                     alert('Error al guardar el orador final: ' + (response.message || 'Error desconocido'));
                 }
@@ -2436,6 +2461,14 @@ $(document).ready(function() {
 
                     // Cerrar modal
                     $('#buscarPresidenciaModal').modal('hide');
+                    
+                    // Mostrar modal de éxito
+                    $('#successModal').modal('show');
+                    
+                    // Ocultar el modal automáticamente después de 3 segundos con fade out
+                    setTimeout(function() {
+                        $('#successModal').modal('hide');
+                    }, 2000);
                 } else {
                     alert('Error al guardar el presidente: ' + (response.message || 'Error desconocido'));
                 }
@@ -2580,6 +2613,14 @@ $(document).ready(function() {
 
                     // Cerrar modal
                     $('#buscarCancionInicialModal').modal('hide');
+                    
+                    // Mostrar modal de éxito
+                    $('#successModal').modal('show');
+                    
+                    // Ocultar el modal automáticamente después de 3 segundos con fade out
+                    setTimeout(function() {
+                        $('#successModal').modal('hide');
+                    }, 2000);
                 } else {
                     alert('Error al guardar la canción inicial: ' + (response.message || 'Error desconocido'));
                 }
@@ -2649,6 +2690,14 @@ $(document).ready(function() {
 
                     // Cerrar modal
                     $('#buscarCancionIntermediaModal').modal('hide');
+                    
+                    // Mostrar modal de éxito
+                    $('#successModal').modal('show');
+                    
+                    // Ocultar el modal automáticamente después de 2 segundos con fade out
+                    setTimeout(function() {
+                        $('#successModal').modal('hide');
+                    }, 2000);
                 } else {
                     alert('Error al guardar la canción intermedia: ' + (response.message || 'Error desconocido'));
                 }
@@ -2718,6 +2767,14 @@ $(document).ready(function() {
 
                     // Cerrar modal
                     $('#buscarCancionFinalModal').modal('hide');
+                    
+                    // Mostrar modal de éxito
+                    $('#successModal').modal('show');
+                    
+                    // Ocultar el modal automáticamente después de 2 segundos con fade out
+                    setTimeout(function() {
+                        $('#successModal').modal('hide');
+                    }, 2000);
                 } else {
                     alert('Error al guardar la canción final: ' + (response.message || 'Error desconocido'));
                 }
