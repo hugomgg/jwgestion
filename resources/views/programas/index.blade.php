@@ -258,6 +258,13 @@ $(document).ready(function() {
     // Inicializar Select2
     initializeSelect2ForCoordinators();
     handleModalEventsForSelect2();
+    
+    // Definir rutas para exportación
+    window.exportRoutes = {
+        pdf: `{{ route('programas.export.pdf') }}`,
+        xls: `{{ route('programas.export.xls') }}`,
+        asignaciones: `{{ route('programas.export.asignaciones') }}`
+    };
 });
 </script>
 @endpush

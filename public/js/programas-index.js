@@ -373,9 +373,10 @@ $(document).ready(function() {
                 baseUrl += "&mes[]=" + mes;
             });
 
-            const pdfUrl = "{{ route('programas.export.pdf') }}" + baseUrl;
-            const xlsUrl = "{{ route('programas.export.xls') }}" + baseUrl;
-            const asignacionesUrl = "{{ route('programas.export.asignaciones') }}" + baseUrl;
+            // Usar las rutas definidas globalmente
+            const pdfUrl = window.exportRoutes.pdf + baseUrl;
+            const xlsUrl = window.exportRoutes.xls + baseUrl;
+            const asignacionesUrl = window.exportRoutes.asignaciones + baseUrl;
 
             $btnPdf.attr('href', pdfUrl);
             $btnXls.attr('href', xlsUrl);
