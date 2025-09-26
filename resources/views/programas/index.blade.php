@@ -7,6 +7,7 @@
 @endpush
 
 @section('content')
+@if(Auth::user()->perfil == 3)
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">
@@ -27,7 +28,7 @@
                                         <option value="">Todos</option>
                                     </select>
                                 </div>
-                                
+
                                 <!-- Dropdown para filtrar por Mes -->
                                 <div class="d-flex align-items-center gap-2">
                                     <label class="form-label mb-0 me-2">Mes:</label>
@@ -46,7 +47,7 @@
                                         </ul>
                                     </div>
                                 </div>
-                                
+
                                 <!-- Botón Exportar PDF -->
                                 <a href="#" class="btn btn-success disabled" id="exportPdfBtn" target="_blank" disabled>
                                     <i class="fas fa-file-pdf me-2"></i>Exportar PDF
@@ -61,7 +62,7 @@
                                 <a href="#" class="btn btn-secondary disabled" id="exportAsignacionesBtn" target="_blank" disabled>
                                     <i class="fas fa-file-export me-2"></i>Exportar Asignaciones
                                 </a>
-                                
+
                                 <!-- Botón Nuevo Programa -->
                                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProgramaModal">
                                     <i class="fas fa-plus me-2"></i>Nuevo Programa
@@ -70,11 +71,11 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="card-body">
                     <!-- Contenedor para alertas -->
                     <div id="alert-container"></div>
-                    
+
                     <div class="table-responsive">
                         <table class="table table-striped table-hover" id="programasTable">
                             <thead class="table-dark">
@@ -96,39 +97,9 @@
                                     <td data-order="{{ $programa->fecha }}">{{ \Carbon\Carbon::parse($programa->fecha)->format('d/m/Y') }}</td>
                                     <td>{{ $programa->nombre_orador_inicial ?? '-' }}</td>
                                     <td>{{ $programa->nombre_presidencia ?? '-' }}</td>
-                                    <td>
-                                        @if($programa->nombre_cancion_pre)
-                                            @if(Auth::user()->perfil == 3)
-                                                {{ $programa->numero_cancion_pre ?? '-' }}
-                                            @else
-                                                {{ $programa->numero_cancion_pre ? $programa->numero_cancion_pre . ' - ' : '' }}{{ $programa->nombre_cancion_pre }}
-                                            @endif
-                                        @else
-                                            -
-                                        @endif
-                                    </td>
-                                    <td>
-                                        @if($programa->nombre_cancion_en)
-                                            @if(Auth::user()->perfil == 3)
-                                                {{ $programa->numero_cancion_en ?? '-' }}
-                                            @else
-                                                {{ $programa->numero_cancion_en ? $programa->numero_cancion_en . ' - ' : '' }}{{ $programa->nombre_cancion_en }}
-                                            @endif
-                                        @else
-                                            -
-                                        @endif
-                                    </td>
-                                    <td>
-                                        @if($programa->nombre_cancion_post)
-                                            @if(Auth::user()->perfil == 3)
-                                                {{ $programa->numero_cancion_post ?? '-' }}
-                                            @else
-                                                {{ $programa->numero_cancion_post ? $programa->numero_cancion_post . ' - ' : '' }}{{ $programa->nombre_cancion_post }}
-                                            @endif
-                                        @else
-                                            -
-                                        @endif
-                                    </td>
+                                    <td>{{ $programa->numero_cancion_pre ?? '-' }}</td>
+                                    <td>{{ $programa->numero_cancion_en ?? '-' }}</td>
+                                    <td>{{ $programa->numero_cancion_post ?? '-' }}</td>
                                     <td>{{ $programa->nombre_orador_final ?? '-' }}</td>
                                     <td class="d-none">
                                         <span class="badge {{ $programa->estado ? 'bg-success' : 'bg-danger' }}">
@@ -183,7 +154,7 @@
                 <div class="modal-body">
                     <!-- Contenedor para alertas -->
                     <div id="add-alert-container"></div>
-                    
+
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
@@ -203,60 +174,7 @@
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3 d-none">
-                                <label for="add_orador_inicial" class="form-label">Orador Inicial</label>
-                                <select class="form-select" id="add_orador_inicial" name="orador_inicial" style="width: 100%;">
-                                    <option value="">Seleccionar...</option>
-                                    @if(Auth::user()->perfil == 3 && isset($usuariosOradorInicial))
-                                        @foreach($usuariosOradorInicial as $usuario)
-                                            <option value="{{ $usuario->id }}"
-                                                    data-ultima-fecha="{{ $usuario->ultima_fecha ? \Carbon\Carbon::parse($usuario->ultima_fecha)->format('d/m/Y') : '' }}">
-                                                @if($usuario->ultima_fecha)
-                                                    {{ \Carbon\Carbon::parse($usuario->ultima_fecha)->format('d/m/Y') }} - {{ $usuario->name }}
-                                                @else
-                                                    Primera vez - {{ $usuario->name }}
-                                                @endif
-                                            </option>
-                                        @endforeach
-                                    @else
-                                        @foreach($usuarios as $usuario)
-                                            <option value="{{ $usuario->id }}">{{ $usuario->name }}</option>
-                                        @endforeach
-                                    @endif
-                                </select>
-                                <div class="invalid-feedback"></div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3 d-none">
-                                <label for="add_presidencia" class="form-label">Presidencia</label>
-                                <select class="form-select" id="add_presidencia" name="presidencia">
-                                    <option value="">Seleccionar...</option>
-                                    @if(Auth::user()->perfil == 3 && isset($usuariosPresidencia))
-                                        @foreach($usuariosPresidencia as $usuario)
-                                            <option value="{{ $usuario->id }}"
-                                                    data-ultima-fecha="{{ $usuario->ultima_fecha ? \Carbon\Carbon::parse($usuario->ultima_fecha)->format('d/m/Y') : '' }}">
-                                                @if($usuario->ultima_fecha)
-                                                    {{ \Carbon\Carbon::parse($usuario->ultima_fecha)->format('d/m/Y') }} - {{ $usuario->name }}
-                                                @else
-                                                    Primera vez - {{ $usuario->name }}
-                                                @endif
-                                            </option>
-                                        @endforeach
-                                    @else
-                                        @foreach($usuarios as $usuario)
-                                            <option value="{{ $usuario->id }}">{{ $usuario->name }}</option>
-                                        @endforeach
-                                    @endif
-                                </select>
-                                <div class="invalid-feedback"></div>
-                            </div>
-                        </div>
-                    </div>
-                    
+
                     <div class="row">
                         <div class="col-md-12">
                             <div class="mb-3">
@@ -271,7 +189,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="row">
                         <div class="col-md-12">
                             <div class="mb-3">
@@ -286,7 +204,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="row">
                         <div class="col-md-12">
                             <div class="mb-3">
@@ -296,34 +214,6 @@
                                     @foreach($canciones as $cancion)
                                         <option value="{{ $cancion->id }}">{{ $cancion->numero ? $cancion->numero . ' - ' : '' }}{{ $cancion->nombre }}</option>
                                     @endforeach
-                                </select>
-                                <div class="invalid-feedback"></div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3 d-none">
-                                <label for="add_orador_final" class="form-label">Orador Final</label>
-                                <select class="form-select" id="add_orador_final" name="orador_final">
-                                    <option value="">Seleccionar...</option>
-                                    @if(Auth::user()->perfil == 3 && isset($usuariosOradorInicial))
-                                        @foreach($usuariosOradorInicial as $usuario)
-                                            <option value="{{ $usuario->id }}"
-                                                    data-ultima-fecha="{{ $usuario->ultima_fecha ? \Carbon\Carbon::parse($usuario->ultima_fecha)->format('d/m/Y') : '' }}">
-                                                @if($usuario->ultima_fecha)
-                                                    {{ \Carbon\Carbon::parse($usuario->ultima_fecha)->format('d/m/Y') }} - {{ $usuario->name }}
-                                                @else
-                                                    Primera vez - {{ $usuario->name }}
-                                                @endif
-                                            </option>
-                                        @endforeach
-                                    @else
-                                        @foreach($usuarios as $usuario)
-                                            <option value="{{ $usuario->id }}">{{ $usuario->name }}</option>
-                                        @endforeach
-                                    @endif
                                 </select>
                                 <div class="invalid-feedback"></div>
                             </div>
@@ -365,7 +255,7 @@
         </div>
     </div>
 </div>
-
+@endif
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="{{ asset('js/programas-index.js') }}"></script>
@@ -376,10 +266,10 @@ $(document).ready(function() {
     initializeSelect2ForCoordinators();
     handleModalEventsForSelect2();
     @endif
-    
+
     // Inicializar Select2 para filtros de año y mes (ya se hace en programas-index.js)
     // initializeFiltrosSelect2(); // REMOVIDO: Ya se inicializa en el archivo JS
-    
+
     // Función para manejar el estado de los botones de exportación
     function actualizarBotonesExportacion() {
         const anioSeleccionado = $('#filtro_anio').val();
@@ -422,7 +312,7 @@ $(document).ready(function() {
 
     // Hacer la función disponible globalmente
     window.actualizarBotonesExportacion = actualizarBotonesExportacion;
-    
+
     // Escuchar cambios en los filtros para actualizar los botones
     $('#filtro_anio').on('change', function() {
         actualizarBotonesExportacion();

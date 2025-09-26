@@ -161,7 +161,7 @@ class ParteProgramaController extends Controller
                 ->join('partes_seccion as ps', 'pp.parte_id', '=', 'ps.id')
                 ->where('pp.programa_id', $programaId)
                 ->where('pp.sala_id', 1)
-                ->whereIn('seccion_id', [1, 2])
+                ->whereIn('seccion_id', [2])
                 ->count();
 
             $query = DB::table('partes_programa as pp')
@@ -190,7 +190,7 @@ class ParteProgramaController extends Controller
                     'encargado.name as encargado_nombre',
                     'ayudante.name as ayudante_nombre',
                     'encargado_reemplazado.name as encargado_reemplazado_nombre',
-                    DB::raw("(row_number() OVER (PARTITION BY pp.sala_id ORDER BY pp.sala_id, pp.orden)) + ${count} as numero")
+                    DB::raw("CASE WHEN pp.parte_id=24 THEN '-' ELSE (row_number() OVER (PARTITION BY pp.sala_id ORDER BY pp.sala_id, pp.orden)) + (${count} + 2) END as numero")
                 )
                 ->get();
 

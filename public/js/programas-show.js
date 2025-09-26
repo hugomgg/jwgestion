@@ -16,12 +16,14 @@ function loadPartes(programaId) {
         success: function(response) {
             let html = '';
             if (response.success && response.data && response.data.length > 0) {
-                response.data.forEach(function(parte) {
+                response.data.forEach(function(parte, index) {
+                    const numero = parte.numero; // Número incremental empezando desde 1
                     // Manejar diferentes estructuras de respuesta
                     const encargadoNombre = parte.encargado?.name || parte.encargado_nombre || '-';
 
                     html += `
                         <tr>
+                            <td>${numero}</td>
                             <td>${parte.tiempo || '-'}</td>
                             <td>${parte.parte_nombre || parte.parte_abreviacion || '-'}</td>
                             <td>${encargadoNombre}</td>
@@ -30,13 +32,13 @@ function loadPartes(programaId) {
                     `;
                 });
             } else {
-                html = '<tr><td colspan="4" class="text-center">No hay asignaciones</td></tr>';
+                html = '<tr><td colspan="5" class="text-center">No hay asignaciones</td></tr>';
             }
             $('#partesTableBody').html(html);
         },
         error: function(xhr, status, error) {
             console.error('Error al cargar partes TB:', error);
-            $('#partesTableBody').html('<tr><td colspan="4" class="text-center text-danger">Error al cargar los datos</td></tr>');
+            $('#partesTableBody').html('<tr><td colspan="5" class="text-center text-danger">Error al cargar los datos</td></tr>');
         }
     });
 }
@@ -51,7 +53,8 @@ function loadPartesSegundaSeccion(programaId) {
         success: function(response) {
             let html = '';
             if (response.success && response.data && response.data.length > 0) {
-                response.data.forEach(function(parte) {
+                response.data.forEach(function(parte, index) {
+                    const numero = parte.numero; // Número incremental empezando desde 1
                     // Manejar diferentes estructuras de respuesta
                     const encargadoNombre = parte.encargado?.name || parte.encargado_nombre || '-';
                     const ayudanteNombre = parte.ayudante?.name || parte.ayudante_nombre || '-';
@@ -70,6 +73,7 @@ function loadPartesSegundaSeccion(programaId) {
 
                     html += `
                         <tr>
+                            <td>${numero}</td>
                             <td>${salaBadge}</td>
                             <td>${parte.tiempo || '-'}</td>
                             <td>${parte.parte_nombre || parte.parte_abreviacion || '-'}</td>
@@ -80,13 +84,13 @@ function loadPartesSegundaSeccion(programaId) {
                     `;
                 });
             } else {
-                html = '<tr><td colspan="6" class="text-center">No hay asignaciones</td></tr>';
+                html = '<tr><td colspan="7" class="text-center">No hay asignaciones</td></tr>';
             }
             $(tableBody).html(html);
         },
         error: function(xhr, status, error) {
             console.error('Error al cargar partes segunda sección:', error);
-            $(tableBody).html('<tr><td colspan="6" class="text-center text-danger">Error al cargar los datos</td></tr>');
+            $(tableBody).html('<tr><td colspan="7" class="text-center text-danger">Error al cargar los datos</td></tr>');
         }
     });
 }
@@ -98,12 +102,14 @@ function loadPartesNV(programaId) {
         success: function(response) {
             let html = '';
             if (response.success && response.data && response.data.length > 0) {
-                response.data.forEach(function(parte) {
+                response.data.forEach(function(parte, index) {
+                    const numero = parte.numero; // Número incremental empezando desde 1
                     // Manejar diferentes estructuras de respuesta
                     const encargadoNombre = parte.encargado?.name || parte.encargado_nombre || '-';
 
                     html += `
                         <tr>
+                            <td>${numero}</td>
                             <td>${parte.tiempo || '-'}</td>
                             <td>${parte.parte_nombre || parte.parte_abreviacion || '-'}</td>
                             <td>${encargadoNombre}</td>
@@ -112,13 +118,13 @@ function loadPartesNV(programaId) {
                     `;
                 });
             } else {
-                html = '<tr><td colspan="4" class="text-center">No hay asignaciones</td></tr>';
+                html = '<tr><td colspan="5" class="text-center">No hay asignaciones</td></tr>';
             }
             $('#partesNVTableBody').html(html);
         },
         error: function(xhr, status, error) {
             console.error('Error al cargar partes NVC:', error);
-            $('#partesNVTableBody').html('<tr><td colspan="4" class="text-center text-danger">Error al cargar los datos</td></tr>');
+            $('#partesNVTableBody').html('<tr><td colspan="5" class="text-center text-danger">Error al cargar los datos</td></tr>');
         }
     });
 }

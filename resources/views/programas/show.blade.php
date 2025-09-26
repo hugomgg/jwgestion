@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+@if(Auth::user()->perfil == 3)
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">
@@ -76,6 +77,7 @@
                                         <table class="table table-striped table-hover">
                                             <thead>
                                                 <tr>
+                                                    <th>Número</th>
                                                     <th>Tiempo (min)</th>
                                                     <th>Parte</th>
                                                     <th>Encargado</th>
@@ -92,7 +94,6 @@
                         </div>
                     </div>
 
-                    @if(Auth::user()->perfil == 3)
                     <!-- Sección de Escuela con Tabs -->
                     <div class="row">
                         <div class="col-12">
@@ -107,6 +108,7 @@
                                         <table class="table table-striped table-hover">
                                             <thead>
                                                 <tr>
+                                                    <th>Número</th>
                                                     <th>Sala</th>
                                                     <th>Tiempo (min)</th>
                                                     <th>Parte</th>
@@ -124,7 +126,6 @@
                             </div>
                         </div>
                     </div>
-                    @endif
 
                     <!-- Sección Nuestra Vida Cristiana -->
                     <div class="row">
@@ -140,6 +141,7 @@
                                         <table class="table table-striped table-hover">
                                             <thead>
                                                 <tr>
+                                                    <th>Número</th>
                                                     <th>Tiempo (min)</th>
                                                     <th>Parte</th>
                                                     <th>Encargado</th>
@@ -196,7 +198,7 @@
         </div>
     </div>
 </div>
-
+@endif
 @push('scripts')
 <script src="{{ asset('js/programas-show.js') }}"></script>
 <script>
