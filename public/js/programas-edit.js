@@ -219,7 +219,8 @@ $(document).ready(function() {
     function initPartesSegundaSeccionDataTable() {
         partesSegundaSeccionTable = $('#partesSegundaSeccionTable').DataTable({
             language: {
-                url: '/js/datatables-es-ES.json'
+                emptyTable: "No hay partes asignadas en la segunda sección",
+                zeroRecords: "No se encontraron partes que coincidan con la búsqueda"
             },
             responsive: true,
             paging: false,
@@ -638,7 +639,14 @@ $(document).ready(function() {
                 if (response.success) {
                     $('#parteProgramaNVModal').modal('hide');
                     loadPartesNV();
-                    showAlert('alert-container', 'success', response.message);
+                    
+                    // Mostrar modal de éxito
+                    $('#successModal').modal('show');
+                    
+                    // Ocultar el modal automáticamente después de 3 segundos con fade out
+                    setTimeout(function() {
+                        $('#successModal').modal('hide');
+                    }, 2000);
                 }
             },
             error: function(xhr) {
@@ -1231,8 +1239,14 @@ $(document).ready(function() {
 
                     // Solo actualizar tabla de segunda sección
                     loadPartesSegundaSeccion();
-
-                    showAlert('alert-container', 'success', response.message);
+                    
+                    // Mostrar modal de éxito
+                    $('#successModal').modal('show');
+                    
+                    // Ocultar el modal automáticamente después de 3 segundos con fade out
+                    setTimeout(function() {
+                        $('#successModal').modal('hide');
+                    }, 2000);
                 }
             },
             error: function(xhr) {
