@@ -140,7 +140,7 @@
                             @foreach($tesorosBiblia as $parte)
                                 <div class="parte-item">
                                     <div class="parte-content">
-                                        {{ $parte->tiempo ?? '' }} min. - {{ $parte->tema ?? $parte->parte_nombre }}
+                                        {{ str_pad($parte->tiempo ?? '', 2, '0', STR_PAD_LEFT) }} min. {{ $loop->iteration }}) {{ $parte->tema ?? $parte->parte_nombre }}
                                     </div>
                                     <div class="parte-asignado">
                                         {{ $parte->encargado_nombre ?? 'Sin asignar' }}
@@ -157,7 +157,7 @@
                             @foreach($mejoresMaestrosPrincipal as $parte)
                                 <div class="parte-item">
                                     <div class="parte-content">
-                                        {{ $parte->tiempo ?? '' }} min. - {{ $parte->tema ?? $parte->parte_nombre }}
+                                        {{ str_pad($parte->tiempo ?? '', 2, '0', STR_PAD_LEFT) }} min. {{ ($loop->iteration + 3) }}) {{ $parte->tema ?? $parte->parte_nombre }}
                                     </div>
                                     <div class="parte-asignado">
                                         {{ $parte->encargado_nombre ?? 'Sin asignar' }}
@@ -177,12 +177,12 @@
                             @foreach($mejoresMaestrosAuxiliar as $parte)
                                 <div class="parte-item">
                                     <div class="parte-content">
-                                        {{ $parte->tiempo ?? '' }} min. - {{ $parte->tema ?? $parte->parte_nombre }}
+                                        {{ str_pad($parte->tiempo ?? '', 2, '0', STR_PAD_LEFT) }} min. {{ ($loop->iteration + 3) }}) {{ $parte->tema ?? $parte->parte_nombre }}
                                     </div>
                                     <div class="parte-asignado">
                                         {{ $parte->encargado_nombre ?? 'Sin asignar' }}
                                         @if($parte->ayudante_nombre)
-                                            | {{ str_pad($parte->ayudante_nombre, 20, '&nbsp;', STR_PAD_RIGHT) }}
+                                            | {{ str_pad($parte->ayudante_nombre, 20, '.', STR_PAD_RIGHT) }}
                                         @endif
                                     </div>
                                 </div>
@@ -197,10 +197,15 @@
                             @foreach($vidaCristiana as $parte)
                                 <div class="parte-item">
                                     <div class="parte-content">
-                                        {{ $parte->tiempo ?? '' }} min. - {{ $parte->tema ?? $parte->parte_nombre }}
+                                        {{ str_pad($parte->tiempo ?? '', 2, '0', STR_PAD_LEFT) }} min. {{ ($loop->iteration + $mejoresMaestrosPrincipal->count() + 3) }}) {{ $parte->tema ?? $parte->parte_nombre }}
                                     </div>
                                     <div class="parte-asignado">
                                         {{ $parte->encargado_nombre ?? 'Sin asignar' }}
+                                        <!-- Si es la penultima parte de nuestra vida cristiana, mostrar el nombre del encargado de la última parte y romper el ciclo -->
+                                        @if($loop->iteration == ($vidaCristiana->count() - 1) && $vidaCristiana->count() > 1 && $vidaCristiana->last()->parte_id == 24)
+                                            | {{ str_pad($vidaCristiana->last()->encargado_nombre, 20, '.', STR_PAD_RIGHT)}} </div></div>
+                                            @break
+                                        @endif
                                     </div>
                                 </div>
                             @endforeach

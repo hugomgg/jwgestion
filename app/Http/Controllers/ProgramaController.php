@@ -449,7 +449,7 @@ class ProgramaController extends Controller
                     'pp.leccion',
                     'pp.orden',
                     'pp.sala_id',
-                    DB::raw('(row_number() OVER (PARTITION BY pp.sala_id ORDER BY pp.sala_id, pp.orden))+2 as numero')
+                    DB::raw('(row_number() OVER (PARTITION BY pp.sala_id ORDER BY pp.sala_id, pp.orden))+3 as numero')
                 )
                 ->get();
 
@@ -798,6 +798,7 @@ class ProgramaController extends Controller
                         'ps.nombre as parte_nombre',
                         'encargado.name as encargado_nombre',
                         'ayudante.name as ayudante_nombre',
+                        'pp.parte_id',
                         DB::raw('CASE WHEN pp.parte_id = 3 THEN 99 ELSE pp.orden END as orden'), //Cambiar orden de LB a al final
                         DB::raw('CASE WHEN pp.parte_id=3 then 1 else ps.seccion_id end as seccion_id')// Cambiar LB a TB
                     )
