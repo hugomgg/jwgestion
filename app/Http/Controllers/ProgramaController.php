@@ -810,9 +810,6 @@ class ProgramaController extends Controller
                     ->orderBy('pp.orden', 'asc')
                     ->get();
             }
-            //imprimir SQL log $programa->partes:
-            \DB::enableQueryLog();
-            \Log::info('SQL Log:', \DB::getQueryLog());
 
             // Verificar si hay programas para exportar
             if ($programas->isEmpty()) {
@@ -910,6 +907,8 @@ class ProgramaController extends Controller
                 $programa->partes = DB::table('partes_programa as pp')
                     ->leftJoin('users as encargado', 'pp.encargado_id', '=', 'encargado.id')
                     ->leftJoin('users as ayudante', 'pp.ayudante_id', '=', 'ayudante.id')
+                    ->leftJoin('users as encargadoreemplazado', 'pp.encargado_reemplazado_id', '=', 'encargadoreemplazado.id')
+                    ->leftJoin('users as ayudantereemplazado', 'pp.ayudante_reemplazado_id', '=', 'ayudantereemplazado.id')
                     ->leftJoin('partes_seccion as ps', 'pp.parte_id', '=', 'ps.id')
                     ->where('pp.programa_id', $programa->id)
                     ->select(
@@ -918,6 +917,10 @@ class ProgramaController extends Controller
                         'ps.abreviacion as parte_abreviacion',
                         'encargado.name as nombre_encargado',
                         'ayudante.name as nombre_ayudante',
+                        'encargadoreemplazado.name as nombre_encargado_reemplazado',
+                        'ayudantereemplazado.name as nombre_ayudante_reemplazado',
+                        'pp.sala_id',
+                        'ps.seccion_id',
                         DB::raw('CASE WHEN pp.parte_id = 3 THEN 99 ELSE pp.orden END as orden')
                     )
                     ->orderBy('ps.seccion_id', 'asc')
@@ -948,8 +951,9 @@ class ProgramaController extends Controller
             }
 
             // Crear Excel usando Laravel Excel
-            return Excel::download(new class($programas) implements \Maatwebsite\Excel\Concerns\FromCollection, \Maatwebsite\Excel\Concerns\WithHeadings {
+            return Excel::download(new class($programas) implements \Maatwebsite\Excel\Concerns\FromCollection, \Maatwebsite\Excel\Concerns\WithHeadings, \Maatwebsite\Excel\Concerns\WithStyles {
                 private $programas;
+                private $rowStyles = [];
 
                 public function __construct($programas)
                 {
@@ -959,29 +963,73 @@ class ProgramaController extends Controller
                 public function collection()
                 {
                     $data = collect();
+                    $rowIndex = 2; // Empezar desde la fila 2 (después del header)
 
-                    foreach ($this->programas as $programa) {
+                    foreach ($this->programas as $programaIndex => $programa) {
+                        // Determinar el color de fondo para este programa
+                        $backgroundColor = $this->getProgramBackgroundColor($programaIndex);
+
+                        //Agregar fila para el presidente
+                        $data->push([
+                            //Fecha en formato dd-mm-AAAA
+                            'Fecha' => \Carbon\Carbon::parse($programa->fecha)->locale('es')->translatedFormat('d-m-Y'),
+                            'Parte' => 'PD',
+                            'Nombre' => $programa->presidente_nombre ?: 'N/A',
+                            'Rol' => 'Presidente',
+                            'Sala' => '1',
+                            'Tiempo' => '',
+                        ]);
+
+                        // Aplicar estilo a la fila del presidente
+                        $this->rowStyles[$rowIndex] = [
+                            'fill' => [
+                                'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                                'startColor' => ['rgb' => $backgroundColor]
+                            ]
+                        ];
+                        $rowIndex++;
+
                         foreach ($programa->partes as $parte) {
                             // Agregar fila para el encargado (Estudiante)
                             $data->push([
-                                'Fecha' => $programa->fecha,
+                                //Fecha en formato dd-mm-AAAA
+                                'Fecha' => \Carbon\Carbon::parse($programa->fecha)->locale('es')->translatedFormat('d-m-Y'),
                                 'Parte' => $parte->parte_abreviacion ?: 'N/A',
                                 'Nombre' => $parte->nombre_encargado ?: 'N/A',
-                                'Rol' => 'Estudiante',
-                                'Tema' => $parte->tema ?: '',
-                                'Tiempo' => $parte->tiempo ?: '',
+                                'Rol' => $parte->seccion_id == 2 ? 'Estudiante' : 'Encargado',
+                                'Sala' => $parte->sala_id ?: '',
+                                'Reemplazado' => $parte->nombre_encargado_reemplazado ?: '',
                             ]);
+
+                            // Aplicar estilo a la fila del estudiante
+                            $this->rowStyles[$rowIndex] = [
+                                'fill' => [
+                                    'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                                    'startColor' => ['rgb' => $backgroundColor]
+                                ]
+                            ];
+                            $rowIndex++;
 
                             // Si hay ayudante, agregar fila adicional para el ayudante
                             if ($parte->nombre_ayudante) {
                                 $data->push([
-                                    'Fecha' => $programa->fecha,
+                                    //Fecha en formato dd-mm-AAAA
+                                    'Fecha' => \Carbon\Carbon::parse($programa->fecha)->locale('es')->translatedFormat('d-m-Y'),
                                     'Parte' => $parte->parte_abreviacion ?: 'N/A',
                                     'Nombre' => $parte->nombre_ayudante,
                                     'Rol' => 'Ayudante',
-                                    'Tema' => $parte->tema ?: '',
-                                    'Tiempo' => $parte->tiempo ?: '',
+                                    'Sala' => $parte->sala_id ?: '',
+                                    'Reemplazado' => $parte->nombre_ayudante_reemplazado ?: '',
                                 ]);
+
+                                // Aplicar estilo a la fila del ayudante
+                                $this->rowStyles[$rowIndex] = [
+                                    'fill' => [
+                                        'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                                        'startColor' => ['rgb' => $backgroundColor]
+                                    ]
+                                ];
+                                $rowIndex++;
                             }
                         }
                     }
@@ -996,9 +1044,53 @@ class ProgramaController extends Controller
                         'Parte',
                         'Nombre',
                         'Rol',
-                        'Tema',
-                        'Tiempo (min)',
+                        'Sala',
+                        'Reemplazado',
                     ];
+                }
+
+                public function styles(\PhpOffice\PhpSpreadsheet\Worksheet\Worksheet $sheet)
+                {
+                    // Aplicar estilos a las filas de datos
+                    foreach ($this->rowStyles as $row => $style) {
+                        $sheet->getStyle('A' . $row . ':F' . $row)->applyFromArray($style);
+                    }
+
+                    // Estilo para el header
+                    $sheet->getStyle('A1:F1')->applyFromArray([
+                        'font' => [
+                            'bold' => true,
+                            'color' => ['rgb' => 'FFFFFF']
+                        ],
+                        'fill' => [
+                            'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                            'startColor' => ['rgb' => '4CAF50']
+                        ]
+                    ]);
+
+                    // Autoajustar columnas
+                    foreach (range('A', 'F') as $column) {
+                        $sheet->getColumnDimension($column)->setAutoSize(true);
+                    }
+                }
+
+                private function getProgramBackgroundColor($programIndex)
+                {
+                    // Colores alternados para diferentes programas
+                    $colors = [
+                        'E8F5E8', // Verde muy claro
+                        'F3E5F5', // Púrpura muy claro
+                        'E3F2FD', // Azul muy claro
+                        'FFF3E0', // Naranja muy claro
+                        'FCE4EC', // Rosa muy claro
+                        'E8F5E8', // Verde muy claro (repetir patrón)
+                        'F3E5F5', // Púrpura muy claro
+                        'E3F2FD', // Azul muy claro
+                        'FFF3E0', // Naranja muy claro
+                        'FCE4EC', // Rosa muy claro
+                    ];
+
+                    return $colors[$programIndex % count($colors)];
                 }
             }, $fileName . '.xlsx');
 
