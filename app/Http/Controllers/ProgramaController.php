@@ -779,7 +779,10 @@ class ProgramaController extends Controller
                     'presidente.name as nombre_presidencia',
                     'orador_inicial.name as nombre_orador_inicial',
                     'orador_final.name as nombre_orador_final',
-                    'c.nombre as congregacion_nombre'
+                    'c.nombre as congregacion_nombre',
+                    'p.cancion_pre',
+                    'p.cancion_en',
+                    'p.cancion_post'
                 )
                 ->orderBy('p.fecha', 'asc') // Orden ascendente para mostrar programas cronológicamente
                 ->get();

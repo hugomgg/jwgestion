@@ -258,7 +258,7 @@ $(document).ready(function() {
     // Inicializar Select2
     initializeSelect2ForCoordinators();
     handleModalEventsForSelect2();
-    
+
     // Definir rutas para exportación
     window.exportRoutes = {
         pdf: `{{ route('programas.export.pdf') }}`,

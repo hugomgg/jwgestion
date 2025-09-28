@@ -20,10 +20,10 @@
         }
         .programa-header {
             text-align: center;
-            background-color: #333;
-            color: white;
+            background-color: #fff;
+            color: black;
             padding: 8px;
-            font-size: 12px;
+            font-size: 18px;
             font-weight: bold;
             margin-bottom: 3px;
         }
@@ -32,22 +32,24 @@
             background-color: #666;
             color: white;
             padding: 5px;
-            font-size: 10px;
+            font-size: 14px;
             margin-bottom: 3px;
+            font-weight: bold;
         }
         .seccion-header {
-            color: white;
+            text-align: center;
+            color: black;
             padding: 4px 8px;
             font-weight: bold;
-            font-size: 9px;
+            font-size: 12px;
             margin-bottom: 2px;
         }
-        .tesoros-biblia { background-color: #4a90e2; }
-        .mejores-maestros { background-color: #f5a623; }
-        .vida-cristiana { background-color: #e94b3c; }
+        .tesoros-biblia { background-color: #a2c4c9; }
+        .mejores-maestros { background-color: #ffe599; }
+        .vida-cristiana { background-color: #ea9999; }
 
         .parte-item {
-            padding: 3px 8px;
+            padding: 2px 8px;
             border-bottom: 1px solid #eee;
             font-size: 8px;
             display: flex;
@@ -66,9 +68,10 @@
             font-weight: bold;
             min-width: 80px;
             font-family: "Cascadia Mono", monospace !important;
-            font-size: 9px;
+            font-size: 10px;
             height: 9px;
         }
+
         .clear { clear: both; }
         .page-break {
             page-break-after: always;
@@ -85,24 +88,24 @@
                      <!--Solo la primera vez-->
                      @if($loop->first)
                     <div class="programa-header">
-                        {{ $congregacionNombre ?? 'Sin nombre' }}: Programa de entre semana
+                        {{ $congregacionNombre ?? 'Sin nombre' }}, Programa para la reunión de entre semana
                     </div>
                     @endif
-                    <!-- Fecha -->
+                    <!-- Fecha en español -->
                     <div class="fecha-header">
-                        {{ date('l j F Y', strtotime($programa->fecha)) }}
+                        {{ \Carbon\Carbon::parse($programa->fecha)->locale('es')->translatedFormat('l j \d\e F \d\e Y') }}
                     </div>
                     <div class="parte-item">
-                            <div class="parte-content">
-                                Orador inicial
-                            </div>
-                            <div class="parte-asignado">
-                                {{ $programa->nombre_orador_inicial ?? 'Sin asignar' }}
-                            </div>
+                        <div class="parte-content">
+                            Canción: {{ $programa->cancion_pre ?? 'Sin asignar' }}
                         </div>
+                        <div class="parte-asignado"> ORADOR INICIAL:
+                            {{ $programa->nombre_orador_inicial ?? 'Sin asignar' }}
+                        </div>
+                    </div>
                     <div class="parte-item">
                         <div class="parte-content">
-                            Presidente
+                            01 min. Palabras de introducción (Presidente)
                         </div>
                         <div class="parte-asignado">
                             {{ $programa->nombre_presidencia ?? 'Sin asignar' }}
@@ -195,6 +198,14 @@
                                 NUESTRA VIDA CRISTIANA
                             </div>
                             @foreach($vidaCristiana as $parte)
+                                @if($loop->iteration == 1)
+                                    <div class="parte-item">
+                                        <div class="parte-content">
+                                            Canción: {{ $programa->cancion_en ?? 'Sin asignar' }}
+                                        </div>
+                                        <div class="parte-asignado"></div>
+                                    </div>
+                                @endif
                                 <div class="parte-item">
                                     <div class="parte-content">
                                         {{ str_pad($parte->tiempo ?? '', 2, '0', STR_PAD_LEFT) }} min. {{ ($loop->iteration + $mejoresMaestrosPrincipal->count() + 3) }}) {{ $parte->tema ?? $parte->parte_nombre }}
@@ -203,7 +214,7 @@
                                         {{ $parte->encargado_nombre ?? 'Sin asignar' }}
                                         <!-- Si es la penultima parte de nuestra vida cristiana, mostrar el nombre del encargado de la última parte y romper el ciclo -->
                                         @if($loop->iteration == ($vidaCristiana->count() - 1) && $vidaCristiana->count() > 1 && $vidaCristiana->last()->parte_id == 24)
-                                            | {{ str_pad($vidaCristiana->last()->encargado_nombre, 20, '.', STR_PAD_RIGHT)}} </div></div>
+                                            | LECTOR: {{ $vidaCristiana->last()->encargado_nombre }} </div></div>
                                             @break
                                         @endif
                                     </div>
@@ -214,7 +225,7 @@
                         <!-- Presidencia y oración final -->
                         <div class="parte-item" style="margin-top: 5px;">
                             <div class="parte-content">
-                                Presidente
+                                03 min. Palabras de conclusión (Presidente)
                             </div>
                             <div class="parte-asignado">
                                 {{ $programa->nombre_presidencia ?? 'Sin asignar' }}
@@ -223,10 +234,10 @@
                         @if($programa->nombre_orador_final)
                             <div class="parte-item">
                                 <div class="parte-content">
-                                    Oración final
+                                    Canción: {{ $programa->cancion_post ?? 'Sin asignar' }}
                                 </div>
                                 <div class="parte-asignado">
-                                    {{ $programa->nombre_orador_final }}
+                                    ORADOR FINAL: {{ $programa->nombre_orador_final?? 'Sin asignar' }}
                                 </div>
                             </div>
                         @endif
