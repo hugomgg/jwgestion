@@ -60,7 +60,7 @@
         }
 
         .field-value {
-            border-bottom: 1px solid #000;
+            border-bottom: 0px solid #000;
             flex-grow: 1;
             min-height: 18px;
             padding-bottom: 2px;
@@ -207,7 +207,7 @@
                 <td>
                     <div class="assignment-box">
                         <div class="assignment-header">
-                            ASIGNACION PARA LA REUNIÓN<br>
+                            ASIGNACIÓN PARA LA REUNIÓN<br>
                             VIDA Y MINISTERIO CRISTIANOS
                         </div>
                         <div class="assignment-content">
@@ -274,7 +274,7 @@
                 <td><br><br><br>
                     <div class="assignment-box">
                         <div class="assignment-header">
-                            ASIGNACION PARA LA REUNIÓN<br>
+                            ASIGNACIÓN PARA LA REUNIÓN<br>
                             VIDA Y MINISTERIO CRISTIANOS
                         </div>
                         <div class="assignment-content">
