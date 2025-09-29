@@ -430,7 +430,7 @@ class UserController extends Controller
             // Agregar opciones de congregaciones y grupos para el coordinador
             if ($currentUser->isCoordinator()) {
                 $userData['congregaciones_disponibles'] = Congregacion::where('id', $currentUser->congregacion)->where('estado', 1)->get();
-                $userData['grupos_disponibles'] = Grupo::where('congregacion_id', $currentUser->congregacion)->where('estado', 1)->get();
+                $userData['grupos_disponibles'] = Grupo::where('estado', 1)->get();
             }
 
             return response()->json([

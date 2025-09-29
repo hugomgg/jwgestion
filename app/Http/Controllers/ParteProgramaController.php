@@ -1621,21 +1621,35 @@ class ParteProgramaController extends Controller
             ", [$parteId,$parteId,$user->congregacion]);
 
             // Segunda parte del UNION: usuarios con historial de participación
-            $usuariosConHistorial = DB::select("SELECT max(p.fecha) as fecha_raw,
+            $usuariosConHistorial = DB::select("SELECT DISTINCT
+                u.id,
+                u.name,
                 ps.abreviacion as abreviacion_parte,
-                        s.abreviacion as sala_abreviacion,
-                        u.name,
-                        u.id
-                FROM partes_programa pp
-                INNER JOIN programas p ON p.id = pp.programa_id
-                INNER JOIN partes_seccion ps ON pp.parte_id = ps.id
-                INNER JOIN salas s ON pp.sala_id = s.id
-                INNER JOIN users u ON u.id = pp.encargado_id OR u.id = pp.ayudante_id
-                WHERE pp.parte_id = ?
-                    AND u.congregacion = ?
+                s.abreviacion as sala_abreviacion,
+                latest_participation.fecha as fecha_raw
+                FROM users u
+                INNER JOIN (
+                    SELECT
+                        CASE
+                            WHEN pp.encargado_id IS NOT NULL THEN pp.encargado_id
+                            ELSE pp.ayudante_id
+                        END as user_id,
+                        MAX(p.fecha) as fecha,
+                        MAX(pp.parte_id) as parte_id,
+                        MAX(pp.sala_id) as sala_id
+                    FROM partes_programa pp
+                    INNER JOIN programas p ON p.id = pp.programa_id
+                    WHERE pp.parte_id = ?
+                    GROUP BY CASE
+                        WHEN pp.encargado_id IS NOT NULL THEN pp.encargado_id
+                        ELSE pp.ayudante_id
+                    END
+                ) latest_participation ON u.id = latest_participation.user_id
+                INNER JOIN partes_seccion ps ON ps.id = latest_participation.parte_id
+                INNER JOIN salas s ON s.id = latest_participation.sala_id
+                WHERE u.congregacion = ?
                     AND u.estado = 1
-                GROUP BY u.id
-                ORDER BY fecha_raw ASC
+                ORDER BY latest_participation.fecha ASC
             ", [$parteId, $user->congregacion]);
 
             // Combinar ambos resultados
@@ -1734,23 +1748,45 @@ class ParteProgramaController extends Controller
             ", [$parteId,$user->congregacion]);
 
             // Segunda parte del UNION: usuarios con historial de participación
-            $usuariosConHistorial = DB::select("SELECT max(p.fecha) as fecha_raw,
-                    ps.abreviacion as abreviacion_parte,
-                    s.abreviacion as sala_abreviacion,
-                    u.name,
-                    CASE WHEN pp.encargado_id=u.id THEN 'ES' ELSE 'AY' END AS tipo,
-                    u.id
-                FROM partes_programa pp
-                INNER JOIN programas p ON p.id = pp.programa_id
-                INNER JOIN partes_seccion ps ON pp.parte_id = ps.id
-                INNER JOIN salas s ON pp.sala_id = s.id
-                INNER JOIN users u ON u.id = pp.encargado_id OR u.id = pp.ayudante_id
-                INNER JOIN (SELECT asignacion_id FROM partes_seccion ps WHERE ps.id = ?) pa ON pa.asignacion_id = ps.asignacion_id
-                WHERE
-                    u.congregacion = ?
+            $usuariosConHistorial = DB::select("SELECT DISTINCT
+                u.id,
+                u.name,
+                ps.abreviacion as abreviacion_parte,
+                s.abreviacion as sala_abreviacion,
+                CASE WHEN latest_pp.encargado_id = u.id THEN 'ES' ELSE 'AY' END AS tipo,
+                latest_participation.fecha as fecha_raw
+                FROM users u
+                INNER JOIN (
+                    SELECT
+                        CASE
+                            WHEN pp.encargado_id IS NOT NULL THEN pp.encargado_id
+                            ELSE pp.ayudante_id
+                        END as user_id,
+                        MAX(p.fecha) as fecha,
+                        MAX(pp.parte_id) as parte_id,
+                        MAX(pp.sala_id) as sala_id,
+                        MAX(pp.encargado_id) as encargado_id,
+                        MAX(pp.ayudante_id) as ayudante_id
+                    FROM partes_programa pp
+                    INNER JOIN programas p ON p.id = pp.programa_id
+                    INNER JOIN partes_seccion ps2 ON pp.parte_id = ps2.id
+                    INNER JOIN (SELECT asignacion_id FROM partes_seccion WHERE id = ?) pa ON pa.asignacion_id = ps2.asignacion_id
+                    GROUP BY CASE
+                        WHEN pp.encargado_id IS NOT NULL THEN pp.encargado_id
+                        ELSE pp.ayudante_id
+                    END
+                ) latest_participation ON u.id = latest_participation.user_id
+                INNER JOIN partes_programa latest_pp ON (
+                    (latest_pp.encargado_id = u.id OR latest_pp.ayudante_id = u.id) AND
+                    latest_pp.parte_id = latest_participation.parte_id AND
+                    latest_pp.sala_id = latest_participation.sala_id
+                )
+                INNER JOIN programas lp ON lp.id = latest_pp.programa_id AND lp.fecha = latest_participation.fecha
+                INNER JOIN partes_seccion ps ON ps.id = latest_participation.parte_id
+                INNER JOIN salas s ON s.id = latest_participation.sala_id
+                WHERE u.congregacion = ?
                     AND u.estado = 1
-                GROUP BY u.id
-                ORDER BY fecha_raw ASC
+                ORDER BY latest_participation.fecha ASC
             ", [$parteId, $user->congregacion]);
 
             // Combinar ambos resultados

@@ -14,8 +14,8 @@ class Grupo extends Model
     protected $fillable = [
         'nombre',
         'estado',
-        'creador',
-        'modificador'
+        'creador_id',
+        'modificador_id'
     ];
 
     protected $casts = [
@@ -37,7 +37,7 @@ class Grupo extends Model
      */
     public function usuarioCreador()
     {
-        return $this->belongsTo(User::class, 'creador');
+        return $this->belongsTo(User::class, 'creador_id');
     }
 
     /**
@@ -45,7 +45,7 @@ class Grupo extends Model
      */
     public function usuarioModificador()
     {
-        return $this->belongsTo(User::class, 'modificador');
+        return $this->belongsTo(User::class, 'modificador_id');
     }
 
     /**

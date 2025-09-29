@@ -24,45 +24,8 @@ return new class extends Migration
             $table->foreign('modificador')->references('id')->on('users');
         });
 
-        // Insertar registros iniciales
-        \Illuminate\Support\Facades\DB::table('estado_espiritual')->insert([
-            [
-                'id' => 1,
-                'nombre' => 'Activo',
-                'estado' => 1,
-                'creador' => 1,
-                'modificador' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'id' => 2,
-                'nombre' => 'Inactivo',
-                'estado' => 1,
-                'creador' => 1,
-                'modificador' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'id' => 3,
-                'nombre' => 'Expulsado',
-                'estado' => 1,
-                'creador' => 1,
-                'modificador' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'id' => 4,
-                'nombre' => 'Desasociado',
-                'estado' => 1,
-                'creador' => 1,
-                'modificador' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-        ]);
+        // Los datos iniciales se insertarán mediante el seeder EstadoEspiritualSeeder
+        // después de que se creen los usuarios
     }
 
     /**

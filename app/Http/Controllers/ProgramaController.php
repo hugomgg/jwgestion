@@ -657,8 +657,9 @@ class ProgramaController extends Controller
     public function getAniosDisponibles()
     {
         try {
+            // Cambiar strftime (SQLite) por YEAR (MySQL)
             $anios = DB::table('programas')
-                ->selectRaw('DISTINCT strftime(\'%Y\', fecha) as anio')
+                ->selectRaw('DISTINCT YEAR(fecha) as anio')
                 ->whereNotNull('fecha')
                 ->orderBy('anio', 'desc')
                 ->pluck('anio')
@@ -761,13 +762,15 @@ class ProgramaController extends Controller
 
             // Aplicar filtros de fecha si se proporcionan
             if ($anio) {
-                $query->whereYear('p.fecha', $anio);
+                // Cambiar whereYear (SQLite) por whereRaw con YEAR (MySQL)
+                $query->whereRaw('YEAR(p.fecha) = ?', [$anio]);
 
                 // Si hay meses específicos seleccionados, filtrar por ellos
                 if ($meses && is_array($meses) && !empty($meses)) {
                     $query->where(function($q) use ($meses) {
                         foreach ($meses as $mes) {
-                            $q->orWhereMonth('p.fecha', $mes);
+                            // Cambiar whereMonth (SQLite) por whereRaw con MONTH (MySQL)
+                            $q->orWhereRaw('MONTH(p.fecha) = ?', [$mes]);
                         }
                     });
                 }
@@ -880,13 +883,15 @@ class ProgramaController extends Controller
 
             // Aplicar filtros de fecha si se proporcionan
             if ($anio) {
-                $query->whereYear('p.fecha', $anio);
+                // Cambiar whereYear (SQLite) por whereRaw con YEAR (MySQL)
+                $query->whereRaw('YEAR(p.fecha) = ?', [$anio]);
 
                 // Si hay meses específicos seleccionados, filtrar por ellos
                 if ($meses && is_array($meses) && !empty($meses)) {
                     $query->where(function($q) use ($meses) {
                         foreach ($meses as $mes) {
-                            $q->orWhereMonth('p.fecha', $mes);
+                            // Cambiar whereMonth (SQLite) por whereRaw con MONTH (MySQL)
+                            $q->orWhereRaw('MONTH(p.fecha) = ?', [$mes]);
                         }
                     });
                 }
@@ -1132,13 +1137,15 @@ class ProgramaController extends Controller
 
             // Aplicar filtros de fecha si se proporcionan
             if ($anio) {
-                $query->whereYear('p.fecha', $anio);
+                // Cambiar whereYear (SQLite) por whereRaw con YEAR (MySQL)
+                $query->whereRaw('YEAR(p.fecha) = ?', [$anio]);
 
                 // Si hay meses específicos seleccionados, filtrar por ellos
                 if ($meses && is_array($meses) && !empty($meses)) {
                     $query->where(function($q) use ($meses) {
                         foreach ($meses as $mes) {
-                            $q->orWhereMonth('p.fecha', $mes);
+                            // Cambiar whereMonth (SQLite) por whereRaw con MONTH (MySQL)
+                            $q->orWhereRaw('MONTH(p.fecha) = ?', [$mes]);
                         }
                     });
                 }

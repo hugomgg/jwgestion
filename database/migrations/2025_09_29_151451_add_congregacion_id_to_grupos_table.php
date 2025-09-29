@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // La foreign key constraint ya fue creada en la migración anterior
-        // 2025_05_26_161542_add_perfil_to_users_table.php
-        // Esta migración se mantiene por compatibilidad pero no hace nada
+        Schema::table('grupos', function (Blueprint $table) {
+            //
+        });
     }
 
     /**
@@ -21,9 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            // Drop the foreign key constraint
-            $table->dropForeign(['perfil']);
+        Schema::table('grupos', function (Blueprint $table) {
+            //
         });
     }
 };

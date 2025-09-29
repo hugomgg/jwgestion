@@ -13,34 +13,49 @@ class AsignacionesSeeder extends Seeder
      */
     public function run(): void
     {
-        Asignacion::create([
-            'nombre' => 'Desarrollo de Sistema Web',
-            'descripcion' => 'Proyecto de desarrollo completo de una aplicación web moderna con Laravel y Vue.js',
-            'estado' => 1
-        ]);
+        Asignacion::updateOrCreate(
+            ['abreviacion' => 'DSW'],
+            [
+                'nombre' => 'Desarrollo de Sistema Web',
+                'descripcion' => 'Proyecto de desarrollo completo de una aplicación web moderna con Laravel y Vue.js',
+                'estado' => 1
+            ]
+        );
 
-        Asignacion::create([
-            'nombre' => 'Base de Datos MySQL',
-            'descripcion' => 'Diseño e implementación de base de datos relacional para sistema empresarial',
-            'estado' => 1
-        ]);
+        Asignacion::updateOrCreate(
+            ['abreviacion' => 'BDM'],
+            [
+                'nombre' => 'Base de Datos MySQL',
+                'descripcion' => 'Diseño e implementación de base de datos relacional para sistema empresarial',
+                'estado' => 1
+            ]
+        );
 
-        Asignacion::create([
-            'nombre' => 'Análisis de Sistemas',
-            'descripcion' => 'Análisis y documentación de requerimientos para nuevo software corporativo',
-            'estado' => 0
-        ]);
+        Asignacion::updateOrCreate(
+            ['abreviacion' => 'AS'],
+            [
+                'nombre' => 'Análisis de Sistemas',
+                'descripcion' => 'Análisis y documentación de requerimientos para nuevo software corporativo',
+                'estado' => 0
+            ]
+        );
 
-        Asignacion::create([
-            'nombre' => 'Proyecto Final',
-            'descripcion' => 'Desarrollo de aplicación móvil con React Native y backend en Node.js',
-            'estado' => 1
-        ]);
+        Asignacion::updateOrCreate(
+            ['abreviacion' => 'PF'],
+            [
+                'nombre' => 'Proyecto Final',
+                'descripcion' => 'Desarrollo de aplicación móvil con React Native y backend en Node.js',
+                'estado' => 1
+            ]
+        );
 
-        Asignacion::create([
-            'nombre' => 'Investigación IA',
-            'descripcion' => 'Proyecto de investigación sobre implementación de inteligencia artificial en procesos empresariales',
-            'estado' => 0
-        ]);
+        Asignacion::updateOrCreate(
+            ['abreviacion' => 'IIA'],
+            [
+                'nombre' => 'Investigación IA',
+                'descripcion' => 'Proyecto de investigación sobre implementación de inteligencia artificial en procesos empresariales',
+                'estado' => 0
+            ]
+        );
     }
 }
