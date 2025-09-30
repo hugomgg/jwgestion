@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-@if(Auth::user()->perfil == 3)
+@if(Auth::user()->perfil == 3 || Auth::user()->perfil == 7)
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">
@@ -1195,7 +1195,7 @@ let partesTable;
 let partesSegundaSeccionTable;
 let partesNVTable;
 let isEditMode = false;
-const userIsCoordinator = {{ Auth::user()->isCoordinator() ? 'true' : 'false' }};
+const userIsCoordinator = {{ (Auth::user()->isCoordinator() || Auth::user()->isOrganizer()) ? 'true' : 'false' }};
 window.editingParteTwoData = false; // Variable para controlar la carga en modo edición
 
 // Variables para manejar reemplazados

@@ -22,7 +22,7 @@ class CanAccessAdminMenuMiddleware
 
         $user = auth()->user();
         
-        // Permitir acceso a usuarios con perfil 1 (admin), 2 (supervisor) y 3 (coordinador)
+        // Permitir acceso a usuarios con perfil 1 (admin), 2 (supervisor), 3 (coordinador) y 7 (organizador)
         if (!$user->canAccessAdminMenu() && !$user->canAccessPeopleManagementMenu()) {
             return redirect()->route('home')->with('error', 'No tiene permisos para acceder a esta sección.');
         }
@@ -37,8 +37,8 @@ class CanAccessAdminMenuMiddleware
             }
         }
         
-        // Para usuarios con perfil = 3 (Coordinador), permitir gestión de usuarios y programas
-        if ($user->isCoordinator()) {
+        // Para usuarios con perfil = 3 (Coordinador) y perfil = 7 (Organizador), permitir gestión de usuarios y programas
+        if ($user->isCoordinator() || $user->isOrganizer()) {
             $method = $request->method();
             $path = $request->path();
             

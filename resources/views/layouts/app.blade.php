@@ -198,7 +198,7 @@
                         <i class="fas fa-users"></i>Usuarios
                     </a>
                 </li>
-                @if(auth()->user()->isCoordinator())
+                @if(auth()->user()->isCoordinator() || auth()->user()->isOrganizer())
                 <li>
                     <a href="{{ route('programas.index') }}" class="nav-link {{ request()->routeIs('programas.*') ? 'active' : '' }}">
                         <i class="fas fa-calendar"></i>Programas
@@ -217,7 +217,7 @@
                         <i class="fas fa-users"></i>Usuarios
                     </a>
                 </li>
-                @if(auth()->user()->isCoordinator())
+                @if(auth()->user()->isCoordinator() || auth()->user()->isOrganizer())
                 <li>
                     <a href="{{ route('programas.index') }}" class="nav-link {{ request()->routeIs('programas.*') ? 'active' : '' }}">
                         <i class="fas fa-calendar"></i>Programas

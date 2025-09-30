@@ -23,8 +23,8 @@ class ProgramaController extends Controller
     public function index()
     {
         $currentUser = auth()->user();
-        //No pernmite ver programas si $currentUser->perfil no es 3
-        if ($currentUser->perfil != 3) {
+        //No permite ver programas si $currentUser->perfil no es 3 (Coordinador) o 7 (Organizador)
+        if ($currentUser->perfil != 3 && $currentUser->perfil != 7) {
             return redirect()->route('home')
                 ->with('error', 'No tienes permiso para acceder a esta sección.');
         }
@@ -64,7 +64,7 @@ class ProgramaController extends Controller
             ->orderBy('name')
             ->get();
 
-        // Para coordinadores (perfil=3), obtener usuarios especiales para presidencia y orador inicial
+        // Para coordinadores (perfil=3) y organizadores (perfil=7), obtener usuarios especiales para presidencia y orador inicial
         $usuariosPresidencia = [];
         $usuariosOradorInicial = [];
 
@@ -130,8 +130,8 @@ class ProgramaController extends Controller
         try {
             $programa = Programa::with(['oradorInicial', 'presidenciaUsuario', 'oradorFinal'])->findOrFail($id);
             $currentUser = auth()->user();
-            //No pernmite ver programas si $currentUser->perfil no es 3
-            if ($currentUser->perfil != 3) {
+            //No permite ver programas si $currentUser->perfil no es 3 (Coordinador) o 7 (Organizador)
+            if ($currentUser->perfil != 3 && $currentUser->perfil != 7) {
                 return redirect()->route('home')
                     ->with('error', 'No tienes permiso para acceder a esta sección.');
             }
@@ -149,7 +149,7 @@ class ProgramaController extends Controller
                 ->orderBy('id')
                 ->get();
 
-            // Para coordinadores (perfil=3), obtener usuarios especiales para presidencia y orador inicial
+            // Para coordinadores (perfil=3) y organizadores (perfil=7), obtener usuarios especiales para presidencia y orador inicial
             $usuariosPresidencia = [];
             $usuariosOradorInicial = [];
 
@@ -521,8 +521,8 @@ class ProgramaController extends Controller
     public function store(Request $request)
     {
         $currentUser = auth()->user();
-        //No pernmite ver programas si $currentUser->perfil no es 3
-        if ($currentUser->perfil != 3) {
+        //No permite crear programas si $currentUser->perfil no es 3 (Coordinador) o 7 (Organizador)
+        if ($currentUser->perfil != 3 && $currentUser->perfil != 7) {
             return redirect()->route('home')
                 ->with('error', 'No tienes permiso para acceder a esta sección.');
         }
@@ -576,8 +576,8 @@ class ProgramaController extends Controller
     public function update(Request $request, $id)
     {
         $currentUser = auth()->user();
-        //No pernmite ver programas si $currentUser->perfil no es 3
-        if ($currentUser->perfil != 3) {
+        //No permite actualizar programas si $currentUser->perfil no es 3 (Coordinador) o 7 (Organizador)
+        if ($currentUser->perfil != 3 && $currentUser->perfil != 7) {
             return redirect()->route('home')
                 ->with('error', 'No tienes permiso para acceder a esta sección.');
         }
@@ -630,8 +630,8 @@ class ProgramaController extends Controller
     public function destroy($id)
     {
         $currentUser = auth()->user();
-        //No pernmite ver programas si $currentUser->perfil no es 3
-        if ($currentUser->perfil != 3) {
+        //No permite eliminar programas si $currentUser->perfil no es 3 (Coordinador) o 7 (Organizador)
+        if ($currentUser->perfil != 3 && $currentUser->perfil != 7) {
             return redirect()->route('home')
                 ->with('error', 'No tienes permiso para acceder a esta sección.');
         }
@@ -736,7 +736,7 @@ class ProgramaController extends Controller
     }
 
     /**
-     * Exportar programas a PDF (solo para coordinadores - perfil 3)
+     * Exportar programas a PDF (para coordinadores - perfil 3 y organizadores - perfil 7)
      */
     public function exportPdf(Request $request)
     {
@@ -858,7 +858,7 @@ class ProgramaController extends Controller
     }
 
     /**
-     * Exportar programas a XLS (para coordinadores - perfil 3)
+     * Exportar programas a XLS (para coordinadores - perfil 3 y organizadores - perfil 7)
      */
     public function exportXls(Request $request)
     {
@@ -1106,7 +1106,7 @@ class ProgramaController extends Controller
     }
 
     /**
-     * Exportar asignaciones de programas a XLS (para coordinadores - perfil 3)
+     * Exportar asignaciones de programas a XLS (para coordinadores - perfil 3 y organizadores - perfil 7)
      */
     public function exportAsignaciones(Request $request)
     {

@@ -7,7 +7,7 @@
 @endpush
 
 @section('content')
-@if(Auth::user()->perfil == 3)
+@if(Auth::user()->perfil == 3 || Auth::user()->perfil == 7)
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">

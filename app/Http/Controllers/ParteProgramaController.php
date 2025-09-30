@@ -299,8 +299,8 @@ class ParteProgramaController extends Controller
     public function store(Request $request)
     {
         $currentUser = auth()->user();
-        //No pernmite ver programas si $currentUser->perfil no es 3
-        if ($currentUser->perfil != 3) {
+        //No pernmite ver programas si $currentUser->perfil no es 3 y 7
+        if ($currentUser->perfil != 3 && $currentUser->perfil != 7) {
             return redirect()->route('home')
                 ->with('error', 'No tienes permiso para acceder a esta sección.');
         }
@@ -465,8 +465,8 @@ class ParteProgramaController extends Controller
     public function update(Request $request, $id)
     {
         $currentUser = auth()->user();
-        //No pernmite ver programas si $currentUser->perfil no es 3
-        if ($currentUser->perfil != 3) {
+        //No pernmite ver programas si $currentUser->perfil no es 3 y 7
+        if ($currentUser->perfil != 3 && $currentUser->perfil != 7) {
             return redirect()->route('home')
                 ->with('error', 'No tienes permiso para acceder a esta sección.');
         }
@@ -545,8 +545,8 @@ class ParteProgramaController extends Controller
     public function destroy($id)
     {
         $currentUser = auth()->user();
-        //No pernmite ver programas si $currentUser->perfil no es 3
-        if ($currentUser->perfil != 3) {
+        //No pernmite ver programas si $currentUser->perfil no es 3 y 7
+        if ($currentUser->perfil != 3 && $currentUser->perfil != 7) {
             return redirect()->route('home')
                 ->with('error', 'No tienes permiso para acceder a esta sección.');
         }
@@ -627,8 +627,8 @@ class ParteProgramaController extends Controller
                 ], 404);
             }
 
-            // Para perfil=3 (coordinadores), aplicar lógica especial para la segunda sección
-            if ($user->perfil == 3 && $parteSeccion->seccion_id == 2) {
+            // Aplicar lógica especial para la segunda sección
+            if ($parteSeccion->seccion_id == 2) {
                 $usuarios = DB::table('users as u')
                     ->join('asignaciones_users as au', 'u.id', '=', 'au.user_id')
                     ->leftJoin(DB::raw('(
@@ -684,7 +684,7 @@ class ParteProgramaController extends Controller
                     ->orderBy('ultima_participacion.ultima_fecha', 'asc')
                     ->orderBy('u.name')
                     ->get();
-            } elseif ($user->perfil == 3 && $parteSeccion->seccion_id == 1) {
+            } elseif ($parteSeccion->seccion_id == 1) {
                 // Lógica especial para coordinadores en la primera sección
                 // Solo mostrar usuarios que han participado como ENCARGADOS en esa parte específica
                 $usuarios = DB::table('users as u')
@@ -841,8 +841,8 @@ class ParteProgramaController extends Controller
         try {
             $user = Auth::user();
 
-            // Verificar que el usuario autenticado tenga perfil=3 (coordinador)
-            if ($user->perfil != 3) {
+            // Verificar que el usuario autenticado tenga perfil=3 y 7 (coordinador)
+            if ($user->perfil != 3 && $user->perfil != 7) {
                 return response()->json([
                     'success' => false,
                     'message' => 'No tiene permisos para acceder a esta información.'
@@ -942,8 +942,8 @@ class ParteProgramaController extends Controller
         try {
             $user = Auth::user();
 
-            // Verificar que el usuario autenticado tenga perfil=3 (coordinador)
-            if ($user->perfil != 3) {
+            // Verificar que el usuario autenticado tenga perfil=3 y 7(coordinador)
+            if ($user->perfil != 3 && $user->perfil != 7) {
                 return response()->json([
                     'success' => false,
                     'message' => 'No tiene permisos para acceder a esta información.'
@@ -1286,8 +1286,8 @@ class ParteProgramaController extends Controller
     {
         try {
             $currentUser = auth()->user();
-            //No pernmite ver programas si $currentUser->perfil no es 3
-            if ($currentUser->perfil != 3) {
+            //No pernmite ver programas si $currentUser->perfil no es 3 y 7
+            if ($currentUser->perfil != 3 && $currentUser->perfil != 7) {
                 return response()->json([
                     'success' => false,
                     'message' => 'No tienes permiso para acceder a esta sección.'
@@ -1342,8 +1342,8 @@ class ParteProgramaController extends Controller
     {
         try {
             $currentUser = auth()->user();
-            //No pernmite ver programas si $currentUser->perfil no es 3
-            if ($currentUser->perfil != 3) {
+            //No pernmite ver programas si $currentUser->perfil no es 3 y 7
+            if ($currentUser->perfil != 3 && $currentUser->perfil != 7) {
                 return response()->json([
                     'success' => false,
                     'message' => 'No tienes permiso para acceder a esta sección.'
@@ -1398,8 +1398,8 @@ class ParteProgramaController extends Controller
         try {
             $user = Auth::user();
 
-            // Verificar que el usuario autenticado tenga perfil=3 (coordinador)
-            if ($user->perfil != 3) {
+            // Verificar que el usuario autenticado tenga perfil=3 y 7 (coordinador)
+            if ($user->perfil != 3 && $user->perfil != 7) {
                 return response()->json([
                     'success' => false,
                     'message' => 'No tiene permisos para acceder a esta información.'
@@ -1543,8 +1543,8 @@ class ParteProgramaController extends Controller
         try {
             $user = Auth::user();
 
-            // Verificar que el usuario autenticado tenga perfil=3 (coordinador)
-            if ($user->perfil != 3) {
+            // Verificar que el usuario autenticado tenga perfil=3 y 7(coordinador)
+            if ($user->perfil != 3 && $user->perfil != 7) {
                 return response()->json([
                     'success' => false,
                     'message' => 'No tiene permisos para acceder a esta información.'
@@ -1594,11 +1594,11 @@ class ParteProgramaController extends Controller
         try {
             $user = Auth::user();
 
-            // Verificar que el usuario autenticado tenga perfil=3 (coordinador)
-            if ($user->perfil != 3) {
+            // Verificar que el usuario autenticado tenga perfil=3 y 7(coordinador)
+            if ($user->perfil != 3 && $user->perfil != 7) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'No tiene permisos para acceder a esta información.'
+                    'message' => '2No tiene permisos para acceder a esta información.'
                 ], 403);
             }
 
@@ -1718,7 +1718,7 @@ class ParteProgramaController extends Controller
             $user = Auth::user();
 
             // Verificar que el usuario autenticado tenga perfil=3 (coordinador)
-            if ($user->perfil != 3) {
+            if ($user->perfil != 3 && $user->perfil != 7) {
                 return response()->json([
                     'success' => false,
                     'message' => 'No tiene permisos para acceder a esta información.'
@@ -1970,7 +1970,7 @@ class ParteProgramaController extends Controller
             $user = Auth::user();
 
             // Verificar que el usuario autenticado tenga perfil=3 (coordinador)
-            if ($user->perfil != 3) {
+            if ($user->perfil != 3 && $user->perfil != 7) {
                 return response()->json([
                     'success' => false,
                     'message' => 'No tiene permisos para acceder a esta información.'
