@@ -26,3 +26,94 @@ div.select2-container--bootstrap-5 .select2-selection {
 div.select2-container--bootstrap-5 .select2-selection__rendered {
     font-size: 14px !important;
 }
+
+/* Estilos para asegurar que ambas tablas de escuela tengan el mismo ancho */
+#programasTable {
+    width: 100% !important;
+    table-layout: fixed !important;
+}
+#programasTable th,
+#programasTable td {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+}
+
+/* Estilos específicos para las columnas de las tablas de escuela */
+#programasTable th:nth-child(1) {
+    width: 100px !important;
+    min-width: 100px !important;
+}
+
+#programasTable th:nth-child(2) {
+    width: 200px !important;
+    min-width: 100px !important;
+}
+
+#programasTable th:nth-child(3) {
+    width: 250px !important;
+    min-width: 300px !important;
+}
+
+#programasTable th:nth-child(4) {
+    width: 50px !important;
+    min-width: 300px !important;
+}
+
+#programasTable th:nth-child(5) {
+    width: 50px !important;
+    min-width: 100px !important;
+}
+
+#programasTable th:nth-child(6) {
+    width: 50px !important;
+    min-width: 100px !important;
+}
+#programasTable th:nth-child(7) {
+    width: 200px !important;
+    min-width: 100px !important;
+}
+#programasTable th:nth-child(8) {
+    width: 100px !important;
+    min-width: 100px !important;
+}
+
+
+/* Aplicar los mismos estilos a las celdas del cuerpo de la tabla */
+#programasTable td:nth-child(1) {
+    width: 100px !important;
+    max-width: 100px !important;
+}
+
+#programasTable td:nth-child(2) {
+    width: 200px !important;
+    max-width: 100px !important;
+}
+
+#programasTable td:nth-child(3) {
+    width: 250px !important;
+    max-width: 300px !important;
+}
+
+#programasTable td:nth-child(4) {
+    width: 50px !important;
+    max-width: 300px !important;
+}
+
+#programasTable td:nth-child(5) {
+    width: 50px !important;
+    min-width: 100px !important;
+}
+
+#programasTable td:nth-child(6) {
+    width: 50px !important;
+    max-width: 100px !important;
+}
+#programasTable td:nth-child(7) {
+    width: 200px !important;
+    max-width: 100px !important;
+}
+#programasTable td:nth-child(8) {
+    width: 100px !important;
+    max-width: 100px !important;
+}

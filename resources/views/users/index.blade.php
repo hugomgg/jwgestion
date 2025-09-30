@@ -114,8 +114,8 @@
                                             <label for="estadoFilter" class="form-label">Estado:</label>
                                             <select class="form-select" id="estadoFilter">
                                                 <option value="">Todos</option>
-                                                <option value="1">Activo</option>
-                                                <option value="0">Inactivo</option>
+                                                <option value="1">Habilitado</option>
+                                                <option value="0">Deshabilitado</option>
                                             </select>
                                         </div>
                                     </div>
@@ -195,9 +195,9 @@
                                     @endif
                                     <td>
                                         @if($user->estado == 1)
-                                            <span class="badge bg-success">Activo</span>
+                                            <span class="badge bg-success">Habilitado</span>
                                         @else
-                                            <span class="badge bg-danger">Inactivo</span>
+                                            <span class="badge bg-danger">Deshabilitado</span>
                                         @endif
                                     </td>
                                     <td>
@@ -409,8 +409,8 @@
                                         <label for="estado" class="form-label">Estado *</label>
                                         <select class="form-select" id="estado" name="estado" required>
                                             <option value="">Seleccionar estado...</option>
-                                            <option value="1" selected>Activo</option>
-                                            <option value="0">Inactivo</option>
+                                            <option value="1" selected>Habilitado</option>
+                                            <option value="0">Deshabilitado</option>
                                         </select>
                                         <div class="invalid-feedback"></div>
                                     </div>
@@ -698,8 +698,8 @@
                                         <label for="edit_estado" class="form-label">Estado *</label>
                                         <select class="form-select" id="edit_estado" name="estado" required>
                                             <option value="">Seleccionar estado...</option>
-                                            <option value="1">Activo</option>
-                                            <option value="0">Inactivo</option>
+                                            <option value="1">Habilitado</option>
+                                            <option value="0">Deshabilitado</option>
                                         </select>
                                         <div class="invalid-feedback"></div>
                                     </div>

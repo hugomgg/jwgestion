@@ -251,7 +251,7 @@ $(document).ready(function() {
             table.draw();
         } else {
             // Mapear valores numéricos a textos para la búsqueda
-            const textoEstado = selectedEstado === '1' ? 'Activo' : 'Inactivo';
+            const textoEstado = selectedEstado === '1' ? 'Habilitado' : 'Deshabilitado';
             const estadoColumnIndex = window.usersIndexConfig.estadoColumnIndex;
 
             // Crear nueva función de filtro
@@ -396,8 +396,8 @@ $(document).ready(function() {
         $('#view_telefono_contacto').text(user.telefono_contacto || '-');
         $('#view_observacion').text(user.observacion || '-');
         $('#view_estado').html(user.estado == 1 ?
-            '<span class="badge bg-success">Activo</span>' :
-            '<span class="badge bg-danger">Inactivo</span>');
+            '<span class="badge bg-success">Habilitado</span>' :
+            '<span class="badge bg-danger">Deshabilitado</span>');
 
         // Mostrar asignaciones
         if (user.asignaciones && Array.isArray(user.asignaciones) && user.asignaciones.length > 0) {

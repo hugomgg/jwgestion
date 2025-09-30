@@ -362,38 +362,43 @@ $(document).ready(function() {
         const $btnAsignaciones = $('#exportAsignacionesBtn');
 
         if (anioSeleccionado && mesesSeleccionados.length > 0) {
-            // Habilitar botones y actualizar URLs
+            // Habilitar botones
             $btnPdf.removeClass('disabled').prop('disabled', false);
             $btnXls.removeClass('disabled').prop('disabled', false);
             $btnAsignaciones.removeClass('disabled').prop('disabled', false);
 
-            // Construir URLs con múltiples meses
+            // Guardar URLs en data attributes para uso posterior
             let baseUrl = "?anio=" + anioSeleccionado;
             mesesSeleccionados.forEach(function(mes) {
                 baseUrl += "&mes[]=" + mes;
             });
 
-            // Usar las rutas definidas globalmente
-            const pdfUrl = window.exportRoutes.pdf + baseUrl;
-            const xlsUrl = window.exportRoutes.xls + baseUrl;
-            const asignacionesUrl = window.exportRoutes.asignaciones + baseUrl;
-
-            $btnPdf.attr('href', pdfUrl);
-            $btnXls.attr('href', xlsUrl);
-            $btnAsignaciones.attr('href', asignacionesUrl);
+            $btnPdf.data('export-url', window.exportRoutes.pdf + baseUrl);
+            $btnXls.data('export-url', window.exportRoutes.xls + baseUrl);
+            $btnAsignaciones.data('export-url', window.exportRoutes.asignaciones + baseUrl);
         } else {
             // Deshabilitar botones
             $btnPdf.addClass('disabled').prop('disabled', true);
             $btnXls.addClass('disabled').prop('disabled', true);
             $btnAsignaciones.addClass('disabled').prop('disabled', true);
-            $btnPdf.attr('href', '#');
-            $btnXls.attr('href', '#');
-            $btnAsignaciones.attr('href', '#');
+            
+            $btnPdf.removeData('export-url');
+            $btnXls.removeData('export-url');
+            $btnAsignaciones.removeData('export-url');
         }
     }
 
     // Hacer la función disponible globalmente
     window.actualizarBotonesExportacion = actualizarBotonesExportacion;
+
+    // Manejar clic en botones de exportación
+    $('#exportPdfBtn, #exportXlsBtn, #exportAsignacionesBtn').on('click', function(e) {
+        e.preventDefault();
+        const url = $(this).data('export-url');
+        if (url && !$(this).prop('disabled')) {
+            window.open(url, '_blank');
+        }
+    });
 
     // Escuchar cambios en los filtros para actualizar los botones
     $('#filtro_anio').on('change', function() {

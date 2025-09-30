@@ -14,54 +14,17 @@
             <div class="card">
                 <div class="card-header">
                     <div class="row align-items-center">
-                        <div class="col-md-4">
+                        <div class="col-md-7">
                             <h5 class="mb-0">
                                 <i class="fas fa-calendar me-2"></i>Gestión de Programas
                             </h5>
                         </div>
-                        <div class="col-md-8">
+                        <div class="col-md-5">
                             <div class="d-flex justify-content-end align-items-center gap-2 flex-wrap">
-                                <!-- Select2 para filtrar por Año -->
-                                <div class="d-flex align-items-center gap-2">
-                                    <label for="filtro_anio" class="form-label mb-0 me-2">Año:</label>
-                                    <select class="form-select" id="filtro_anio" style="width: 120px;">
-                                        <option value="">Todos</option>
-                                    </select>
-                                </div>
-
-                                <!-- Dropdown para filtrar por Mes -->
-                                <div class="d-flex align-items-center gap-2">
-                                    <label class="form-label mb-0 me-2">Mes:</label>
-                                    <div class="dropdown">
-                                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="mesDropdownBtn" data-bs-toggle="dropdown" aria-expanded="false" disabled style="width: 180px;">
-                                            Seleccionar meses
-                                        </button>
-                                        <ul class="dropdown-menu p-3" aria-labelledby="mesDropdownBtn" id="mesDropdownMenu" style="min-width: 200px;">
-                                            <li><hr class="dropdown-divider"></li>
-                                            <li class="px-2">
-                                                <button type="button" class="btn btn-sm btn-outline-secondary w-100" id="seleccionarTodosMeses">Seleccionar Todos</button>
-                                            </li>
-                                            <li class="px-2 mt-2">
-                                                <button type="button" class="btn btn-sm btn-outline-secondary w-100" id="limpiarMeses">Limpiar Selección</button>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-
-                                <!-- Botón Exportar PDF -->
-                                <a href="#" class="btn btn-success disabled" id="exportPdfBtn" target="_blank" disabled>
-                                    <i class="fas fa-file-pdf me-2"></i>Exportar PDF
-                                </a>
-
-                                <!-- Botón Exportar XLS -->
-                                <a href="#" class="btn btn-primary disabled" id="exportXlsBtn" target="_blank" disabled>
-                                    <i class="fas fa-file-excel me-2"></i>Exportar XLS
-                                </a>
-
-                                <!-- Botón Exportar Asignaciones -->
-                                <a href="#" class="btn btn-secondary disabled" id="exportAsignacionesBtn" target="_blank" disabled>
-                                    <i class="fas fa-file-export me-2"></i>Exportar Asignaciones
-                                </a>
+                                <!-- Botón Generar Documentos (Collapse) -->
+                                <button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#generarDocumentosCollapse" aria-expanded="false" aria-controls="generarDocumentosCollapse">
+                                    <i class="fas fa-download me-2"></i>Exportar Documentos
+                                </button>
 
                                 <!-- Botón Nuevo Programa -->
                                 @if($currentUser->isCoordinator() || $currentUser->isOrganizer())
@@ -69,6 +32,61 @@
                                     <i class="fas fa-plus me-2"></i>Nuevo Programa
                                 </button>
                                 @endif
+                            </div>
+                            
+                            <!-- Collapse para Generar Documentos -->
+                            <div class="collapse mt-3" id="generarDocumentosCollapse">
+                                <div class="card card-body">
+                                    <h6 class="mb-3"><i class="fas fa-download me-2"></i>Exportar Documentos</h6>
+                                    <div class="row g-3 align-items-end">
+                                        <!-- Select2 para filtrar por Año -->
+                                        <div class="col-md-3">
+                                            <label for="filtro_anio" class="form-label">Año</label>
+                                            <select class="form-select" id="filtro_anio" style="width: 100%;">
+                                                <option value="">Todos</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Dropdown para filtrar por Mes -->
+                                        <div class="col-md-6">
+                                            <label class="form-label">Mes</label>
+                                            <div class="dropdown">
+                                                <button class="btn btn-outline-secondary dropdown-toggle w-100" type="button" id="mesDropdownBtn" data-bs-toggle="dropdown" aria-expanded="false" disabled>
+                                                    Seleccionar meses
+                                                </button>
+                                                <ul class="dropdown-menu p-3" aria-labelledby="mesDropdownBtn" id="mesDropdownMenu" style="min-width: 200px;">
+                                                    <li><hr class="dropdown-divider"></li>
+                                                    <li class="px-2">
+                                                        <button type="button" class="btn btn-sm btn-outline-secondary w-100" id="seleccionarTodosMeses">Seleccionar Todos</button>
+                                                    </li>
+                                                    <li class="px-2 mt-2">
+                                                        <button type="button" class="btn btn-sm btn-outline-secondary w-100" id="limpiarMeses">Limpiar Selección</button>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row g-3 align-items-end">
+                                        <!-- Botones de Exportación -->
+                                        <div class="col-md-12">
+                                            <label class="form-label">Acciones</label>
+                                            <div class="d-flex gap-2 flex-wrap">
+                                                <!-- Botón Exportar PDF -->
+                                                <button type="button" class="btn btn-primary" id="exportPdfBtn" disabled>
+                                                    <i class="fas fa-file-pdf me-2"></i>Programa PDF
+                                                </button>
+                                                <!-- Botón Exportar Asignaciones -->
+                                                <button type="button" class="btn btn-primary" id="exportAsignacionesBtn" disabled>
+                                                    <i class="fas fa-file-pdf me-2"></i>Asignaciones SMM
+                                                </button>
+                                                <!-- Botón Exportar XLS -->
+                                                <button type="button" class="btn btn-success" id="exportXlsBtn" disabled>
+                                                    <i class="fas fa-file-excel me-2"></i>Resumen XLS
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -84,10 +102,10 @@
                                 <tr>
                                     <th style="width: 10%;">Fecha</th>
                                     <th style="width: 20%;">Orador Inicial</th>
-                                    <th style="width: 20%;">Presidente</th>
-                                    <th style="width: 10%;">Canción Inicial</th>
-                                    <th style="width: 10%;">Canción Intermedia</th>
-                                    <th style="width: 10%;">Canción Final</th>
+                                    <th style="width: 25%;">Presidente</th>
+                                    <th style="width: 5%;">Canción Inicial</th>
+                                    <th style="width: 5%;">Canción Intermedia</th>
+                                    <th style="width: 5%;">Canción Final</th>
                                     <th style="width: 20%;">Orador Final</th>
                                     <th style="width: 10%;">Acciones</th>
                                 </tr>
