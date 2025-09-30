@@ -5,7 +5,7 @@ $(document).ready(function() {
         if ($('#asignaciones').hasClass('select2-hidden-accessible')) {
             $('#asignaciones').select2('destroy');
         }
-        
+
         // Inicializar Select2 para modal de agregar
         $('#asignaciones').select2({
             theme: 'bootstrap-5',
@@ -34,7 +34,7 @@ $(document).ready(function() {
         if ($('#edit_asignaciones').hasClass('select2-hidden-accessible')) {
             $('#edit_asignaciones').select2('destroy');
         }
-        
+
         // Inicializar Select2 para modal de editar
         $('#edit_asignaciones').select2({
             theme: 'bootstrap-5',
@@ -88,7 +88,7 @@ $(document).ready(function() {
             </div>
         `;
         alertContainer.html(alert);
-        
+
         // Auto-hide success alerts after 5 seconds
         if (type === 'success') {
             setTimeout(() => {
@@ -116,7 +116,7 @@ $(document).ready(function() {
     // Filtro por congregación
     $('#congregacionFilter').on('change', function() {
         const selectedCongregacion = $(this).val();
-        
+
         if (selectedCongregacion === '') {
             table.column(3).search('').draw();
         } else {
@@ -128,7 +128,7 @@ $(document).ready(function() {
     $('#grupoFilter').on('change', function() {
         const selectedGrupo = $(this).val();
         const grupoColumnIndex = window.usersIndexConfig.isLimitedUser ? 4 : 3;
-        
+
         if (selectedGrupo === '') {
             table.column(grupoColumnIndex).search('').draw();
         } else {
@@ -140,7 +140,7 @@ $(document).ready(function() {
     $('#nombramientoFilter').on('change', function() {
         const selectedNombramiento = $(this).val();
         const nombramientoColumnIndex = window.usersIndexConfig.isLimitedUser ? 5 : 4;
-        
+
         if (selectedNombramiento === '') {
             table.column(nombramientoColumnIndex).search('').draw();
         } else {
@@ -152,7 +152,7 @@ $(document).ready(function() {
     $('#servicioFilter').on('change', function() {
         const selectedServicio = $(this).val();
         const servicioColumnIndex = window.usersIndexConfig.isLimitedUser ? 6 : 5;
-        
+
         if (selectedServicio === '') {
             table.column(servicioColumnIndex).search('').draw();
         } else {
@@ -163,7 +163,7 @@ $(document).ready(function() {
     // Filtro por perfil
     $('#perfilFilter').on('change', function() {
         const selectedPerfil = $(this).val();
-        
+
         if (selectedPerfil === '') {
             table.column(2).search('').draw();
         } else {
@@ -176,16 +176,16 @@ $(document).ready(function() {
 
     $('#estadoEspiritualFilter').on('change', function() {
         const selectedEstadoEspiritual = $(this).val();
-        
+
         // Limpiar filtro anterior si existe
         if (currentEstadoEspiritualFilter !== null) {
             $.fn.dataTable.ext.search.pop();
         }
-        
+
         if (selectedEstadoEspiritual) {
             currentEstadoEspiritualFilter = selectedEstadoEspiritual;
             const estadoEspiritualColumnIndex = window.usersIndexConfig.isLimitedUser ? 7 : 6;
-            
+
             // Agregar nuevo filtro
             $.fn.dataTable.ext.search.push(
                 function(settings, data, dataIndex) {
@@ -196,7 +196,7 @@ $(document).ready(function() {
         } else {
             currentEstadoEspiritualFilter = null;
         }
-        
+
         table.draw();
     });
 
@@ -206,19 +206,19 @@ $(document).ready(function() {
 
         $('#asignacionFilter').on('change', function() {
             const selectedAsignacion = $(this).val();
-            
+
             // Limpiar filtro anterior si existe
             if (currentAsignacionFilter !== null) {
                 $.fn.dataTable.ext.search.splice($.fn.dataTable.ext.search.indexOf(currentAsignacionFilter), 1);
             }
-            
+
             if (selectedAsignacion === '') {
                 currentAsignacionFilter = null;
                 table.draw();
             } else {
                 // Para coordinadores, organizadores y suborganizadores: Asignación está en columna 7
                 const asignacionColumnIndex = 7;
-                
+
                 // Crear nueva función de filtro
                 currentAsignacionFilter = function(settings, data, dataIndex) {
                     if (settings.nTable !== table.table().node()) {
@@ -227,7 +227,7 @@ $(document).ready(function() {
                     const asignacionColumn = data[asignacionColumnIndex];
                     return asignacionColumn.includes(selectedAsignacion);
                 };
-                
+
                 // Agregar el nuevo filtro
                 $.fn.dataTable.ext.search.push(currentAsignacionFilter);
                 table.draw();
@@ -240,12 +240,12 @@ $(document).ready(function() {
 
     $('#estadoFilter').on('change', function() {
         const selectedEstado = $(this).val();
-        
+
         // Limpiar filtro anterior si existe
         if (currentEstadoFilter !== null) {
             $.fn.dataTable.ext.search.splice($.fn.dataTable.ext.search.indexOf(currentEstadoFilter), 1);
         }
-        
+
         if (selectedEstado === '') {
             currentEstadoFilter = null;
             table.draw();
@@ -253,7 +253,7 @@ $(document).ready(function() {
             // Mapear valores numéricos a textos para la búsqueda
             const textoEstado = selectedEstado === '1' ? 'Activo' : 'Inactivo';
             const estadoColumnIndex = window.usersIndexConfig.estadoColumnIndex;
-            
+
             // Crear nueva función de filtro
             currentEstadoFilter = function(settings, data, dataIndex) {
                 if (settings.nTable !== table.table().node()) {
@@ -262,7 +262,7 @@ $(document).ready(function() {
                 const estadoColumn = data[estadoColumnIndex];
                 return estadoColumn.indexOf(textoEstado) !== -1;
             };
-            
+
             // Agregar el nuevo filtro
             $.fn.dataTable.ext.search.push(currentEstadoFilter);
             table.draw();
@@ -272,7 +272,7 @@ $(document).ready(function() {
     // Manejar clic en botón Ver
     $(document).on('click', '.view-user', function() {
         const userId = $(this).data('user-id');
-        
+
         // Cargar datos del usuario
         $.ajax({
             url: `/usuarios/${userId}/edit`,
@@ -280,21 +280,21 @@ $(document).ready(function() {
             success: function(response) {
                 if (response.success) {
                     const user = response.user;
-                    
+
                     // Llenar los campos del modal
                     $('#view_name').text(user.name || '-');
                     $('#view_nombre_completo').text(user.nombre_completo || '-');
                     $('#view_email').text(user.email || '-');
-                    
+
                     // Cargar datos de las relaciones
                     loadUserRelationData(user);
-                    
+
                     // Mostrar información de auditoría
                     $('#view_creado_por').text(user.creado_por_nombre ?
                         `${user.creado_por_nombre} - ${user.creado_por_timestamp}` : '-');
                     $('#view_modificado_por').text(user.modificado_por_nombre ?
                         `${user.modificado_por_nombre} - ${user.modificado_por_timestamp}` : '-');
-                    
+
                     // Mostrar modal
                     $('#viewUserModal').modal('show');
                 } else {
@@ -427,7 +427,7 @@ $(document).ready(function() {
         if ($('#asignaciones').hasClass('select2-hidden-accessible')) {
             $('#asignaciones').val([]).trigger('change');
         }
-        
+
         // Preseleccionar congregación después del reset para perfiles específicos
         if (window.usersIndexConfig.userCongregacion) {
             setTimeout(function() {
@@ -439,18 +439,18 @@ $(document).ready(function() {
     // Envío del formulario
     $('#addUserForm').on('submit', function(e) {
         e.preventDefault();
-        
+
         const form = $(this);
         const submitBtn = $('#saveUserBtn');
         const spinner = submitBtn.find('.spinner-border');
-        
+
         // Deshabilitar botón y mostrar spinner
         submitBtn.prop('disabled', true);
         spinner.removeClass('d-none');
-        
+
         // Limpiar errores previos
         clearValidationErrors();
-        
+
         $.ajax({
             url: window.usersIndexConfig.storeRoute,
             method: 'POST',
@@ -459,10 +459,10 @@ $(document).ready(function() {
                 if (response.success) {
                     // Cerrar modal
                     $('#addUserModal').modal('hide');
-                    
+
                     // Mostrar mensaje de éxito
                     showAlert('success', response.message);
-                    
+
                     // Recargar la página para actualizar la tabla
                     setTimeout(() => {
                         window.location.reload();
@@ -471,7 +471,7 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 const response = xhr.responseJSON;
-                
+
                 if (xhr.status === 422 && response.errors) {
                     // Errores de validación
                     showValidationErrors(response.errors);
@@ -498,11 +498,11 @@ $(document).ready(function() {
     // Manejar clic en botón Editar
     $(document).on('click', '.edit-user', function() {
         const userId = $(this).data('user-id');
-        
+
         // Limpiar formulario y errores
         $('#editUserForm')[0].reset();
         clearValidationErrors();
-        
+
         // Cargar datos del usuario
         $.ajax({
             url: `/usuarios/${userId}/edit`,
@@ -510,7 +510,7 @@ $(document).ready(function() {
             success: function(response) {
                 if (response.success) {
                     const user = response.user;
-                    
+
                     // Llenar formulario
                     $('#edit_user_id').val(user.id);
                     $('#edit_name').val(user.name);
@@ -538,7 +538,7 @@ $(document).ready(function() {
                     } else {
                         $('#edit_asignaciones').val([]).trigger('change');
                     }
-                    
+
                     // Mostrar modal
                     $('#editUserModal').modal('show');
                 } else {
@@ -568,19 +568,19 @@ $(document).ready(function() {
     // Envío del formulario de edición
     $('#editUserForm').on('submit', function(e) {
         e.preventDefault();
-        
+
         const form = $(this);
         const userId = $('#edit_user_id').val();
         const submitBtn = $('#updateUserBtn');
         const spinner = submitBtn.find('.spinner-border');
-        
+
         // Deshabilitar botón y mostrar spinner
         submitBtn.prop('disabled', true);
         spinner.removeClass('d-none');
-        
+
         // Limpiar errores previos
         clearValidationErrors();
-        
+
         $.ajax({
             url: `/usuarios/${userId}`,
             method: 'PUT',
@@ -589,10 +589,10 @@ $(document).ready(function() {
                 if (response.success) {
                     // Cerrar modal
                     $('#editUserModal').modal('hide');
-                    
+
                     // Mostrar mensaje de éxito
                     showAlert('success', response.message);
-                    
+
                     // Recargar la página para actualizar la tabla
                     setTimeout(() => {
                         window.location.reload();
@@ -601,7 +601,7 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 const response = xhr.responseJSON;
-                
+
                 if (xhr.status === 422 && response.errors) {
                     // Errores de validación
                     showValidationErrors(response.errors);
@@ -622,7 +622,7 @@ $(document).ready(function() {
     // Manejar exportación PDF
     $('#exportPdfBtn').on('click', function(e) {
         e.preventDefault();
-        
+
         // Obtener los filtros actuales
         const filters = {
             congregacion: $('#congregacionFilter').val(),
@@ -645,7 +645,7 @@ $(document).ready(function() {
 
         // Crear la URL completa
         const url = `${window.usersIndexConfig.exportPdfRoute}?${params.toString()}`;
-        
+
         // Usar window.location.href para mantener la sesión
         window.location.href = url;
     });
