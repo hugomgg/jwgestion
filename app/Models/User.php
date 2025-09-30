@@ -306,11 +306,11 @@ class User extends Authenticatable
     }
 
     /**
-     * Verificar si el usuario puede acceder al menú de administración.
+     * Verificar si el usuario puede acceder al menú de administración (administradores, supervisores y coordinadores).
      */
     public function canAccessAdminMenu()
     {
-        return $this->perfil == 1 || $this->perfil == 2;
+        return $this->perfil == 1 || $this->perfil == 2 || $this->perfil == 3;
     }
 
     /**
