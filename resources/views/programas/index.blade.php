@@ -7,7 +7,7 @@
 @endpush
 
 @section('content')
-@if(Auth::user()->perfil == 3 || Auth::user()->perfil == 7)
+@if($currentUser->isCoordinator() || $currentUser->isOrganizer() ||  $currentUser->isSuborganizer())
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">
@@ -64,9 +64,11 @@
                                 </a>
 
                                 <!-- Botón Nuevo Programa -->
+                                @if($currentUser->isCoordinator() || $currentUser->isOrganizer())
                                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProgramaModal">
                                     <i class="fas fa-plus me-2"></i>Nuevo Programa
                                 </button>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -107,6 +109,7 @@
                                                title="Ver programa">
                                                 <i class="fas fa-eye"></i>
                                             </a>
+                                            @if($currentUser->isCoordinator() || $currentUser->isOrganizer())
                                             <a href="{{ route('programas.edit', $programa->id) }}" class="btn btn-sm btn-warning"
                                                data-bs-toggle="tooltip"
                                                title="Editar programa">
@@ -120,6 +123,7 @@
                                                     title="Eliminar programa">
                                                 <i class="fas fa-trash"></i>
                                             </button>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>
@@ -227,6 +231,7 @@
 </div>
 
 <!-- Modal de Confirmación para Eliminar Programa -->
+@if($currentUser->isCoordinator() || $currentUser->isOrganizer())
 <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -249,6 +254,7 @@
         </div>
     </div>
 </div>
+@endif
 @endif
 @push('scripts')
 <script src="{{ asset('js/select2.min.js') }}"></script>

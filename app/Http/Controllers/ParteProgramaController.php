@@ -299,8 +299,8 @@ class ParteProgramaController extends Controller
     public function store(Request $request)
     {
         $currentUser = auth()->user();
-        //No pernmite ver programas si $currentUser->perfil no es 3 y 7
-        if ($currentUser->perfil != 3 && $currentUser->perfil != 7) {
+        //No permite ver programas si $currentUser->perfil no es 3 y 7
+        if (!($currentUser->isCoordinator() || $currentUser->isOrganizer())) {
             return redirect()->route('home')
                 ->with('error', 'No tienes permiso para acceder a esta sección.');
         }
@@ -465,8 +465,8 @@ class ParteProgramaController extends Controller
     public function update(Request $request, $id)
     {
         $currentUser = auth()->user();
-        //No pernmite ver programas si $currentUser->perfil no es 3 y 7
-        if ($currentUser->perfil != 3 && $currentUser->perfil != 7) {
+        //No permite ver programas si $currentUser->perfil no es 3 y 7
+        if (!($currentUser->isCoordinator() || $currentUser->isOrganizer())) {
             return redirect()->route('home')
                 ->with('error', 'No tienes permiso para acceder a esta sección.');
         }
@@ -545,8 +545,8 @@ class ParteProgramaController extends Controller
     public function destroy($id)
     {
         $currentUser = auth()->user();
-        //No pernmite ver programas si $currentUser->perfil no es 3 y 7
-        if ($currentUser->perfil != 3 && $currentUser->perfil != 7) {
+        //No permite ver programas si $currentUser->perfil no es 3 y 7
+        if (!($currentUser->isCoordinator() || $currentUser->isOrganizer())) {
             return redirect()->route('home')
                 ->with('error', 'No tienes permiso para acceder a esta sección.');
         }
@@ -1286,8 +1286,8 @@ class ParteProgramaController extends Controller
     {
         try {
             $currentUser = auth()->user();
-            //No pernmite ver programas si $currentUser->perfil no es 3 y 7
-            if ($currentUser->perfil != 3 && $currentUser->perfil != 7) {
+            //No permite ver programas si $currentUser->perfil no es 3 y 7
+            if (!($currentUser->isCoordinator() || $currentUser->isOrganizer())) {
                 return response()->json([
                     'success' => false,
                     'message' => 'No tienes permiso para acceder a esta sección.'
@@ -1342,8 +1342,8 @@ class ParteProgramaController extends Controller
     {
         try {
             $currentUser = auth()->user();
-            //No pernmite ver programas si $currentUser->perfil no es 3 y 7
-            if ($currentUser->perfil != 3 && $currentUser->perfil != 7) {
+            //No permite ver programas si $currentUser->perfil no es 3 y 7
+            if (!($currentUser->isCoordinator() || $currentUser->isOrganizer())) {
                 return response()->json([
                     'success' => false,
                     'message' => 'No tienes permiso para acceder a esta sección.'

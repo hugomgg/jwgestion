@@ -22,7 +22,7 @@ class CanAccessAdminMenuMiddleware
 
         $user = auth()->user();
         
-        // Permitir acceso a usuarios con perfil 1 (admin), 2 (supervisor), 3 (coordinador) y 7 (organizador)
+        // Permitir acceso a usuarios con perfil 1 (admin), 2 (supervisor), 3 (coordinador), 6 (subsecretario), 7 (organizador) y 8 (suborganizador)
         if (!$user->canAccessAdminMenu() && !$user->canAccessPeopleManagementMenu()) {
             return redirect()->route('home')->with('error', 'No tiene permisos para acceder a esta sección.');
         }
@@ -47,6 +47,25 @@ class CanAccessAdminMenuMiddleware
                 // Si no es ruta de usuarios, programas o partes-programa, solo permitir GET
                 if (!in_array($method, ['GET', 'HEAD'])) {
                     return redirect()->back()->with('error', 'No tiene permisos para realizar esta acción en esta sección.');
+                }
+            }
+        }
+        
+        // Para usuarios con perfil = 6 (Subsecretario) y perfil = 8 (SubOrganizador), permitir solo lectura en programas
+        if ($user->isSubsecretary() || $user->isSuborganizer()) {
+            $method = $request->method();
+            $path = $request->path();
+            
+            // Solo permitir operaciones GET en rutas de programas
+            if (str_starts_with($path, 'programas')) {
+                // Permitir solo métodos GET para programas
+                if (!in_array($method, ['GET', 'HEAD'])) {
+                    return redirect()->back()->with('error', 'No tiene permisos para modificar programas. Solo puede ver la información.');
+                }
+            } else {
+                // Para otras rutas, solo permitir GET
+                if (!in_array($method, ['GET', 'HEAD'])) {
+                    return redirect()->back()->with('error', 'No tiene permisos para realizar esta acción. Solo puede ver la información.');
                 }
             }
         }

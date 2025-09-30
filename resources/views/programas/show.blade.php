@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-@if(Auth::user()->perfil == 3 || Auth::user()->perfil == 7)
+@if($currentUser->isCoordinator() || $currentUser->isOrganizer() || $currentUser->isSubsecretary() || $currentUser->isSuborganizer())
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">

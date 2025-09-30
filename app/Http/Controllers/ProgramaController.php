@@ -23,10 +23,10 @@ class ProgramaController extends Controller
     public function index()
     {
         $currentUser = auth()->user();
-        //No permite ver programas si $currentUser->perfil no es 3 (Coordinador) o 7 (Organizador)
-        if ($currentUser->perfil != 3 && $currentUser->perfil != 7) {
+        //No permite ver programas si $currentUser->perfil no es 3 (Coordinador), 7 (Organizador), 6 (Subsecretario) o 8 (SubOrganizador)
+        if (!($currentUser->isCoordinator() || $currentUser->isOrganizer() || $currentUser->isSubsecretary() || $currentUser->isSuborganizer())) {
             return redirect()->route('home')
-                ->with('error', 'No tienes permiso para acceder a esta sección.');
+                ->with('error', 'No tienes permiso para acceder a esta sección2.');
         }
         // Consulta base con JOIN para obtener los nombres relacionados
         $query = DB::table('programas')
@@ -119,7 +119,7 @@ class ProgramaController extends Controller
             ->orderBy('numero')
             ->get();
 
-        return view('programas.index', compact('programas', 'usuarios', 'canciones', 'usuariosPresidencia', 'usuariosOradorInicial'));
+        return view('programas.index', compact('programas', 'usuarios', 'canciones', 'usuariosPresidencia', 'usuariosOradorInicial', 'currentUser'));
     }
 
     /**
@@ -131,7 +131,7 @@ class ProgramaController extends Controller
             $programa = Programa::with(['oradorInicial', 'presidenciaUsuario', 'oradorFinal'])->findOrFail($id);
             $currentUser = auth()->user();
             //No permite ver programas si $currentUser->perfil no es 3 (Coordinador) o 7 (Organizador)
-            if ($currentUser->perfil != 3 && $currentUser->perfil != 7) {
+            if (!($currentUser->isCoordinator() || $currentUser->isOrganizer())) {
                 return redirect()->route('home')
                     ->with('error', 'No tienes permiso para acceder a esta sección.');
             }
@@ -203,7 +203,7 @@ class ProgramaController extends Controller
             // Obtener la sección de reunión con id=1 para el título
             $seccionReunion = SeccionReunion::find(1);
 
-            return view('programas.edit', compact('programa', 'usuarios', 'canciones', 'seccionReunion', 'usuariosPresidencia', 'usuariosOradorInicial', 'salas'));
+            return view('programas.edit', compact('programa', 'usuarios', 'canciones', 'seccionReunion', 'usuariosPresidencia', 'usuariosOradorInicial', 'salas', 'currentUser'));
         } catch (\Exception $e) {
             return redirect()->route('programas.index')
                 ->with('error', 'Programa no encontrado.');
@@ -222,7 +222,7 @@ class ProgramaController extends Controller
             // Obtener la sección de reunión con id=1 para el título
             $seccionReunion = SeccionReunion::find(1);
 
-            return view('programas.show', compact('programa', 'seccionReunion'));
+            return view('programas.show', compact('programa', 'seccionReunion', 'currentUser'));
         } catch (\Exception $e) {
             return redirect()->route('programas.index')
                 ->with('error', 'Programa no encontrado.');
@@ -522,7 +522,7 @@ class ProgramaController extends Controller
     {
         $currentUser = auth()->user();
         //No permite crear programas si $currentUser->perfil no es 3 (Coordinador) o 7 (Organizador)
-        if ($currentUser->perfil != 3 && $currentUser->perfil != 7) {
+        if (!($currentUser->isCoordinator() || $currentUser->isOrganizer())) {
             return redirect()->route('home')
                 ->with('error', 'No tienes permiso para acceder a esta sección.');
         }
@@ -577,7 +577,7 @@ class ProgramaController extends Controller
     {
         $currentUser = auth()->user();
         //No permite actualizar programas si $currentUser->perfil no es 3 (Coordinador) o 7 (Organizador)
-        if ($currentUser->perfil != 3 && $currentUser->perfil != 7) {
+        if (!($currentUser->isCoordinator() || $currentUser->isOrganizer())) {
             return redirect()->route('home')
                 ->with('error', 'No tienes permiso para acceder a esta sección.');
         }
@@ -631,7 +631,7 @@ class ProgramaController extends Controller
     {
         $currentUser = auth()->user();
         //No permite eliminar programas si $currentUser->perfil no es 3 (Coordinador) o 7 (Organizador)
-        if ($currentUser->perfil != 3 && $currentUser->perfil != 7) {
+        if (!($currentUser->isCoordinator() || $currentUser->isOrganizer())) {
             return redirect()->route('home')
                 ->with('error', 'No tienes permiso para acceder a esta sección.');
         }
