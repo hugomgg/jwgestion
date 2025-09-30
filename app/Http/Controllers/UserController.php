@@ -92,39 +92,26 @@ class UserController extends Controller
         }
 
         // Filtrar perfiles para el modal CREAR (solo perfiles activos)
-        if ($currentUser->isSecretary()) {
-            // Secretarios no pueden crear usuarios con perfiles 1, 2, 3, 4, 7, 8
-            $perfilesModal = Perfil::where('estado', 1)->whereNotIn('id', [1, 2, 3, 4, 7, 8])->get();
-        } elseif ($currentUser->isOrganizer()) {
-            // Organizadores no pueden crear usuarios con perfiles 1, 2, 3, 4, 5, 6
-            $perfilesModal = Perfil::where('estado', 1)->whereNotIn('id', [1, 2, 3, 4, 5, 6])->get();
-        } elseif ($currentUser->isSubsecretary() || $currentUser->isSuborganizer()) {
-            // Subsecretarios y suborganizadores tienen acceso de solo lectura, no necesitan perfiles para modales
-            $perfilesModal = collect(); // Colección vacía
-        } elseif ($currentUser->isCoordinator() || $currentUser->isSubcoordinator()) {
-            // Coordinadores y subcoordinadores no pueden crear usuarios con perfiles 1, 2
+        // Coordinadores, secretarios o organizadores no pueden crear usuarios con perfiles 1, 2
+        if ($currentUser->isSecretary() || $currentUser->isCoordinator() || $currentUser->isOrganizer()) {
             $perfilesModal = Perfil::where('estado', 1)->whereNotIn('id', [1, 2])->get();
-        } else {
+        } elseif ($currentUser->isAdmin()) {
             // Administradores y supervisores ven todos los perfiles activos
             $perfilesModal = Perfil::where('estado', 1)->get();
+        }else{
+            // Subsecretarios y suborganizadores tienen acceso de solo lectura, no necesitan perfiles para modales
+            $perfilesModal = Perfil::whereNotIn('id', [1, 2, 3, 4, 5, 6,7,8,9,10])->get();
         }
 
         // Filtrar perfiles para el modal EDITAR (perfiles activos e inactivos)
-        if ($currentUser->isSecretary()) {
-            // Secretarios no pueden editar usuarios con perfiles 1, 2, 3, 4, 7, 8
-            $perfilesModalEdit = Perfil::whereNotIn('id', [1, 2, 3, 4, 7, 8])->get();
-        } elseif ($currentUser->isOrganizer()) {
-            // Organizadores no pueden editar usuarios con perfiles 1, 2, 3, 4, 5, 6
-            $perfilesModalEdit = Perfil::whereNotIn('id', [1, 2, 3, 4, 5, 6])->get();
+        //Administradores, Secretarios y organizadores ven todos los perfiles
+        if ($currentUser->isAdmin()) {
+            $perfilesModalEdit = Perfil::all();
+        }elseif($currentUser->isSecretary() || $currentUser->isCoordinator() || $currentUser->isOrganizer()){
+            $perfilesModalEdit = Perfil::whereNotIn('id', [1, 2])->get();
         } elseif ($currentUser->isSubsecretary() || $currentUser->isSuborganizer()) {
             // Subsecretarios y suborganizadores tienen acceso de solo lectura, no necesitan perfiles para modales
-            $perfilesModalEdit = collect(); // Colección vacía
-        } elseif ($currentUser->isCoordinator() || $currentUser->isSubcoordinator()) {
-            // Coordinadores y subcoordinadores no pueden editar usuarios con perfiles 1, 2
-            $perfilesModalEdit = Perfil::whereNotIn('id', [1, 2])->get();
-        } else {
-            // Administradores y supervisores ven todos los perfiles (activos e inactivos)
-            $perfilesModalEdit = Perfil::all();
+            $perfilesModalEdit = Perfil::whereNotIn('id', [1, 2, 3, 4, 5, 6])->get();
         }
         $sexos = Sexo::where('estado', 1)->get();
         $servicios = Servicio::where('estado', 1)->get();
@@ -167,14 +154,12 @@ class UserController extends Controller
         $currentUser = auth()->user();
 
         // Filtrar perfiles según el tipo de usuario
-        if ($currentUser->isSecretary()) {
+        //Secretario, coordinador y organizador no pueden crear usuarios con perfiles 1, 2
+        if ($currentUser->isSecretary() || $currentUser->isCoordinator() || $currentUser->isOrganizer()) {
             // Secretarios no pueden ver perfiles 1, 2, 3, 4, 7, 8
-            $perfiles = Perfil::whereNotIn('id', [1, 2, 3, 4, 7, 8])->get();
-        } elseif ($currentUser->isCoordinator() || $currentUser->isSubcoordinator()) {
-            // Coordinadores y subcoordinadores no pueden ver perfiles 1, 2
             $perfiles = Perfil::whereNotIn('id', [1, 2])->get();
-        } else {
-            // Administradores y supervisores ven todos los perfiles
+        } elseif($currentUser->Admin()) {
+            // Administradores ven todos los perfiles
             $perfiles = Perfil::all();
         }
 
@@ -234,8 +219,8 @@ class UserController extends Controller
     {
         $currentUser = auth()->user();
 
-        // Si es coordinador, forzar que la congregación sea la suya y validar perfil
-        if ($currentUser->isCoordinator()) {
+        // Si es coordinador, secretario y organizador forzar que la congregación sea la suya y validar perfil
+        if ($currentUser->isCoordinator() || $currentUser->isSecretary() || $currentUser->isOrganizer()) {
             $request->merge(['congregacion' => $currentUser->congregacion]);
 
             // Coordinadores no pueden crear usuarios con perfiles 1, 2
@@ -245,32 +230,12 @@ class UserController extends Controller
                     'message' => 'No tiene permisos para asignar este perfil.'
                 ], 403);
             }
-        }
-
-        // Si es secretario, forzar que la congregación sea la suya y validar perfil
-        if ($currentUser->isSecretary()) {
-            $request->merge(['congregacion' => $currentUser->congregacion]);
-
-            // Secretarios no pueden crear usuarios con perfiles 1, 2, 3, 4, 7, 8
-            if (in_array($request->perfil, [1, 2, 3, 4, 7, 8])) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'No tiene permisos para asignar este perfil.'
-                ], 403);
-            }
-        }
-
-        // Si es organizador, forzar que la congregación sea la suya y validar perfil
-        if ($currentUser->isOrganizer()) {
-            $request->merge(['congregacion' => $currentUser->congregacion]);
-
-            // Organizadores no pueden crear usuarios con perfiles 1, 2, 3, 4, 5, 6
-            if (in_array($request->perfil, [1, 2, 3, 4, 5, 6])) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'No tiene permisos para asignar este perfil.'
-                ], 403);
-            }
+        }elseif(!$currentUser->isAdmin()){
+            //Solo administradores pueden crear usuarios
+            return response()->json([
+                'success' => false,
+                'message' => 'No tiene permisos para crear usuarios.'
+            ], 403);
         }
 
         $validator = Validator::make($request->all(), [
@@ -454,16 +419,16 @@ class UserController extends Controller
             $currentUser = auth()->user();
             $user = User::findOrFail($id);
 
-            // Si es coordinador o secretario, verificar que el usuario pertenezca a la misma congregación
-            if (($currentUser->isCoordinator() || $currentUser->isSecretary()) && $user->congregacion != $currentUser->congregacion) {
+            // Si es coordinador,secretario o organizador verificar que el usuario pertenezca a la misma congregación
+            if (($currentUser->isCoordinator() || $currentUser->isSecretary() || $currentUser->isOrganizer()) && $user->congregacion != $currentUser->congregacion) {
                 return response()->json([
                     'success' => false,
                     'message' => 'No tiene permisos para actualizar este usuario.'
                 ], 403);
             }
 
-            // Si es coordinador, forzar que la congregación sea la suya y validar perfil
-            if ($currentUser->isCoordinator()) {
+            // Si es coordinador, secretario o organizador forzar que la congregación sea la suya y validar perfil
+            if ($currentUser->isCoordinator() || $currentUser->isSecretary() || $currentUser->isOrganizer()) {
                 $request->merge(['congregacion' => $currentUser->congregacion]);
 
                 // Coordinadores no pueden actualizar usuarios con perfiles 1, 2
@@ -475,31 +440,6 @@ class UserController extends Controller
                 }
             }
 
-            // Si es secretario, forzar que la congregación sea la suya y validar perfil
-            if ($currentUser->isSecretary()) {
-                $request->merge(['congregacion' => $currentUser->congregacion]);
-
-                // Secretarios no pueden actualizar usuarios con perfiles 1, 2, 3, 4, 7, 8
-                if (in_array($request->perfil, [1, 2, 3, 4, 7, 8])) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'No tiene permisos para asignar este perfil.'
-                    ], 403);
-                }
-            }
-
-            // Si es organizador, forzar que la congregación sea la suya y validar perfil
-            if ($currentUser->isOrganizer()) {
-                $request->merge(['congregacion' => $currentUser->congregacion]);
-
-                // Organizadores no pueden actualizar usuarios con perfiles 1, 2, 3, 4, 5, 6
-                if (in_array($request->perfil, [1, 2, 3, 4, 5, 6])) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'No tiene permisos para asignar este perfil.'
-                    ], 403);
-                }
-            }
 
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:255',
