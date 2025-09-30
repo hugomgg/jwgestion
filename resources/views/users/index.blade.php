@@ -209,31 +209,12 @@
                                                 <i class="fas fa-eye"></i>
                                             </button>
                                             @if(Auth::user()->canModify() && !Auth::user()->isSubsecretary() && !Auth::user()->isSuborganizer())
-                                                @php
-                                                    $canEditUser = true;
-                                                    // Si el usuario autenticado es secretario (perfil=5), no puede editar ciertos perfiles
-                                                    if(Auth::user()->isSecretary()) {
-                                                        $restrictedProfiles = [3, 4, 7, 8]; // coordinador, subcoordinador, organizador, suborganizador
-                                                        if(in_array($user->perfil_id, $restrictedProfiles)) {
-                                                            $canEditUser = false;
-                                                        }
-                                                    }
-                                                    // Si el usuario autenticado es organizador (perfil=7), no puede editar ciertos perfiles
-                                                    if(Auth::user()->isOrganizer()) {
-                                                        $restrictedProfiles = [3, 4, 5, 6]; // coordinador, subcoordinador, secretario, subsecretario
-                                                        if(in_array($user->perfil_id, $restrictedProfiles)) {
-                                                            $canEditUser = false;
-                                                        }
-                                                    }
-                                                @endphp
-                                                @if($canEditUser)
                                                 <button type="button" class="btn btn-sm btn-warning edit-user"
                                                         data-user-id="{{ $user->id }}"
                                                         data-bs-toggle="tooltip"
                                                         title="Editar usuario">
                                                     <i class="fas fa-edit"></i>
                                                 </button>
-                                                @endif
                                             @endif
                                         </div>
                                     </td>
