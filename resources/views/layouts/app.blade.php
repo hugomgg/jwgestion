@@ -360,7 +360,6 @@
             </ul>
         </div>
         @endauth
-        
         <!-- Barra de navegación superior -->
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container-fluid">
@@ -369,7 +368,6 @@
                     <i class="fas fa-bars"></i>
                 </button>
                 @endauth
-                
                 <a class="navbar-brand" href="{{ url('/') }}">
                     @guest
                         {{ config('app.name', 'Laravel') }}
@@ -381,18 +379,6 @@
                         @endif
                     @endguest
                 </a>
-                
-                <div class="ms-auto">
-                    <!-- Authentication Links -->
-                    @guest
-                        @if (Route::has('login'))
-                            <a class="btn btn-outline-primary me-2" href="{{ route('login') }}">Login</a>
-                        @endif
-                        @if (Route::has('register'))
-                            <a class="btn btn-primary" href="{{ route('register') }}">Register</a>
-                        @endif
-                    @endguest
-                </div>
             </div>
         </nav>
 

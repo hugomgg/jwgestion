@@ -17,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'can.access.people.management' => \App\Http\Middleware\CanAccessPeopleManagementMiddleware::class,
             'check.user.status' => \App\Http\Middleware\CheckUserStatusMiddleware::class,
             'load.profile' => \App\Http\Middleware\LoadUserProfile::class,
+            'recaptcha' => \App\Http\Middleware\VerifyRecaptcha::class,
         ]);
         
         // Apply middlewares globally to web routes
