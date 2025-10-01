@@ -101,8 +101,8 @@
                             <thead class="table-dark">
                                 <tr>
                                     <th style="width: 10%;">Fecha</th>
-                                    <th style="width: 20%;">Orador Inicial</th>
                                     <th style="width: 25%;">Presidente</th>
+                                    <th style="width: 20%;">Orador Inicial</th>
                                     <th style="width: 5%;">Canción Inicial</th>
                                     <th style="width: 5%;">Canción Intermedia</th>
                                     <th style="width: 5%;">Canción Final</th>
@@ -114,8 +114,8 @@
                                 @foreach($programas as $programa)
                                 <tr>
                                     <td data-order="{{ $programa->fecha }}">{{ \Carbon\Carbon::parse($programa->fecha)->format('d/m/Y') }}</td>
-                                    <td>{{ $programa->nombre_orador_inicial ?? '-' }}</td>
                                     <td>{{ $programa->nombre_presidencia ?? '-' }}</td>
+                                    <td>{{ $programa->nombre_orador_inicial ?? '-' }}</td>
                                     <td>{{ $programa->numero_cancion_pre ?? '-' }}</td>
                                     <td>{{ $programa->numero_cancion_en ?? '-' }}</td>
                                     <td>{{ $programa->numero_cancion_post ?? '-' }}</td>
