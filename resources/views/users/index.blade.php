@@ -292,8 +292,8 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label for="email" class="form-label">Email *</label>
-                                        <input type="email" class="form-control" id="email" name="email" required>
+                                        <label for="email" class="form-label">Email</label>
+                                        <input type="email" class="form-control" id="email" name="email">
                                         <div class="invalid-feedback"></div>
                                     </div>
                                 </div>
@@ -581,8 +581,8 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label for="edit_email" class="form-label">Email *</label>
-                                        <input type="email" class="form-control" id="edit_email" name="email" required>
+                                        <label for="edit_email" class="form-label">Email</label>
+                                        <input type="email" class="form-control" id="edit_email" name="email">
                                         <div class="invalid-feedback"></div>
                                     </div>
                                 </div>

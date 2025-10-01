@@ -241,7 +241,7 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'nombre_completo' => 'nullable|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
+            'email' => 'nullable|string|email|max:255|unique:users',
             'password' => 'nullable|string|min:8|confirmed',
             'perfil' => 'required|integer|exists:perfiles,id',
             'estado' => 'required|integer|in:0,1',
@@ -264,7 +264,6 @@ class UserController extends Controller
             'name.required' => 'El nombre es obligatorio.',
             'name.max' => 'El nombre no puede exceder 255 caracteres.',
             'nombre_completo.max' => 'El nombre completo no puede exceder 255 caracteres.',
-            'email.required' => 'El email es obligatorio.',
             'email.email' => 'El email debe tener un formato válido.',
             'email.unique' => 'Este email ya está registrado.',
             'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
@@ -444,7 +443,7 @@ class UserController extends Controller
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:255',
                 'nombre_completo' => 'nullable|string|max:255',
-                'email' => 'required|string|email|max:255|unique:users,email,' . $id,
+                'email' => 'nullable|string|email|max:255|unique:users,email,' . $id,
                 'password' => 'nullable|string|min:8|confirmed',
                 'perfil' => 'required|integer|exists:perfiles,id',
                 'estado' => 'required|integer|in:0,1',
@@ -467,7 +466,6 @@ class UserController extends Controller
                 'name.required' => 'El nombre es obligatorio.',
                 'name.max' => 'El nombre no puede exceder 255 caracteres.',
                 'nombre_completo.max' => 'El nombre completo no puede exceder 255 caracteres.',
-                'email.required' => 'El email es obligatorio.',
                 'email.email' => 'El email debe tener un formato válido.',
                 'email.unique' => 'Este email ya está registrado.',
                 'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
@@ -597,12 +595,11 @@ class UserController extends Controller
 
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:255',
-                'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+                'email' => 'nullable|string|email|max:255|unique:users,email,' . $user->id,
                 'password' => 'nullable|string|min:8|confirmed',
             ], [
                 'name.required' => 'El nombre es obligatorio.',
                 'name.max' => 'El nombre no puede exceder 255 caracteres.',
-                'email.required' => 'El email es obligatorio.',
                 'email.email' => 'El email debe tener un formato válido.',
                 'email.max' => 'El email no puede exceder 255 caracteres.',
                 'email.unique' => 'Ya existe un usuario con este email.',
