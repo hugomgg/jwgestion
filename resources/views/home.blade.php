@@ -29,6 +29,23 @@
             <div class="card-body">
                 <div class="row">
                     @if(Auth::user()->canAccessAdminMenu())
+                        <div class="col-12 mt-3">
+                            @if(Auth::user()->isAdmin())
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Bienvenido, {{ Auth::user()->name }}!</strong>
+                                <span class="badge bg-primary ms-2">{{ Auth::user()->role_name }}</span>
+                                <br><small>Como {{ Auth::user()->role_name }}, tienes acceso completo a todas las funcionalidades del sistema.</small>
+                            </div>
+                            @else
+                            <div class="alert alert-warning">
+                                <i class="fas fa-eye me-2"></i>
+                                <strong>Bienvenido, {{ Auth::user()->name }}!</strong>
+                                <span class="badge bg-warning ms-2">{{ Auth::user()->role_name }}</span>
+                                <br><small>Como {{ Auth::user()->role_name }}, tienes acceso a la gestión o visualización de usuarios, informes y/o programa.</small>
+                            </div>
+                            @endif
+                        </div>
                         <!-- Dashboard para Usuarios con Acceso al Menú -->
                         <div class="col-md-4">
                             <div class="card border-primary">
@@ -50,67 +67,22 @@
                         </div>
 
                         <div class="col-md-4">
-                            <div class="card border-info">
+                            <div class="card border-primary">
                                 <div class="card-body text-center">
-                                    <i class="fas fa-user-tag fa-3x text-info mb-3"></i>
-                                    <h5>Gestión de Perfiles</h5>
-                                    <p class="text-muted">Crear, editar y administrar perfiles de usuario</p>
-                                    <a href="{{ route('perfiles.index') }}" class="btn btn-info">
-                                        <i class="fas fa-arrow-right me-2"></i>Acceder
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-4">
-                            <div class="card border-warning">
-                                <div class="card-body text-center">
-                                    <i class="fas fa-tasks fa-3x text-warning mb-3"></i>
-                                    <h5>Gestión de Asignaciones</h5>
-                                    <p class="text-muted">Crear, editar y administrar asignaciones del sistema</p>
-                                    <a href="{{ route('asignaciones.index') }}" class="btn btn-warning">
-                                        <i class="fas fa-arrow-right me-2"></i>Acceder
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-md-4">
-                            <div class="card border-dark">
-                                <div class="card-body text-center">
-                                    <i class="fas fa-award fa-3x text-dark mb-3"></i>
-                                    <h5>Gestión de Nombramientos</h5>
+                                    <i class="fas fa-users fa-3x text-success mb-3"></i>
+                                    <h5>Gestión de Informes de Predicación</h5>
                                     <p class="text-muted">
                                         @if(Auth::user()->isAdmin())
-                                            Crear, editar y administrar nombramientos congregacionales
+                                            Crear, editar y administrar informes de predicación
                                         @else
-                                            Ver y consultar listado de nombramientos congregacionales
+                                            Ver y consultar listado de informes de predicación
                                         @endif
                                     </p>
-                                    <a href="{{ route('nombramiento.index') }}" class="btn btn-dark">
+                                    <a href="{{ route('users.index') }}" class="btn btn-success">
                                         <i class="fas fa-arrow-right me-2"></i>Acceder
                                     </a>
                                 </div>
                             </div>
-                        </div>
-
-                        <div class="col-12 mt-3">
-                            @if(Auth::user()->isAdmin())
-                            <div class="alert alert-info">
-                                <i class="fas fa-info-circle me-2"></i>
-                                <strong>Bienvenido, {{ Auth::user()->name }}!</strong>
-                                <span class="badge bg-primary ms-2">{{ Auth::user()->role_name }}</span>
-                                <br><small>Como {{ Auth::user()->role_name }}, tienes acceso completo a todas las funcionalidades del sistema.</small>
-                            </div>
-                            @else
-                            <div class="alert alert-warning">
-                                <i class="fas fa-eye me-2"></i>
-                                <strong>Bienvenido, {{ Auth::user()->name }}!</strong>
-                                <span class="badge bg-warning ms-2">{{ Auth::user()->role_name }}</span>
-                                <br><small>Como {{ Auth::user()->role_name }}, tienes acceso de visualización a los módulos del sistema.</small>
-                            </div>
-                            @endif
                         </div>
                     @else
                         <!-- Dashboard para Estudiantes -->
