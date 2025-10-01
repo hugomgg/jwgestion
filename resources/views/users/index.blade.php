@@ -1053,6 +1053,7 @@ window.usersIndexConfig = {
     // Configuración de permisos y UI
     isLimitedUser: @json(!Auth::user()->isCoordinator() && !Auth::user()->isSubcoordinator() && !Auth::user()->isSecretary() && !Auth::user()->isSubsecretary() && !Auth::user()->isOrganizer() && !Auth::user()->isSuborganizer()),
     showAsignacionFilter: @json(Auth::user()->isCoordinator() || Auth::user()->isOrganizer() || Auth::user()->isSuborganizer()),
+    canModify: @json(Auth::user()->canModify() && !Auth::user()->isSubsecretary() && !Auth::user()->isSuborganizer()),
     
     // Configuración de DataTables
     datatablesColumnDefs: [

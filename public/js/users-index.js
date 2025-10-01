@@ -443,6 +443,91 @@ $(document).ready(function() {
         }
     });
 
+    // Función para construir la fila HTML de un usuario
+    function buildUserRowHtml(user, asignaciones) {
+        const config = window.usersIndexConfig;
+        const isLimitedUser = config.isLimitedUser;
+        const showAsignacion = config.showAsignacionFilter;
+        const canModify = config.canModify;
+        
+        // Determinar si se debe mostrar la columna congregación
+        // isLimitedUser = true significa que NO es Coordinador/Secretario/Organizador
+        // Por lo tanto, showCongregacion = true cuando isLimitedUser = true (Admin/Supervisor)
+        const showCongregacion = isLimitedUser;
+        
+        // Construir badges de asignaciones
+        let asignacionesHtml = '';
+        if (asignaciones && asignaciones.length > 0) {
+            asignaciones.forEach(function(asig) {
+                asignacionesHtml += `<span class="badge bg-info me-1">${asig.abreviacion}</span>`;
+            });
+        } else {
+            asignacionesHtml = '<span class="text-muted">-</span>';
+        }
+
+        // Construir HTML de la fila
+        let rowHtml = `
+            <tr data-user-id="${user.id}">
+                <td>${user.id}</td>
+                <td>${user.name}</td>
+                <td><span class="badge bg-info">${user.privilegio_perfil}</span></td>
+        `;
+
+        // Agregar columna congregación solo para Admin y Supervisor
+        if (showCongregacion) {
+            rowHtml += `<td><span class="badge bg-secondary">${user.nombre_congregacion}</span></td>`;
+        }
+
+        rowHtml += `
+                <td><span class="badge bg-dark">${user.nombre_grupo}</span></td>
+                <td>${user.nombre_nombramiento ? '<span class="badge bg-primary">' + user.nombre_nombramiento + '</span>' : '<span class="text-muted">-</span>'}</td>
+                <td>${user.nombre_servicio ? '<span class="badge bg-warning text-dark">' + user.nombre_servicio + '</span>' : '<span class="text-muted">-</span>'}</td>
+                <td><span class="badge bg-light text-dark">${user.nombre_estado_espiritual}</span></td>
+        `;
+
+        // Agregar columna asignación solo para usuarios autorizados
+        if (showAsignacion) {
+            rowHtml += `<td>${asignacionesHtml}</td>`;
+        }
+
+        // Agregar columna estado
+        const estadoBadge = user.estado == 1 
+            ? '<span class="badge bg-success">Habilitado</span>' 
+            : '<span class="badge bg-danger">Deshabilitado</span>';
+        
+        rowHtml += `
+                <td>${estadoBadge}</td>
+                <td>
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-sm btn-info view-user"
+                                data-user-id="${user.id}"
+                                data-bs-toggle="tooltip"
+                                title="Ver usuario">
+                            <i class="fas fa-eye"></i>
+                        </button>
+        `;
+
+        // Agregar botón de editar si el usuario tiene permisos
+        if (canModify) {
+            rowHtml += `
+                        <button type="button" class="btn btn-sm btn-warning edit-user"
+                                data-user-id="${user.id}"
+                                data-bs-toggle="tooltip"
+                                title="Editar usuario">
+                            <i class="fas fa-edit"></i>
+                        </button>
+            `;
+        }
+
+        rowHtml += `
+                    </div>
+                </td>
+            </tr>
+        `;
+
+        return rowHtml;
+    }
+
     // Envío del formulario
     $('#addUserForm').on('submit', function(e) {
         e.preventDefault();
@@ -470,10 +555,12 @@ $(document).ready(function() {
                     // Mostrar mensaje de éxito
                     showAlert('success', response.message);
 
-                    // Recargar la página para actualizar la tabla
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 1500);
+                    // Agregar nueva fila a la tabla
+                    const newRowHtml = buildUserRowHtml(response.user, response.asignaciones);
+                    table.row.add($(newRowHtml)).draw(false);
+
+                    // Reinicializar tooltips
+                    $('[data-bs-toggle="tooltip"]').tooltip();
                 }
             },
             error: function(xhr) {
@@ -600,10 +687,29 @@ $(document).ready(function() {
                     // Mostrar mensaje de éxito
                     showAlert('success', response.message);
 
-                    // Recargar la página para actualizar la tabla
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 1500);
+                    // Actualizar la fila existente en la tabla
+                    const rowElement = $(`tr[data-user-id="${userId}"]`);
+                    
+                    if (rowElement.length > 0) {
+                        // Obtener la fila de DataTable
+                        const dtRow = table.row(rowElement);
+                        
+                        // Crear el nuevo HTML de la fila
+                        const updatedRowHtml = buildUserRowHtml(response.user, response.asignaciones);
+                        const newRow = $(updatedRowHtml);
+                        
+                        // Reemplazar el contenido de la fila existente
+                        rowElement.html(newRow.html());
+                        
+                        // Invalidar la caché de DataTables para esta fila
+                        dtRow.invalidate();
+                        
+                        // Redibujar solo esta fila (sin perder el filtro o posición)
+                        table.draw(false);
+                        
+                        // Reinicializar tooltips
+                        $('[data-bs-toggle="tooltip"]').tooltip();
+                    }
                 }
             },
             error: function(xhr) {

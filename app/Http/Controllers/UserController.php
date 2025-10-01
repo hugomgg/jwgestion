@@ -341,11 +341,37 @@ class UserController extends Controller
                 : [];
             $user->asignaciones()->sync($asignaciones);
 
+            // Recargar el usuario con todas sus relaciones para devolver los datos completos
+            $userWithRelations = DB::table('users')
+                ->join('perfiles', 'users.perfil', '=', 'perfiles.id')
+                ->join('congregaciones', 'users.congregacion', '=', 'congregaciones.id')
+                ->join('grupos', 'users.grupo', '=', 'grupos.id')
+                ->leftJoin('nombramiento', 'users.nombramiento', '=', 'nombramiento.id')
+                ->join('estado_espiritual', 'users.estado_espiritual', '=', 'estado_espiritual.id')
+                ->leftJoin('servicios', 'users.servicio', '=', 'servicios.id')
+                ->select(
+                    'users.id',
+                    'users.name',
+                    'users.estado',
+                    'perfiles.privilegio as privilegio_perfil',
+                    'congregaciones.nombre as nombre_congregacion',
+                    'grupos.nombre as nombre_grupo',
+                    'nombramiento.nombre as nombre_nombramiento',
+                    'servicios.nombre as nombre_servicio',
+                    'estado_espiritual.nombre as nombre_estado_espiritual'
+                )
+                ->where('users.id', $user->id)
+                ->first();
+
+            // Cargar asignaciones
+            $userModel = User::with('asignaciones')->find($user->id);
+            $asignacionesData = $userModel ? $userModel->asignaciones : collect();
+
             return response()->json([
                 'success' => true,
                 'message' => 'Usuario creado exitosamente.',
-                'user' => $user->load(['perfil', 'creador', 'modificador']),
-                'audit_info' => $user->getAuditInfo()
+                'user' => $userWithRelations,
+                'asignaciones' => $asignacionesData
             ]);
 
         } catch (\Exception $e) {
@@ -538,11 +564,37 @@ class UserController extends Controller
                 : [];
             $user->asignaciones()->sync($asignaciones);
 
+            // Recargar el usuario con todas sus relaciones para devolver los datos completos
+            $userWithRelations = DB::table('users')
+                ->join('perfiles', 'users.perfil', '=', 'perfiles.id')
+                ->join('congregaciones', 'users.congregacion', '=', 'congregaciones.id')
+                ->join('grupos', 'users.grupo', '=', 'grupos.id')
+                ->leftJoin('nombramiento', 'users.nombramiento', '=', 'nombramiento.id')
+                ->join('estado_espiritual', 'users.estado_espiritual', '=', 'estado_espiritual.id')
+                ->leftJoin('servicios', 'users.servicio', '=', 'servicios.id')
+                ->select(
+                    'users.id',
+                    'users.name',
+                    'users.estado',
+                    'perfiles.privilegio as privilegio_perfil',
+                    'congregaciones.nombre as nombre_congregacion',
+                    'grupos.nombre as nombre_grupo',
+                    'nombramiento.nombre as nombre_nombramiento',
+                    'servicios.nombre as nombre_servicio',
+                    'estado_espiritual.nombre as nombre_estado_espiritual'
+                )
+                ->where('users.id', $user->id)
+                ->first();
+
+            // Cargar asignaciones
+            $userModel = User::with('asignaciones')->find($user->id);
+            $asignacionesData = $userModel ? $userModel->asignaciones : collect();
+
             return response()->json([
                 'success' => true,
                 'message' => 'Usuario actualizado exitosamente.',
-                'user' => $user->load(['perfil', 'creador', 'modificador']),
-                'audit_info' => $user->getAuditInfo()
+                'user' => $userWithRelations,
+                'asignaciones' => $asignacionesData
             ]);
 
         } catch (\Exception $e) {
