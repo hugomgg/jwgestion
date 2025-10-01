@@ -238,9 +238,7 @@ $(document).ready(function() {
     // Filtro por estado
     let currentEstadoFilter = null;
 
-    $('#estadoFilter').on('change', function() {
-        const selectedEstado = $(this).val();
-
+    function applyEstadoFilter(selectedEstado) {
         // Limpiar filtro anterior si existe
         if (currentEstadoFilter !== null) {
             $.fn.dataTable.ext.search.splice($.fn.dataTable.ext.search.indexOf(currentEstadoFilter), 1);
@@ -267,7 +265,16 @@ $(document).ready(function() {
             $.fn.dataTable.ext.search.push(currentEstadoFilter);
             table.draw();
         }
+    }
+
+    $('#estadoFilter').on('change', function() {
+        const selectedEstado = $(this).val();
+        applyEstadoFilter(selectedEstado);
     });
+
+    // Aplicar filtro por defecto: mostrar solo usuarios habilitados
+    $('#estadoFilter').val('1');
+    applyEstadoFilter('1');
 
     // Manejar clic en botón Ver
     $(document).on('click', '.view-user', function() {

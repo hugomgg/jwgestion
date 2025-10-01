@@ -114,7 +114,7 @@
                                             <label for="estadoFilter" class="form-label">Estado:</label>
                                             <select class="form-select" id="estadoFilter">
                                                 <option value="">Todos</option>
-                                                <option value="1">Habilitado</option>
+                                                <option value="1" selected>Habilitado</option>
                                                 <option value="0">Deshabilitado</option>
                                             </select>
                                         </div>
