@@ -135,14 +135,14 @@
                                     <th>ID</th>
                                     <th>Nombre</th>
                                     <th>Perfil</th>
-                                    @if(!Auth::user()->isCoordinator() && !Auth::user()->isSubcoordinator() && !Auth::user()->isSecretary() && !Auth::user()->isSubsecretary() && !Auth::user()->isOrganizer() && !Auth::user()->isSuborganizer())
+                                    @if(Auth::user()->isAdmin() || Auth::user()->isSupervisor())
                                         <th>Congregación</th>
                                     @endif
                                     <th>Grupo</th>
                                     <th>Nombramiento</th>
                                     <th>Servicio</th>
                                     <th>Estado Espiritual</th>
-                                    @if(Auth::user()->isOrganizer() || Auth::user()->isSuborganizer() || Auth::user()->isCoordinator())
+                                    @if(Auth::user()->isOrganizer() || Auth::user()->isSuborganizer() || Auth::user()->isCoordinator() || Auth::user()->isSubcoordinator() || Auth::user()->isSecretary() || Auth::user()->isSubsecretary())
                                         <th>Asignación</th>
                                     @endif
                                     <th>Estado</th>
@@ -157,7 +157,7 @@
                                     <td>
                                         <span class="badge bg-info">{{ $user->privilegio_perfil }}</span>
                                     </td>
-                                    @if(!Auth::user()->isCoordinator() && !Auth::user()->isSubcoordinator() && !Auth::user()->isSecretary() && !Auth::user()->isSubsecretary() && !Auth::user()->isOrganizer() && !Auth::user()->isSuborganizer())
+                                    @if(Auth::user()->isAdmin() || Auth::user()->isSupervisor())
                                         <td>
                                             <span class="badge bg-secondary">{{ $user->nombre_congregacion }}</span>
                                         </td>
@@ -182,7 +182,7 @@
                                     <td>
                                         <span class="badge bg-light text-dark">{{ $user->nombre_estado_espiritual }}</span>
                                     </td>
-                                    @if(Auth::user()->isOrganizer() || Auth::user()->isSuborganizer() || Auth::user()->isCoordinator())
+                                    @if(Auth::user()->isOrganizer() || Auth::user()->isSuborganizer() || Auth::user()->isCoordinator() || Auth::user()->isSubcoordinator() || Auth::user()->isSecretary() || Auth::user()->isSubsecretary())
                                         <td>
                                             @if($user->asignaciones && $user->asignaciones->count() > 0)
                                                 @foreach($user->asignaciones as $asignacion)

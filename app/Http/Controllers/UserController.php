@@ -67,6 +67,10 @@ class UserController extends Controller
         if ($currentUser->isCoordinator() || $currentUser->isSubcoordinator() || $currentUser->isSecretary() || $currentUser->isSubsecretary() || $currentUser->isOrganizer() || $currentUser->isSuborganizer()) {
             $query->where('users.congregacion', $currentUser->congregacion);
         }
+        if($currentUser->isAdmin() || $currentUser->isSupervisor()){
+            // Administradores y supervisores ven todos los usuarios
+            $query->whereIn('users.perfil', [1, 2, 3]);
+        }
 
         $users = $query->get();
 
