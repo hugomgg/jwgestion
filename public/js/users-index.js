@@ -66,6 +66,54 @@ $(document).ready(function() {
         }
     });
 
+    // Función para filtrar grupos por congregación
+    function filterGruposByCongregacion(congregacionId, grupoSelectId) {
+        const $grupoSelect = $(grupoSelectId);
+        const currentValue = $grupoSelect.val();
+        
+        // Guardar todas las opciones si no están guardadas
+        if (!$grupoSelect.data('all-options')) {
+            $grupoSelect.data('all-options', $grupoSelect.find('option').clone());
+        }
+        
+        // Limpiar el select
+        $grupoSelect.empty();
+        
+        // Restaurar la opción vacía
+        $grupoSelect.append('<option value="">Seleccionar grupo...</option>');
+        
+        // Filtrar y agregar opciones según la congregación seleccionada
+        const allOptions = $grupoSelect.data('all-options');
+        allOptions.each(function() {
+            const $option = $(this);
+            const optionCongregacionId = $option.data('congregacion-id');
+            
+            // Si no es la opción vacía y coincide con la congregación, agregarla
+            if ($option.val() !== '' && (congregacionId === '' || optionCongregacionId == congregacionId)) {
+                $grupoSelect.append($option.clone());
+            }
+        });
+        
+        // Intentar mantener el valor seleccionado si sigue siendo válido
+        if (currentValue && $grupoSelect.find(`option[value="${currentValue}"]`).length > 0) {
+            $grupoSelect.val(currentValue);
+        } else {
+            $grupoSelect.val('');
+        }
+    }
+
+    // Listener para cambio de congregación en modal de agregar
+    $('#congregacion').on('change', function() {
+        const congregacionId = $(this).val();
+        filterGruposByCongregacion(congregacionId, '#grupo');
+    });
+
+    // Listener para cambio de congregación en modal de editar
+    $('#edit_congregacion').on('change', function() {
+        const congregacionId = $(this).val();
+        filterGruposByCongregacion(congregacionId, '#edit_grupo');
+    });
+
     // Inicializar DataTable
     var table = $('#usersTable').DataTable({
         responsive: true,

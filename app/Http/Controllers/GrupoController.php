@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Grupo;
+use App\Models\Congregacion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -19,9 +20,10 @@ class GrupoController extends Controller
             abort(403, 'No tienes permisos para acceder a esta sección.');
         }
 
-        $grupos = Grupo::orderBy('nombre')->get();
+        $grupos = Grupo::with('congregacion')->orderBy('nombre')->get();
+        $congregaciones = Congregacion::where('estado', 1)->orderBy('nombre')->get();
         
-        return view('grupos.index', compact('grupos'));
+        return view('grupos.index', compact('grupos', 'congregaciones'));
     }
 
     /**
@@ -48,11 +50,14 @@ class GrupoController extends Controller
 
         $validator = Validator::make($request->all(), [
             'nombre' => 'required|string|max:255|unique:grupos,nombre',
+            'congregacion_id' => 'required|integer|exists:congregaciones,id',
             'estado' => 'required|integer|in:0,1'
         ], [
             'nombre.required' => 'El nombre es obligatorio.',
             'nombre.unique' => 'Ya existe un grupo con este nombre.',
             'nombre.max' => 'El nombre no puede tener más de 255 caracteres.',
+            'congregacion_id.required' => 'La congregación es obligatoria.',
+            'congregacion_id.exists' => 'La congregación seleccionada no existe.',
             'estado.required' => 'El estado es obligatorio.',
             'estado.in' => 'El estado debe ser Activo o Inactivo.'
         ]);
@@ -67,6 +72,7 @@ class GrupoController extends Controller
         try {
             $grupo = Grupo::create([
                 'nombre' => $request->nombre,
+                'congregacion_id' => $request->congregacion_id,
                 'estado' => $request->estado,
                 'creador' => Auth::id(),
                 'modificador' => Auth::id()
@@ -100,7 +106,7 @@ class GrupoController extends Controller
         }
 
         try {
-            $grupo = Grupo::findOrFail($id);
+            $grupo = Grupo::with('congregacion')->findOrFail($id);
             
             return response()->json([
                 'success' => true,
@@ -139,11 +145,14 @@ class GrupoController extends Controller
 
         $validator = Validator::make($request->all(), [
             'nombre' => 'required|string|max:255|unique:grupos,nombre,' . $id,
+            'congregacion_id' => 'required|integer|exists:congregaciones,id',
             'estado' => 'required|integer|in:0,1'
         ], [
             'nombre.required' => 'El nombre es obligatorio.',
             'nombre.unique' => 'Ya existe un grupo con este nombre.',
             'nombre.max' => 'El nombre no puede tener más de 255 caracteres.',
+            'congregacion_id.required' => 'La congregación es obligatoria.',
+            'congregacion_id.exists' => 'La congregación seleccionada no existe.',
             'estado.required' => 'El estado es obligatorio.',
             'estado.in' => 'El estado debe ser Activo o Inactivo.'
         ]);
@@ -160,6 +169,7 @@ class GrupoController extends Controller
             
             $grupo->update([
                 'nombre' => $request->nombre,
+                'congregacion_id' => $request->congregacion_id,
                 'estado' => $request->estado,
                 'modificador' => Auth::id()
             ]);

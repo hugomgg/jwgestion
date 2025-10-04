@@ -333,7 +333,7 @@
                                         <select class="form-select" id="grupo" name="grupo" required>
                                             <option value="">Seleccionar grupo...</option>
                                             @foreach($grupos as $grupo)
-                                                <option value="{{ $grupo->id }}">{{ $grupo->nombre }}</option>
+                                                <option value="{{ $grupo->id }}" data-congregacion-id="{{ $grupo->congregacion_id }}">{{ $grupo->nombre }}</option>
                                             @endforeach
                                         </select>
                                         <div class="invalid-feedback"></div>
@@ -622,7 +622,7 @@
                                         <select class="form-select" id="edit_grupo" name="grupo" required>
                                             <option value="">Seleccionar grupo...</option>
                                             @foreach($grupos as $grupo)
-                                                <option value="{{ $grupo->id }}">{{ $grupo->nombre }}</option>
+                                                <option value="{{ $grupo->id }}" data-congregacion-id="{{ $grupo->congregacion_id }}">{{ $grupo->nombre }}</option>
                                             @endforeach
                                         </select>
                                         <div class="invalid-feedback"></div>
@@ -1071,10 +1071,8 @@ window.usersIndexConfig = {
     ],
     
     // Índice de columna de estado
-    @if(Auth::user()->isOrganizer() || Auth::user()->isSuborganizer())
-        estadoColumnIndex: 8, // Para organizadores/suborganizadores: Estado está en columna 8 (sin columna Congregación, con columna Asignación)
-    @elseif(Auth::user()->isCoordinator() || Auth::user()->isSubcoordinator() || Auth::user()->isSecretary() || Auth::user()->isSubsecretary())
-        estadoColumnIndex: 7, // Para coordinadores/subcoordinadores/secretarios/subsecretarios: Estado está en columna 7 (sin columna Congregación, sin columna Asignación)
+    @if(Auth::user()->isOrganizer() || Auth::user()->isSuborganizer() || Auth::user()->isCoordinator() || Auth::user()->isSubcoordinator() || Auth::user()->isSecretary() || Auth::user()->isSubsecretary())
+        estadoColumnIndex: 8, // Para organizadores/suborganizadores/coordinadores/subcoordinadores/secretarios/subsecretarios: Estado está en columna 8 (sin columna Congregación, con columna Asignación)
     @else
         estadoColumnIndex: 8, // Para otros usuarios: Estado está en columna 8 (con columna Congregación, sin columna Asignación)
     @endif
@@ -1086,7 +1084,7 @@ window.usersIndexConfig = {
     servicios: @json($servicios->map(function($s) { return ['id' => $s->id, 'nombre' => $s->nombre]; })),
     nombramientos: @json($nombramientos->map(function($n) { return ['id' => $n->id, 'nombre' => $n->nombre]; })),
     esperanzas: @json($esperanzas->map(function($e) { return ['id' => $e->id, 'nombre' => $e->nombre]; })),
-    grupos: @json($grupos->map(function($g) { return ['id' => $g->id, 'nombre' => $g->nombre]; })),
+    grupos: @json($grupos->map(function($g) { return ['id' => $g->id, 'nombre' => $g->nombre, 'congregacion_id' => $g->congregacion_id]; })),
     estadosEspirituales: @json($estadosEspirituales->map(function($e) { return ['id' => $e->id, 'nombre' => $e->nombre]; })),
     asignaciones: @json(isset($asignaciones) ? $asignaciones->map(function($a) { return ['id' => $a->id, 'nombre' => $a->nombre]; }) : [])
 };

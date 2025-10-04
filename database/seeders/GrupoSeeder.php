@@ -18,6 +18,7 @@ class GrupoSeeder extends Seeder
             ['id' => 1],
             [
                 'nombre' => 'Grupo General',
+                'congregacion_id' => 1,
                 'estado' => 1,
                 'creador_id' => 1,
                 'modificador_id' => 1
@@ -28,6 +29,7 @@ class GrupoSeeder extends Seeder
         Grupo::updateOrCreate(
             ['nombre' => 'Ancianos'],
             [
+                'congregacion_id' => 1,
                 'estado' => 1,
                 'creador_id' => 1,
                 'modificador_id' => 1
@@ -37,6 +39,7 @@ class GrupoSeeder extends Seeder
         Grupo::updateOrCreate(
             ['nombre' => 'Siervos Ministeriales'],
             [
+                'congregacion_id' => 1,
                 'estado' => 1,
                 'creador_id' => 1,
                 'modificador_id' => 1
@@ -46,6 +49,7 @@ class GrupoSeeder extends Seeder
         Grupo::updateOrCreate(
             ['nombre' => 'Precursores'],
             [
+                'congregacion_id' => 1,
                 'estado' => 1,
                 'creador_id' => 1,
                 'modificador_id' => 1
@@ -55,6 +59,7 @@ class GrupoSeeder extends Seeder
         Grupo::updateOrCreate(
             ['nombre' => 'Publicadores'],
             [
+                'congregacion_id' => 1,
                 'estado' => 1,
                 'creador_id' => 1,
                 'modificador_id' => 1

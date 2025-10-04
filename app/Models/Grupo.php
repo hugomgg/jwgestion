@@ -13,12 +13,14 @@ class Grupo extends Model
 
     protected $fillable = [
         'nombre',
+        'congregacion_id',
         'estado',
         'creador_id',
         'modificador_id'
     ];
 
     protected $casts = [
+        'congregacion_id' => 'integer',
         'estado' => 'integer',
         'creador' => 'integer',
         'modificador' => 'integer'
@@ -30,6 +32,14 @@ class Grupo extends Model
     public function usuarios()
     {
         return $this->hasMany(User::class, 'grupo');
+    }
+
+    /**
+     * Relación con la congregación a la que pertenece este grupo
+     */
+    public function congregacion()
+    {
+        return $this->belongsTo(Congregacion::class, 'congregacion_id');
     }
 
     /**

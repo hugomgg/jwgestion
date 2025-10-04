@@ -42,6 +42,7 @@
                                 <tr>
                                     <th>ID</th>
                                     <th>Nombre</th>
+                                    <th>Congregación</th>
                                     <th>Estado</th>
                                     <th>Usuarios Asignados</th>
                                     <th>Acciones</th>
@@ -52,6 +53,9 @@
                                 <tr data-grupo-id="{{ $grupo->id }}">
                                     <td>{{ $grupo->id }}</td>
                                     <td>{{ $grupo->nombre }}</td>
+                                    <td>
+                                        <span class="badge bg-primary">{{ $grupo->congregacion->nombre ?? 'Sin asignar' }}</span>
+                                    </td>
                                     <td>
                                         @if($grupo->estado == 1)
                                             <span class="badge bg-success">Activo</span>
@@ -117,6 +121,17 @@
                     </div>
                     
                     <div class="mb-3">
+                        <label for="congregacion_id" class="form-label">Congregación *</label>
+                        <select class="form-select" id="congregacion_id" name="congregacion_id" required>
+                            <option value="">Seleccionar congregación...</option>
+                            @foreach($congregaciones as $congregacion)
+                                <option value="{{ $congregacion->id }}">{{ $congregacion->nombre }}</option>
+                            @endforeach
+                        </select>
+                        <div class="invalid-feedback"></div>
+                    </div>
+                    
+                    <div class="mb-3">
                         <label for="estado" class="form-label">Estado *</label>
                         <select class="form-select" id="estado" name="estado" required>
                             <option value="">Seleccionar estado...</option>
@@ -156,6 +171,17 @@
                     <div class="mb-3">
                         <label for="edit_nombre" class="form-label">Nombre *</label>
                         <input type="text" class="form-control" id="edit_nombre" name="nombre" required>
+                        <div class="invalid-feedback"></div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="edit_congregacion_id" class="form-label">Congregación *</label>
+                        <select class="form-select" id="edit_congregacion_id" name="congregacion_id" required>
+                            <option value="">Seleccionar congregación...</option>
+                            @foreach($congregaciones as $congregacion)
+                                <option value="{{ $congregacion->id }}">{{ $congregacion->nombre }}</option>
+                            @endforeach
+                        </select>
                         <div class="invalid-feedback"></div>
                     </div>
                     
@@ -204,10 +230,16 @@
                 </div>
                 <div class="row">
                     <div class="col-md-6">
+                        <strong>Congregación:</strong>
+                        <p id="view_grupo_congregacion"></p>
+                    </div>
+                    <div class="col-md-6">
                         <strong>Estado:</strong>
                         <p id="view_grupo_estado"></p>
                     </div>
-                    <div class="col-md-6">
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
                         <strong>Usuarios Asignados:</strong>
                         <p id="view_grupo_usuarios"></p>
                     </div>
@@ -256,7 +288,7 @@ $(document).ready(function() {
                 if (settings.nTable !== table.table().node()) {
                     return true;
                 }
-                const estadoColumn = data[2]; // Columna 2 es el estado
+                const estadoColumn = data[3]; // Columna 3 es el estado (ahora que agregamos congregación)
                 return estadoColumn.indexOf(textoEstado) !== -1;
             };
             
@@ -358,6 +390,7 @@ $(document).ready(function() {
                     const grupo = response.grupo;
                     $('#view_grupo_id').text(grupo.id);
                     $('#view_grupo_nombre').text(grupo.nombre);
+                    $('#view_grupo_congregacion').text(grupo.congregacion ? grupo.congregacion.nombre : 'Sin asignar');
                     $('#view_grupo_estado').html(grupo.estado == 1 ? '<span class="badge bg-success">Activo</span>' : '<span class="badge bg-danger">Inactivo</span>');
                     $('#view_grupo_usuarios').text('Ver en la tabla principal');
                     $('#viewGrupoModal').modal('show');
@@ -381,6 +414,7 @@ $(document).ready(function() {
                     const grupo = response.grupo;
                     $('#edit_grupo_id').val(grupo.id);
                     $('#edit_nombre').val(grupo.nombre);
+                    $('#edit_congregacion_id').val(grupo.congregacion_id);
                     $('#edit_estado').val(grupo.estado);
                     $('#editGrupoModal').modal('show');
                 }

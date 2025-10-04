@@ -55,6 +55,14 @@ class Congregacion extends Model
     }
 
     /**
+     * Relación con los grupos que pertenecen a esta congregación
+     */
+    public function grupos()
+    {
+        return $this->hasMany(Grupo::class, 'congregacion_id');
+    }
+
+    /**
      * Scope para congregaciones activas
      */
     public function scopeActive($query)
