@@ -31,7 +31,7 @@ class Grupo extends Model
      */
     public function usuarios()
     {
-        return $this->hasMany(User::class, 'grupo');
+        return $this->hasMany(User::class, 'grupo')->where('estado', 1);
     }
 
     /**

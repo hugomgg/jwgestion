@@ -15,15 +15,48 @@ class GrupoController extends Controller
      */
     public function index()
     {
-        // Verificar que el usuario pueda acceder al menú de administración (perfil 1 y 2)
-        if (!Auth::user()->canAccessAdminMenu()) {
+        // Verificar que el usuario pueda acceder al menú de administración o al menú de gestión de personas
+        if (!Auth::user()->canAccessAdminMenu() && !Auth::user()->canAccessPeopleManagementMenu()) {
             abort(403, 'No tienes permisos para acceder a esta sección.');
         }
 
-        $grupos = Grupo::with('congregacion')->orderBy('nombre')->get();
-        $congregaciones = Congregacion::where('estado', 1)->orderBy('nombre')->get();
+        // Si es Admin o Supervisor, mostrar todas las congregaciones
+        // Si no, solo mostrar la congregación del usuario autenticado
+        if (Auth::user()->isAdmin() || Auth::user()->isSupervisor()) {
+            $congregaciones = Congregacion::where('estado', 1)->orderBy('nombre')->get();
+        } else {
+            $congregaciones = Congregacion::where('id', Auth::user()->congregacion)
+                                         ->where('estado', 1)
+                                         ->get();
+        }
         
-        return view('grupos.index', compact('grupos', 'congregaciones'));
+        return view('grupos.index', compact('congregaciones'));
+    }
+
+    /**
+     * Get data for DataTables via AJAX
+     */
+    public function getData()
+    {
+        // Verificar que el usuario pueda acceder
+        if (!Auth::user()->canAccessAdminMenu() && !Auth::user()->canAccessPeopleManagementMenu()) {
+            return response()->json(['error' => 'No autorizado'], 403);
+        }
+
+        $grupos = Grupo::with('congregacion')->orderBy('nombre')->get();
+
+        return response()->json([
+            'data' => $grupos->map(function($grupo) {
+                return [
+                    'id' => $grupo->id,
+                    'nombre' => $grupo->nombre,
+                    'congregacion' => $grupo->congregacion ? $grupo->congregacion->nombre : 'Sin asignar',
+                    'estado' => $grupo->estado,
+                    'usuarios_count' => $grupo->usuarios->count(),
+                    'can_modify' => Auth::user()->canModify()
+                ];
+            })
+        ]);
     }
 
     /**
@@ -40,8 +73,8 @@ class GrupoController extends Controller
      */
     public function store(Request $request)
     {
-        // Verificar que solo los administradores puedan crear
-        if (!Auth::user()->isAdmin()) {
+        // Verificar que el usuario pueda modificar (Admin, Coordinator, Secretary, Organizer)
+        if (!Auth::user()->isAdmin() && !Auth::user()->canModify()) {
             return response()->json([
                 'success' => false,
                 'message' => 'No tienes permisos para realizar esta acción.'
@@ -59,7 +92,7 @@ class GrupoController extends Controller
             'congregacion_id.required' => 'La congregación es obligatoria.',
             'congregacion_id.exists' => 'La congregación seleccionada no existe.',
             'estado.required' => 'El estado es obligatorio.',
-            'estado.in' => 'El estado debe ser Activo o Inactivo.'
+            'estado.in' => 'El estado debe ser Habilitado o Deshabilitado.'
         ]);
 
         if ($validator->fails()) {
@@ -98,7 +131,7 @@ class GrupoController extends Controller
     public function show(string $id)
     {
         // Verificar permisos
-        if (!Auth::user()->isAdmin()) {
+        if (!Auth::user()->isAdmin() && !Auth::user()->canAccessPeopleManagementMenu()) {
             return response()->json([
                 'success' => false,
                 'message' => 'No tienes permisos para realizar esta acción.'
@@ -107,7 +140,7 @@ class GrupoController extends Controller
 
         try {
             $grupo = Grupo::with('congregacion')->findOrFail($id);
-            
+            $grupo->usuarios_count = $grupo->usuarios()->count();
             return response()->json([
                 'success' => true,
                 'grupo' => $grupo
@@ -135,8 +168,8 @@ class GrupoController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        // Verificar que solo los administradores puedan editar
-        if (!Auth::user()->isAdmin()) {
+        // Verificar que el usuario pueda modificar (Admin, Coordinator, Secretary, Organizer)
+        if (!Auth::user()->isAdmin() && !Auth::user()->canModify()) {
             return response()->json([
                 'success' => false,
                 'message' => 'No tienes permisos para realizar esta acción.'
@@ -154,7 +187,7 @@ class GrupoController extends Controller
             'congregacion_id.required' => 'La congregación es obligatoria.',
             'congregacion_id.exists' => 'La congregación seleccionada no existe.',
             'estado.required' => 'El estado es obligatorio.',
-            'estado.in' => 'El estado debe ser Activo o Inactivo.'
+            'estado.in' => 'El estado debe ser Habilitado o Deshabilitado.'
         ]);
 
         if ($validator->fails()) {
@@ -193,8 +226,8 @@ class GrupoController extends Controller
      */
     public function destroy(string $id)
     {
-        // Verificar que solo los administradores puedan eliminar
-        if (!Auth::user()->isAdmin()) {
+        // Verificar que el usuario pueda modificar (Admin, Coordinator, Secretary, Organizer)
+        if (!Auth::user()->isAdmin() && !Auth::user()->canModify()) {
             return response()->json([
                 'success' => false,
                 'message' => 'No tienes permisos para realizar esta acción.'

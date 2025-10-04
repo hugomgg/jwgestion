@@ -198,6 +198,13 @@
                         <i class="fas fa-users"></i>Usuarios
                     </a>
                 </li>
+                @if(auth()->user()->isCoordinator() || auth()->user()->isSubcoordinator() || auth()->user()->isSecretary() || auth()->user()->isSubsecretary() || auth()->user()->isOrganizer() || auth()->user()->isSuborganizer())
+                <li>
+                    <a href="{{ route('grupos.index') }}" class="nav-link {{ request()->routeIs('grupos.*') ? 'active' : '' }}">
+                        <i class="fas fa-users-cog"></i>Grupos
+                    </a>
+                </li>
+                @endif
                 @if(auth()->user()->isCoordinator() || auth()->user()->isOrganizer() || auth()->user()->isSubsecretary() || auth()->user()->isSuborganizer())
                 <li>
                     <a href="{{ route('programas.index') }}" class="nav-link {{ request()->routeIs('programas.*') ? 'active' : '' }}">
@@ -217,6 +224,13 @@
                         <i class="fas fa-users"></i>Usuarios
                     </a>
                 </li>
+                @if(auth()->user()->isCoordinator() || auth()->user()->isSubcoordinator() || auth()->user()->isSecretary() || auth()->user()->isSubsecretary() || auth()->user()->isOrganizer() || auth()->user()->isSuborganizer())
+                <li>
+                    <a href="{{ route('grupos.index') }}" class="nav-link {{ request()->routeIs('grupos.*') ? 'active' : '' }}">
+                        <i class="fas fa-users-cog"></i>Grupos
+                    </a>
+                </li>
+                @endif
                 @if(auth()->user()->isCoordinator() || auth()->user()->isOrganizer() || auth()->user()->isSubsecretary() || auth()->user()->isSuborganizer())
                 <li>
                     <a href="{{ route('programas.index') }}" class="nav-link {{ request()->routeIs('programas.*') ? 'active' : '' }}">

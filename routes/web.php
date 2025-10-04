@@ -192,13 +192,6 @@ Route::middleware('auth')->group(function () {
         Route::put('/canciones/{cancion}', [App\Http\Controllers\CancionController::class, 'update'])->name('canciones.update');
         Route::delete('/canciones/{cancion}', [App\Http\Controllers\CancionController::class, 'destroy'])->name('canciones.destroy');
 
-        // Gesti?n de Grupos - Solo para administradores (perfil 1) - ESCRITURA
-        Route::get('/grupos', [App\Http\Controllers\GrupoController::class, 'index'])->name('grupos.index');
-        Route::post('/grupos', [App\Http\Controllers\GrupoController::class, 'store'])->name('grupos.store');
-        Route::get('/grupos/{id}', [App\Http\Controllers\GrupoController::class, 'show'])->name('grupos.show');
-        Route::put('/grupos/{id}', [App\Http\Controllers\GrupoController::class, 'update'])->name('grupos.update');
-        Route::delete('/grupos/{id}', [App\Http\Controllers\GrupoController::class, 'destroy'])->name('grupos.destroy');
-
         // Gesti?n de Estados Espirituales - Solo para administradores (perfil 1) - ESCRITURA
         Route::get('/estados-espirituales', [App\Http\Controllers\EstadoEspiritualController::class, 'index'])->name('estados-espirituales.index');
         Route::post('/estados-espirituales', [App\Http\Controllers\EstadoEspiritualController::class, 'store'])->name('estados-espirituales.store');
@@ -220,6 +213,19 @@ Route::middleware('auth')->group(function () {
         Route::delete('/partes-seccion/{id}', [App\Http\Controllers\ParteSeccionController::class, 'destroy'])->name('partes-seccion.destroy');
 
         Route::delete('/estados-espirituales/{id}', [App\Http\Controllers\EstadoEspiritualController::class, 'destroy'])->name('estados-espirituales.destroy');
+    });
+
+    // Gesti?n de Grupos - Para usuarios con acceso al menú de administración o gestión de personas
+    Route::middleware(['auth'])->group(function () {
+        // Lectura de grupos (Admin, Supervisor, Coordinator, Subcoordinator, Secretary, Subsecretary, Organizer, Suborganizer)
+        Route::get('/grupos', [App\Http\Controllers\GrupoController::class, 'index'])->name('grupos.index');
+        Route::get('/grupos/data', [App\Http\Controllers\GrupoController::class, 'getData'])->name('grupos.data');
+        Route::get('/grupos/{id}', [App\Http\Controllers\GrupoController::class, 'show'])->name('grupos.show');
+        
+        // Escritura de grupos (Admin, Coordinator, Secretary, Organizer)
+        Route::post('/grupos', [App\Http\Controllers\GrupoController::class, 'store'])->name('grupos.store');
+        Route::put('/grupos/{id}', [App\Http\Controllers\GrupoController::class, 'update'])->name('grupos.update');
+        Route::delete('/grupos/{id}', [App\Http\Controllers\GrupoController::class, 'destroy'])->name('grupos.destroy');
     });
 
 });

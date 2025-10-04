@@ -18,8 +18,8 @@
                                     <label for="estadoFilter" class="form-label me-2 mb-0">Estado:</label>
                                     <select class="form-select" id="estadoFilter" style="width: auto;">
                                         <option value="">Todos</option>
-                                        <option value="1">Activo</option>
-                                        <option value="0">Inactivo</option>
+                                        <option value="1">Habilitado</option>
+                                        <option value="0">Deshabilitado</option>
                                     </select>
                                 </div>
                                 @if(Auth::user()->canModify())
@@ -49,49 +49,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($grupos as $grupo)
-                                <tr data-grupo-id="{{ $grupo->id }}">
-                                    <td>{{ $grupo->id }}</td>
-                                    <td>{{ $grupo->nombre }}</td>
-                                    <td>
-                                        <span class="badge bg-primary">{{ $grupo->congregacion->nombre ?? 'Sin asignar' }}</span>
-                                    </td>
-                                    <td>
-                                        @if($grupo->estado == 1)
-                                            <span class="badge bg-success">Activo</span>
-                                        @else
-                                            <span class="badge bg-danger">Inactivo</span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        <span class="badge bg-info">{{ $grupo->usuarios->count() }}</span>
-                                    </td>
-                                    <td>
-                                        <div class="btn-group" role="group">
-                                            <button type="button" class="btn btn-sm btn-info view-grupo"
-                                                    data-grupo-id="{{ $grupo->id }}"
-                                                    data-bs-toggle="tooltip"
-                                                    title="Ver grupo">
-                                                <i class="fas fa-eye"></i>
-                                            </button>
-                                            @if(Auth::user()->canModify())
-                                            <button type="button" class="btn btn-sm btn-warning edit-grupo"
-                                                    data-grupo-id="{{ $grupo->id }}"
-                                                    data-bs-toggle="tooltip"
-                                                    title="Editar grupo">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                            <button type="button" class="btn btn-sm btn-danger delete-grupo"
-                                                    data-grupo-id="{{ $grupo->id }}"
-                                                    data-bs-toggle="tooltip"
-                                                    title="Eliminar grupo">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                            @endif
-                                        </div>
-                                    </td>
-                                </tr>
-                                @endforeach
+                                <!-- Los datos se cargarán dinámicamente vía AJAX -->
                             </tbody>
                         </table>
                     </div>
@@ -122,11 +80,19 @@
                     
                     <div class="mb-3">
                         <label for="congregacion_id" class="form-label">Congregación *</label>
-                        <select class="form-select" id="congregacion_id" name="congregacion_id" required>
-                            <option value="">Seleccionar congregación...</option>
-                            @foreach($congregaciones as $congregacion)
-                                <option value="{{ $congregacion->id }}">{{ $congregacion->nombre }}</option>
-                            @endforeach
+                        <select class="form-select" id="congregacion_id" name="congregacion_id" required {{ count($congregaciones) == 1 ? 'readonly' : '' }}>
+                            @if(count($congregaciones) == 0)
+                                <option value="">No hay congregaciones disponibles</option>
+                            @elseif(count($congregaciones) == 1)
+                                @foreach($congregaciones as $congregacion)
+                                    <option value="{{ $congregacion->id }}" selected>{{ $congregacion->nombre }}</option>
+                                @endforeach
+                            @else
+                                <option value="">Seleccionar congregación...</option>
+                                @foreach($congregaciones as $congregacion)
+                                    <option value="{{ $congregacion->id }}">{{ $congregacion->nombre }}</option>
+                                @endforeach
+                            @endif
                         </select>
                         <div class="invalid-feedback"></div>
                     </div>
@@ -135,8 +101,8 @@
                         <label for="estado" class="form-label">Estado *</label>
                         <select class="form-select" id="estado" name="estado" required>
                             <option value="">Seleccionar estado...</option>
-                            <option value="1">Activo</option>
-                            <option value="0">Inactivo</option>
+                            <option value="1">Habilitado</option>
+                            <option value="0">Deshabilitado</option>
                         </select>
                         <div class="invalid-feedback"></div>
                     </div>
@@ -176,11 +142,19 @@
                     
                     <div class="mb-3">
                         <label for="edit_congregacion_id" class="form-label">Congregación *</label>
-                        <select class="form-select" id="edit_congregacion_id" name="congregacion_id" required>
-                            <option value="">Seleccionar congregación...</option>
-                            @foreach($congregaciones as $congregacion)
-                                <option value="{{ $congregacion->id }}">{{ $congregacion->nombre }}</option>
-                            @endforeach
+                        <select class="form-select" id="edit_congregacion_id" name="congregacion_id" required {{ count($congregaciones) == 1 ? 'readonly' : '' }}>
+                            @if(count($congregaciones) == 0)
+                                <option value="">No hay congregaciones disponibles</option>
+                            @elseif(count($congregaciones) == 1)
+                                @foreach($congregaciones as $congregacion)
+                                    <option value="{{ $congregacion->id }}">{{ $congregacion->nombre }}</option>
+                                @endforeach
+                            @else
+                                <option value="">Seleccionar congregación...</option>
+                                @foreach($congregaciones as $congregacion)
+                                    <option value="{{ $congregacion->id }}">{{ $congregacion->nombre }}</option>
+                                @endforeach
+                            @endif
                         </select>
                         <div class="invalid-feedback"></div>
                     </div>
@@ -189,8 +163,8 @@
                         <label for="edit_estado" class="form-label">Estado *</label>
                         <select class="form-select" id="edit_estado" name="estado" required>
                             <option value="">Seleccionar estado...</option>
-                            <option value="1">Activo</option>
-                            <option value="0">Inactivo</option>
+                            <option value="1">Habilitado</option>
+                            <option value="0">Deshabilitado</option>
                         </select>
                         <div class="invalid-feedback"></div>
                     </div>
@@ -220,26 +194,20 @@
             <div class="modal-body">
                 <div class="row">
                     <div class="col-md-6">
-                        <strong>ID:</strong>
-                        <p id="view_grupo_id"></p>
-                    </div>
-                    <div class="col-md-6">
                         <strong>Nombre:</strong>
                         <p id="view_grupo_nombre"></p>
                     </div>
-                </div>
-                <div class="row">
                     <div class="col-md-6">
                         <strong>Congregación:</strong>
                         <p id="view_grupo_congregacion"></p>
                     </div>
+                </div>
+                <div class="row">
                     <div class="col-md-6">
                         <strong>Estado:</strong>
                         <p id="view_grupo_estado"></p>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12">
+                    <div class="col-md-6">
                         <strong>Usuarios Asignados:</strong>
                         <p id="view_grupo_usuarios"></p>
                     </div>
@@ -255,256 +223,30 @@
 
 @section('scripts')
 <script>
+// Configuración para grupos-index.js
+window.gruposIndexConfig = {
+    // Rutas
+    dataRoute: '{{ route("grupos.data") }}',
+    storeRoute: '{{ route("grupos.store") }}',
+    
+    // CSRF Token
+    csrfToken: '{{ csrf_token() }}',
+    
+    // Permisos
+    canModify: @json(Auth::user()->canModify()),
+    
+    // Congregaciones disponibles
+    congregacionesCount: {{ count($congregaciones) }}
+};
+</script>
+<script>
 $(document).ready(function() {
-    // Inicializar DataTable
-    var table = $('#gruposTable').DataTable({
-        responsive: true,
-        language: {
-            url: '/js/datatables-es-ES.json'
-        },
-        order: [[1, 'asc']] // Ordenar por nombre
-    });
-
-    // Filtro por estado
-    let currentEstadoFilter = null;
-
-    $('#estadoFilter').on('change', function() {
-        const selectedEstado = $(this).val();
-        
-        // Limpiar filtro anterior si existe
-        if (currentEstadoFilter !== null) {
-            $.fn.dataTable.ext.search.splice($.fn.dataTable.ext.search.indexOf(currentEstadoFilter), 1);
-        }
-        
-        if (selectedEstado === '') {
-            currentEstadoFilter = null;
-            table.draw();
-        } else {
-            // Mapear valores numéricos a textos para la búsqueda
-            const textoEstado = selectedEstado === '1' ? 'Activo' : 'Inactivo';
-            
-            // Crear nueva función de filtro
-            currentEstadoFilter = function(settings, data, dataIndex) {
-                if (settings.nTable !== table.table().node()) {
-                    return true;
-                }
-                const estadoColumn = data[3]; // Columna 3 es el estado (ahora que agregamos congregación)
-                return estadoColumn.indexOf(textoEstado) !== -1;
-            };
-            
-            // Agregar el nuevo filtro
-            $.fn.dataTable.ext.search.push(currentEstadoFilter);
-            table.draw();
-        }
-    });
-
-    // Inicializar tooltips
-    $('[data-bs-toggle="tooltip"]').tooltip();
-
-    // Función para mostrar alertas
-    function showAlert(type, message) {
-        const alertContainer = $('#alert-container');
-        const alert = `
-            <div class="alert alert-${type} alert-dismissible fade show" role="alert">
-                ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        `;
-        alertContainer.html(alert);
-        
-        if (type === 'success') {
-            setTimeout(() => {
-                $('.alert').alert('close');
-            }, 5000);
-        }
+    // Si solo hay una congregación, deshabilitar el select visualmente
+    if (window.gruposIndexConfig.congregacionesCount === 1) {
+        $('#congregacion_id').css('background-color', '#e9ecef').css('pointer-events', 'none');
+        $('#edit_congregacion_id').css('background-color', '#e9ecef').css('pointer-events', 'none');
     }
-
-    // Función para limpiar errores de validación
-    function clearValidationErrors() {
-        $('.form-control, .form-select').removeClass('is-invalid');
-        $('.invalid-feedback').text('');
-    }
-
-    // Función para mostrar errores de validación
-    function showValidationErrors(errors) {
-        clearValidationErrors();
-        $.each(errors, function(field, messages) {
-            const input = $(`[name="${field}"]`);
-            input.addClass('is-invalid');
-            input.siblings('.invalid-feedback').text(messages[0]);
-        });
-    }
-
-    // Manejar el envío del formulario de agregar
-    $('#addGrupoForm').on('submit', function(e) {
-        e.preventDefault();
-        
-        const form = $(this);
-        const submitBtn = $('#saveGrupoBtn');
-        const spinner = submitBtn.find('.spinner-border');
-        
-        submitBtn.prop('disabled', true);
-        spinner.removeClass('d-none');
-        clearValidationErrors();
-        
-        $.ajax({
-            url: '{{ route("grupos.store") }}',
-            method: 'POST',
-            data: form.serialize(),
-            success: function(response) {
-                if (response.success) {
-                    showAlert('success', response.message);
-                    $('#addGrupoModal').modal('hide');
-                    form[0].reset();
-                    setTimeout(() => {
-                        location.reload();
-                    }, 1500);
-                }
-            },
-            error: function(xhr) {
-                const response = xhr.responseJSON;
-                
-                if (xhr.status === 422 && response.errors) {
-                    showValidationErrors(response.errors);
-                } else {
-                    const message = response.message || 'Error al crear el grupo. Intente nuevamente.';
-                    showAlert('danger', message);
-                }
-            },
-            complete: function() {
-                submitBtn.prop('disabled', false);
-                spinner.addClass('d-none');
-            }
-        });
-    });
-
-    // Manejar clic en ver grupo
-    $('.view-grupo').on('click', function() {
-        const grupoId = $(this).data('grupo-id');
-        
-        $.ajax({
-            url: `/grupos/${grupoId}`,
-            method: 'GET',
-            success: function(response) {
-                if (response.success) {
-                    const grupo = response.grupo;
-                    $('#view_grupo_id').text(grupo.id);
-                    $('#view_grupo_nombre').text(grupo.nombre);
-                    $('#view_grupo_congregacion').text(grupo.congregacion ? grupo.congregacion.nombre : 'Sin asignar');
-                    $('#view_grupo_estado').html(grupo.estado == 1 ? '<span class="badge bg-success">Activo</span>' : '<span class="badge bg-danger">Inactivo</span>');
-                    $('#view_grupo_usuarios').text('Ver en la tabla principal');
-                    $('#viewGrupoModal').modal('show');
-                }
-            },
-            error: function() {
-                showAlert('danger', 'Error al cargar los datos del grupo.');
-            }
-        });
-    });
-
-    // Manejar clic en editar grupo
-    $('.edit-grupo').on('click', function() {
-        const grupoId = $(this).data('grupo-id');
-        
-        $.ajax({
-            url: `/grupos/${grupoId}`,
-            method: 'GET',
-            success: function(response) {
-                if (response.success) {
-                    const grupo = response.grupo;
-                    $('#edit_grupo_id').val(grupo.id);
-                    $('#edit_nombre').val(grupo.nombre);
-                    $('#edit_congregacion_id').val(grupo.congregacion_id);
-                    $('#edit_estado').val(grupo.estado);
-                    $('#editGrupoModal').modal('show');
-                }
-            },
-            error: function() {
-                showAlert('danger', 'Error al cargar los datos del grupo.');
-            }
-        });
-    });
-
-    // Manejar el envío del formulario de editar
-    $('#editGrupoForm').on('submit', function(e) {
-        e.preventDefault();
-        
-        const form = $(this);
-        const grupoId = $('#edit_grupo_id').val();
-        const submitBtn = $('#updateGrupoBtn');
-        const spinner = submitBtn.find('.spinner-border');
-        
-        submitBtn.prop('disabled', true);
-        spinner.removeClass('d-none');
-        clearValidationErrors();
-        
-        $.ajax({
-            url: `/grupos/${grupoId}`,
-            method: 'PUT',
-            data: form.serialize(),
-            success: function(response) {
-                if (response.success) {
-                    showAlert('success', response.message);
-                    $('#editGrupoModal').modal('hide');
-                    setTimeout(() => {
-                        location.reload();
-                    }, 1500);
-                }
-            },
-            error: function(xhr) {
-                const response = xhr.responseJSON;
-                
-                if (xhr.status === 422 && response.errors) {
-                    showValidationErrors(response.errors);
-                } else {
-                    const message = response.message || 'Error al actualizar el grupo. Intente nuevamente.';
-                    showAlert('danger', message);
-                }
-            },
-            complete: function() {
-                submitBtn.prop('disabled', false);
-                spinner.addClass('d-none');
-            }
-        });
-    });
-
-    // Manejar clic en eliminar grupo
-    $('.delete-grupo').on('click', function() {
-        const grupoId = $(this).data('grupo-id');
-        const grupoRow = $(this).closest('tr');
-        const grupoNombre = grupoRow.find('td:nth-child(2)').text();
-        
-        if (confirm(`¿Está seguro que desea eliminar el grupo "${grupoNombre}"?`)) {
-            $.ajax({
-                url: `/grupos/${grupoId}`,
-                method: 'DELETE',
-                data: {
-                    _token: '{{ csrf_token() }}'
-                },
-                success: function(response) {
-                    if (response.success) {
-                        showAlert('success', response.message);
-                        setTimeout(() => {
-                            location.reload();
-                        }, 1500);
-                    }
-                },
-                error: function(xhr) {
-                    const response = xhr.responseJSON;
-                    const message = response.message || 'Error al eliminar el grupo. Intente nuevamente.';
-                    showAlert('danger', message);
-                }
-            });
-        }
-    });
-
-    // Limpiar modales cuando se cierren
-    $('.modal').on('hidden.bs.modal', function() {
-        clearValidationErrors();
-        $(this).find('form')[0].reset();
-        $(this).find('.spinner-border').addClass('d-none');
-        $(this).find('button[type="submit"]').prop('disabled', false);
-    });
 });
 </script>
+<script src="{{ asset('js/grupos-index.js') }}"></script>
 @endsection
