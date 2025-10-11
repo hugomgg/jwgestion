@@ -914,8 +914,8 @@ class UserController extends Controller
                 $item->fecha_formateada = date('d/m/Y', strtotime($item->fecha));
 
                 // Aplicar str_pad con puntos para los nombres (25 caracteres)
-                $item->encargado_nombre_formateado = $item->encargado_nombre ? str_pad($item->encargado_nombre, 25, '.') : str_pad('', 25, '.');
-                $item->ayudante_nombre_formateado = $item->ayudante_nombre ? str_pad($item->ayudante_nombre, 25, '.') : str_pad('', 25, '.');
+                $item->encargado_nombre_formateado = mb_str_pad(substr($item->encargado_nombre, 0, 25), 25, '.', STR_PAD_RIGHT);
+                $item->ayudante_nombre_formateado = $item->ayudante_nombre;
 
                 return $item;
             });
