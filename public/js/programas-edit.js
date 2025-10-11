@@ -848,9 +848,9 @@ $(document).ready(function() {
         $('#btn-encargado-reemplazado-segunda').prop('disabled', true);
         $('#btn-ayudante-reemplazado-segunda').prop('disabled', true);
         if (parteId) {
-            btnBuscarEncargado.prop('disabled', false).attr('title', 'Buscar Encargado');
+            btnBuscarEncargado.prop('disabled', false).attr('title', 'Buscar Estudiante');
             // El botón "Buscar Ayudante" se mantiene deshabilitado hasta que se seleccione un encargado
-            btnBuscarAyudante.prop('disabled', true).attr('title', 'Seleccionar un encargado primero');
+            btnBuscarAyudante.prop('disabled', true).attr('title', 'Seleccionar un estudiante primero');
 
             // Cargar el tiempo en el campo correspondiente
             if (typeof tiempo !== 'undefined' && tiempo !== null && tiempo !== '') {
@@ -1199,14 +1199,14 @@ $(document).ready(function() {
         const parteSeleccionada = $('#parte_id_segunda_seccion').val();
 
         if (encargadoId && ayudanteId && encargadoId === ayudanteId) {
-            showAlert('modal-alert-container-segunda-seccion', 'warning', 'El Encargado y el Ayudante no pueden ser la misma persona.');
+            showAlert('modal-alert-container-segunda-seccion', 'warning', 'El Estudiante y el Ayudante no pueden ser la misma persona.');
             return;
         }
 
         // Validar que el encargado y el encargado reemplazado sean distintos
         const encargadoReemplazadoId = $('#encargado_reemplazado_id_segunda_seccion').val();
         if (encargadoId && encargadoReemplazadoId && encargadoId === encargadoReemplazadoId) {
-            showAlert('modal-alert-container-segunda-seccion', 'warning', 'El Encargado y el Encargado Reemplazado no pueden ser la misma persona.');
+            showAlert('modal-alert-container-segunda-seccion', 'warning', 'El Estudiante y el Estudiante Reemplazado no pueden ser la misma persona.');
             return;
         }
 
@@ -1222,9 +1222,8 @@ $(document).ready(function() {
             const selectedOption = $('#parte_id_segunda_seccion').find('option:selected');
             const tipo = selectedOption.data('tipo');
 
-
                 if (!encargadoId || encargadoId === '') {
-                    showAlert('modal-alert-container-segunda-seccion', 'warning', 'Para esta Asignación es obligatorio seleccionar un Encargado.');
+                    showAlert('modal-alert-container-segunda-seccion', 'warning', 'Para esta Asignación es obligatorio seleccionar un Estudiante.');
                     $('#encargado_display_segunda_seccion').addClass('is-invalid');
                     return;
                 }
@@ -1718,18 +1717,6 @@ $(document).ready(function() {
         });
     }
 
-    function verHistorialEncargadoSegundaSeccion() {
-        const encargadoId = $('#encargado_id_segunda_seccion').val();
-        if (!encargadoId) {
-            alert('No hay encargado seleccionado');
-            return;
-        }
-
-        // Aquí iría la lógica para mostrar el historial del encargado
-        // Similar a verHistorialEncargadoParte() pero para segunda sección
-        alert('Función verHistorialEncargadoSegundaSeccion() - Por implementar\nEncargado ID: ' + encargadoId);
-    }
-
     function buscarAyudanteSegundaSeccion() {
         const parteId = $('#parte_id_segunda_seccion').val();
         const encargadoId = $('#encargado_id_segunda_seccion').val();
@@ -1858,17 +1845,16 @@ $(document).ready(function() {
         const parteSeleccionada = $('#parte_id_segunda_seccion').val();
         const btnBuscarEncargado = $('#btn-buscar-encargado-segunda');
         const btnBuscarAyudante = $('#btn-buscar-ayudante-segunda');
-        const btnBuscarAyudante2 = $('#btn-buscar-ayudante2-segunda');
 
         // Botones del encargado
         if (encargadoId) {
             $('#btn-encargado-reemplazado-segunda').prop('disabled', false);
             btnBuscarEncargado.prop('disabled', false);
-            btnBuscarEncargado.attr('title', 'Buscar Encargado');
+            btnBuscarEncargado.attr('title', 'Buscar Estudiante');
         } else {
             $('#btn-encargado-reemplazado-segunda').prop('disabled', true);
             btnBuscarEncargado.prop('disabled', true);
-            btnBuscarEncargado.attr('title', 'Seleccionar encargado primero');
+            btnBuscarEncargado.attr('title', 'Seleccionar estudiante primero');
         }
         //console.log('encargado=', encargadoId, 'parte=', parteSeleccionada);
         // Botón "Buscar Ayudante" - aplicar la nueva lógica
@@ -1885,7 +1871,7 @@ $(document).ready(function() {
             }
         } else {
             btnBuscarAyudante.prop('disabled', true);
-            btnBuscarAyudante.attr('title', 'Seleccionar encargado y parte con tipo 2 o 3');
+            btnBuscarAyudante.attr('title', 'Seleccionar estudiante y parte con tipo 2 o 3');
         }
 
         // Botones del ayudante
@@ -3511,7 +3497,7 @@ $(document).ready(function() {
         const encargadoReemplazadoNombre = $('#encargado_reemplazado_display').val();
 
         if (!encargadoReemplazadoNombre) {
-            alert('No hay encargado reemplazado para eliminar');
+            alert('No hay estudiante reemplazado para eliminar');
             return;
         }
 
@@ -4310,13 +4296,13 @@ $(document).ready(function() {
         const encargadoReemplazadoNombre = $('#encargado_reemplazado_display_nv').val();
 
         if (!encargadoReemplazadoNombre) {
-            alert('No hay encargado reemplazado para eliminar');
+            alert('No hay estudiante reemplazado para eliminar');
             return;
         }
 
         // Eliminar directamente sin confirmación
         $('#encargado_reemplazado_id_nv').val('');
-        $('#encargado_reemplazado_display_nv').val('Sin encargado reemplazado...');
+        $('#encargado_reemplazado_display_nv').val('Sin estudiante reemplazado...');
 
         // Deshabilitar el botón de eliminar
         $('#btn-eliminar-reemplazado-nv').prop('disabled', true);

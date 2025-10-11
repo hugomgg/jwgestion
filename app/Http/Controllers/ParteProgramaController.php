@@ -578,7 +578,7 @@ class ParteProgramaController extends Controller
             $query = ParteSeccion::where('seccion_id', $parteId ?? 1);
 
             // Solo aplicar filtro de estado para usuarios que no son administradores
-            if ($user && $user->perfil != 1) {
+            if ($user && !$user->isAdmin()) {
                 $query->where('estado', 1);
             }
 
@@ -842,7 +842,7 @@ class ParteProgramaController extends Controller
             $user = Auth::user();
 
             // Verificar que el usuario autenticado tenga perfil=3 y 7 (coordinador)
-            if ($user->perfil != 3 && $user->perfil != 7) {
+            if (!$user->isCoordinator() && !$user->isOrganizer()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'No tiene permisos para acceder a esta información.'
@@ -943,7 +943,7 @@ class ParteProgramaController extends Controller
             $user = Auth::user();
 
             // Verificar que el usuario autenticado tenga perfil=3 y 7(coordinador)
-            if ($user->perfil != 3 && $user->perfil != 7) {
+            if (!$user->isCoordinator() && !$user->isOrganizer()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'No tiene permisos para acceder a esta información.'
@@ -1399,7 +1399,7 @@ class ParteProgramaController extends Controller
             $user = Auth::user();
 
             // Verificar que el usuario autenticado tenga perfil=3 y 7 (coordinador)
-            if ($user->perfil != 3 && $user->perfil != 7) {
+            if (!$user->isCoordinator() && !$user->isOrganizer()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'No tiene permisos para acceder a esta información.'
@@ -1544,7 +1544,7 @@ class ParteProgramaController extends Controller
             $user = Auth::user();
 
             // Verificar que el usuario autenticado tenga perfil=3 y 7(coordinador)
-            if ($user->perfil != 3 && $user->perfil != 7) {
+            if (!$user->isCoordinator() && !$user->isOrganizer()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'No tiene permisos para acceder a esta información.'
@@ -1595,7 +1595,7 @@ class ParteProgramaController extends Controller
             $user = Auth::user();
 
             // Verificar que el usuario autenticado tenga perfil=3 y 7(coordinador)
-            if ($user->perfil != 3 && $user->perfil != 7) {
+            if (!$user->isCoordinator() && !$user->isOrganizer()) {
                 return response()->json([
                     'success' => false,
                     'message' => '2No tiene permisos para acceder a esta información.'
@@ -1718,7 +1718,7 @@ class ParteProgramaController extends Controller
             $user = Auth::user();
 
             // Verificar que el usuario autenticado tenga perfil=3 (coordinador)
-            if ($user->perfil != 3 && $user->perfil != 7) {
+            if (!$user->isCoordinator() && !$user->isOrganizer()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'No tiene permisos para acceder a esta información.'
@@ -1733,7 +1733,8 @@ class ParteProgramaController extends Controller
                     u.name,
                     '__' as tipo,
                     au.asignacion_id AS as1,
-                    u.id
+                    u.id,
+                    u.sexo
                 FROM users u
                 INNER JOIN asignaciones_users au ON au.user_id = u.id
                 INNER JOIN partes_seccion ps ON ps.asignacion_id = au.asignacion_id
@@ -1748,45 +1749,55 @@ class ParteProgramaController extends Controller
             ", [$parteId,$user->congregacion]);
 
             // Segunda parte del UNION: usuarios con historial de participación
-            $usuariosConHistorial = DB::select("SELECT DISTINCT
-                u.id,
-                u.name,
-                ps.abreviacion as abreviacion_parte,
-                s.abreviacion as sala_abreviacion,
-                CASE WHEN latest_pp.encargado_id = u.id THEN 'ES' ELSE 'AY' END AS tipo,
-                latest_participation.fecha as fecha_raw
-                FROM users u
-                INNER JOIN (
-                    SELECT
-                        CASE
-                            WHEN pp.encargado_id IS NOT NULL THEN pp.encargado_id
+            $usuariosConHistorial = DB::select(
+                "WITH
+                    asignacion_parte as(
+                        SELECT ps.id AS parte_id,ps.asignacion_id
+                        FROM partes_seccion ps
+                        WHERE ps.id = ? 
+                    ),
+                    usuarios_asignacion_seleccionada AS (
+                        SELECT
+                            au.user_id,au.asignacion_id
+                        FROM
+                            asignaciones_users au
+                        INNER JOIN asignacion_parte ap ON au.asignacion_id = ap.asignacion_id 
+                    ),
+                    ultima_participacion AS (
+                        SELECT max(p.fecha) AS fecha,
+                                max(pp.encargado_id) AS encargado_id ,
+                                max(pp.ayudante_id) AS ayudante_id ,
+                                max(pp.parte_id) AS parte_id ,
+                                max(ps.abreviacion ) AS abreviacion,
+                                max(pp.sala_id) AS sala_id,
+                            CASE
+                                WHEN pp.encargado_id=uas.user_id THEN pp.encargado_id
+                                ELSE pp.ayudante_id
+                            END as user_id,
+                            max(uas.asignacion_id) AS asignacion_id  
+                        FROM programas p 
+                        INNER JOIN partes_programa pp ON p.id=pp.programa_id
+                        INNER JOIN usuarios_asignacion_seleccionada uas ON (uas.user_id=pp.encargado_id OR uas.user_id=pp.ayudante_id)
+                        INNER JOIN partes_seccion ps ON pp.parte_id= ps.id 
+                        WHERE ps.asignacion_id = uas.asignacion_id
+                        GROUP BY CASE
+                                WHEN pp.encargado_id=uas.user_id THEN pp.encargado_id
                             ELSE pp.ayudante_id
-                        END as user_id,
-                        MAX(p.fecha) as fecha,
-                        MAX(pp.parte_id) as parte_id,
-                        MAX(pp.sala_id) as sala_id,
-                        MAX(pp.encargado_id) as encargado_id,
-                        MAX(pp.ayudante_id) as ayudante_id
-                    FROM partes_programa pp
-                    INNER JOIN programas p ON p.id = pp.programa_id
-                    INNER JOIN partes_seccion ps2 ON pp.parte_id = ps2.id
-                    INNER JOIN (SELECT asignacion_id FROM partes_seccion WHERE id = ?) pa ON pa.asignacion_id = ps2.asignacion_id
-                    GROUP BY CASE
-                        WHEN pp.encargado_id IS NOT NULL THEN pp.encargado_id
-                        ELSE pp.ayudante_id
-                    END
-                ) latest_participation ON u.id = latest_participation.user_id
-                INNER JOIN partes_programa latest_pp ON (
-                    (latest_pp.encargado_id = u.id OR latest_pp.ayudante_id = u.id) AND
-                    latest_pp.parte_id = latest_participation.parte_id AND
-                    latest_pp.sala_id = latest_participation.sala_id
-                )
-                INNER JOIN programas lp ON lp.id = latest_pp.programa_id AND lp.fecha = latest_participation.fecha
-                INNER JOIN partes_seccion ps ON ps.id = latest_participation.parte_id
-                INNER JOIN salas s ON s.id = latest_participation.sala_id
-                WHERE u.congregacion = ?
-                    AND u.estado = 1
-                ORDER BY latest_participation.fecha ASC
+                        END
+                    )
+                    SELECT 
+                        us.id,
+                        us.name,
+                        up.abreviacion as abreviacion_parte,
+                        sa.abreviacion as sala_abreviacion,
+                        CASE WHEN up.encargado_id = us.id THEN 'ES' ELSE 'AY' END AS tipo,
+                        up.fecha as fecha_raw,
+                        us.sexo
+                    FROM ultima_participacion up
+                    INNER JOIN users us ON us.id=up.user_id
+                    INNER JOIN salas sa ON up.sala_id=sa.id
+                    WHERE us.estado=1 AND us.congregacion = ?
+                    ORDER BY up.fecha DESC
             ", [$parteId, $user->congregacion]);
 
             // Combinar ambos resultados
@@ -1810,7 +1821,7 @@ class ParteProgramaController extends Controller
                 return [
                     'id' => $usuario->id,
                     'name' => $usuario->name,
-                    'display_text' => $fechaDisplay. '|' . $salaAbreviacion . '|' . $usuario->abreviacion_parte . '|' . $usuario->tipo . '|' . $usuario->name,
+                    'display_text' => $fechaDisplay. '|' . $salaAbreviacion . '|' . $usuario->abreviacion_parte . '|' . $usuario->tipo . '|'.$usuario->sexo.'|' . $usuario->name,
                     'fecha' => $fechaDisplay,
                     'sala_abreviacion' => $salaAbreviacion,
                     'parte_abreviacion' => $usuario->abreviacion_parte,
@@ -1858,11 +1869,6 @@ class ParteProgramaController extends Controller
         try {
             $user = Auth::user();
 
-            // Debug logging
-            \Log::info('=== getUsuariosParticipantesPrograma DEBUG ===');
-            \Log::info('User ID: ' . $user->id);
-            \Log::info('Congregacion: ' . $user->congregacion);
-
             // Consulta con todas las relaciones especificadas
             $usuariosConParticipacion = DB::table('users as u')
                 ->join('asignaciones_users as au', 'u.id', '=', 'au.user_id')
@@ -1896,23 +1902,17 @@ class ParteProgramaController extends Controller
                 ->groupBy('u.id', 'u.name', 'u.sexo')
                 ->get();
 
-            \Log::info('Usuarios con participación encontrados: ' . $usuariosConParticipacion->count());
-
             // Obtener todos los usuarios activos de la misma congregación para comparar
             $todosUsuarios = User::where('estado', 1)
                 ->where('congregacion', $user->congregacion)
                 ->select('id', 'name', 'sexo')
                 ->get();
 
-            \Log::info('Total usuarios activos de la congregación: ' . $todosUsuarios->count());
-
             // Obtener IDs de usuarios que ya tienen participación
             $idsConParticipacion = $usuariosConParticipacion->pluck('id')->toArray();
 
             // Usuarios sin participación
             $usuariosSinParticipacion = $todosUsuarios->whereNotIn('id', $idsConParticipacion);
-
-            \Log::info('Usuarios sin participación: ' . $usuariosSinParticipacion->count());
 
             // Convertir usuarios con participación a array
             $usuariosConParticipacionArray = $usuariosConParticipacion->map(function ($usuario) {
@@ -1947,15 +1947,11 @@ class ParteProgramaController extends Controller
                 ['name', 'asc']            // Luego por nombre
             ])->values();
 
-            \Log::info('Total usuarios combinados: ' . $usuarios->count());
-
             return response()->json([
                 'success' => true,
                 'data' => $usuarios
             ]);
         } catch (\Exception $e) {
-            \Log::error('Error en getUsuariosParticipantesPrograma: ' . $e->getMessage());
-            \Log::error('Stack trace: ' . $e->getTraceAsString());
 
             return response()->json([
                 'success' => false,
@@ -1970,7 +1966,7 @@ class ParteProgramaController extends Controller
             $user = Auth::user();
 
             // Verificar que el usuario autenticado tenga perfil=3 (coordinador)
-            if ($user->perfil != 3 && $user->perfil != 7) {
+            if (!$user->isCoordinator() && !$user->isOrganizer()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'No tiene permisos para acceder a esta información.'
@@ -2071,12 +2067,13 @@ class ParteProgramaController extends Controller
                     $asignacionIdToShow = $asignacionId;
                 }
 
-                $displayText = $fechaTexto . '|' . $salaTexto . '|' . $parteTexto . '|' . $usuario->name;
+                $displayText = $fechaTexto . '|' . $salaTexto . '|' . $parteTexto . '|' . $tipoTexto . '|' . $usuario->name;
 
                 $usuarios->push((object)[
                     'id' => $usuario->id,
                     'name' => $usuario->name,
                     'sexo' => $usuario->sexo,
+                    'fecha' => $fechaTexto,
                     'display_text' => $displayText,
                     'ultima_fecha' => $ultimaParticipacion ? $ultimaParticipacion->fecha : null,
                     'partes_programa_id' => $parteProgramaIdToShow,
@@ -2084,26 +2081,26 @@ class ParteProgramaController extends Controller
                 ]);
             }
 
-            // Ordenar por fecha (Primera vez primero, luego más antiguos primero)
+            // Ordenar por fecha NO por texto (Primera vez primero, luego más recientes después)
             $usuariosOrdenados = $usuarios->sort(function($a, $b) {
-                $fechaA = substr($a->display_text, 0, 11); // Incluir "Primera vez"
-                $fechaB = substr($b->display_text, 0, 11);
-
-                // Si alguno es "Primera vez", debe ir primero
-                if ($fechaA === 'Primera vez' && $fechaB !== 'Primera vez') {
+                // "Primera vez" siempre va primero
+                if ($a->fecha === 'Primera vez' && $b->fecha !== 'Primera vez') {
                     return -1;
                 }
-                if ($fechaB === 'Primera vez' && $fechaA !== 'Primera vez') {
+                if ($b->fecha === 'Primera vez' && $a->fecha !== 'Primera vez') {
                     return 1;
                 }
-                if ($fechaA === 'Primera vez' && $fechaB === 'Primera vez') {
+                if ($a->fecha === 'Primera vez' && $b->fecha === 'Primera vez') {
                     return 0;
                 }
 
-                // Si ninguno es "Primera vez", ordenar por fecha
-                return strcmp($fechaA, $fechaB);
-            });
+                // Si ambos tienen fechas, comparar las fechas reales
+                $fechaA = \Carbon\Carbon::parse($a->ultima_fecha);
+                $fechaB = \Carbon\Carbon::parse($b->ultima_fecha);
 
+                return $fechaA <=> $fechaB; // Más recientes después
+            });
+            
             // Si es parte tipo 3 (ambos sexos), organizar por género
             if ($esParteAmbosSexos) {
                 // Separar por género

@@ -148,7 +148,7 @@
                                         </div>
                                     </div>
                                     <div class="card-body">
-                                        <!-- Tabla principal de Sala Principal -->
+                                        <!-- Tabla principal de Escuela por Sala-->
                                         <div class="mb-4">
                                             <div class="table-responsive">
                                                 <table id="partesSegundaSeccionTable" class="table table-striped table-hover">
@@ -158,7 +158,7 @@
                                                             <th style="width: 8%">Sala</th>
                                                             <th style="width: 9%">Tiempo (min)</th>
                                                             <th style="width: 9%">Parte</th>
-                                                            <th style="width: 25%">Encargado</th>
+                                                            <th style="width: 25%">Estudiante</th>
                                                             <th style="width: 25%">Ayudante</th>
                                                             <th style="width: 7%">Lección</th>
                                                             <th style="width: 11%;">Acciones</th>
@@ -361,7 +361,7 @@
                                 <label for="encargado_reemplazado_display" class="form-label">Encargado Reemplazado</label>
                                 <div class="input-group">
                                     <input type="text" class="form-control" id="encargado_reemplazado_display" name="encargado_reemplazado_display"
-                                           placeholder="Sin encargado reemplazado..." disabled>
+                                           placeholder="Sin Encargado reemplazado..." disabled>
                                     <button type="button" class="btn btn-outline-danger" id="btn-eliminar-reemplazado"
                                             title="Eliminar Encargado Reemplazado" onclick="eliminarEncargadoReemplazado()" disabled>
                                         <i class="fas fa-user-times"></i>
@@ -383,7 +383,7 @@
         </div>
     </div>
 </div>
-<!-- Modal para Crear/Editar Parte de la Segunda Sección -->
+<!-- Modal para Crear/Editar Parte Seamos Mejores Maestros -->
 <div class="modal fade" id="parteProgramaSegundaSeccionModal" tabindex="-1" aria-labelledby="parteProgramaSegundaSeccionModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -427,17 +427,17 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="encargado_display_segunda_seccion" class="form-label">Encargado <span class="text-danger">*</span></label>
+                                <label for="encargado_display_segunda_seccion" class="form-label">Estudiante <span class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <input type="text" class="form-control" id="encargado_display_segunda_seccion" name="encargado_display" placeholder="Seleccionar una parte primero..." disabled>
-                                    <button type="button" class="btn btn-outline-primary" id="btn-buscar-encargado-segunda" onclick="buscarEncargadoSegundaSeccion()" title="Buscar Encargado">
+                                    <button type="button" class="btn btn-outline-primary" id="btn-buscar-encargado-segunda" onclick="buscarEncargadoSegundaSeccion()" title="Buscar Estudiante" disabled>
                                         <i class="fas fa-search"></i>
                                     </button>
 
-                                    <button type="button" class="btn btn-outline-success" id="btn-agregar-encargado-reemplazado-segunda" onclick="agregarEncargadoReemplazado()" title="Agregar Encargado como Reemplazado" disabled style="display: none;">
+                                    <button type="button" class="btn btn-outline-success" id="btn-agregar-encargado-reemplazado-segunda" onclick="agregarEncargadoReemplazado()" title="Agregar Estudiante como Reemplazado" disabled style="display: none;">
                                         <i class="fas fa-user-plus"></i>
                                     </button>
-                                    <button type="button" class="btn btn-outline-success" id="btn-encargado-reemplazado-segunda" onclick="manejarEncargadoReemplazado()" title="Encargado reemplazado" disabled>
+                                    <button type="button" class="btn btn-outline-success" id="btn-encargado-reemplazado-segunda" onclick="manejarEncargadoReemplazado()" title="Estudiante reemplazado" disabled>
                                         <i class="fas fa-user-plus"></i>
                                     </button>
                                 </div>
@@ -471,11 +471,11 @@
                     <div class="row" id="campos-reemplazados-segunda-seccion" style="display: none;">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="encargado_reemplazado_segunda_seccion" class="form-label">Encargado Reemplazado</label>
+                                <label for="encargado_reemplazado_segunda_seccion" class="form-label">Estudiante Reemplazado</label>
                                 <div class="input-group">
                                     <input type="text" class="form-control" id="encargado_reemplazado_segunda_seccion" readonly>
                                     <input type="hidden" id="encargado_reemplazado_id_segunda_seccion" name="encargado_reemplazado_id">
-                                    <button type="button" class="btn btn-outline-danger" onclick="clearEncargadoReemplazado()" title="Eliminar encargado reemplazado">
+                                    <button type="button" class="btn btn-outline-danger" onclick="clearEncargadoReemplazado()" title="Eliminar estudiante reemplazado">
                                         <i class="fas fa-user-times"></i>
                                     </button>
                                 </div>
@@ -565,7 +565,7 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="encargado_id_tercera_seccion" class="form-label">Encargado <span class="text-danger">*</span></label>
+                                <label for="encargado_id_tercera_seccion" class="form-label">Estudiante <span class="text-danger">*</span></label>
                                 <div class="d-flex">
                                     <button type="button" class="btn btn-outline-primary me-2" id="btn-agregar-encargado-reemplazado-tercera" onclick="agregarEncargadoReemplazadoTercera()" title="Agregar como encargado reemplazado" style="display: none;">
                                         <i class="fas fa-user-plus"></i>
@@ -1034,25 +1034,25 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="buscarEncargadoSegundaSeccionModalLabel">
-                    <i class="fas fa-search me-2"></i>Buscar Encargado (Sala Principal)
+                    <i class="fas fa-search me-2"></i>Buscar Estudiante (Sala Principal)
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="mb-3">
-                    <label for="select_encargado_segunda_seccion" class="form-label">Seleccionar Encargado</label>
+                    <label for="select_encargado_segunda_seccion" class="form-label">Seleccionar Estudiante</label>
                     <select class="form-select" id="select_encargado_segunda_seccion" style="width: 100%;">
-                        <option value="">Cargando usuarios...</option>
+                        <option value="">Cargando estudiantes...</option>
                     </select>
-                    <small class="form-text text-muted">Usuarios que han participado como encargado o ayudante en partes_programa, ordenados por fecha más reciente.</small>
+                    <small class="form-text text-muted">Estudiantes o ayudante que han participado en partes_programa, ordenados por fecha más reciente.</small>
                 </div>
 
                 <div class="mb-3">
-                    <label for="select_historial_encargado_segunda_seccion" class="form-label">Historial del Encargado</label>
+                    <label for="select_historial_encargado_segunda_seccion" class="form-label">Historial del Estudiante</label>
                     <select class="form-select" id="select_historial_encargado_segunda_seccion" style="width: 100%;" disabled>
-                        <option value="">Seleccionar un encargado primero...</option>
+                        <option value="">Seleccionar un estudiante primero...</option>
                     </select>
-                    <small class="form-text text-muted">Historial de participaciones del encargado seleccionado en la segunda sección, ordenadas desde la más reciente.</small>
+                    <small class="form-text text-muted">Historial de participaciones del estudiante seleccionado en la segunda sección, ordenadas desde la más reciente.</small>
                 </div>
             </div>
             <br><br><br><br><br><br>
@@ -1080,9 +1080,9 @@
                 <div class="mb-3">
                     <label for="select_ayudante_segunda_seccion" class="form-label">Seleccionar Ayudante</label>
                     <select class="form-select" id="select_ayudante_segunda_seccion" style="width: 100%;">
-                        <option value="">Cargando usuarios...</option>
+                        <option value="">Cargando ayudantes...</option>
                     </select>
-                    <small class="form-text text-muted">Usuarios que han participado como ayudante en partes_programa, ordenados por fecha más reciente.</small>
+                    <small class="form-text text-muted">Ayudantes que han participado en partes_programa, ordenados por fecha más reciente.</small>
                 </div>
 
                 <div class="mb-3">
@@ -1133,12 +1133,12 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="confirmarAgregarReemplazadoModalLabel">
-                    <i class="fas fa-user-plus me-2"></i>Confirmar Agregar Encargado Reemplazado
+                    <i class="fas fa-user-plus me-2"></i>Confirmar Agregar Estudiante Reemplazado
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p>¿Desea agregar a <strong id="nombreEncargadoAgregar"></strong> como Encargado Reemplazado?</p>
+                <p>¿Desea agregar a <strong id="nombreEncargadoAgregar"></strong> como Estudiante Reemplazado?</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -1156,12 +1156,12 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="confirmarEliminarReemplazadoModalLabel">
-                    <i class="fas fa-user-times me-2"></i>Confirmar Eliminar Encargado Reemplazado
+                    <i class="fas fa-user-times me-2"></i>Confirmar Eliminar Estudiante Reemplazado
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p>¿Desea eliminar a <strong id="nombreEncargadoEliminar"></strong> como Encargado Reemplazado?</p>
+                <p>¿Desea eliminar a <strong id="nombreEncargadoEliminar"></strong> como Estudiante Reemplazado?</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
