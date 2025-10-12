@@ -1039,6 +1039,24 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
+                <div class="mb-3" id="filtro_sexo_encargado_segunda_container">
+                    <label class="form-label">Filtrar por Sexo</label>
+                    <div class="d-flex gap-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="filtro_sexo_encargado_segunda" id="filtro_hombres_encargado_segunda" value="1">
+                            <label class="form-check-label" for="filtro_hombres_encargado_segunda">
+                                <i class="fas fa-male me-1"></i>Hombres
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="filtro_sexo_encargado_segunda" id="filtro_mujeres_encargado_segunda" value="2" checked>
+                            <label class="form-check-label" for="filtro_mujeres_encargado_segunda">
+                                <i class="fas fa-female me-1"></i>Mujeres
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
                 <div class="mb-3">
                     <label for="select_encargado_segunda_seccion" class="form-label">Seleccionar Estudiante</label>
                     <select class="form-select" id="select_encargado_segunda_seccion" style="width: 100%;">
@@ -1077,6 +1095,24 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
+                <div class="mb-3" id="filtro_sexo_ayudante_segunda_container" style="display: none;">
+                    <label class="form-label">Filtrar por Sexo</label>
+                    <div class="d-flex gap-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="filtro_sexo_ayudante_segunda" id="filtro_hombres_ayudante_segunda" value="1">
+                            <label class="form-check-label" for="filtro_hombres_ayudante_segunda">
+                                <i class="fas fa-male me-1"></i>Hombres
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="filtro_sexo_ayudante_segunda" id="filtro_mujeres_ayudante_segunda" value="2">
+                            <label class="form-check-label" for="filtro_mujeres_ayudante_segunda">
+                                <i class="fas fa-female me-1"></i>Mujeres
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="mb-3">
                     <label for="select_ayudante_segunda_seccion" class="form-label">Seleccionar Ayudante</label>
                     <select class="form-select" id="select_ayudante_segunda_seccion" style="width: 100%;">

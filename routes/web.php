@@ -127,6 +127,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/canciones-disponibles', [App\Http\Controllers\ProgramaController::class, 'getCancionesDisponibles'])->name('canciones-disponibles.get');
         Route::get('/usuarios/{usuarioId}/historial-participaciones', [App\Http\Controllers\ParteProgramaController::class, 'getHistorialParticipaciones'])->name('usuarios.historial-participaciones');
         Route::get('/verificar-sexos-usuarios', [App\Http\Controllers\ParteProgramaController::class, 'verificarSexosUsuarios'])->name('verificar-sexos-usuarios.get');
+        Route::get('/verificar-sexo-encargado', [App\Http\Controllers\ParteProgramaController::class, 'verificarSexoEncargado'])->name('verificar-sexo-encargado.get');
         Route::get('/ayudantes-por-parte/{parteId}', [App\Http\Controllers\ParteProgramaController::class, 'getAyudantesByParte'])->name('ayudantes-por-parte.get');
         Route::get('/encargados-por-parte-programa/{parteId}', [App\Http\Controllers\ParteProgramaController::class, 'getEncargadosByPartePrograma'])->name('encargados-por-parte-programa.get');
         Route::get('/encargados-por-parte-programa-smm/{parteId}', [App\Http\Controllers\ParteProgramaController::class, 'getEncargadosByParteProgramaSmm'])->name('encargados-por-parte-programa-smm.get');

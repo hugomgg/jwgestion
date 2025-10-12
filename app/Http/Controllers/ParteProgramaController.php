@@ -1585,6 +1585,50 @@ class ParteProgramaController extends Controller
         }
     }
 
+    public function verificarSexoEncargado(Request $request)
+    {
+        try {
+            $user = Auth::user();
+
+            // Verificar que el usuario autenticado tenga perfil=3 y 7(coordinador)
+            if (!$user->isCoordinator() && !$user->isOrganizer()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No tiene permisos para acceder a esta información.'
+                ], 403);
+            }
+
+            $encargadoId = $request->get('encargado_id');
+
+            if (!$encargadoId) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Se requiere el ID del encargado.'
+                ], 400);
+            }
+
+            // Obtener el sexo de ambos usuarios
+            $encargado = User::select('sexo')->where('id', $encargadoId)->first();
+
+            if (!$encargado) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'El encargado no fue encontrado.'
+                ], 404);
+            }
+
+            return response()->json([
+                'success' => true,
+                'encargado_sexo' => $encargado->sexo
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al verificar el sexo del encargado: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
     /**
      * Obtener encargados basados en el parte_id implementando SQL con UNION
      * Para perfil=3 coordinador con filtro de congregación y parte dinámica
@@ -1725,6 +1769,18 @@ class ParteProgramaController extends Controller
                 ], 403);
             }
 
+            // Obtener el filtro de sexo si se proporciona
+            $sexoFiltro = $request->input('sexo');
+
+            // Construir la condición WHERE para el filtro de sexo
+            $condicionSexo = '';
+            $parametros = [$parteId, $user->congregacion];
+            
+            if ($sexoFiltro) {
+                $condicionSexo = ' AND u.sexo = ?';
+                $parametros[] = $sexoFiltro;
+            }
+
             // Primera parte del UNION: usuarios que nunca han participado
             $usuariosPrimeraVez = DB::select("SELECT
                     'Primera vez' as fecha,
@@ -1746,9 +1802,19 @@ class ParteProgramaController extends Controller
                     AND ps.id= ?
                     AND u.congregacion = ?
                     AND u.estado = 1
-            ", [$parteId,$user->congregacion]);
+                    $condicionSexo
+            ", $parametros);
 
             // Segunda parte del UNION: usuarios con historial de participación
+            // Preparar parámetros para la segunda consulta
+            $parametrosHistorial = [$parteId, $user->congregacion];
+            $condicionSexoHistorial = '';
+            
+            if ($sexoFiltro) {
+                $condicionSexoHistorial = ' AND us.sexo = ?';
+                $parametrosHistorial[] = $sexoFiltro;
+            }
+
             $usuariosConHistorial = DB::select(
                 "WITH
                     asignacion_parte as(
@@ -1797,8 +1863,9 @@ class ParteProgramaController extends Controller
                     INNER JOIN users us ON us.id=up.user_id
                     INNER JOIN salas sa ON up.sala_id=sa.id
                     WHERE us.estado=1 AND us.congregacion = ?
+                    $condicionSexoHistorial
                     ORDER BY up.fecha DESC
-            ", [$parteId, $user->congregacion]);
+            ", $parametrosHistorial);
 
             // Combinar ambos resultados
             $usuarios = array_merge($usuariosPrimeraVez, $usuariosConHistorial);
@@ -1975,6 +2042,7 @@ class ParteProgramaController extends Controller
 
             $editingId = request()->get('editing_id');
             $encargadoId = request()->get('encargado_id');
+            $sexoFiltro = request()->get('sexo'); // Nuevo parámetro para filtrar por sexo
 
             // Obtener información de la parte para verificar el tipo y obtener asignacion_id
             $parteSeccion = DB::table('partes_seccion')->where('id', $parteId)->first();
@@ -2006,8 +2074,13 @@ class ParteProgramaController extends Controller
 
             // Aplicar filtros de sexo según las reglas
             if ($esParteAmbosSexos) {
-                // Para parte tipo=3: cargar todos los usuarios que pueden participar
-                $usuariosQuery->whereIn('u.sexo', [1, 2]); // Ambos sexos
+                // Para parte tipo=3: Si se proporciona filtro de sexo, aplicarlo
+                if ($sexoFiltro) {
+                    $usuariosQuery->where('u.sexo', $sexoFiltro);
+                } else {
+                    // Sin filtro: cargar todos los usuarios que pueden participar
+                    $usuariosQuery->whereIn('u.sexo', [1, 2]); // Ambos sexos
+                }
             } else {
                 // Para otras partes: solo usuarios del mismo sexo que el encargado
                 $usuariosQuery->where('u.sexo', $encargadoSexo);
@@ -2100,7 +2173,7 @@ class ParteProgramaController extends Controller
 
                 return $fechaA <=> $fechaB; // Más recientes después
             });
-            
+            /*
             // Si es parte tipo 3 (ambos sexos), organizar por género
             if ($esParteAmbosSexos) {
                 // Separar por género
@@ -2178,7 +2251,7 @@ class ParteProgramaController extends Controller
                     'has_gender_sections' => true
                 ]);
             }
-
+            */
             return response()->json([
                 'success' => true,
                 'data' => $usuariosOrdenados->values()->all(),

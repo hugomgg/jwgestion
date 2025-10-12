@@ -1639,8 +1639,29 @@ $(document).ready(function() {
             return;
         }
 
+        // Obtener el tipo de la parte seleccionada
+        const selectedOption = $('#parte_id_segunda_seccion').find('option:selected');
+        const tipoParte = selectedOption.data('tipo');
+
         // Abrir modal y cargar usuarios con participaciones en la parte seleccionada
         $('#buscarEncargadoSegundaSeccionModal').modal('show');
+
+        // Mostrar/ocultar filtros de sexo según el tipo de parte
+        const contenedorFiltroSexo = $('#filtro_sexo_encargado_segunda_container');
+        if (tipoParte == 1) {
+            // Tipo 1: Solo mostrar "Hombres" y forzar filtro a hombres
+            contenedorFiltroSexo.show();
+            $('input[name="filtro_sexo_encargado_segunda"][value="2"]').closest('.form-check').hide(); // Ocultar Mujeres
+            $('input[name="filtro_sexo_encargado_segunda"][value="1"]').closest('.form-check').show(); // Mostrar Hombres
+            $('input[name="filtro_sexo_encargado_segunda"][value="1"]').prop('checked', true); // Forzar selección Hombres
+            $('input[name="filtro_sexo_encargado_segunda"]').prop('disabled', true); // Deshabilitar cambio
+        } else {
+            // Otros tipos: Mostrar ambos filtros
+            contenedorFiltroSexo.show();
+            $('input[name="filtro_sexo_encargado_segunda"][value="1"]').closest('.form-check').show(); // Mostrar Hombres
+            $('input[name="filtro_sexo_encargado_segunda"][value="2"]').closest('.form-check').show(); // Mostrar Mujeres
+            $('input[name="filtro_sexo_encargado_segunda"]').prop('disabled', false); // Habilitar cambio
+        }
 
         // Al abrir el modal, deshabilitar el botón Seleccionar
         $('#confirmarEncargadoSegundaSeccion').prop('disabled', true);
@@ -1658,10 +1679,97 @@ $(document).ready(function() {
             }
         });
 
-        // Cargar usuarios que han participado como encargados en esta parte
+        // Función para cargar encargados filtrados por sexo
+        function cargarEncargadosSegundaSeccionPorSexo() {
+            const sexoSeleccionado = $('input[name="filtro_sexo_encargado_segunda"]:checked').val();
+            
+            $.ajax({
+                url: `/encargados-por-parte-programa-smm/${parteId}`,
+                method: 'GET',
+                data: { sexo: sexoSeleccionado },
+                success: function(response) {
+                    if (response.success) {
+                        const select = $('#select_encargado_segunda_seccion');
+                        
+                        // Guardar el valor actual antes de limpiar
+                        const valorActual = select.val();
+                        
+                        select.empty();
+                        select.append('<option value="">Seleccionar encargado...</option>');
+
+                        // Agregar opciones con el formato: fecha|abreviacion|nombre
+                        response.data.forEach(function(usuario) {
+                            select.append(`<option value="${usuario.id}">${usuario.display_text}</option>`);
+                        });
+
+                        // Intentar mantener la selección anterior si el usuario sigue en la lista
+                        if (valorActual && select.find(`option[value="${valorActual}"]`).length > 0) {
+                            select.val(valorActual).trigger('change');
+                        } else {
+                            select.val('').trigger('change');
+                        }
+                    } else {
+                        alert('Error al cargar los usuarios: ' + response.message);
+                    }
+                },
+                error: function(xhr) {
+                    alert('Error al cargar los usuarios participantes');
+                    console.error(xhr);
+                }
+            });
+        }
+
+        // Listener para cambios en los radio buttons de filtro por sexo
+        $(document).off('change.filtro_sexo_encargado_segunda').on('change.filtro_sexo_encargado_segunda', 'input[name="filtro_sexo_encargado_segunda"]', function() {
+            cargarEncargadosSegundaSeccionPorSexo();
+        });
+
+        // Determinar el sexo por defecto basado en el tipo de parte y el encargado actual
+        let sexoPorDefecto = 2; // Por defecto: Mujeres
+        
+        // Si el tipo de parte es 1, forzar sexo a Hombres (1)
+        if (tipoParte == 1) {
+            sexoPorDefecto = 1;
+        } else {
+            // Para otros tipos, determinar por el encargado actual
+            const encargadoActualId = $('#encargado_id_segunda_seccion').val();
+            const encargadoActualNombre = $('#encargado_nombre_segunda_seccion').val();
+            
+            // Si hay un encargado seleccionado, intentar obtener su sexo
+            if (encargadoActualId) {
+                $.ajax({
+                    url: `/encargados-por-parte-programa-smm/${parteId}`,
+                    method: 'GET',
+                    data: {}, // Sin filtro para obtener todos
+                    async: false, // Hacer síncrono para obtener el sexo antes de continuar
+                    success: function(response) {
+                        if (response.success) {
+                            // Buscar el usuario actual en la respuesta
+                            const usuarioActual = response.data.find(u => u.id == encargadoActualId);
+                            if (usuarioActual && usuarioActual.display_text) {
+                                // Extraer el sexo del display_text (formato: fecha|sala|parte|tipo|sexo|name)
+                                const partes = usuarioActual.display_text.split('|');
+                                if (partes.length >= 5) {
+                                    const sexo = partes[4]; // Posición 4 (índice 4) es el sexo
+                                    if (sexo === '1' || sexo === '2') {
+                                        sexoPorDefecto = parseInt(sexo);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+        // Seleccionar el radio button correspondiente (solo si está visible)
+        const radioButton = $(`input[name="filtro_sexo_encargado_segunda"][value="${sexoPorDefecto}"]`);
+        radioButton.prop('checked', true);
+
+        // Cargar usuarios con el filtro determinado
         $.ajax({
             url: `/encargados-por-parte-programa-smm/${parteId}`,
             method: 'GET',
+            data: { sexo: sexoPorDefecto },
             success: function(response) {
                 if (response.success) {
                     const select = $('#select_encargado_segunda_seccion');
@@ -1720,6 +1828,7 @@ $(document).ready(function() {
     function buscarAyudanteSegundaSeccion() {
         const parteId = $('#parte_id_segunda_seccion').val();
         const encargadoId = $('#encargado_id_segunda_seccion').val();
+        const ayudanteId = $('#ayudante_id_segunda_seccion').val();
         const selectedOption = $('#parte_id_segunda_seccion').find('option:selected');
         const tipo = selectedOption.data('tipo');
 
@@ -1737,6 +1846,59 @@ $(document).ready(function() {
         // Abrir modal y cargar usuarios con participaciones como ayudante
         $('#buscarAyudanteSegundaSeccionModal').modal('show');
 
+        // Determinar si mostrar filtros de sexo (solo para tipo=3)
+        const contenedorFiltroSexo = $('#filtro_sexo_ayudante_segunda_container');
+        let sexoForzado = null;
+        if (tipo == 3) {
+            // Tipo 3: Mostrar filtros según el sexo del encargado
+            contenedorFiltroSexo.show();
+            // Obtener el sexo del encargado
+            if (ayudanteId) {
+                // Hacer petición para obtener el sexo del encargado
+                $.ajax({
+                    url: `/verificar-sexos-usuarios`,
+                    method: 'GET',
+                    data: { encargado_id: encargadoId, ayudante_id: ayudanteId },
+                    async: false,
+                    success: function(response) {
+                        if (response.success && response.ayudante_sexo) {
+                            sexoForzado = response.ayudante_sexo;
+                        }
+                    }
+                });
+            }else{
+                // Hacer petición para obtener el sexo del ayudante
+                $.ajax({
+                    url: `/verificar-sexo-encargado`,
+                    method: 'GET',
+                    data: { encargado_id: encargadoId },
+                    async: false,
+                    success: function(response) {
+                        if (response.success && response.encargado) {
+                            sexoForzado = response.encargado.sexo;
+                        }
+                    }
+                });
+            }
+
+            if (sexoForzado == 1) {
+                // Encargado es hombre: Solo mostrar "Hombres"
+                $('input[name="filtro_sexo_ayudante_segunda"][value="1"]').prop('checked', true);
+                //$('input[name="filtro_sexo_ayudante_segunda"]').prop('disabled', true);
+            } else if (sexoForzado == 2) {
+                // Encargado es mujer: Solo mostrar "Mujeres"
+                $('input[name="filtro_sexo_ayudante_segunda"][value="2"]').prop('checked', true);
+                //$('input[name="filtro_sexo_ayudante_segunda"]').prop('disabled', true);
+            } else {
+                // No hay encargado: Mostrar ambos pero forzar Mujeres por defecto
+                $('input[name="filtro_sexo_ayudante_segunda"][value="2"]').prop('checked', true);
+                sexoForzado = 2; // Forzar Mujeres si no hay encargado
+            }
+        } else {
+            // Otros tipos: Ocultar filtros
+            contenedorFiltroSexo.hide();
+        }
+
         // Al abrir el modal, deshabilitar el botón Seleccionar
         $('#confirmarAyudanteSegundaSeccion').prop('disabled', true);
 
@@ -1753,15 +1915,30 @@ $(document).ready(function() {
             }
         });
 
-        // Cargar usuarios que han participado como ayudantes (endpoint unificado) y ordenar secciones según encargado si aplica
+        // Listener para cambios en los radio buttons de filtro por sexo (solo si tipo=3)
+        if (tipo == 3) {
+            $(document).off('change.filtro_sexo_ayudante_segunda').on('change.filtro_sexo_ayudante_segunda', 'input[name="filtro_sexo_ayudante_segunda"]', function() {
+                cargarAyudantesSegundaSeccionPorSexo(parteId, encargadoId,tipo);
+            });
+        }
+
+        // Cargar usuarios que han participado como ayudantes
         let url = `/ayudantes-por-parte-programa/${parteId}`;
+        let params = {};
+        
         if (encargadoId) {
-            url += `?encargado_id=${encargadoId}`;
+            params.encargado_id = encargadoId;
+        }
+        
+        // Si es tipo 3, agregar el filtro de sexo forzado
+        if (tipo == 3 && sexoForzado) {
+            params.sexo = sexoForzado;
         }
 
         $.ajax({
             url: url,
             method: 'GET',
+            data: params,
             success: function(response) {
                 if (response.success) {
                     const select = $('#select_ayudante_segunda_seccion');
@@ -1815,6 +1992,70 @@ $(document).ready(function() {
                     const ayudanteActual = $('#ayudante_id_segunda_seccion').val();
                     if (ayudanteActual) {
                         select.val(ayudanteActual).trigger('change');
+                    }
+                } else {
+                    alert('Error al cargar los usuarios: ' + response.message);
+                }
+            },
+            error: function(xhr) {
+                alert('Error al cargar los usuarios ayudantes');
+                console.error(xhr);
+            }
+        });
+    }
+
+     // Función para cargar ayudantes filtrados por sexo
+    function cargarAyudantesSegundaSeccionPorSexo(parteId,encargadoId,tipo) {
+        const sexoSeleccionado = $('input[name="filtro_sexo_ayudante_segunda"]:checked').val();
+        
+        let url = `/ayudantes-por-parte-programa/${parteId}`;
+        let params = {};
+        
+        if (encargadoId) {
+            params.encargado_id = encargadoId;
+        }
+        
+        // Si es tipo 3 y hay sexo seleccionado, agregarlo
+        if (tipo == 3 && sexoSeleccionado) {
+            params.sexo = sexoSeleccionado;
+        }
+        
+        $.ajax({
+            url: url,
+            method: 'GET',
+            data: params,
+            success: function(response) {
+                if (response.success) {
+                    const select = $('#select_ayudante_segunda_seccion');
+                    
+                    // Guardar el valor actual antes de limpiar
+                    const valorActual = select.val();
+                    
+                    select.empty();
+                    select.append('<option value="">Seleccionar ayudante...</option>');
+
+                    // Verificar si hay secciones de género
+                    if (response.has_gender_sections) {
+                        // Agregar opciones con secciones de género
+                        response.data.forEach(function(usuario) {
+                            if (usuario.is_section) {
+                                select.append(`<option disabled style="font-weight: bold;">${usuario.display_text}</option>`);
+                            } else {
+                                select.append(`<option value="${usuario.id}">${usuario.display_text}</option>`);
+                            }
+                        });
+                    } else {
+                        // Sin secciones de género, agregar normalmente
+                        response.data.forEach(function(usuario) {
+                            select.append(`<option value="${usuario.id}">${usuario.display_text}</option>`);
+                        });
+                    }
+
+                    // Intentar mantener la selección anterior si el usuario sigue en la lista
+                    if (valorActual && select.find(`option[value="${valorActual}"]`).length > 0) {
+                        select.val(valorActual).trigger('change');
+                    } else {
+                        select.val('').trigger('change');
                     }
                 } else {
                     alert('Error al cargar los usuarios: ' + response.message);
@@ -3630,18 +3871,31 @@ $(document).ready(function() {
                                 $('#btn-ayudante-reemplazado-segunda').prop('disabled', true);
                                 clearHistorialAyudanteSegundaSeccion();
                                 showAlert('modal-alert-container-segunda-seccion', 'info', 'El ayudante ha sido removido porque tiene un sexo diferente al encargado.');
+                                
+                                // Limpiar filtros de sexo antes de cerrar
+                                limpiarFiltroSexoEncargadoSegunda();
+                                
                                 // Cerrar modal inmediatamente después de mostrar el mensaje
                                 $('#buscarEncargadoSegundaSeccionModal').modal('hide');
                             } else {
+                                // Limpiar filtros de sexo antes de cerrar
+                                limpiarFiltroSexoEncargadoSegunda();
+                                
                                 // Cerrar modal inmediatamente si no hay cambios
                                 $('#buscarEncargadoSegundaSeccionModal').modal('hide');
                             }
                         } else {
+                            // Limpiar filtros de sexo antes de cerrar
+                            limpiarFiltroSexoEncargadoSegunda();
+                            
                             // Cerrar modal incluso si hay error en la respuesta
                             $('#buscarEncargadoSegundaSeccionModal').modal('hide');
                         }
                     },
                     error: function(xhr) {
+                        // Limpiar filtros de sexo antes de cerrar
+                        limpiarFiltroSexoEncargadoSegunda();
+                        
                         // Cerrar modal incluso si hay error en la petición
                         $('#buscarEncargadoSegundaSeccionModal').modal('hide');
                     }
@@ -3655,8 +3909,26 @@ $(document).ready(function() {
 
         // Si no hay verificación de sexos, actualizar campos y cerrar modal normalmente
         updateButtonStatesSegundaSeccion();
+        
+        // Limpiar filtros de sexo antes de cerrar el modal
+        limpiarFiltroSexoEncargadoSegunda();
+        
         $('#buscarEncargadoSegundaSeccionModal').modal('hide');
     });
+
+    // Función para limpiar/resetear el filtro de sexo
+    function limpiarFiltroSexoEncargadoSegunda() {
+        // Resetear radio buttons al estado por defecto (Mujeres seleccionado)
+        $('input[name="filtro_sexo_encargado_segunda"]').prop('checked', false);
+        $('#filtro_mujeres_encargado_segunda').prop('checked', true);
+        
+        // Habilitar ambos radio buttons
+        $('input[name="filtro_sexo_encargado_segunda"]').prop('disabled', false);
+        
+        // Mostrar ambos radio buttons
+        $('input[name="filtro_sexo_encargado_segunda"][value="1"]').closest('.form-check').show();
+        $('input[name="filtro_sexo_encargado_segunda"][value="2"]').closest('.form-check').show();
+    }
 
     // Limpiar Select2 cuando se cierre el modal de buscar encargado segunda sección
     $('#buscarEncargadoSegundaSeccionModal').on('hidden.bs.modal', function() {
@@ -3808,6 +4080,22 @@ $(document).ready(function() {
     }
 
     // Evento para confirmar la selección del ayudante de segunda sección
+    // Función para limpiar/resetear el filtro de sexo de ayudante
+    function limpiarFiltroSexoAyudanteSegunda() {
+        // Resetear radio buttons
+        $('input[name="filtro_sexo_ayudante_segunda"]').prop('checked', false);
+        
+        // Habilitar ambos radio buttons
+        $('input[name="filtro_sexo_ayudante_segunda"]').prop('disabled', false);
+        
+        // Mostrar ambos radio buttons
+        $('input[name="filtro_sexo_ayudante_segunda"][value="1"]').closest('.form-check').show();
+        $('input[name="filtro_sexo_ayudante_segunda"][value="2"]').closest('.form-check').show();
+        
+        // Ocultar el contenedor de filtros
+        $('#filtro_sexo_ayudante_segunda_container').hide();
+    }
+
     $('#confirmarAyudanteSegundaSeccion').on('click', function() {
         const ayudanteSeleccionado = $('#select_ayudante_segunda_seccion').val();
         const textoSeleccionado = $('#select_ayudante_segunda_seccion option:selected').text();
@@ -3823,7 +4111,7 @@ $(document).ready(function() {
             const partes = textoSeleccionado.split('|');
             if (partes.length >= 4) {
                 // El nombre está en la cuarta parte (índice 3)
-                nombreAyudante = partes[3].trim();
+                nombreAyudante = partes[4].trim();
             }
         }
 
@@ -3833,6 +4121,9 @@ $(document).ready(function() {
 
         // Actualizar el estado de los botones
         updateButtonStatesSegundaSeccion();
+
+        // Limpiar filtros de sexo antes de cerrar
+        limpiarFiltroSexoAyudanteSegunda();
 
         // Cerrar modal
         $('#buscarAyudanteSegundaSeccionModal').modal('hide');
