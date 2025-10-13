@@ -1874,8 +1874,8 @@ $(document).ready(function() {
                     data: { encargado_id: encargadoId },
                     async: false,
                     success: function(response) {
-                        if (response.success && response.encargado) {
-                            sexoForzado = response.encargado.sexo;
+                        if (response.success && response.encargado_sexo) {
+                            sexoForzado = response.encargado_sexo;
                         }
                     }
                 });
