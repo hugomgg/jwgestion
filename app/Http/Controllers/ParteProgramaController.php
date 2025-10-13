@@ -612,7 +612,7 @@ class ParteProgramaController extends Controller
     /**
      * Obtener usuarios filtrados por asignación de parte y congregación del usuario autenticado
      */
-    public function getUsersByParteAndCongregacion($parteId)
+    public function getUsersByParteAndCongregacionELIMINAR($parteId)
     {
         try {
             $user = Auth::user();
@@ -1393,7 +1393,7 @@ class ParteProgramaController extends Controller
     /**
      * Obtener ayudantes basados solo en la parte de la sección seleccionada
      */
-    public function getAyudantesByParte($parteId, Request $request)
+    public function getAyudantesByParteELIMINAR($parteId, Request $request)
     {
         try {
             $user = Auth::user();
@@ -1888,7 +1888,7 @@ class ParteProgramaController extends Controller
                 return [
                     'id' => $usuario->id,
                     'name' => $usuario->name,
-                    'display_text' => $fechaDisplay. '|' . $salaAbreviacion . '|' . $usuario->abreviacion_parte . '|' . $usuario->tipo . '|'.$usuario->sexo.'|' . $usuario->name,
+                    'display_text' => $fechaDisplay. '|' . $salaAbreviacion . '|' . $usuario->abreviacion_parte . '|' . $usuario->tipo .'|' . $usuario->name,
                     'fecha' => $fechaDisplay,
                     'sala_abreviacion' => $salaAbreviacion,
                     'parte_abreviacion' => $usuario->abreviacion_parte,
@@ -1931,7 +1931,7 @@ class ParteProgramaController extends Controller
      * Obtener usuarios que han participado en partes_programa como encargado o ayudante
      * con las condiciones específicas requeridas
      */
-    public function getUsuariosParticipantesPrograma()
+    public function getUsuariosParticipantesProgramaELIMINAR()
     {
         try {
             $user = Auth::user();
@@ -2027,7 +2027,12 @@ class ParteProgramaController extends Controller
         }
     }
 
-    public function getAyudantesByPartePrograma($parteId)
+    /**
+     * Obtener ayudantes basados en el parte_id implementando SQL con UNION
+     * Para perfil=3 coordinador con filtro de congregación y parte dinámica
+     * Incluye filtro opcional por sexo y considera el sexo del encargado seleccionado
+     */
+    public function getAyudantesByParteProgramaSmm($parteId)
     {
         try {
             $user = Auth::user();
@@ -2054,137 +2059,169 @@ class ParteProgramaController extends Controller
             }
 
             $esParteAmbosSexos = ($parteSeccion->tipo == 3);
-            $asignacionId = $parteSeccion->asignacion_id;
+            $parametros = [$parteId, $user->congregacion];
 
-            // Obtener usuarios únicos de la misma congregación que pueden ser ayudantes
-            // Usar la misma lógica que getAyudantesByEncargadoAndParte para mantener consistencia
-            $usuariosQuery = DB::table('users as u')
-                ->join('asignaciones_users as au', 'u.id', '=', 'au.user_id')
-                ->join('asignaciones as a', 'au.asignacion_id', '=', 'a.id')
-                ->join('partes_seccion as ps', 'a.id', '=', 'ps.asignacion_id')
-                ->where('u.congregacion', $user->congregacion)
-                ->where('u.estado', 1)
-                ->where('au.asignacion_id', $asignacionId)
-                ->whereNotIn('u.id', [$encargadoId]); // Excluir el encargado actual
             // Obtener el sexo del encargado seleccionado para determinar el orden
             $encargadoSexo = null;
             if ($encargadoId) {
                 $encargadoSexo = DB::table('users')->where('id', $encargadoId)->value('sexo');
             }
+            // Construir la condición WHERE para el filtro de sexo
+            $condicionSexo = '';
+            if ($sexoFiltro || $encargadoSexo) {
+                $condicionSexo = ' AND u.sexo = ?';
+                $parametros[] = $sexoFiltro??$encargadoSexo;
+            }
+            
+            // Primera parte del UNION: usuarios que nunca han participado
+            $usuariosPrimeraVez = DB::select("SELECT
+                    'Primera vez' as fecha,
+                    '__' as abreviacion_parte,
+                    '__' as sala_abreviacion,
+                    u.name,
+                    '__' as tipo,
+                    au.asignacion_id AS as1,
+                    u.id,
+                    u.sexo
+                FROM users u
+                INNER JOIN asignaciones_users au ON au.user_id = u.id
+                INNER JOIN partes_seccion ps ON ps.asignacion_id = au.asignacion_id
+                LEFT JOIN (SELECT pp.encargado_id,pp.ayudante_id,pp.parte_id,ps.asignacion_id
+                            FROM partes_programa pp
+                            INNER JOIN partes_seccion ps ON ps.id=pp.parte_id
+                            ) spp ON (spp.encargado_id = u.id or spp.ayudante_id = u.id) AND spp.asignacion_id = ps.asignacion_id
+                WHERE (spp.encargado_id IS NULL and spp.ayudante_id IS NULL )
+                    AND ps.id= ?
+                    AND u.congregacion = ?
+                    AND u.estado = 1
+                    $condicionSexo
+            ", $parametros);
 
-            // Aplicar filtros de sexo según las reglas
-            if ($esParteAmbosSexos) {
-                // Para parte tipo=3: Si se proporciona filtro de sexo, aplicarlo
-                if ($sexoFiltro) {
-                    $usuariosQuery->where('u.sexo', $sexoFiltro);
-                } else {
-                    // Sin filtro: cargar todos los usuarios que pueden participar
-                    $usuariosQuery->whereIn('u.sexo', [1, 2]); // Ambos sexos
-                }
-            } else {
-                // Para otras partes: solo usuarios del mismo sexo que el encargado
-                $usuariosQuery->where('u.sexo', $encargadoSexo);
+            // Segunda parte del UNION: usuarios con historial de participación
+            // Preparar parámetros para la segunda consulta
+            $parametrosHistorial = [$parteId, $user->congregacion];
+            // Excluir la parte que se está editando si corresponde
+            $condicionEditing = '';
+            if ($editingId) {
+                $condicionEditing = ' AND pp.id != ?';
+                $parametrosHistorial[] = $editingId;
+            }
+            
+            // Construir la condición WHERE para el filtro de sexo
+            $condicionSexoHistorial = '';
+            if ($sexoFiltro || $encargadoSexo) {
+                $condicionSexoHistorial = ' AND us.sexo = ?';
+                $parametrosHistorial[] = $sexoFiltro??$encargadoSexo;
             }
 
-            $usuariosBase = $usuariosQuery->select('u.id', 'u.name', 'u.sexo')
-                ->distinct()
-                ->get();
-
-            // Para cada usuario, obtener su última participación
-            $usuarios = collect();
-            foreach ($usuariosBase as $usuario) {
-                $query = DB::table('partes_programa as pp')
-                    ->join('programas as prog', 'pp.programa_id', '=', 'prog.id')
-                    ->join('partes_seccion as ps', 'pp.parte_id', '=', 'ps.id')
-                    ->join('salas as s', 'pp.sala_id', '=', 's.id')
-                    ->where(function($query) use ($usuario) {
-                        $query->where('pp.encargado_id', $usuario->id)
-                              ->orWhere('pp.ayudante_id', $usuario->id);
-                    })
-                    ->where('ps.asignacion_id', $asignacionId); // Solo segunda sección
-
-                // Excluir la parte que se está editando si corresponde
-                if ($editingId) {
-                    $query->where('pp.id', '!=', $editingId);
-                }
-
-                $ultimaParticipacion = $query->select(
-                        'prog.fecha',
-                        'ps.abreviacion',
-                        's.abreviacion as sala_abreviacion',
-                        'ps.asignacion_id',
-                        'pp.id as partes_programa_id',
-                        DB::raw('CASE
-                            WHEN pp.encargado_id = ' . $usuario->id . ' THEN "ES"
-                            WHEN pp.ayudante_id = ' . $usuario->id . ' THEN "AY"
-                            ELSE "AY"
-                        END as tipo_participacion')
+            $usuariosConHistorial = DB::select(
+                "WITH
+                    asignacion_parte as(
+                        SELECT ps.id AS parte_id,ps.asignacion_id
+                        FROM partes_seccion ps
+                        WHERE ps.id = ? 
+                    ),
+                    usuarios_asignacion_seleccionada AS (
+                        SELECT
+                            au.user_id,au.asignacion_id
+                        FROM
+                            asignaciones_users au
+                        INNER JOIN asignacion_parte ap ON au.asignacion_id = ap.asignacion_id 
+                    ),
+                    ultima_participacion AS (
+                        SELECT max(p.fecha) AS fecha,
+                                max(pp.encargado_id) AS encargado_id ,
+                                max(pp.ayudante_id) AS ayudante_id ,
+                                max(pp.parte_id) AS parte_id ,
+                                max(ps.abreviacion ) AS abreviacion,
+                                max(pp.sala_id) AS sala_id,
+                            CASE
+                                WHEN pp.encargado_id=uas.user_id THEN pp.encargado_id
+                                ELSE pp.ayudante_id
+                            END as user_id,
+                            max(uas.asignacion_id) AS asignacion_id  
+                        FROM programas p 
+                        INNER JOIN partes_programa pp ON p.id=pp.programa_id
+                        INNER JOIN usuarios_asignacion_seleccionada uas ON (uas.user_id=pp.encargado_id OR uas.user_id=pp.ayudante_id)
+                        INNER JOIN partes_seccion ps ON pp.parte_id= ps.id 
+                        WHERE ps.asignacion_id = uas.asignacion_id
+                        GROUP BY CASE
+                                WHEN pp.encargado_id=uas.user_id THEN pp.encargado_id
+                            ELSE pp.ayudante_id
+                        END
                     )
-                    ->orderBy('prog.fecha', 'desc')
-                    ->first();
+                    SELECT 
+                        us.id,
+                        us.name,
+                        up.abreviacion as abreviacion_parte,
+                        sa.abreviacion as sala_abreviacion,
+                        CASE WHEN up.encargado_id = us.id THEN 'ES' ELSE 'AY' END AS tipo,
+                        up.fecha as fecha_raw,
+                        us.sexo
+                    FROM ultima_participacion up
+                    INNER JOIN users us ON us.id=up.user_id
+                    INNER JOIN salas sa ON up.sala_id=sa.id
+                    WHERE us.estado=1 AND us.congregacion = ?
+                    $condicionSexoHistorial
+                    ORDER BY up.fecha DESC
+            ", $parametrosHistorial);
 
-                // Formatear datos
-                if ($ultimaParticipacion) {
-                    $fechaTexto = \Carbon\Carbon::parse($ultimaParticipacion->fecha)->format('d/m/Y');
-                    $parteTexto = $ultimaParticipacion->abreviacion;
-                    $salaTexto = $ultimaParticipacion->sala_abreviacion;
-                    $tipoTexto = $ultimaParticipacion->tipo_participacion;
-                    $parteProgramaIdToShow = $ultimaParticipacion->partes_programa_id;
-                    $asignacionIdToShow = $ultimaParticipacion->asignacion_id;
+            // Combinar ambos resultados
+            $usuarios = array_merge($usuariosPrimeraVez, $usuariosConHistorial);
+
+            // Formatear los datos para el select2
+            $usuariosFormateados = array_map(function($usuario) {
+                // Formatear la fecha si no es "Primera vez"
+                if (isset($usuario->fecha_raw) && $usuario->fecha_raw) {
+                    // Convertir la fecha a formato dd-mm-yyyy
+                    $fechaFormateada = \Carbon\Carbon::parse($usuario->fecha_raw)->format('d-m-Y');
+                    $fechaDisplay = $fechaFormateada;
                 } else {
-                    $fechaTexto = 'Primera vez';
-                    $parteTexto = '__';
-                    $salaTexto = '__';
-                    $tipoTexto = '__';
-                    $parteProgramaIdToShow = null;
-                    $asignacionIdToShow = $asignacionId;
+                    $fechaFormateada = isset($usuario->fecha) ? $usuario->fecha : 'Primera vez';
+                    $fechaDisplay = $fechaFormateada;
                 }
 
-                $displayText = $fechaTexto . '|' . $salaTexto . '|' . $parteTexto . '|' . $tipoTexto . '|' . $usuario->name;
+                // Obtener la abreviación de la sala
+                $salaAbreviacion = isset($usuario->sala_abreviacion) ? $usuario->sala_abreviacion : '__';
 
-                $usuarios->push((object)[
+                return [
                     'id' => $usuario->id,
                     'name' => $usuario->name,
-                    'sexo' => $usuario->sexo,
-                    'fecha' => $fechaTexto,
-                    'display_text' => $displayText,
-                    'ultima_fecha' => $ultimaParticipacion ? $ultimaParticipacion->fecha : null,
-                    'partes_programa_id' => $parteProgramaIdToShow,
-                    'asignacion_id' => $asignacionIdToShow
-                ]);
-            }
+                    'display_text' => $fechaDisplay. '|' . $salaAbreviacion . '|' . $usuario->abreviacion_parte . '|' . $usuario->tipo . '|' . $usuario->name,
+                    'fecha' => $fechaDisplay,
+                    'sala_abreviacion' => $salaAbreviacion,
+                    'parte_abreviacion' => $usuario->abreviacion_parte,
+                    'ultima_fecha' => $fechaDisplay === 'Primera vez' ? null : (isset($usuario->fecha_raw) ? $usuario->fecha_raw : null)
+                ];
+            }, $usuarios);
 
-            // Ordenar por fecha NO por texto (Primera vez primero, luego más recientes después)
-            $usuariosOrdenados = $usuarios->sort(function($a, $b) {
-                // "Primera vez" siempre va primero
-                if ($a->fecha === 'Primera vez' && $b->fecha !== 'Primera vez') {
+            // Ordenar: "Primera vez" primero, luego por fecha más antigua
+            usort($usuariosFormateados, function($a, $b) {
+                if ($a['fecha'] === 'Primera vez' && $b['fecha'] !== 'Primera vez') {
                     return -1;
                 }
-                if ($b->fecha === 'Primera vez' && $a->fecha !== 'Primera vez') {
+                if ($b['fecha'] === 'Primera vez' && $a['fecha'] !== 'Primera vez') {
                     return 1;
                 }
-                if ($a->fecha === 'Primera vez' && $b->fecha === 'Primera vez') {
+                if ($a['fecha'] === 'Primera vez' && $b['fecha'] === 'Primera vez') {
                     return 0;
                 }
 
-                // Si ambos tienen fechas, comparar las fechas reales
-                $fechaA = \Carbon\Carbon::parse($a->ultima_fecha);
-                $fechaB = \Carbon\Carbon::parse($b->ultima_fecha);
+                // Convertir fechas para comparación
+                $fechaA = \DateTime::createFromFormat('d-m-Y', $a['fecha']);
+                $fechaB = \DateTime::createFromFormat('d-m-Y', $b['fecha']);
 
-                return $fechaA <=> $fechaB; // Más recientes después
+                return $fechaA <=> $fechaB;
             });
+
             return response()->json([
                 'success' => true,
-                'data' => $usuariosOrdenados->values()->all(),
-                'has_gender_sections' => false
+                'data' => $usuariosFormateados
             ]);
-
         } catch (\Exception $e) {
-            \Log::error('Error al obtener ayudantes por parte programa: ' . $e->getMessage());
-            \Log::error('Stack trace: ' . $e->getTraceAsString());
             return response()->json([
                 'success' => false,
-                'message' => 'Error al cargar usuarios ayudantes'
+                'message' => 'Error al obtener los encargados: ' . $e->getMessage()
             ], 500);
         }
     }
