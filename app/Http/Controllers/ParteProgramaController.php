@@ -2113,7 +2113,11 @@ class ParteProgramaController extends Controller
                 $condicionSexoHistorial = ' AND us.sexo = ?';
                 $parametrosHistorial[] = $sexoFiltro??$encargadoSexo;
             }
-
+            if($encargadoId){
+                //agregar condición que no sea el mismo encargado
+                $condicionEncargado = ' AND us.id != ?';
+                $parametrosHistorial[] = $encargadoId;
+            }
             $usuariosConHistorial = DB::select(
                 "WITH
                     asignacion_parte as(
@@ -2163,6 +2167,8 @@ class ParteProgramaController extends Controller
                     INNER JOIN salas sa ON up.sala_id=sa.id
                     WHERE us.estado=1 AND us.congregacion = ?
                     $condicionSexoHistorial
+                    $condicionEditing
+                    $condicionEncargado
                     ORDER BY up.fecha DESC
             ", $parametrosHistorial);
 
