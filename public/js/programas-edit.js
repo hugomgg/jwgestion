@@ -1026,23 +1026,17 @@ $(document).ready(function() {
         clearEncargadoReemplazado();
         clearAyudanteReemplazado();
 
-        // Pequeño delay para asegurar que los campos se hayan limpiado
-        setTimeout(function() {
-            // Limpiar historiales
-            clearHistorialEncargado();
-            clearHistorialAyudante();
+        // Mostrar campos de reemplazados en modo edición
+        $('#campos-reemplazados-segunda-seccion').show();
 
-            // Mostrar campos de reemplazados en modo edición
-            $('#campos-reemplazados-segunda-seccion').show();
+        // Mostrar botones de agregar reemplazado en modo edición
+        $('#btn-agregar-encargado-reemplazado').show();
+        $('#btn-agregar-ayudante-reemplazado').show();
 
-            // Mostrar botones de agregar reemplazado en modo edición
-            $('#btn-agregar-encargado-reemplazado').show();
-            $('#btn-agregar-ayudante-reemplazado').show();
+        // Mostrar botones de reemplazado en modo edición
+        $('#btn-encargado-reemplazado-segunda').show();
+        $('#btn-ayudante-reemplazado-segunda').show();
 
-            // Mostrar botones de reemplazado en modo edición
-            $('#btn-encargado-reemplazado-segunda').show();
-            $('#btn-ayudante-reemplazado-segunda').show();
-        }, 50);
 
         // Variable para controlar si estamos en modo edición para evitar eventos conflictivos
         window.editingParteTwoData = true;
@@ -1062,7 +1056,14 @@ $(document).ready(function() {
                     $('#tiempo_segunda_seccion').val(parte.tiempo);
                     $('#leccion_segunda_seccion').val(parte.leccion);
 
-                    // Cargar nombres de usuarios reemplazados si existen
+                    if (parte.encargado_id) {
+                        $('#encargado_id_segunda_seccion').val(parte.encargado_id);
+                        $('#encargado_display_segunda_seccion').val(parte.encargado_nombre);
+                    }
+                    $('#ayudante_id_segunda_seccion').val(parte.ayudante_id);
+                    $('#ayudante_display_segunda_seccion').val(parte.ayudante_nombre);
+                    $('#tema_segunda_seccion').val(parte.tema);
+
                     // Cargar encargado reemplazado
                     if (parte.encargado_reemplazado) {
                         $('#encargado_reemplazado_segunda_seccion').val(parte.encargado_reemplazado.name);
@@ -1081,72 +1082,8 @@ $(document).ready(function() {
                         $('#ayudante_reemplazado_id_segunda_seccion').val('');
                     }
 
-                    // Asegurar que los campos de reemplazados sean visibles
-                    $('#campos-reemplazados-segunda-seccion').show();
-
-                    // Verificar después de un delay que los campos se hayan cargado correctamente
-                    setTimeout(function() {
-                        // Verificación completada
-                    }, 500);                    // Las variables de control de reemplazados se inicializarán después de cargar los selects
-
-                    // Cargar datos necesarios en secuencia
+                    // Cargar datos necesarios de la asignación
                     loadPartesSeccionesForEditSegundaSeccion(parte.parte_id);
-
-                    // Esperar un poco y luego cargar encargados
-                    setTimeout(function() {
-                        loadEncargadosByParteSegundaSeccion(parte.parte_id, parte.encargado_id);
-
-                        // Establecer directamente el encargado seleccionado después de un momento
-                        setTimeout(function() {
-                            if (parte.encargado_id) {
-                                $('#encargado_id_segunda_seccion').val(parte.encargado_id);
-                                $('#encargado_display_segunda_seccion').val(parte.encargado_nombre);
-                            }
-                        }, 100);
-
-                        // Esperar otro poco y cargar ayudantes
-                        setTimeout(function() {
-                            if (parte.encargado_id && parte.parte_id) {
-                                loadAyudantesByEncargadoAndParte(parte.encargado_id, parte.parte_id, parte.ayudante_id);
-                            } else {
-                                loadAyudantesByParteSegundaSeccion(parte.ayudante_id);
-                            }
-
-                            // Establecer directamente el ayudante seleccionado después de un momento
-                            setTimeout(function() {
-                                if (parte.ayudante_id) {
-                                    $('#ayudante_id_segunda_seccion').val(parte.ayudante_id);
-                                    $('#ayudante_display_segunda_seccion').val(parte.ayudante_nombre);
-                                }
-
-                                // Actualizar el estado de los botones después de cargar los datos
-                                updateButtonStatesSegundaSeccion();
-                            }, 600);
-
-                            // Cargar historial del encargado si existe
-                            if (parte.encargado_id) {
-                                loadHistorialEncargado(parte.encargado_id);
-                            } else {
-                                clearHistorialEncargado();
-                            }
-
-                            // Liberar el flag después de todo el proceso
-                            setTimeout(function() {
-                                window.editingParteTwoData = false;
-
-                                // Inicializar variables para control de reemplazados después de que todo esté cargado
-                                encargadoAnterior = $('#encargado_id_segunda_seccion').val();
-                                const encargadoOption = $('#encargado_id_segunda_seccion').find('option:selected');
-                                encargadoAnteriorNombre = encargadoOption.text() || '';
-
-                                ayudanteAnterior = $('#ayudante_id_segunda_seccion').val();
-                                const ayudanteOption = $('#ayudante_id_segunda_seccion').find('option:selected');
-                                ayudanteAnteriorNombre = ayudanteOption.text() || '';
-                            }, 400);
-
-                        }, 300);
-                    }, 200);
-
                     $('#parteProgramaSegundaSeccionModal').modal('show');
                 }
             },
