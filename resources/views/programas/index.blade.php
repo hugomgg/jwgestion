@@ -72,15 +72,15 @@
                                             <label class="form-label">Acciones</label>
                                             <div class="d-flex gap-2 flex-wrap">
                                                 <!-- Botón Exportar PDF -->
-                                                <button type="button" class="btn btn-primary" id="exportPdfBtn" disabled>
+                                                <button type="button" class="btn btn-outline-danger" id="exportPdfBtn" disabled>
                                                     <i class="fas fa-file-pdf me-2"></i>Programa PDF
                                                 </button>
                                                 <!-- Botón Exportar Asignaciones -->
-                                                <button type="button" class="btn btn-primary" id="exportAsignacionesBtn" disabled>
+                                                <button type="button" class="btn btn-outline-danger" id="exportAsignacionesBtn" disabled>
                                                     <i class="fas fa-file-pdf me-2"></i>Asignaciones SMM
                                                 </button>
                                                 <!-- Botón Exportar XLS -->
-                                                <button type="button" class="btn btn-success" id="exportXlsBtn" disabled>
+                                                <button type="button" class="btn btn-outline-success" id="exportXlsBtn" disabled>
                                                     <i class="fas fa-file-excel me-2"></i>Resumen XLS
                                                 </button>
                                             </div>
