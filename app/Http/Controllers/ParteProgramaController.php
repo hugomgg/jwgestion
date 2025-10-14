@@ -1820,27 +1820,23 @@ class ParteProgramaController extends Controller
                     asignacion_parte as(
                         SELECT ps.id AS parte_id,ps.asignacion_id
                         FROM partes_seccion ps
-                        WHERE ps.id = ? 
-                    ),
+                        WHERE ps.id = ?
+                    )
+                    ,
                     usuarios_asignacion_seleccionada AS (
                         SELECT
                             au.user_id,au.asignacion_id
                         FROM
                             asignaciones_users au
-                        INNER JOIN asignacion_parte ap ON au.asignacion_id = ap.asignacion_id 
-                    ),
+                        INNER JOIN asignacion_parte ap ON au.asignacion_id = ap.asignacion_id
+                    )
+                    ,
                     ultima_participacion AS (
                         SELECT max(p.fecha) AS fecha,
-                                max(pp.encargado_id) AS encargado_id ,
-                                max(pp.ayudante_id) AS ayudante_id ,
-                                max(pp.parte_id) AS parte_id ,
-                                max(ps.abreviacion ) AS abreviacion,
-                                max(pp.sala_id) AS sala_id,
                             CASE
                                 WHEN pp.encargado_id=uas.user_id THEN pp.encargado_id
                                 ELSE pp.ayudante_id
-                            END as user_id,
-                            max(uas.asignacion_id) AS asignacion_id  
+                            END as user_id
                         FROM programas p 
                         INNER JOIN partes_programa pp ON p.id=pp.programa_id
                         INNER JOIN usuarios_asignacion_seleccionada uas ON (uas.user_id=pp.encargado_id OR uas.user_id=pp.ayudante_id)
@@ -1851,20 +1847,23 @@ class ParteProgramaController extends Controller
                             ELSE pp.ayudante_id
                         END
                     )
-                    SELECT 
-                        us.id,
-                        us.name,
-                        up.abreviacion as abreviacion_parte,
-                        sa.abreviacion as sala_abreviacion,
-                        CASE WHEN up.encargado_id = us.id THEN 'ES' ELSE 'AY' END AS tipo,
-                        up.fecha as fecha_raw,
-                        us.sexo
+                    SELECT
+                    us.id,
+                    us.name,
+                    ps.abreviacion as abreviacion_parte,
+                    sa.abreviacion as sala_abreviacion,
+                    CASE WHEN pp.encargado_id = up.user_id THEN 'ES' ELSE 'AY' END AS tipo,
+                    up.fecha as fecha_raw,
+                    us.sexo
                     FROM ultima_participacion up
-                    INNER JOIN users us ON us.id=up.user_id
-                    INNER JOIN salas sa ON up.sala_id=sa.id
-                    WHERE us.estado=1 AND us.congregacion = ?
+                    INNER JOIN users us ON up.user_id=us.id
+                    INNER JOIN programas p ON up.fecha = p.fecha
+                    INNER JOIN partes_programa pp ON (pp.encargado_id=up.user_id OR pp.ayudante_id=user_id) AND p.id=pp.programa_id
+                    INNER JOIN partes_seccion ps ON pp.parte_id=ps.id
+                    INNER JOIN asignacion_parte ap ON ps.asignacion_id=ap.asignacion_id
+                    INNER JOIN salas sa ON pp.sala_id=sa.id
+                    WHERE us.estado = 1 AND us.congregacion = ?
                     $condicionSexoHistorial
-                    ORDER BY up.fecha DESC
             ", $parametrosHistorial);
 
             // Combinar ambos resultados

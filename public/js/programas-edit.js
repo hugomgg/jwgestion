@@ -1405,7 +1405,7 @@ $(document).ready(function() {
         const params = [];
         if (editingId) params.push(`editing_id=${editingId}`);
         if (encargadoId) params.push(`encargado_id=${encargadoId}`);
-        const url = `/ayudantes-por-parte-programa/${parteId}` + (params.length ? `?${params.join('&')}` : '');
+        const url = `/ayudantes-por-parte-programa-smm/${parteId}` + (params.length ? `?${params.join('&')}` : '');
 
         $.ajax({
             url: url,
@@ -1845,7 +1845,7 @@ $(document).ready(function() {
         }
 
         // Cargar usuarios que han participado como ayudantes
-        let url = `/ayudantes-por-parte-programa/${parteId}`;
+        let url = `/ayudantes-por-parte-programa-smm/${parteId}`;
         let params = {};
 
         if (encargadoId) {
@@ -1932,7 +1932,7 @@ $(document).ready(function() {
         //deshabilitar el select mientras carga
         $('#select_ayudante_segunda_seccion').prop('disabled', true);
 
-        let url = `/ayudantes-por-parte-programa/${parteId}`;
+        let url = `/ayudantes-por-parte-programa-smm/${parteId}`;
         let params = {};
 
         if (encargadoId) {

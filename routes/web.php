@@ -131,7 +131,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/ayudantes-por-parte/{parteId}', [App\Http\Controllers\ParteProgramaController::class, 'getAyudantesByParte'])->name('ayudantes-por-parte.get');
         Route::get('/encargados-por-parte-programa/{parteId}', [App\Http\Controllers\ParteProgramaController::class, 'getEncargadosByPartePrograma'])->name('encargados-por-parte-programa.get');
         Route::get('/encargados-por-parte-programa-smm/{parteId}', [App\Http\Controllers\ParteProgramaController::class, 'getEncargadosByParteProgramaSmm'])->name('encargados-por-parte-programa-smm.get');
-        Route::get('/ayudantes-por-parte-programa/{parteId}', [App\Http\Controllers\ParteProgramaController::class, 'getAyudantesByParteProgramaSmm'])->name('ayudantes-por-parte-programa.get');
+        Route::get('/ayudantes-por-parte-programa-smm/{parteId}', [App\Http\Controllers\ParteProgramaController::class, 'getAyudantesByParteProgramaSmm'])->name('ayudantes-por-parte-programa.get');
         Route::get('/usuarios-participantes-programa', [App\Http\Controllers\ParteProgramaController::class, 'getUsuariosParticipantesPrograma'])->name('usuarios-participantes-programa.get');
         Route::post('/partes-programa/{id}/move-up', [App\Http\Controllers\ParteProgramaController::class, 'moveUp'])->name('partes-programa.move-up');
         Route::post('/partes-programa/{id}/move-down', [App\Http\Controllers\ParteProgramaController::class, 'moveDown'])->name('partes-programa.move-down');
