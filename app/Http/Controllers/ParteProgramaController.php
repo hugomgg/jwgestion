@@ -1775,7 +1775,7 @@ class ParteProgramaController extends Controller
             // Construir la condición WHERE para el filtro de sexo
             $condicionSexo = '';
             $parametros = [$parteId, $user->congregacion];
-            
+
             if ($sexoFiltro) {
                 $condicionSexo = ' AND u.sexo = ?';
                 $parametros[] = $sexoFiltro;
@@ -1833,19 +1833,13 @@ class ParteProgramaController extends Controller
                     ,
                     ultima_participacion AS (
                         SELECT max(p.fecha) AS fecha,
-                            CASE
-                                WHEN pp.encargado_id=uas.user_id THEN pp.encargado_id
-                                ELSE pp.ayudante_id
-                            END as user_id
-                        FROM programas p 
+                            uas.user_id
+                        FROM programas p
                         INNER JOIN partes_programa pp ON p.id=pp.programa_id
                         INNER JOIN usuarios_asignacion_seleccionada uas ON (uas.user_id=pp.encargado_id OR uas.user_id=pp.ayudante_id)
                         INNER JOIN partes_seccion ps ON pp.parte_id= ps.id 
                         WHERE ps.asignacion_id = uas.asignacion_id
-                        GROUP BY CASE
-                                WHEN pp.encargado_id=uas.user_id THEN pp.encargado_id
-                            ELSE pp.ayudante_id
-                        END
+                        GROUP BY uas.user_id
                     )
                     SELECT
                     us.id,
@@ -2128,19 +2122,13 @@ class ParteProgramaController extends Controller
                     ,
                     ultima_participacion AS (
                         SELECT max(p.fecha) AS fecha,
-                            CASE
-                                WHEN pp.encargado_id=uas.user_id THEN pp.encargado_id
-                                ELSE pp.ayudante_id
-                            END as user_id
+                            uas.user_id
                         FROM programas p 
                         INNER JOIN partes_programa pp ON p.id=pp.programa_id
                         INNER JOIN usuarios_asignacion_seleccionada uas ON (uas.user_id=pp.encargado_id OR uas.user_id=pp.ayudante_id)
                         INNER JOIN partes_seccion ps ON pp.parte_id= ps.id 
                         WHERE ps.asignacion_id = uas.asignacion_id
-                        GROUP BY CASE
-                                WHEN pp.encargado_id=uas.user_id THEN pp.encargado_id
-                            ELSE pp.ayudante_id
-                        END
+                        GROUP BY uas.user_id
                     ),
                     ayudantes_encargado AS (
                         SELECT
