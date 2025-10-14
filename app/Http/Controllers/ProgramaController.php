@@ -38,6 +38,7 @@ class ProgramaController extends Controller
             ->leftJoin('canciones as cancion_post', 'programas.cancion_post', '=', 'cancion_post.id')
             ->leftJoin('users as creador', 'programas.creador', '=', 'creador.id')
             ->leftJoin('users as modificador', 'programas.modificador', '=', 'modificador.id')
+             ->where('creador.congregacion', $currentUser->congregacion)
             ->select(
                 'programas.id',
                 'programas.fecha',
@@ -754,11 +755,12 @@ class ProgramaController extends Controller
 
             // Consulta base de programas
             $query = DB::table('programas as p')
-                ->join('users as presidente', 'p.presidencia', '=', 'presidente.id')
+                ->Join('users as creador', 'p.creador', '=', 'creador.id')
+                ->leftjoin('users as presidente', 'p.presidencia', '=', 'presidente.id')
                 ->leftJoin('users as orador_inicial', 'p.orador_inicial', '=', 'orador_inicial.id')
                 ->leftJoin('users as orador_final', 'p.orador_final', '=', 'orador_final.id')
                 ->leftJoin('congregaciones as c', 'presidente.congregacion', '=', 'c.id')
-                ->where('presidente.congregacion', $currentUser->congregacion);
+                ->where('creador.congregacion', $currentUser->congregacion);
 
             // Aplicar filtros de fecha si se proporcionan
             if ($anio) {
@@ -876,9 +878,10 @@ class ProgramaController extends Controller
 
             // Consulta para obtener los programas con sus partes
             $query = DB::table('programas as p')
+                ->Join('users as creador', 'p.creador', '=', 'creador.id')
                 ->leftJoin('users as presidente', 'p.presidencia', '=', 'presidente.id')
                 ->leftJoin('congregaciones as c', 'presidente.congregacion', '=', 'c.id')
-                ->where('presidente.congregacion', $currentUser->congregacion)
+                ->where('creador.congregacion', $currentUser->congregacion)
                 ->whereNotNull('p.fecha');
 
             // Aplicar filtros de fecha si se proporcionan
@@ -1128,10 +1131,10 @@ class ProgramaController extends Controller
                 ->leftJoin('partes_seccion as ps', 'pp.parte_id', '=', 'ps.id')
                 ->leftJoin('users as encargado', 'pp.encargado_id', '=', 'encargado.id')
                 ->leftJoin('users as ayudante', 'pp.ayudante_id', '=', 'ayudante.id')
-                ->leftJoin('users as presidente', 'p.presidencia', '=', 'presidente.id')
-                ->leftJoin('congregaciones as c', 'presidente.congregacion', '=', 'c.id')
+                ->leftJoin('users as creador', 'p.creador', '=', 'creador.id')
+                ->leftJoin('congregaciones as c', 'creador.congregacion', '=', 'c.id')
                 ->where('ps.seccion_id', 2) // Filtrar solo "Seamos Mejores Maestros"
-                ->where('presidente.congregacion', $currentUser->congregacion)
+                ->where('creador.congregacion', $currentUser->congregacion)
                 ->whereNotNull('p.fecha')
                 ->whereNotNull('pp.encargado_id'); // Solo partes con encargado asignado
 
