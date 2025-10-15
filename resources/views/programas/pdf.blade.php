@@ -165,7 +165,7 @@
                                     <div class="parte-asignado">
                                         {{ $parte->encargado_nombre ?? 'Sin asignar' }}
                                         @if($parte->ayudante_nombre)
-                                            | {{ str_pad($parte->ayudante_nombre, 20, '.', STR_PAD_RIGHT) }}
+                                            | {{ mb_str_pad(substr($parte->ayudante_nombre, 0, 20), 20, '.', STR_PAD_RIGHT) }}
                                         @endif
                                     </div>
                                 </div>
@@ -185,7 +185,7 @@
                                     <div class="parte-asignado">
                                         {{ $parte->encargado_nombre ?? 'Sin asignar' }}
                                         @if($parte->ayudante_nombre)
-                                            | {{ str_pad($parte->ayudante_nombre, 20, '.', STR_PAD_RIGHT) }}
+                                            | {{ mb_str_pad(substr($parte->ayudante_nombre, 0, 20), 20, '.', STR_PAD_RIGHT) }}
                                         @endif
                                     </div>
                                 </div>
@@ -214,7 +214,7 @@
                                         {{ $parte->encargado_nombre ?? 'Sin asignar' }}
                                         <!-- Si es la penultima parte de nuestra vida cristiana, mostrar el nombre del encargado de la última parte y romper el ciclo -->
                                         @if($loop->iteration == ($vidaCristiana->count() - 1) && $vidaCristiana->count() > 1 && $vidaCristiana->last()->parte_id == 24)
-                                            | LECTOR: {{ $vidaCristiana->last()->encargado_nombre }} </div></div>
+                                            | LECTOR: {{ mb_str_pad(substr($vidaCristiana->last()->encargado_nombre, 0, 20), 20, '.', STR_PAD_RIGHT) }} </div></div>
                                             @break
                                         @endif
                                     </div>

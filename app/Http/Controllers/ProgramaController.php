@@ -807,8 +807,8 @@ class ProgramaController extends Controller
                         'encargado.name as encargado_nombre',
                         'ayudante.name as ayudante_nombre',
                         'pp.parte_id',
-                        DB::raw('CASE WHEN pp.parte_id = 3 THEN 99 ELSE pp.orden END as orden'), //Cambiar orden de LB a al final
-                        DB::raw('CASE WHEN pp.parte_id=3 then 1 else ps.seccion_id end as seccion_id')// Cambiar LB a TB
+                        'pp.orden',
+                        'ps.seccion_id'
                     )
                     ->orderBy('ps.seccion_id', 'asc')
                     ->orderBy('pp.sala_id', 'asc')
@@ -826,7 +826,7 @@ class ProgramaController extends Controller
             $congregacionNombre = $programas->first()->congregacion_nombre ?? 'Sin nombre';
 
             // Preparar nombre del archivo
-            $fileName = 'programas';
+            $fileName = 'programaMensual';
             if ($anio && $meses && is_array($meses) && !empty($meses)) {
                 // Si hay múltiples meses, usar el primer mes para el nombre del archivo
                 $primerMes = min($meses); // Usar el mes más pequeño
@@ -944,7 +944,7 @@ class ProgramaController extends Controller
             }
 
             // Preparar nombre del archivo
-            $fileName = 'programas_partes';
+            $fileName = 'programaResumido';
             if ($anio && $meses && is_array($meses) && !empty($meses)) {
                 // Si hay múltiples meses, usar el primer mes para el nombre del archivo
                 $primerMes = min($meses); // Usar el mes más pequeño
@@ -1133,8 +1133,9 @@ class ProgramaController extends Controller
                 ->leftJoin('users as ayudante', 'pp.ayudante_id', '=', 'ayudante.id')
                 ->leftJoin('users as creador', 'p.creador', '=', 'creador.id')
                 ->leftJoin('congregaciones as c', 'creador.congregacion', '=', 'c.id')
-                ->where('ps.seccion_id', 2) // Filtrar solo "Seamos Mejores Maestros"
+                ->whereIn('ps.seccion_id', [1,2]) // Filtrar "Tesoros de la Biblia y Seamos Mejores Maestros"
                 ->where('creador.congregacion', $currentUser->congregacion)
+                ->whereNotIn('ps.id', [1, 2]) // Excluir TB, BPE (dejando solo la Lectura de la Biblia)
                 ->whereNotNull('p.fecha')
                 ->whereNotNull('pp.encargado_id'); // Solo partes con encargado asignado
 
@@ -1234,7 +1235,7 @@ class ProgramaController extends Controller
             }
 
             // Preparar nombre del archivo
-            $fileName = 'asignaciones_smm';
+            $fileName = 'programaEscuelaAsignaciones';
             if ($anio && $meses && is_array($meses) && !empty($meses)) {
                 // Si hay múltiples meses, usar el primer mes para el nombre del archivo
                 $primerMes = min($meses); // Usar el mes más pequeño
