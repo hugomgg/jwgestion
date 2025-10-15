@@ -1090,7 +1090,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="buscarAyudanteSegundaSeccionModalLabel">
-                    <i class="fas fa-search me-2"></i>Buscar Ayudante (Sala Principal)
+                    <i class="fas fa-search me-2"></i>Buscar Ayudante
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>

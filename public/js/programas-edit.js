@@ -1753,7 +1753,8 @@ $(document).ready(function() {
         const ayudanteId = $('#ayudante_id_segunda_seccion').val();
         const selectedOption = $('#parte_id_segunda_seccion').find('option:selected');
         const tipo = selectedOption.data('tipo');
-
+        const encargadoNombre = $('#encargado_display_segunda_seccion').val();
+        $('#buscarAyudanteSegundaSeccionModalLabel').text(`Buscar Ayudante para: ${encargadoNombre || '...'}`);
         if (!parteId) {
             alert('Por favor seleccione una parte primero');
             return;
