@@ -1,6 +1,10 @@
 $(document).ready(function() {
     // Inicializar Select2 cuando se abran los modales
     $('#addUserModal').on('shown.bs.modal', function() {
+        // Limpiar errores al abrir el modal
+        clearErrorsAboveTabs('add');
+        clearValidationErrors();
+        
         // Destruir Select2 si ya existe
         if ($('#asignaciones').hasClass('select2-hidden-accessible')) {
             $('#asignaciones').select2('destroy');
@@ -30,6 +34,10 @@ $(document).ready(function() {
     });
 
     $('#editUserModal').on('shown.bs.modal', function() {
+        // Limpiar errores al abrir el modal
+        clearErrorsAboveTabs('edit');
+        clearValidationErrors();
+        
         // Destruir Select2 si ya existe
         if ($('#edit_asignaciones').hasClass('select2-hidden-accessible')) {
             $('#edit_asignaciones').select2('destroy');
@@ -55,12 +63,20 @@ $(document).ready(function() {
 
     // Destruir Select2 cuando se cierren los modales
     $('#addUserModal').on('hidden.bs.modal', function() {
+        // Limpiar errores al cerrar el modal
+        clearErrorsAboveTabs('add');
+        clearValidationErrors();
+        
         if ($('#asignaciones').hasClass('select2-hidden-accessible')) {
             $('#asignaciones').select2('destroy');
         }
     });
 
     $('#editUserModal').on('hidden.bs.modal', function() {
+        // Limpiar errores al cerrar el modal
+        clearErrorsAboveTabs('edit');
+        clearValidationErrors();
+        
         if ($('#edit_asignaciones').hasClass('select2-hidden-accessible')) {
             $('#edit_asignaciones').select2('destroy');
         }
@@ -152,13 +168,91 @@ $(document).ready(function() {
     }
 
     // Función para mostrar errores de validación
-    function showValidationErrors(errors) {
+    function showValidationErrors(errors, modalType = 'add') {
         clearValidationErrors();
+        
+        // Determinar el contenedor de errores según el modal
+        const errorContainerId = modalType === 'edit' ? 'editUserErrorContainer' : 'addUserErrorContainer';
+        const errorListId = modalType === 'edit' ? 'editUserErrorList' : 'addUserErrorList';
+        
+        const errorContainer = $('#' + errorContainerId);
+        const errorList = $('#' + errorListId);
+        
+        // Limpiar lista de errores
+        errorList.empty();
+        
+        // Agregar errores a la lista sobre los tabs
+        let hasErrors = false;
         $.each(errors, function(field, messages) {
+            hasErrors = true;
+            
+            // Agregar error al contenedor sobre los tabs
+            if (Array.isArray(messages)) {
+                messages.forEach(function(message) {
+                    errorList.append(`<li>${message}</li>`);
+                });
+            } else {
+                errorList.append(`<li>${messages}</li>`);
+            }
+            
+            // También marcar el input correspondiente
             const input = $(`[name="${field}"]`);
             input.addClass('is-invalid');
-            input.siblings('.invalid-feedback').text(messages[0]);
+            input.siblings('.invalid-feedback').text(Array.isArray(messages) ? messages[0] : messages);
         });
+        
+        // Mostrar u ocultar el contenedor de errores
+        if (hasErrors) {
+            errorContainer.removeClass('d-none');
+            
+            // Scroll al top del modal para ver los errores
+            const modalBody = errorContainer.closest('.modal-body');
+            if (modalBody.length) {
+                modalBody.animate({ scrollTop: 0 }, 300);
+            }
+        } else {
+            errorContainer.addClass('d-none');
+        }
+    }
+    
+    // Función para limpiar errores sobre los tabs
+    function clearErrorsAboveTabs(modalType = 'add') {
+        const errorContainerId = modalType === 'edit' ? 'editUserErrorContainer' : 'addUserErrorContainer';
+        const errorListId = modalType === 'edit' ? 'editUserErrorList' : 'addUserErrorList';
+        
+        const errorContainer = $('#' + errorContainerId);
+        const errorList = $('#' + errorListId);
+        
+        errorContainer.addClass('d-none');
+        errorList.empty();
+    }
+    
+    // Función para validar campos requeridos del lado del cliente
+    function validateRequiredFields(formId, modalType = 'add') {
+        const form = $('#' + formId);
+        const requiredFields = form.find('[required]');
+        const errors = {};
+        let isValid = true;
+        
+        requiredFields.each(function() {
+            const field = $(this);
+            const fieldName = field.attr('name');
+            const fieldValue = field.val();
+            const fieldLabel = field.prev('label').text().replace('*', '').trim();
+            
+            // Validar si el campo está vacío
+            if (!fieldValue || fieldValue.trim() === '') {
+                isValid = false;
+                errors[fieldName] = [`El campo ${fieldLabel} es obligatorio.`];
+            }
+        });
+        
+        // Mostrar errores si los hay
+        if (!isValid) {
+            showValidationErrors(errors, modalType);
+        }
+        
+        return isValid;
     }
 
     // Filtro por congregación
@@ -584,12 +678,18 @@ $(document).ready(function() {
         const submitBtn = $('#saveUserBtn');
         const spinner = submitBtn.find('.spinner-border');
 
+        // Limpiar errores previos
+        clearValidationErrors();
+        clearErrorsAboveTabs('add');
+        
+        // Validar campos requeridos del lado del cliente
+        if (!validateRequiredFields('addUserForm', 'add')) {
+            return false;
+        }
+
         // Deshabilitar botón y mostrar spinner
         submitBtn.prop('disabled', true);
         spinner.removeClass('d-none');
-
-        // Limpiar errores previos
-        clearValidationErrors();
 
         $.ajax({
             url: window.usersIndexConfig.storeRoute,
@@ -615,12 +715,12 @@ $(document).ready(function() {
                 const response = xhr.responseJSON;
 
                 if (xhr.status === 422 && response.errors) {
-                    // Errores de validación
-                    showValidationErrors(response.errors);
+                    // Errores de validación - mostrar sobre los tabs
+                    showValidationErrors(response.errors, 'add');
                 } else {
-                    // Otros errores
+                    // Otros errores - mostrar en contenedor sobre tabs
                     const message = response.message || 'Error al crear el usuario. Intente nuevamente.';
-                    showAlert('danger', message);
+                    showValidationErrors({ general: [message] }, 'add');
                 }
             },
             complete: function() {
@@ -644,6 +744,7 @@ $(document).ready(function() {
         // Limpiar formulario y errores
         $('#editUserForm')[0].reset();
         clearValidationErrors();
+        clearErrorsAboveTabs('edit');
 
         // Cargar datos del usuario
         $.ajax({
@@ -716,12 +817,18 @@ $(document).ready(function() {
         const submitBtn = $('#updateUserBtn');
         const spinner = submitBtn.find('.spinner-border');
 
+        // Limpiar errores previos
+        clearValidationErrors();
+        clearErrorsAboveTabs('edit');
+        
+        // Validar campos requeridos del lado del cliente
+        if (!validateRequiredFields('editUserForm', 'edit')) {
+            return false;
+        }
+
         // Deshabilitar botón y mostrar spinner
         submitBtn.prop('disabled', true);
         spinner.removeClass('d-none');
-
-        // Limpiar errores previos
-        clearValidationErrors();
 
         $.ajax({
             url: `/usuarios/${userId}`,
@@ -764,12 +871,12 @@ $(document).ready(function() {
                 const response = xhr.responseJSON;
 
                 if (xhr.status === 422 && response.errors) {
-                    // Errores de validación
-                    showValidationErrors(response.errors);
+                    // Errores de validación - mostrar sobre los tabs
+                    showValidationErrors(response.errors, 'edit');
                 } else {
-                    // Otros errores
+                    // Otros errores - mostrar en contenedor sobre tabs
                     const message = response.message || 'Error al actualizar el usuario. Intente nuevamente.';
-                    showAlert('danger', message);
+                    showValidationErrors({ general: [message] }, 'edit');
                 }
             },
             complete: function() {

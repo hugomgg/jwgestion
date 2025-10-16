@@ -241,9 +241,15 @@
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form id="addUserForm">
+            <form id="addUserForm" novalidate>
                 @csrf
                 <div class="modal-body">
+                    <!-- Contenedor de errores sobre los tabs -->
+                    <div id="addUserErrorContainer" class="alert alert-danger d-none" role="alert">
+                        <strong><i class="fas fa-exclamation-triangle me-2"></i>Errores de validación:</strong>
+                        <ul id="addUserErrorList" class="mb-0 mt-2"></ul>
+                    </div>
+                    
                     <!-- Nav tabs -->
                     <ul class="nav nav-tabs" id="addUserTabs" role="tablist">
                         <li class="nav-item" role="presentation">
@@ -528,11 +534,17 @@
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form id="editUserForm">
+            <form id="editUserForm" novalidate>
                 @csrf
                 @method('PUT')
                 <input type="hidden" id="edit_user_id" name="user_id">
                 <div class="modal-body">
+                    <!-- Contenedor de errores sobre los tabs -->
+                    <div id="editUserErrorContainer" class="alert alert-danger d-none" role="alert">
+                        <strong><i class="fas fa-exclamation-triangle me-2"></i>Errores de validación:</strong>
+                        <ul id="editUserErrorList" class="mb-0 mt-2"></ul>
+                    </div>
+                    
                     <!-- Nav tabs -->
                     <ul class="nav nav-tabs" id="editUserTabs" role="tablist">
                         <li class="nav-item" role="presentation">
