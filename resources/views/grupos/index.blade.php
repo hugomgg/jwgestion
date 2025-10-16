@@ -1,5 +1,7 @@
 @extends('layouts.app')
-
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/grupos-index.css') }}">
+@endpush
 @section('content')
 <div class="container-fluid">
     <div class="row">

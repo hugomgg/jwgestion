@@ -28,60 +28,61 @@ class UserController extends Controller
     public function index()
     {
         $currentUser = auth()->user();
-
-        // Consulta base con JOIN explícito para obtener el nombre del perfil, congregación, nombramiento, servicio, grupo, estado espiritual y datos de auditoría
-        $query = DB::table('users')
-            ->join('perfiles', 'users.perfil', '=', 'perfiles.id')
-            ->join('congregaciones', 'users.congregacion', '=', 'congregaciones.id')
-            ->join('grupos', 'users.grupo', '=', 'grupos.id')
-            ->leftJoin('nombramiento', 'users.nombramiento', '=', 'nombramiento.id')
-            ->join('estado_espiritual', 'users.estado_espiritual', '=', 'estado_espiritual.id')
-            ->leftJoin('servicios', 'users.servicio', '=', 'servicios.id')
-            ->leftJoin('users as creador', 'users.creador_id', '=', 'creador.id')
-            ->leftJoin('users as modificador', 'users.modificador_id', '=', 'modificador.id')
-            ->select(
-                'users.id',
-                'users.name',
-                'users.email',
-                'users.estado',
-                'perfiles.nombre as nombre_perfil',
-                'perfiles.privilegio as privilegio_perfil',
-                'perfiles.id as perfil_id',
-                'congregaciones.nombre as nombre_congregacion',
-                'congregaciones.id as congregacion_id',
-                'grupos.nombre as nombre_grupo',
-                'grupos.id as grupo_id',
-                'nombramiento.nombre as nombre_nombramiento',
-                'nombramiento.id as nombramiento_id',
-                'servicios.nombre as nombre_servicio',
-                'servicios.id as servicio_id',
-                'estado_espiritual.nombre as nombre_estado_espiritual',
-                'estado_espiritual.id as estado_espiritual_id',
-                'users.creado_por_timestamp',
-                'users.modificado_por_timestamp',
-                'creador.name as creado_por_nombre',
-                'modificador.name as modificado_por_nombre'
-            );
-
+        $condicionCongregacion = "";
+        $condicionPerfil = "";
         // Si es coordinador, subcoordinador, secretario, subsecretario, organizador o suborganizador (perfil 3, 4, 5, 6, 7 u 8), solo mostrar usuarios de su congregación
         if ($currentUser->isCoordinator() || $currentUser->isSubcoordinator() || $currentUser->isSecretary() || $currentUser->isSubsecretary() || $currentUser->isOrganizer() || $currentUser->isSuborganizer()) {
-            $query->where('users.congregacion', $currentUser->congregacion);
+            $condicionCongregacion = "WHERE u.congregacion = $currentUser->congregacion";
         }
         if($currentUser->isAdmin() || $currentUser->isSupervisor()){
             // Administradores y supervisores ven todos los usuarios
-            $query->whereIn('users.perfil', [1, 2, 3]);
+            $condicionPerfil = "WHERE u.perfil IN (1, 2, 3)";
         }
 
-        $users = $query->get();
-
-        // Cargar las asignaciones para cada usuario (solo para coordinadores, organizadores y suborganizadores que necesitan verlas)
-        if ($currentUser->isCoordinator() || $currentUser->isSubcoordinator() || $currentUser->isOrganizer() || $currentUser->isSuborganizer() || $currentUser->isSecretary() || $currentUser->isSubsecretary()) {
-            $users = $users->map(function($user) {
-                $userModel = User::with('asignaciones')->find($user->id);
-                $user->asignaciones = $userModel ? $userModel->asignaciones : collect();
-                return $user;
-            });
-        }
+        // Consulta base con JOIN explícito para obtener el nombre del perfil, congregación, nombramiento, servicio, grupo, estado espiritual y datos de auditoría
+        $users = DB::select("WITH
+                                asignaciones_usuarios AS (
+                                    SELECT user_id,GROUP_CONCAT(a.abreviacion ORDER BY a.id ASC SEPARATOR ',') AS asignaciones
+                                    FROM asignaciones_users au
+                                    INNER JOIN asignaciones a ON au.asignacion_id = a.id AND a.estado = 1
+                                    GROUP BY user_id
+                                )
+                                SELECT
+                                    u.id,
+                                    u.name,
+                                    u.email,
+                                    u.estado,
+                                    p.nombre as nombre_perfil,
+                                    p.privilegio as privilegio_perfil,
+                                    p.id as perfil_id,
+                                    c.nombre as nombre_congregacion,
+                                    c.id as congregacion_id,
+                                    g.nombre as nombre_grupo,
+                                    g.id as grupo_id,
+                                    n.nombre as nombre_nombramiento,
+                                    n.id as nombramiento_id,
+                                    s.nombre as nombre_servicio,
+                                    s.id as servicio_id,
+                                    ee.nombre as nombre_estado_espiritual,
+                                    ee.id as estado_espiritual_id,
+                                    u.creado_por_timestamp,
+                                    u.modificado_por_timestamp,
+                                    creador.name as creado_por_nombre,
+                                    modificador.name as modificado_por_nombre,
+                                    asignaciones
+                                FROM users u
+                                INNER JOIN perfiles p ON u.perfil=p.id
+                                INNER JOIN congregaciones c ON u.congregacion = c.id
+                                INNER JOIN grupos g ON u.grupo = g.id
+                                INNER JOIN estado_espiritual ee ON u.estado_espiritual = ee.id
+                                LEFT JOIN nombramiento n ON u.nombramiento = n.id
+                                LEFT JOIN servicios s ON u.servicio = s.id
+                                LEFT JOIN users as creador ON u.creador_id = creador.id
+                                LEFT JOIN users as modificador ON u.modificador_id = modificador.id
+                                LEFT JOIN asignaciones_usuarios aus ON u.id=aus.user_id
+                                $condicionCongregacion
+                                $condicionPerfil
+                            ");
 
         // Filtrar perfiles para el filtro del listado
         if ($currentUser->isSecretary() || $currentUser->isSubsecretary() || $currentUser->isOrganizer() || $currentUser->isSuborganizer()) {

@@ -174,8 +174,12 @@
                     <i class="fas fa-landmark me-2"></i>
                     {{ config('app.name', 'Laravel') }}
                 </h5>
+                //Se define variable PHP de la congregación
+                @php
+                    $congregacion = Auth::user()->congregacion()->first();
+                @endphp
                 @if(Auth::user() && Auth::user()->congregacion)
-                    <small class="text-light">{{ Auth::user()->congregacion()->first()->nombre ?? 'Sin Congregación' }}</small>
+                    <small class="text-light">{{ $congregacion->nombre ?? 'Sin Congregación' }}</small>
                 @endif
             </div>
             
@@ -389,7 +393,7 @@
                         {{ Auth::user()->name }}
                         <small class="text-muted ms-2">({{ Auth::user()->role_name }})</small>
                         @if(Auth::user() && Auth::user()->congregacion)
-                            <span class="badge bg-primary ms-2">{{ Auth::user()->congregacion()->first()->nombre ?? 'Sin Congregación' }}</span>
+                            <span class="badge bg-primary ms-2">{{ $congregacion->nombre }}</span>
                         @endif
                     @endguest
                 </a>
@@ -505,7 +509,7 @@
                             <div class="col-12">
                                 <div class="mb-3">
                                     <label for="congregacion_nombre" class="form-label">Nombre *</label>
-                                    <input type="text" class="form-control" id="congregacion_nombre" name="nombre" value="{{ Auth::user()->congregacion()->first()->nombre ?? '' }}" required>
+                                    <input type="text" class="form-control" id="congregacion_nombre" name="nombre" value="{{ $congregacion->nombre }}" required>
                                     <div class="invalid-feedback"></div>
                                 </div>
                             </div>
@@ -515,14 +519,14 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="congregacion_telefono" class="form-label">Teléfono</label>
-                                    <input type="text" class="form-control" id="congregacion_telefono" name="telefono" value="{{ Auth::user()->congregacion()->first()->telefono ?? '' }}">
+                                    <input type="text" class="form-control" id="congregacion_telefono" name="telefono" value="{{ $congregacion->telefono }}" >
                                     <div class="invalid-feedback"></div>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="congregacion_persona_contacto" class="form-label">Persona de Contacto</label>
-                                    <input type="text" class="form-control" id="congregacion_persona_contacto" name="persona_contacto" value="{{ Auth::user()->congregacion()->first()->persona_contacto ?? '' }}">
+                                    <input type="text" class="form-control" id="congregacion_persona_contacto" name="persona_contacto" value="{{ $congregacion->persona_contacto }}">
                                     <div class="invalid-feedback"></div>
                                 </div>
                             </div>
@@ -532,7 +536,7 @@
                             <div class="col-12">
                                 <div class="mb-3">
                                     <label for="congregacion_direccion" class="form-label">Dirección</label>
-                                    <textarea class="form-control" id="congregacion_direccion" name="direccion" rows="3">{{ Auth::user()->congregacion()->first()->direccion ?? '' }}</textarea>
+                                    <textarea class="form-control" id="congregacion_direccion" name="direccion" rows="3">{{ $congregacion->direccion }}</textarea>
                                     <div class="invalid-feedback"></div>
                                 </div>
                             </div>
@@ -913,10 +917,10 @@
             
             // Restaurar valores originales si no se guardaron cambios
             @if(Auth::user() && Auth::user()->congregacion)
-            $('#congregacion_nombre').val('{{ Auth::user()->congregacion()->first()->nombre ?? '' }}');
-            $('#congregacion_direccion').val('{{ Auth::user()->congregacion()->first()->direccion ?? '' }}');
-            $('#congregacion_telefono').val('{{ Auth::user()->congregacion()->first()->telefono ?? '' }}');
-            $('#congregacion_persona_contacto').val('{{ Auth::user()->congregacion()->first()->persona_contacto ?? '' }}');
+            $('#congregacion_nombre').val('{{ $congregacion->nombre ?? '' }}');
+            $('#congregacion_direccion').val('{{ $congregacion->direccion ?? '' }}');
+            $('#congregacion_telefono').val('{{ $congregacion->telefono ?? '' }}');
+            $('#congregacion_persona_contacto').val('{{ $congregacion->persona_contacto ?? '' }}');
             @endif
         });
 

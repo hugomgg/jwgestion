@@ -1,5 +1,7 @@
 @extends('layouts.app')
-
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/users-index.css') }}">
+@endpush
 @section('content')
 <div class="container-fluid">
     <div class="row">
@@ -184,9 +186,9 @@
                                     </td>
                                     @if(Auth::user()->isOrganizer() || Auth::user()->isSuborganizer() || Auth::user()->isCoordinator() || Auth::user()->isSubcoordinator() || Auth::user()->isSecretary() || Auth::user()->isSubsecretary())
                                         <td>
-                                            @if($user->asignaciones && $user->asignaciones->count() > 0)
-                                                @foreach($user->asignaciones as $asignacion)
-                                                    <span class="badge bg-info me-1">{{ $asignacion->abreviacion }}</span>
+                                            @if($user->asignaciones && explode(',', $user->asignaciones) > 0)
+                                                @foreach(explode(',', $user->asignaciones) as $asignacion)
+                                                    <span class="badge bg-info me-1">{{ $asignacion }}</span>
                                                 @endforeach
                                             @else
                                                 <span class="text-muted">-</span>

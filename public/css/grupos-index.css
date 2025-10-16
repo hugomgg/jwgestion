@@ -1,0 +1,74 @@
+/* Estilos para asegurar que ambas tablas de escuela tengan el mismo ancho */
+#gruposTable {
+    width: 100% !important;
+    table-layout: fixed !important;
+}
+#gruposTable th,
+#gruposTable td {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+}
+
+/* Estilos específicos para las columnas de las tablas de escuela */
+#gruposTable th:nth-child(1) {
+    width: 50px !important;
+    min-width: 50px !important;
+}
+
+#gruposTable th:nth-child(2) {
+    width: 200px !important;
+    min-width: 200px !important;
+}
+
+#gruposTable th:nth-child(3) {
+    width: 100px !important;
+    min-width: 100px !important;
+}
+
+#gruposTable th:nth-child(4) {
+    width: 50px !important;
+    min-width: 50px !important;
+}
+
+#gruposTable th:nth-child(5) {
+    width: 100px !important;
+    min-width: 100px !important;
+}
+
+#gruposTable th:nth-child(6) {
+    width: 100px !important;
+    min-width: 100px !important;
+}
+
+
+/* Aplicar los mismos estilos a las celdas del cuerpo de la tabla */
+#gruposTable td:nth-child(1) {
+    width: 50px !important;
+    max-width: 50px !important;
+}
+
+#gruposTable td:nth-child(2) {
+    width: 200px !important;
+    max-width: 200px !important;
+}
+
+#gruposTable td:nth-child(3) {
+    width: 100px !important;
+    max-width: 300px !important;
+}
+
+#gruposTable td:nth-child(4) {
+    width: 50px !important;
+    max-width: 50px !important;
+}
+
+#gruposTable td:nth-child(5) {
+    width: 100px !important;
+    min-width: 100px !important;
+}
+
+#gruposTable td:nth-child(6) {
+    width: 100px !important;
+    max-width: 100px !important;
+}
