@@ -18,9 +18,9 @@ class ParteSeccion extends Model
     
     // Array de tipos disponibles
     public static $tipos = [
-        self::TIPO_SOLO => 'Solo',
-        self::TIPO_ACOMPANADO => 'Acompañado',
-        self::TIPO_HOMBRE_Y_MUJER => 'HombreyMujer'
+        self::TIPO_SOLO => 'Hombres',
+        self::TIPO_ACOMPANADO => 'Hombres o Mujeres',
+        self::TIPO_HOMBRE_Y_MUJER => 'Hombres y/o Mujeres'
     ];
     
     protected $fillable = [
