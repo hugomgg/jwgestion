@@ -216,6 +216,13 @@
                     </a>
                 </li>
                 @endif
+                @if(auth()->user()->isCoordinator() || auth()->user()->isSubcoordinator() || auth()->user()->isSecretary() || auth()->user()->isSubsecretary() || auth()->user()->isOrganizer() || auth()->user()->isSuborganizer())
+                <li>
+                    <a href="{{ route('informes.index') }}" class="nav-link {{ request()->routeIs('informes.*') ? 'active' : '' }}">
+                        <i class="fas fa-id-card"></i>Informes
+                    </a>
+                </li>
+                @endif
                 @endcan
                 
                 <!-- Administración para otros perfiles que no tienen acceso al menú de administración principal -->
@@ -239,6 +246,13 @@
                 <li>
                     <a href="{{ route('programas.index') }}" class="nav-link {{ request()->routeIs('programas.*') ? 'active' : '' }}">
                         <i class="fas fa-calendar"></i>Programas
+                    </a>
+                </li>
+                @endif
+                @if(auth()->user()->isCoordinator() || auth()->user()->isSubcoordinator() || auth()->user()->isSecretary() || auth()->user()->isSubsecretary() || auth()->user()->isOrganizer() || auth()->user()->isSuborganizer())
+                <li>
+                    <a href="{{ route('informes.index') }}" class="nav-link {{ request()->routeIs('informes.*') ? 'active' : '' }}">
+                        <i class="fas fa-chart-line"></i>Informes
                     </a>
                 </li>
                 @endif

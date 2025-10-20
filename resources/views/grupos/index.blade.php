@@ -67,7 +67,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="addGrupoModalLabel">
-                    <i class="fas fa-layer-group me-2"></i>Agregar Nuevo Grupo
+                    <i class="fas fa-users-cog me-2"></i>Agregar Nuevo Grupo
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -127,7 +127,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="editGrupoModalLabel">
-                    <i class="fas fa-layer-group me-2"></i>Editar Grupo
+                    <i class="fas fa-users-cog me-2"></i>Editar Grupo
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>

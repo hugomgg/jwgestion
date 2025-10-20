@@ -75,6 +75,15 @@ Route::middleware('auth')->group(function () {
         // Gesti?n de Programas - Para coordinadores (perfil 3)
         Route::get('/programas', [App\Http\Controllers\ProgramaController::class, 'index'])->name('programas.index');
         Route::get('/programas/{id}', [App\Http\Controllers\ProgramaController::class, 'show'])->name('programas.show');
+
+        // Gesti?n de Informes - Para coordinadores, secretarios y organizadores
+        Route::get('/informes', [App\Http\Controllers\InformeController::class, 'index'])->name('informes.index');
+        Route::get('/informes/usuarios-por-grupo', [App\Http\Controllers\InformeController::class, 'getUsersByGroup'])->name('informes.usuarios-por-grupo');
+        Route::get('/informes/{id}', [App\Http\Controllers\InformeController::class, 'show'])->name('informes.show');
+        Route::get('/informes/{id}/edit', [App\Http\Controllers\InformeController::class, 'edit'])->name('informes.edit');
+        Route::post('/informes', [App\Http\Controllers\InformeController::class, 'store'])->name('informes.store');
+        Route::put('/informes/{id}', [App\Http\Controllers\InformeController::class, 'update'])->name('informes.update');
+        Route::delete('/informes/{id}', [App\Http\Controllers\InformeController::class, 'destroy'])->name('informes.destroy');
     });
 
     // Actualizaci?n de perfil del usuario (para todos los perfiles autenticados)

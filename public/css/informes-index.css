@@ -1,0 +1,271 @@
+/* Estilos específicos para la gestión de informes */
+
+/* Estilos para la tabla */
+#informesTable {
+    font-size: 0.9rem;
+}
+
+#informesTable th {
+    background-color: #343a40 !important;
+    color: white !important;
+    font-weight: 600;
+    border-bottom: none;
+}
+
+#informesTable tbody tr:hover {
+    background-color: #f8f9fa;
+    transition: background-color 0.15s ease-in-out;
+}
+
+/* Estilos para badges */
+.badge {
+    font-size: 0.75em;
+    font-weight: 500;
+}
+
+/* Estilos para botones de acciones */
+.btn-group .btn {
+    border-radius: 0.25rem;
+    margin-right: 2px;
+}
+
+.btn-group .btn:last-child {
+    margin-right: 0;
+}
+
+/* Estilos para filtros */
+.card-body .form-select,
+.card-body .form-control {
+    font-size: 0.9rem;
+}
+
+/* Estilos para modales */
+.modal-dialog {
+    max-width: 800px;
+}
+
+.modal-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.modal-title {
+    color: #495057;
+    font-weight: 600;
+}
+
+/* Estilo para el backdrop del modal - color consistente con el sistema */
+.modal-backdrop {
+    background-color: rgba(52, 58, 64, 0.4) !important;
+}
+
+.modal-backdrop.show {
+    opacity: 1 !important;
+}
+
+/* Estilos para formularios */
+.form-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.5rem;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Estilos para alertas de error */
+.alert-danger {
+    border-color: #f5c6cb;
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.alert-danger ul {
+    padding-left: 1.5rem;
+}
+
+.alert-danger li {
+    margin-bottom: 0.25rem;
+}
+
+/* Estilos para campos de validación */
+.is-invalid {
+    border-color: #dc3545;
+    padding-right: calc(1.5em + 0.75rem);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath d='m5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right calc(0.375em + 0.1875rem) center;
+    background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+}
+
+.invalid-feedback {
+    width: 100%;
+    margin-top: 0.25rem;
+    font-size: 0.875em;
+    color: #dc3545;
+}
+
+/* Estilos para spinners */
+.spinner-border-sm {
+    width: 1rem;
+    height: 1rem;
+}
+
+/* Estilos responsive */
+@media (max-width: 768px) {
+    .card-header .btn {
+        margin-bottom: 0.5rem;
+    }
+    
+    .card-header .d-flex {
+        flex-direction: column;
+        align-items: stretch !important;
+    }
+    
+    .btn-group {
+        flex-direction: column;
+    }
+    
+    .btn-group .btn {
+        margin-right: 0;
+        margin-bottom: 2px;
+    }
+}
+
+/* Estilos para DataTables responsive */
+@media (max-width: 576px) {
+    .table-responsive table,
+    .table-responsive thead,
+    .table-responsive tbody,
+    .table-responsive th,
+    .table-responsive td,
+    .table-responsive tr {
+        display: block;
+    }
+    
+    .table-responsive thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+    
+    .table-responsive tr {
+        border: 1px solid #ccc;
+        margin-bottom: 10px;
+    }
+    
+    .table-responsive td {
+        border: none;
+        border-bottom: 1px solid #eee;
+        position: relative;
+        padding-left: 50% !important;
+    }
+    
+    .table-responsive td:before {
+        content: attr(data-label);
+        position: absolute;
+        left: 6px;
+        width: 45%;
+        padding-right: 10px;
+        white-space: nowrap;
+        font-weight: bold;
+    }
+}
+
+/* Estilos para el colapso de búsqueda avanzada */
+.collapse {
+    transition: height 0.35s ease;
+}
+
+.collapse.show {
+    height: auto;
+}
+
+/* Estilos para tooltips */
+.tooltip {
+    font-size: 0.8rem;
+}
+
+.tooltip-inner {
+    max-width: 200px;
+    padding: 0.375rem 0.75rem;
+    color: #fff;
+    text-align: center;
+    background-color: #000;
+    border-radius: 0.25rem;
+}
+
+/* Estilos para elementos de solo lectura */
+.form-control-plaintext {
+    padding: 0.375rem 0;
+    margin-bottom: 0;
+    line-height: 1.5;
+    color: #495057;
+    background-color: transparent;
+    border: solid transparent;
+    border-width: 1px 0;
+}
+
+/* Estilos para texto muted */
+.text-muted {
+    color: #6c757d !important;
+}
+
+/* Estilos para navegación de pestañas */
+.nav-tabs .nav-link {
+    color: #495057;
+    border: 1px solid transparent;
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
+}
+
+.nav-tabs .nav-link:hover {
+    border-color: #e9ecef #e9ecef #dee2e6;
+    isolation: isolate;
+}
+
+.nav-tabs .nav-link.active {
+    color: #495057;
+    background-color: #fff;
+    border-color: #dee2e6 #dee2e6 #fff;
+}
+
+.tab-content {
+    border: 1px solid #dee2e6;
+    border-top: none;
+    padding: 1rem;
+    background-color: #fff;
+}
+
+/* Animaciones suaves */
+.fade {
+    transition: opacity 0.15s linear;
+}
+
+.fade:not(.show) {
+    opacity: 0;
+}
+
+.fade.show {
+    opacity: 1;
+}
+
+/* Estilos para indicadores de carga */
+.btn .spinner-border {
+    vertical-align: text-bottom;
+}
+
+/* Estilos para campos obligatorios */
+.form-label::after {
+    content: "";
+}
+
+.form-label:has(+ .form-control[required])::after,
+.form-label:has(+ .form-select[required])::after {
+    content: " *";
+    color: #dc3545;
+}

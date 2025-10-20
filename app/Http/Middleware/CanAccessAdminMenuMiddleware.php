@@ -37,35 +37,33 @@ class CanAccessAdminMenuMiddleware
             }
         }
         
-        // Para usuarios con perfil = 3 (Coordinador) y perfil = 7 (Organizador), permitir gestión de usuarios y programas
+        // Para usuarios con perfil = 3 (Coordinador) y perfil = 7 (Organizador), permitir gestión de usuarios, programas e informes
         if ($user->isCoordinator() || $user->isOrganizer()) {
             $method = $request->method();
             $path = $request->path();
             
-            // Solo permitir operaciones en rutas de usuarios, programas y partes-programa
-            if (!str_starts_with($path, 'usuarios') && !str_starts_with($path, 'programas') && !str_starts_with($path, 'partes-programa')) {
-                // Si no es ruta de usuarios, programas o partes-programa, solo permitir GET
+            // Solo permitir operaciones en rutas de usuarios, programas, partes-programa e informes
+            if (!str_starts_with($path, 'usuarios') && !str_starts_with($path, 'programas') && !str_starts_with($path, 'partes-programa') && !str_starts_with($path, 'informes')) {
+                // Si no es ruta de usuarios, programas, partes-programa o informes, solo permitir GET
                 if (!in_array($method, ['GET', 'HEAD'])) {
                     return redirect()->back()->with('error', 'No tiene permisos para realizar esta acción en esta sección.');
                 }
             }
         }
         
-        // Para usuarios con perfil = 6 (Subsecretario) y perfil = 8 (SubOrganizador), permitir solo lectura en programas
-        if ($user->isSubsecretary() || $user->isSuborganizer()) {
+        // Para usuarios con perfil = 4 (Subcoordinador), 5 (Secretario), 6 (Subsecretario) y 8 (Suborganizador), permitir gestión de informes
+        if ($user->isSubcoordinator() || $user->isSecretary() || $user->isSubsecretary() || $user->isSuborganizer()) {
             $method = $request->method();
             $path = $request->path();
             
-            // Solo permitir operaciones GET en rutas de programas
-            if (str_starts_with($path, 'programas')) {
-                // Permitir solo métodos GET para programas
-                if (!in_array($method, ['GET', 'HEAD'])) {
-                    return redirect()->back()->with('error', 'No tiene permisos para modificar programas. Solo puede ver la información.');
-                }
+            // Permitir operaciones en rutas de informes
+            if (str_starts_with($path, 'informes')) {
+                // Permitir todas las operaciones CRUD en informes
+                // (No se añade restricción, se permite pasar al siguiente middleware)
             } else {
                 // Para otras rutas, solo permitir GET
                 if (!in_array($method, ['GET', 'HEAD'])) {
-                    return redirect()->back()->with('error', 'No tiene permisos para realizar esta acción. Solo puede ver la información.');
+                    return redirect()->back()->with('error', 'No tiene permisos para realizar esta acción en esta sección.');
                 }
             }
         }
