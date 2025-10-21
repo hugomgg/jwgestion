@@ -874,6 +874,8 @@ class ProgramaController extends Controller
             // Si meses es un string, convertirlo a array para consistencia
             if (is_string($meses)) {
                 $meses = [$meses];
+            }else {
+                $mesesSQL = implode(',', $meses);
             }
 
             // Consulta para obtener los programas con sus partes
@@ -881,6 +883,21 @@ class ProgramaController extends Controller
                 ->Join('users as creador', 'p.creador', '=', 'creador.id')
                 ->leftJoin('users as presidente', 'p.presidencia', '=', 'presidente.id')
                 ->leftJoin('congregaciones as c', 'presidente.congregacion', '=', 'c.id')
+                ->leftJoinSub("SELECT usuario,count(usuario) AS contador 
+                    FROM
+                        programas p
+                        INNER JOIN 
+                        (
+                        SELECT presidencia AS usuario,id AS programa_id FROM programas
+                        UNION 
+                        SELECT encargado_id AS usuario,programa_id FROM partes_programa
+                        UNION 
+                        SELECT ayudante_id AS usuario,programa_id FROM partes_programa
+                        ) usuarios ON usuarios.programa_id=p.id
+                    WHERE YEAR(p.fecha) = {$anio} AND MONTH(p.fecha) IN ($mesesSQL) AND usuario IS NOT null
+                    GROUP BY usuario ", 'posts_count1', function ($join) {
+                        $join->on('presidente.id', '=', 'posts_count1.usuario');
+                    })
                 ->where('creador.congregacion', $currentUser->congregacion)
                 ->whereNotNull('p.fecha');
 
@@ -905,7 +922,8 @@ class ProgramaController extends Controller
                     'p.fecha',
                     'p.presidencia',
                     'c.nombre as congregacion_nombre',
-                    'presidente.name as presidente_nombre'
+                    'presidente.name as presidente_nombre',
+                    'posts_count1.contador'
                 )
                 ->orderBy('p.fecha', 'asc')
                 ->get();
@@ -918,6 +936,36 @@ class ProgramaController extends Controller
                     ->leftJoin('users as encargadoreemplazado', 'pp.encargado_reemplazado_id', '=', 'encargadoreemplazado.id')
                     ->leftJoin('users as ayudantereemplazado', 'pp.ayudante_reemplazado_id', '=', 'ayudantereemplazado.id')
                     ->leftJoin('partes_seccion as ps', 'pp.parte_id', '=', 'ps.id')
+                    ->leftJoinSub("SELECT usuario,count(usuario) AS contador 
+                        FROM
+                            programas p
+                            INNER JOIN 
+                            (
+                            SELECT presidencia AS usuario,id AS programa_id FROM programas
+                            UNION 
+                            SELECT encargado_id AS usuario,programa_id FROM partes_programa
+                            UNION 
+                            SELECT ayudante_id AS usuario,programa_id FROM partes_programa
+                            ) usuarios ON usuarios.programa_id=p.id
+                        WHERE YEAR(p.fecha) = {$anio} AND MONTH(p.fecha) IN ($mesesSQL) AND usuario IS NOT null
+                        GROUP BY usuario ", 'posts_count2', function ($join) {
+                            $join->on('encargado.id', '=', 'posts_count2.usuario');
+                        })
+                    ->leftJoinSub("SELECT usuario,count(usuario) AS contador 
+                        FROM
+                            programas p
+                            INNER JOIN 
+                            (
+                            SELECT presidencia AS usuario,id AS programa_id FROM programas
+                            UNION 
+                            SELECT encargado_id AS usuario,programa_id FROM partes_programa
+                            UNION 
+                            SELECT ayudante_id AS usuario,programa_id FROM partes_programa
+                            ) usuarios ON usuarios.programa_id=p.id
+                        WHERE YEAR(p.fecha) = {$anio} AND MONTH(p.fecha) IN ($mesesSQL) AND usuario IS NOT null
+                        GROUP BY usuario ", 'posts_count3', function ($join) {
+                            $join->on('ayudante.id', '=', 'posts_count3.usuario');
+                        })
                     ->where('pp.programa_id', $programa->id)
                     ->select(
                         'pp.tema',
@@ -929,8 +977,9 @@ class ProgramaController extends Controller
                         'ayudantereemplazado.name as nombre_ayudante_reemplazado',
                         'pp.sala_id',
                         'ps.seccion_id',
-                        DB::raw('CASE WHEN pp.parte_id = 3 THEN 99 ELSE pp.orden END as orden')
-                    )
+                        DB::raw('CASE WHEN pp.parte_id = 3 THEN 99 ELSE pp.orden END as orden'),
+                        'posts_count2.contador as contador_encargado',
+                        'posts_count3.contador as contador_ayudante')
                     ->orderBy('ps.seccion_id', 'asc')
                     ->orderBy('pp.sala_id', 'asc')
                     ->orderBy('pp.orden', 'asc')
@@ -957,7 +1006,7 @@ class ProgramaController extends Controller
             } else {
                 $fileName .= '_' . date('Y-m-d');
             }
-DIE();
+
             // Crear Excel usando Laravel Excel
             return Excel::download(new class($programas) implements \Maatwebsite\Excel\Concerns\FromCollection, \Maatwebsite\Excel\Concerns\WithHeadings, \Maatwebsite\Excel\Concerns\WithStyles {
                 private $programas;
@@ -982,7 +1031,7 @@ DIE();
                             //Fecha en formato dd-mm-AAAA
                             'Fecha' => \Carbon\Carbon::parse($programa->fecha)->locale('es')->translatedFormat('d-m-Y'),
                             'Parte' => 'PD',
-                            'Nombre' => $programa->presidente_nombre ?: 'N/A',
+                            'Nombre' => $programa->presidente_nombre ? $programa->presidente_nombre.'('.$programa->contador.')' : 'N/A',
                             'Rol' => 'Presidente',
                             'Sala' => '1',
                             'Tiempo' => '',
@@ -1003,7 +1052,7 @@ DIE();
                                 //Fecha en formato dd-mm-AAAA
                                 'Fecha' => \Carbon\Carbon::parse($programa->fecha)->locale('es')->translatedFormat('d-m-Y'),
                                 'Parte' => $parte->parte_abreviacion ?: 'N/A',
-                                'Nombre' => $parte->nombre_encargado ?: 'N/A',
+                                'Nombre' => $parte->nombre_encargado ? $parte->nombre_encargado.'('.$parte->contador_encargado.')' : 'N/A',
                                 'Rol' => $parte->seccion_id == 2 ? 'Estudiante' : 'Encargado',
                                 'Sala' => $parte->sala_id ?: '',
                                 'Reemplazado' => $parte->nombre_encargado_reemplazado ?: '',
@@ -1024,7 +1073,7 @@ DIE();
                                     //Fecha en formato dd-mm-AAAA
                                     'Fecha' => \Carbon\Carbon::parse($programa->fecha)->locale('es')->translatedFormat('d-m-Y'),
                                     'Parte' => $parte->parte_abreviacion ?: 'N/A',
-                                    'Nombre' => $parte->nombre_ayudante,
+                                    'Nombre' => $parte->nombre_ayudante.'('.$parte->contador_ayudante.')',
                                     'Rol' => 'Ayudante',
                                     'Sala' => $parte->sala_id ?: '',
                                     'Reemplazado' => $parte->nombre_ayudante_reemplazado ?: '',
@@ -1103,6 +1152,12 @@ DIE();
             }, $fileName . '.xlsx');
 
         } catch (\Exception $e) {
+             \Log::error('❌ Error en exportación PDF:', [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'user_id' => Auth::id()
+            ]);
             return redirect()->route('programas.index')
                 ->with('error', 'Error al exportar XLS: ' . $e->getMessage());
         }
@@ -1171,7 +1226,6 @@ DIE();
                 ->orderBy('pp.orden', 'asc')
                 ->get();
 
-            // Calcular números de intervención por programa
             $asignaciones = $asignaciones->groupBy('fecha')->map(function ($asignacionesPorFecha) {
                 $numeroIntervencion = 4; // Empezar desde 4
 
