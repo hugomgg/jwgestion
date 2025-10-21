@@ -244,7 +244,7 @@ $(document).ready(function() {
         const programaId = $('#programa_id').val();
 
         $.ajax({
-            url: `/programas/${programaId}/partes-segunda-seccion`,
+            url: `/programas/${programaId}/partes-smm`,
             method: 'GET',
             success: function(response) {
                 if (response.success) {
@@ -4093,7 +4093,7 @@ $(document).ready(function() {
         const programaId = $('#programa_id').val();
 
         $.ajax({
-            url: `/programas/${programaId}/partes-nv`,
+            url: `/programas/${programaId}/partes-nvc`,
             method: 'GET',
             success: function(response) {
                 if (response.success) {

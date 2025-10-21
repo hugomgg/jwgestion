@@ -152,7 +152,7 @@ class ParteProgramaController extends Controller
     /**
      * Obtener las partes del programa de la sección Nuestra Vida Cristiana (seccion_id = 3)
      */
-    public function getPartesNV($programaId)
+    public function getPartesNVC($programaId)
     {
         try {
             $user = Auth::user();

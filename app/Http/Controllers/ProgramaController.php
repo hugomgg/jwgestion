@@ -426,7 +426,7 @@ class ProgramaController extends Controller
     /**
      * Obtener partes de programa para la segunda sección (sala principal)
      */
-    public function getPartesSegundaSeccion($programaId)
+    public function getPartesSMM($programaId)
     {
         try {
             $partes = DB::table('partes_programa as pp')
@@ -957,7 +957,7 @@ class ProgramaController extends Controller
             } else {
                 $fileName .= '_' . date('Y-m-d');
             }
-
+DIE();
             // Crear Excel usando Laravel Excel
             return Excel::download(new class($programas) implements \Maatwebsite\Excel\Concerns\FromCollection, \Maatwebsite\Excel\Concerns\WithHeadings, \Maatwebsite\Excel\Concerns\WithStyles {
                 private $programas;
