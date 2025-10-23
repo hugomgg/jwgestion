@@ -38,6 +38,9 @@ Route::middleware('auth')->group(function () {
     // Exportar PDF de programas (para coordinadores)
     Route::get('/programas/exportar-pdf', [App\Http\Controllers\ProgramaController::class, 'exportPdf'])->name('programas.export.pdf');
 
+    // Exportar Programa XLS de programas (para coordinadores)
+    Route::get('/programas/exportar-programa-xls', [App\Http\Controllers\ProgramaController::class, 'exportProgramaXls'])->name('programas.export.programa-xls');
+
     // Exportar XLS de programas (para coordinadores)
     Route::get('/programas/exportar-xls', [App\Http\Controllers\ProgramaController::class, 'exportXls'])->name('programas.export.xls');
 

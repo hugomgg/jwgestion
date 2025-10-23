@@ -88,7 +88,7 @@
                      <!--Solo la primera vez-->
                      @if($loop->first)
                     <div class="programa-header">
-                        {{ $congregacionNombre ?? 'Sin nombre' }}, Programa para la reunión de entre semana
+                        {{ $congregacionNombre ?? 'Sin nombre' }}, PROGRAMA NUESTRA VIDA CRISTIANA
                     </div>
                     @endif
                     <!-- Fecha en español -->

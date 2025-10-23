@@ -45,7 +45,7 @@ function loadPartes(programaId) {
 
 function loadPartesSegundaSeccion(programaId) {
     const tableBody = '#partesSegundaSeccionTableBody';
-    const url = '/programas/' + programaId + '/partes-segunda-seccion';
+    const url = '/programas/' + programaId + '/partes-smm';
 
     $.ajax({
         url: url,
@@ -97,7 +97,7 @@ function loadPartesSegundaSeccion(programaId) {
 
 function loadPartesNV(programaId) {
     $.ajax({
-        url: '/programas/' + programaId + '/partes-nv',
+        url: '/programas/' + programaId + '/partes-nvc',
         method: 'GET',
         success: function(response) {
             let html = '';

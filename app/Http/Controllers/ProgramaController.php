@@ -860,6 +860,121 @@ class ProgramaController extends Controller
     }
 
     /**
+     * Exportar programas a XLS con el mismo formato que el PDF
+     */
+    public function exportProgramaXls(Request $request)
+    {
+        try {
+            $currentUser = Auth::user();
+
+            // Obtener parámetros de filtro
+            $anio = $request->get('anio');
+            $meses = $request->get('mes'); // Ahora puede ser un array
+
+            // Si meses es un string, convertirlo a array para consistencia
+            if (is_string($meses)) {
+                $meses = [$meses];
+            }
+
+            // Consulta base de programas
+            $query = DB::table('programas as p')
+                ->Join('users as creador', 'p.creador', '=', 'creador.id')
+                ->leftjoin('users as presidente', 'p.presidencia', '=', 'presidente.id')
+                ->leftJoin('users as orador_inicial', 'p.orador_inicial', '=', 'orador_inicial.id')
+                ->leftJoin('users as orador_final', 'p.orador_final', '=', 'orador_final.id')
+                ->leftJoin('congregaciones as c', 'presidente.congregacion', '=', 'c.id')
+                ->where('creador.congregacion', $currentUser->congregacion);
+
+            // Aplicar filtros de fecha si se proporcionan
+            if ($anio) {
+                $query->whereRaw('YEAR(p.fecha) = ?', [$anio]);
+
+                if ($meses && is_array($meses) && !empty($meses)) {
+                    $query->where(function($q) use ($meses) {
+                        foreach ($meses as $mes) {
+                            $q->orWhereRaw('MONTH(p.fecha) = ?', [$mes]);
+                        }
+                    });
+                }
+            }
+
+            $programas = $query->select(
+                    'p.id',
+                    'p.fecha',
+                    'presidente.name as nombre_presidencia',
+                    'orador_inicial.name as nombre_orador_inicial',
+                    'orador_final.name as nombre_orador_final',
+                    'c.nombre as congregacion_nombre',
+                    'p.cancion_pre',
+                    'p.cancion_en',
+                    'p.cancion_post'
+                )
+                ->orderBy('p.fecha', 'asc')
+                ->get();
+
+            // Para cada programa, obtener sus partes con temas
+            foreach ($programas as &$programa) {
+                $programa->partes = DB::table('partes_programa as pp')
+                    ->leftJoin('users as encargado', 'pp.encargado_id', '=', 'encargado.id')
+                    ->leftJoin('users as ayudante', 'pp.ayudante_id', '=', 'ayudante.id')
+                    ->leftJoin('partes_seccion as ps', 'pp.parte_id', '=', 'ps.id')
+                    ->where('pp.programa_id', $programa->id)
+                    ->select(
+                        'pp.tema',
+                        'pp.tiempo',
+                        'pp.sala_id',
+                        'ps.nombre as parte_nombre',
+                        'encargado.name as encargado_nombre',
+                        'ayudante.name as ayudante_nombre',
+                        'pp.parte_id',
+                        'pp.orden',
+                        'ps.seccion_id'
+                    )
+                    ->orderBy('ps.seccion_id', 'asc')
+                    ->orderBy('pp.sala_id', 'asc')
+                    ->orderBy('pp.orden', 'asc')
+                    ->get();
+            }
+
+            // Verificar si hay programas para exportar
+            if ($programas->isEmpty()) {
+                return redirect()->route('programas.index')
+                    ->with('error', 'No hay programas disponibles para el período seleccionado.');
+            }
+
+            // Obtener nombre de la congregación
+            $congregacionNombre = $programas->first()->congregacion_nombre ?? 'Sin nombre';
+
+            // Preparar nombre del archivo
+            $fileName = 'programaMensual';
+            if ($anio && $meses && is_array($meses) && !empty($meses)) {
+                $primerMes = min($meses);
+                $fileName .= '_' . $anio . '_' . str_pad($primerMes, 2, '0', STR_PAD_LEFT);
+
+                if (count($meses) > 1) {
+                    $fileName .= '_multiple';
+                }
+            } else {
+                $fileName .= '_' . date('Y-m-d');
+            }
+
+            // Crear el archivo Excel
+            return Excel::download(new \App\Exports\ProgramaExport($programas, $congregacionNombre), $fileName . '.xlsx');
+
+        } catch (\Throwable $e) {
+            \Log::error('❌ Error en exportación Programa XLS:', [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'user_id' => Auth::id()
+            ]);
+
+            return redirect()->route('programas.index')
+                ->with('error', 'Error al generar el archivo Excel: ' . $e->getMessage());
+        }
+    }
+
+    /**
      * Exportar programas a XLS (para coordinadores - perfil 3 y organizadores - perfil 7)
      */
     public function exportXls(Request $request)
@@ -1152,7 +1267,7 @@ class ProgramaController extends Controller
             }, $fileName . '.xlsx');
 
         } catch (\Exception $e) {
-             \Log::error('❌ Error en exportación PDF:', [
+             \Log::error('❌ Error en exportación XLS:', [
                 'error' => $e->getMessage(),
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),

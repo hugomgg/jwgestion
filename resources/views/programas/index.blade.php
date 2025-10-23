@@ -75,6 +75,10 @@
                                                 <button type="button" class="btn btn-outline-danger" id="exportPdfBtn" disabled>
                                                     <i class="fas fa-file-pdf me-2"></i>Programa PDF
                                                 </button>
+                                                <!-- Botón Exportar Programa XLS -->
+                                                <button type="button" class="btn btn-outline-success" id="exportProgramaXlsBtn" disabled>
+                                                    <i class="fas fa-file-excel me-2"></i>Programa XLS
+                                                </button>
                                                 <!-- Botón Exportar Asignaciones -->
                                                 <button type="button" class="btn btn-outline-danger" id="exportAsignacionesBtn" disabled>
                                                     <i class="fas fa-file-pdf me-2"></i>Asignaciones SMM
@@ -286,6 +290,7 @@ $(document).ready(function() {
     // Definir rutas para exportación
     window.exportRoutes = {
         pdf: `{{ route('programas.export.pdf') }}`,
+        programaXls: `{{ route('programas.export.programa-xls') }}`,
         xls: `{{ route('programas.export.xls') }}`,
         asignaciones: `{{ route('programas.export.asignaciones') }}`
     };
