@@ -1612,7 +1612,7 @@ $(document).ready(function() {
                 async: false,
                 success: function(response) {
                     if (response.success && response.encargado_sexo) {
-                        sexoForzado = response.encargado_sexo;
+                        sexoPorDefecto = response.encargado_sexo;
                     }
                 }
             });
@@ -1659,12 +1659,6 @@ $(document).ready(function() {
                         select.append(`<option value="${usuario.id}">${usuario.display_text}</option>`);
                     });
 
-                    // Preseleccionar el encargado actual si existe
-                    const encargadoActual = $('#encargado_id_segunda_seccion').val();
-                    if (encargadoActual) {
-                        select.val(encargadoActual).trigger('change');
-                    }
-
                     // Inicializar Select2 para el historial si no está ya inicializado
                     const selectHistorial = $('#select_historial_encargado_segunda_seccion');
                     if (!selectHistorial.hasClass('select2-hidden-accessible')) {
@@ -1676,11 +1670,28 @@ $(document).ready(function() {
                         });
                     }
 
+                    // Preseleccionar el encargado actual si existe
+                    const encargadoActual = $('#encargado_id_segunda_seccion').val();
+
                     // Preseleccionar el encargado actual si existe (ya declarado arriba)
                     if (encargadoActual) {
-                        select.val(encargadoActual).trigger('change');
+                        select.val(encargadoActual);
                         loadHistorialEncargadoSegundaSeccion(encargadoActual,parteId);
                     }
+
+                    // Cuando se seleccione un encargado, habilitar el botón Seleccionar y cargar historial
+                    select.off('change.select_encargado_segunda_seccion').on('change.select_encargado_segunda_seccion', function() {
+                        const encargadoSeleccionado = $(this).val();
+                        const parteId = $('#parte_id_segunda_seccion').val();
+                        //Vaciamos el select de historial
+                        $('#confirmarEncargadoSegundaSeccion').prop('disabled', !encargadoSeleccionado);
+                        // Cargar historial del encargado seleccionado
+                        if (encargadoSeleccionado) {
+                            loadHistorialEncargadoSegundaSeccion(encargadoSeleccionado,parteId);
+                        } else {
+                            clearHistorialEncargadoSegundaSeccion();
+                        }
+                    });
                 } else {
                     alert('Error al cargar los usuarios: ' + response.message);
                 }
@@ -1688,19 +1699,6 @@ $(document).ready(function() {
             error: function(xhr) {
                 alert('Error al cargar los usuarios participantes');
                 console.error(xhr);
-            }
-        });
-        // Cuando se seleccione un encargado, habilitar el botón Seleccionar y cargar historial
-        $(document).off('change.select_encargado_segunda_seccion').on('change.select_encargado_segunda_seccion', '#select_encargado_segunda_seccion', function() {
-            const encargadoIdDinamico = $(this).val();
-            //Vaciamos el select de historial
-            $('#confirmarEncargadoSegundaSeccion').prop('disabled', !encargadoIdDinamico);
-
-            // Cargar historial del encargado seleccionado
-            if (encargadoIdDinamico) {
-                loadHistorialEncargadoSegundaSeccion(encargadoIdDinamico,parteId);
-            } else {
-                clearHistorialEncargadoSegundaSeccion();
             }
         });
     }
@@ -3372,7 +3370,8 @@ $(document).ready(function() {
 
         // Abrir modal y cargar usuarios con participaciones en la parte seleccionada
         $('#buscarEncargadoParteModal').modal('show');
-
+        // Al abrir el modal, deshabilitar el botón Seleccionar
+        $('#confirmarEncargadoParte').prop('disabled', true);
         // Cargar usuarios que han participado como encargados en esta parte
         $.ajax({
             url: `/encargados-por-parte-programa/${parteId}`,
@@ -3414,21 +3413,21 @@ $(document).ready(function() {
                     // Preseleccionar el encargado actual si existe
                     const encargadoActual = $('#encargado_id').val();
                     if (encargadoActual) {
-                        select.val(encargadoActual).trigger('change');
+                        select.val(encargadoActual);
+                        cargarHistorialEncargado(encargadoActual, parteId);
                     }
 
                     // Agregar event listener para cargar historial cuando se selecciona un encargado
                     select.off('change.historial').on('change.historial', function() {
                         const encargadoSeleccionado = $(this).val();
                         const parteId = $('#parte_id').val();
-
+                        $('#confirmarEncargadoParte').prop('disabled', !encargadoSeleccionado);
                         if (encargadoSeleccionado && parteId) {
                             cargarHistorialEncargado(encargadoSeleccionado, parteId);
                         } else {
                             // Limpiar historial si no hay selección
                             const historialSelect = $('#select_historial_encargado_parte');
-                            historialSelect.empty();
-                            historialSelect.append('<option value="">Seleccione un encargado primero...</option>');
+                            historialSelect.empty().append('<option value="">Seleccione un encargado primero...</option>');
                             historialSelect.prop('disabled', true);
                         }
                     });
@@ -4353,6 +4352,8 @@ $(document).ready(function() {
         // Abrir modal y cargar usuarios con participaciones en la parte seleccionada
         $('#buscarEncargadoParteNVModal').modal('show');
 
+        // Al abrir el modal, deshabilitar el botón Seleccionar
+        $('#confirmarEncargadoParteNV').prop('disabled', true);
         // Cargar usuarios que han participado como encargados en esta parte
         $.ajax({
             url: `/encargados-por-parte-programa/${parteId}`,
@@ -4394,21 +4395,21 @@ $(document).ready(function() {
                     // Preseleccionar el encargado actual si existe
                     const encargadoActual = $('#encargado_id_nv').val();
                     if (encargadoActual) {
-                        select.val(encargadoActual).trigger('change');
+                        select.val(encargadoActual);
+                        cargarHistorialEncargadoNV(encargadoActual, parteId);
                     }
 
                     // Agregar event listener para cargar historial cuando se selecciona un encargado
                     select.off('change.historial_nv').on('change.historial_nv', function() {
                         const encargadoSeleccionado = $(this).val();
                         const parteId = $('#parte_id_nv').val();
-
+                        $('#confirmarEncargadoParteNV').prop('disabled', !encargadoSeleccionado);
                         if (encargadoSeleccionado && parteId) {
                             cargarHistorialEncargadoNV(encargadoSeleccionado, parteId);
                         } else {
                             // Limpiar historial si no hay selección
                             const historialSelect = $('#select_historial_encargado_parte_nv');
-                            historialSelect.empty();
-                            historialSelect.append('<option value="">Seleccione un encargado primero...</option>');
+                            historialSelect.empty().append('<option value="">Seleccione un encargado primero...</option>');
                             historialSelect.prop('disabled', true);
                         }
                     });
