@@ -204,7 +204,25 @@ class ProgramaController extends Controller
             // Obtener la sección de reunión con id=1 para el título
             $seccionReunion = SeccionReunion::find(1);
 
-            return view('programas.edit', compact('programa', 'usuarios', 'canciones', 'seccionReunion', 'usuariosPresidencia', 'usuariosOradorInicial', 'salas', 'currentUser'));
+            // Obtener programa anterior (fecha anterior más cercana)
+            $programaAnterior = DB::table('programas')
+                ->join('users as creador', 'programas.creador', '=', 'creador.id')
+                ->where('creador.congregacion', $currentUser->congregacion)
+                ->where('programas.fecha', '<', $programa->fecha)
+                ->orderBy('programas.fecha', 'desc')
+                ->select('programas.id')
+                ->first();
+
+            // Obtener programa posterior (fecha posterior más cercana)
+            $programaPosterior = DB::table('programas')
+                ->join('users as creador', 'programas.creador', '=', 'creador.id')
+                ->where('creador.congregacion', $currentUser->congregacion)
+                ->where('programas.fecha', '>', $programa->fecha)
+                ->orderBy('programas.fecha', 'asc')
+                ->select('programas.id')
+                ->first();
+
+            return view('programas.edit', compact('programa', 'usuarios', 'canciones', 'seccionReunion', 'usuariosPresidencia', 'usuariosOradorInicial', 'salas', 'currentUser', 'programaAnterior', 'programaPosterior'));
         } catch (\Exception $e) {
             return redirect()->route('programas.index')
                 ->with('error', 'Programa no encontrado.');
@@ -223,7 +241,25 @@ class ProgramaController extends Controller
             // Obtener la sección de reunión con id=1 para el título
             $seccionReunion = SeccionReunion::find(1);
 
-            return view('programas.show', compact('programa', 'seccionReunion', 'currentUser'));
+            // Obtener programa anterior (fecha anterior más cercana)
+            $programaAnterior = DB::table('programas')
+                ->join('users as creador', 'programas.creador', '=', 'creador.id')
+                ->where('creador.congregacion', $currentUser->congregacion)
+                ->where('programas.fecha', '<', $programa->fecha)
+                ->orderBy('programas.fecha', 'desc')
+                ->select('programas.id')
+                ->first();
+
+            // Obtener programa posterior (fecha posterior más cercana)
+            $programaPosterior = DB::table('programas')
+                ->join('users as creador', 'programas.creador', '=', 'creador.id')
+                ->where('creador.congregacion', $currentUser->congregacion)
+                ->where('programas.fecha', '>', $programa->fecha)
+                ->orderBy('programas.fecha', 'asc')
+                ->select('programas.id')
+                ->first();
+
+            return view('programas.show', compact('programa', 'seccionReunion', 'currentUser', 'programaAnterior', 'programaPosterior'));
         } catch (\Exception $e) {
             return redirect()->route('programas.index')
                 ->with('error', 'Programa no encontrado.');

@@ -38,7 +38,8 @@ class ProgramaExport implements FromCollection, WithHeadings, WithStyles, WithCo
             if ($data->isEmpty() || ($this->currentRow-1) % 2 == 1) {
                 $data->push([
                     'tema' => $this->congregacionNombre . ', PROGRAMA NUESTRA VIDA CRISTIANA',
-                    'asignado' => ''
+                    'asignado' => '',
+                    'ayudante' => ''
                 ]);
                 //$data->push(['', '']); // Línea en blanco
             }
@@ -47,19 +48,22 @@ class ProgramaExport implements FromCollection, WithHeadings, WithStyles, WithCo
             $fechaFormateada = \Carbon\Carbon::parse($programa->fecha)->locale('es')->translatedFormat('l j \d\e F \d\e Y');
             $data->push([
                 'tema' => $fechaFormateada,
-                'asignado' => ''
+                'asignado' => '',
+                'ayudante' => ''
             ]);
             $data->push(['', '']); // Línea en blanco
             // Canción inicial y orador
             $data->push([
                 'tema' => 'Canción: ' . ($programa->cancion_pre ?? 'Sin asignar'),
-                'asignado' => 'ORADOR INICIAL: ' . ($programa->nombre_orador_inicial ?? 'Sin asignar')
+                'asignado' => 'ORADOR INICIAL: ',
+                'ayudante' => ($programa->nombre_orador_inicial ?? 'Sin asignar')
             ]);
 
             // Palabras de introducción
             $data->push([
                 'tema' => '01 min. Palabras de introducción (Presidente)',
-                'asignado' => $programa->nombre_presidencia ?? 'Sin asignar'
+                'asignado' => '',
+                'ayudante' => $programa->nombre_presidencia ?? 'Sin asignar'
             ]);
 
             if ($programa->partes && count($programa->partes) > 0) {
@@ -93,12 +97,13 @@ class ProgramaExport implements FromCollection, WithHeadings, WithStyles, WithCo
                         $contenido = "{$tiempo} min. {$contador}) " . ($parte->tema ?? $parte->parte_nombre);
                         $data->push([
                             'tema' => $contenido,
-                            'asignado' => $parte->encargado_nombre ?? 'Sin asignar'
+                            'asignado' => '',
+                            'ayudante' => $parte->encargado_nombre ?? 'Sin asignar',
                         ]);
                         $contador++;
                     }
                     for($i = $contador; $i <= 4; $i++){
-                        $data->push(['', '']);
+                        $data->push(['', '', '']);
                     }
                 }
 
@@ -109,18 +114,18 @@ class ProgramaExport implements FromCollection, WithHeadings, WithStyles, WithCo
                     foreach ($mejoresMaestrosPrincipal as $parte) {
                         $tiempo = str_pad($parte->tiempo ?? '', 2, '0', STR_PAD_LEFT);
                         $contenido = "{$tiempo} min. {$contador}) " . ($parte->tema ?? $parte->parte_nombre);
+                        $ayudante = $parte->ayudante_nombre ?? 'Sin asignar';
                         $asignado = $parte->encargado_nombre ?? 'Sin asignar';
-                        if ($parte->ayudante_nombre) {
-                            $asignado .= ' | ' . $parte->ayudante_nombre;
-                        }
+
                         $data->push([
                             'tema' => $contenido,
-                            'asignado' => $asignado
+                            'asignado' => $asignado,
+                            'ayudante' => "|".$ayudante
                         ]);
                         $contador++;
                     }
                     for($i = $contador; $i <= 7; $i++){
-                        $data->push(['', '']);
+                        $data->push(['', '', '']);
                     }
                 }
 
@@ -132,17 +137,16 @@ class ProgramaExport implements FromCollection, WithHeadings, WithStyles, WithCo
                         $tiempo = str_pad($parte->tiempo ?? '', 2, '0', STR_PAD_LEFT);
                         $contenido = "{$tiempo} min. {$contador}) " . ($parte->tema ?? $parte->parte_nombre);
                         $asignado = $parte->encargado_nombre ?? 'Sin asignar';
-                        if ($parte->ayudante_nombre) {
-                            $asignado .= ' | ' . $parte->ayudante_nombre;
-                        }
+                        $ayudante = $parte->ayudante_nombre ?? 'Sin asignar';
                         $data->push([
                             'tema' => $contenido,
-                            'asignado' => $asignado
+                            'asignado' => $asignado,
+                            'ayudante' => "|".$ayudante
                         ]);
                         $contador++;
                     }
                     for($i = $contador; $i <= 7; $i++){
-                        $data->push(['', '']);
+                        $data->push(['', '', '']);
                     }
                 }
 
@@ -153,79 +157,66 @@ class ProgramaExport implements FromCollection, WithHeadings, WithStyles, WithCo
                     // Canción intermedia
                     $data->push([
                         'tema' => 'Canción: ' . ($programa->cancion_en ?? 'Sin asignar'),
-                        'asignado' => ''
+                        'asignado' => '',
+                        'ayudante' => ''
                     ]);
 
                     $contador = $mejoresMaestrosPrincipal->count() + 4;
                     $partesArray = $vidaCristiana->values();
                     $indiceParte=0;
                     foreach ($vidaCristiana as $index => $parte) {
-                        // Si es la penúltima parte y la última es la lectura (parte_id 24)
-                        if ($indiceParte == ($vidaCristiana->count() - 2) &&
-                            $vidaCristiana->count() > 1 &&
-                            $partesArray[$vidaCristiana->count() - 1]->parte_id == 24) {
-
-                            $tiempo = str_pad($parte->tiempo ?? '', 2, '0', STR_PAD_LEFT);
-                            $contenido = "{$tiempo} min. {$contador}) " . ($parte->tema ?? $parte->parte_nombre);
-                            $asignado = ($parte->encargado_nombre ?? 'Sin asignar') .
-                                       ' | LECTOR: ' . ($partesArray[$vidaCristiana->count() - 1]->encargado_nombre ?? 'Sin asignar');
-
-                            $data->push([
-                                'tema' => $contenido,
-                                'asignado' => $asignado
-                            ]);
-                            break;
-                        }
-
-                        // Parte normal de vida cristiana
-                        if ($parte->parte_id != 24 || $vidaCristiana->count() == 1 || $indiceParte < ($vidaCristiana->count() - 2)) {
-                            $tiempo = str_pad($parte->tiempo ?? '', 2, '0', STR_PAD_LEFT);
-                            $contenido = "{$tiempo} min. {$contador}) " . ($parte->tema ?? $parte->parte_nombre);
-                            $data->push([
-                                'tema' => $contenido,
-                                'asignado' => $parte->encargado_nombre ?? 'Sin asignar'
-                            ]);
-                        }
+                        $tiempo = str_pad($parte->tiempo ?? '', 2, '0', STR_PAD_LEFT);
+                        $contenido = $parte->parte_id != 24 ? "{$tiempo} min. {$contador}) " . ($parte->tema ?? $parte->parte_nombre) : $parte->parte_nombre;
+                        $data->push([
+                            'tema' => $contenido,
+                            'asignado' => '',
+                            'ayudante' => $parte->encargado_nombre ?? 'Sin asignar'
+                        ]);
                         $indiceParte++;
                         $contador++;
                     }
-                    for($i = $indiceParte; $i <= 2; $i++){
-                        $data->push(['', '']);
+                    for($i = $indiceParte; $i <= 3; $i++){
+                        $data->push(['', '', '']);
                     }
                 }
                 if($programa->nombre_presidencia){
                     // Palabras de conclusión
                     $data->push([
                         'tema' => '03 min. Palabras de conclusión (Presidente)',
-                        'asignado' => $programa->nombre_presidencia ?? 'Sin asignar'
+                        'asignado' => '',
+                        'ayudante' => $programa->nombre_presidencia ?? 'Sin asignar'
                     ]);
                 }else{
-                    $data->push(['', '']);
+                    $data->push(['', '', '']);
                 }
                 // Canción final y orador final
                 if ($programa->cancion_post) {
                     $data->push([
                         'tema' => 'Canción: ' . ($programa->cancion_post ?? 'Sin asignar'),
-                        'asignado' => 'ORADOR FINAL: ' . ($programa->nombre_orador_final ?? 'Sin asignar')
+                        'asignado' => 'ORADOR FINAL: ',
+                        'ayudante' => ($programa->nombre_orador_final ?? 'Sin asignar')
                     ]);
                 }else{
                     // Línea en blanco entre programas
-                    $data->push(['', '']);
+                    $data->push(['', '', '']);
                 }
             } else {
                 // Si no hay partes, mostrar datos básicos
                 $data->push([
                     'tema' => 'Presidente',
-                    'asignado' => $programa->nombre_presidencia ?? 'Sin asignar'
+                    'asignado' => '',
+                    'ayudante' => $programa->nombre_presidencia ?? 'Sin asignar'
                 ]);
                 $data->push([
                     'tema' => 'Orador inicial',
-                    'asignado' => $programa->nombre_orador_inicial ?? 'Sin asignar'
+                    'asignado' => '',
+                    'ayudante' => $programa->nombre_orador_inicial ?? 'Sin asignar'
                 ]);
                 if ($programa->nombre_orador_final) {
                     $data->push([
                         'tema' => 'Oración final',
-                        'asignado' => $programa->nombre_orador_final
+                        'asignado' => '',
+                        'ayudante' => $programa->nombre_orador_final ?? 'Sin asignar'
                     ]);
                 }
             }
@@ -241,6 +232,7 @@ class ProgramaExport implements FromCollection, WithHeadings, WithStyles, WithCo
     {
         return [
             '',
+            '',
             ''
         ];
     }
@@ -252,7 +244,8 @@ class ProgramaExport implements FromCollection, WithHeadings, WithStyles, WithCo
     {
         return [
             'A' => 45,
-            'B' => 45,
+            'B' => 23,
+            'C' => 22,
         ];
     }
 
@@ -273,7 +266,8 @@ class ProgramaExport implements FromCollection, WithHeadings, WithStyles, WithCo
         $highestRow = $sheet->getHighestRow();
 
         // Estilos generales. Con border abajo gris claro, border verticales blancos
-        $sheet->getStyle('A1:B' . $highestRow)->applyFromArray([
+        $sheet->getStyle('A1:C' . $highestRow)->applyFromArray([
+           
             'borders' => [
                 'vertical' => [
                     'borderStyle' => Border::BORDER_THIN,
@@ -284,6 +278,14 @@ class ProgramaExport implements FromCollection, WithHeadings, WithStyles, WithCo
                     'color' => ['rgb' => 'D9D9D9'],
                 ],
             ],
+            /*
+            'borders' => [
+                'bottom' => [ // 👈 solo borde inferior
+                    'borderStyle' => Border::BORDER_THIN,
+                    'color' => ['rgb' => 'FF0000'], // rojo (hex)
+                ],
+            ],
+             */
         ]);
 
         // Procesar cada fila para aplicar estilos
@@ -293,8 +295,8 @@ class ProgramaExport implements FromCollection, WithHeadings, WithStyles, WithCo
             // Título de la congregación (primera, tercera, quinta.... fila)
             if ($row == 1 || strpos($cellValue, 'PROGRAMA NUESTRA VIDA CRISTIANA') !== false) {
                 $sheet->getRowDimension($row)->setRowHeight(45);
-                $sheet->mergeCells('A' . $row . ':B' . $row);
-                $sheet->getStyle('A' . $row)->applyFromArray([
+                $sheet->mergeCells('A' . $row . ':C' . $row);
+                $sheet->getStyle('A' . $row . ':C' . $row)->applyFromArray([
                     'font' => [
                         'bold' => true,
                         'size' => 18,
@@ -307,15 +309,17 @@ class ProgramaExport implements FromCollection, WithHeadings, WithStyles, WithCo
                         'fillType' => Fill::FILL_SOLID,
                         'startColor' => ['rgb' => 'FFFFFF'],
                     ],
-                    'horizontal' => [
-                    'borderStyle' => Border::BORDER_THIN,
-                    'color' => ['rgb' => 'FFFFFF'],
-                ],
+                    'borders' => [
+                        'top' => [ // 👈 solo borde superior
+                            'borderStyle' => Border::BORDER_THIN,
+                            'color' => ['rgb' => 'FFFFFF'], // blanco (hex)
+                        ],
+                    ],
                 ]);
             }
             // Fecha del programa. Expresion regular para fechas=$cellValue, ejemplo: lunes 5 de noviembre de 2024
             elseif (preg_match('/^(lunes|martes|miércoles|jueves|viernes|sábado|domingo) \d{1,2} de (enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre) de \d{4}$/', $cellValue)) {
-                $sheet->mergeCells('A' . $row . ':B' . $row);
+                $sheet->mergeCells('A' . $row . ':C' . $row);
                 $sheet->getStyle('A' . $row)->applyFromArray([
                     'font' => [
                         'bold' => true,
@@ -334,7 +338,7 @@ class ProgramaExport implements FromCollection, WithHeadings, WithStyles, WithCo
             }
             // Encabezados de sección
             elseif (strpos($cellValue, 'TESOROS DE LA BIBLIA') !== false) {
-                $sheet->mergeCells('A' . $row . ':B' . $row);
+                $sheet->mergeCells('A' . $row . ':C' . $row);
                 $sheet->getStyle('A' . $row)->applyFromArray([
                     'font' => [
                         'bold' => true,
@@ -349,7 +353,7 @@ class ProgramaExport implements FromCollection, WithHeadings, WithStyles, WithCo
                 ]);
             }
             elseif (strpos($cellValue, 'SEAMOS MEJORES MAESTROS') !== false) {
-                $sheet->mergeCells('A' . $row . ':B' . $row);
+                $sheet->mergeCells('A' . $row . ':C' . $row);
                 $sheet->getStyle('A' . $row)->applyFromArray([
                     'font' => [
                         'bold' => true,
@@ -364,7 +368,7 @@ class ProgramaExport implements FromCollection, WithHeadings, WithStyles, WithCo
                 ]);
             }
             elseif (strpos($cellValue, 'NUESTRA VIDA CRISTIANA') !== false) {
-                $sheet->mergeCells('A' . $row . ':B' . $row);
+                $sheet->mergeCells('A' . $row . ':C' . $row);
                 $sheet->getStyle('A' . $row)->applyFromArray([
                     'font' => [
                         'bold' => true,
@@ -401,11 +405,21 @@ class ProgramaExport implements FromCollection, WithHeadings, WithStyles, WithCo
                         'vertical' => Alignment::VERTICAL_CENTER,
                     ],
                 ]);
+                $sheet->getStyle('C' . $row)->applyFromArray([
+                    'font' => [
+                        'bold' => true,
+                        'size' => 8,
+                    ],
+                    'alignment' => [
+                        'horizontal' => Alignment::HORIZONTAL_LEFT,
+                        'vertical' => Alignment::VERTICAL_CENTER,
+                    ],
+                ]);
             }else {
                 // Estilo por defecto para otras filas columna A
                 $sheet->getStyle('A' . $row)->applyFromArray([
                     'font' => [
-                        'size' => 9,
+                        'size' => 10,
                     ],
                     'alignment' => [
                         'vertical' => Alignment::VERTICAL_CENTER,
@@ -414,10 +428,19 @@ class ProgramaExport implements FromCollection, WithHeadings, WithStyles, WithCo
                 // Estilo por defecto para otras filas columna B font-family: Cascadia Mono
                 $sheet->getStyle('B' . $row)->applyFromArray([
                     'font' => [
-                        'size' => 10,
+                        'size' => 8,
                     ],
                     'alignment' => [
                         'horizontal' => Alignment::HORIZONTAL_RIGHT,
+                        'vertical' => Alignment::VERTICAL_CENTER,
+                    ],
+                ]);
+                $sheet->getStyle('C' . $row)->applyFromArray([
+                    'font' => [
+                        'size' => 8,
+                    ],
+                    'alignment' => [
+                        'horizontal' => Alignment::HORIZONTAL_LEFT,
                         'vertical' => Alignment::VERTICAL_CENTER,
                     ],
                 ]);

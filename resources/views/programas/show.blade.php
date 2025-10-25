@@ -14,7 +14,40 @@
                             </h5>
                         </div>
                         <div class="col-md-6">
-                            <div class="d-flex justify-content-end">
+                            <div class="d-flex justify-content-end gap-2">
+                                <!-- Botón Programa Anterior -->
+                                @if(isset($programaAnterior) && $programaAnterior)
+                                <a href="{{ route('programas.show', $programaAnterior->id) }}" 
+                                   class="btn btn-outline-primary" 
+                                   title="Programa anterior">
+                                    <i class="fas fa-chevron-left"></i>
+                                </a>
+                                @else
+                                <button type="button" 
+                                        class="btn btn-outline-secondary" 
+                                        disabled 
+                                        title="No hay programa anterior">
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                                @endif
+
+                                <!-- Botón Programa Posterior -->
+                                @if(isset($programaPosterior) && $programaPosterior)
+                                <a href="{{ route('programas.show', $programaPosterior->id) }}" 
+                                   class="btn btn-outline-primary" 
+                                   title="Programa posterior">
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                                @else
+                                <button type="button" 
+                                        class="btn btn-outline-secondary" 
+                                        disabled 
+                                        title="No hay programa posterior">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                                @endif
+
+                                <!-- Botón Volver -->
                                 <a href="{{ route('programas.index') }}" class="btn btn-secondary">
                                     <i class="fas fa-arrow-left me-2"></i>Volver a Programas
                                 </a>

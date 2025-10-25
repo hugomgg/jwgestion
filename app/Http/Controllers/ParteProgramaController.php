@@ -190,7 +190,7 @@ class ParteProgramaController extends Controller
                     'encargado.name as encargado_nombre',
                     'ayudante.name as ayudante_nombre',
                     'encargado_reemplazado.name as encargado_reemplazado_nombre',
-                    DB::raw("CASE WHEN pp.parte_id=24 THEN '-' ELSE (row_number() OVER (PARTITION BY pp.sala_id ORDER BY pp.sala_id, pp.orden)) + (${count} + 3) END as numero")
+                    DB::raw("CASE WHEN pp.parte_id=24 THEN '-' ELSE (row_number() OVER (PARTITION BY pp.sala_id ORDER BY pp.sala_id, pp.orden)) + ({$count} + 3) END as numero")
                 )
                 ->get();
 
