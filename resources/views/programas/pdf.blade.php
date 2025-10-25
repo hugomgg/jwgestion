@@ -208,15 +208,14 @@
                                 @endif
                                 <div class="parte-item">
                                     <div class="parte-content">
-                                        {{ str_pad($parte->tiempo ?? '', 2, '0', STR_PAD_LEFT) }} min. {{ ($loop->iteration + $mejoresMaestrosPrincipal->count() + 3) }}) {{ $parte->tema ?? $parte->parte_nombre }}
+                                        @if($parte->parte_id == 24)
+                                            {{ $parte->parte_nombre }}:
+                                        @else
+                                            {{ str_pad($parte->tiempo ?? '', 2, '0', STR_PAD_LEFT) }} min. {{ ($loop->iteration + $mejoresMaestrosPrincipal->count() + 3) }}) {{ $parte->tema ?? $parte->parte_nombre }}
+                                        @endif
                                     </div>
                                     <div class="parte-asignado">
                                         {{ $parte->encargado_nombre ?? 'Sin asignar' }}
-                                        <!-- Si es la penultima parte de nuestra vida cristiana, mostrar el nombre del encargado de la última parte y romper el ciclo -->
-                                        @if($loop->iteration == ($vidaCristiana->count() - 1) && $vidaCristiana->count() > 1 && $vidaCristiana->last()->parte_id == 24)
-                                            | LECTOR: {{ mb_str_pad(substr($vidaCristiana->last()->encargado_nombre, 0, 20), 20, '.', STR_PAD_RIGHT) }} </div></div>
-                                            @break
-                                        @endif
                                     </div>
                                 </div>
                             @endforeach
@@ -231,7 +230,7 @@
                                 {{ $programa->nombre_presidencia ?? 'Sin asignar' }}
                             </div>
                         </div>
-                        @if($programa->nombre_orador_final)
+                        @if($programa->cancion_post || $programa->nombre_orador_final)
                             <div class="parte-item">
                                 <div class="parte-content">
                                     Canción: {{ $programa->cancion_post ?? 'Sin asignar' }}
@@ -241,7 +240,6 @@
                                 </div>
                             </div>
                         @endif
-
                     @else
                         <!-- Si no hay partes, mostrar datos básicos -->
                         <div class="parte-item">

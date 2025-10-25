@@ -267,7 +267,6 @@ class ProgramaExport implements FromCollection, WithHeadings, WithStyles, WithCo
 
         // Estilos generales. Con border abajo gris claro, border verticales blancos
         $sheet->getStyle('A1:C' . $highestRow)->applyFromArray([
-           
             'borders' => [
                 'vertical' => [
                     'borderStyle' => Border::BORDER_THIN,
@@ -278,14 +277,6 @@ class ProgramaExport implements FromCollection, WithHeadings, WithStyles, WithCo
                     'color' => ['rgb' => 'D9D9D9'],
                 ],
             ],
-            /*
-            'borders' => [
-                'bottom' => [ // 👈 solo borde inferior
-                    'borderStyle' => Border::BORDER_THIN,
-                    'color' => ['rgb' => 'FF0000'], // rojo (hex)
-                ],
-            ],
-             */
         ]);
 
         // Procesar cada fila para aplicar estilos
@@ -445,11 +436,6 @@ class ProgramaExport implements FromCollection, WithHeadings, WithStyles, WithCo
                     ],
                 ]);
             }
-        }
-
-        // Ajustar altura de filas
-        for ($row = 1; $row <= $highestRow; $row++) {
-            //$sheet->getRowDimension($row)->setRowHeight(18);
         }
 
         return [];
