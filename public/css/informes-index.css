@@ -263,9 +263,3 @@
 .form-label::after {
     content: "";
 }
-
-.form-label:has(+ .form-control[required])::after,
-.form-label:has(+ .form-select[required])::after {
-    content: " *";
-    color: #dc3545;
-}

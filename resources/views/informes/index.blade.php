@@ -194,7 +194,7 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="anio" class="form-label">Año </label>
+                                <label for="anio" class="form-label">Año *</label>
                                 <select class="form-select" id="anio" name="anio" required>
                                     <option value="">Seleccionar año...</option>
                                     @foreach($anios as $i)
@@ -206,7 +206,7 @@
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="mes" class="form-label">Mes </label>
+                                <label for="mes" class="form-label">Mes *</label>
                                 <select class="form-select" id="mes" name="mes" required>
                                     <option value="">Seleccionar mes...</option>
                                     <option value="1">Enero</option>
@@ -230,7 +230,7 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="grupo_id" class="form-label">Grupo </label>
+                                <label for="grupo_id" class="form-label">Grupo *</label>
                                 <select class="form-select" id="grupo_id" name="grupo_id" required>
                                     <option value="">Seleccionar grupo...</option>
                                     @foreach($grupos as $grupo)
@@ -242,7 +242,7 @@
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="user_id" class="form-label">Publicador </label>
+                                <label for="user_id" class="form-label">Publicador *</label>
                                 <select class="form-select" id="user_id" name="user_id" required>
                                     <option value="">Seleccionar publicador...</option>
                                     {{-- Los usuarios se cargarán dinámicamente al seleccionar un grupo --}}
@@ -255,7 +255,7 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="servicio_id" class="form-label">Servicio </label>
+                                <label for="servicio_id" class="form-label">Servicio *</label>
                                 <select class="form-select" id="servicio_id" name="servicio_id" required>
                                     <option value="">Seleccionar servicio...</option>
                                     @foreach($servicios as $servicio)
@@ -267,7 +267,7 @@
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="participa" class="form-label">Participación </label>
+                                <label for="participa" class="form-label">Participación *</label>
                                 <select class="form-select" id="participa" name="participa" required>
                                     <option value="">Seleccionar participación...</option>
                                     <option value="1">Sí</option>
@@ -342,7 +342,7 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="edit_anio" class="form-label">Año </label>
+                                <label for="edit_anio" class="form-label">Año *</label>
                                 <input type="text" class="form-control" id="edit_anio_display" readonly>
                                 <input type="hidden" id="edit_anio" name="anio">
                                 <div class="invalid-feedback"></div>
@@ -350,7 +350,7 @@
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="edit_mes" class="form-label">Mes </label>
+                                <label for="edit_mes" class="form-label">Mes *</label>
                                 <input type="text" class="form-control" id="edit_mes_display" readonly>
                                 <input type="hidden" id="edit_mes" name="mes">
                                 <div class="invalid-feedback"></div>
@@ -361,7 +361,7 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="edit_grupo_id" class="form-label">Grupo </label>
+                                <label for="edit_grupo_id" class="form-label">Grupo *</label>
                                 <input type="text" class="form-control" id="edit_grupo_display" readonly>
                                 <input type="hidden" id="edit_grupo_id" name="grupo_id">
                                 <div class="invalid-feedback"></div>
@@ -369,7 +369,7 @@
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="edit_user_id" class="form-label">Publicador </label>
+                                <label for="edit_user_id" class="form-label">Publicador *</label>
                                 <input type="text" class="form-control" id="edit_user_display" readonly>
                                 <input type="hidden" id="edit_user_id" name="user_id">
                                 <div class="invalid-feedback"></div>
@@ -380,7 +380,7 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="edit_servicio_id" class="form-label">Servicio </label>
+                                <label for="edit_servicio_id" class="form-label">Servicio *</label>
                                 <select class="form-select" id="edit_servicio_id" name="servicio_id" required>
                                     <option value="">Seleccionar servicio...</option>
                                     @foreach($servicios as $servicio)
@@ -392,7 +392,7 @@
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="edit_participa" class="form-label">Participación </label>
+                                <label for="edit_participa" class="form-label">Participación *</label>
                                 <select class="form-select" id="edit_participa" name="participa" required>
                                     <option value="">Seleccionar participación...</option>
                                     <option value="1">Sí</option>
