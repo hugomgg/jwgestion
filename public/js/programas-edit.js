@@ -285,11 +285,11 @@ $(document).ready(function() {
 
                         let rowData = [
                             numero, // Columna Número
-                            salaBadge,
-                            parte.tiempo || '-',
                             parte.parte_abreviacion || '-',
                             parte.encargado_nombre || '-',
                             parte.ayudante_nombre || '-',
+                            salaBadge,
+                            parte.tiempo || '-',
                             parte.leccion || '-',
                             acciones
                         ];
@@ -342,9 +342,9 @@ $(document).ready(function() {
 
                         let rowData = [
                             numero, // Columna Número
-                            parte.tiempo || '-',
                             parte.parte_abreviacion || '-',
                             parte.encargado_nombre || '-',
+                            parte.tiempo || '-',
                             parte.tema || '-'
                         ];
 
@@ -4123,9 +4123,9 @@ $(document).ready(function() {
 
                         let rowData = [
                             numero, // Columna Número
-                            parte.tiempo || '-',
                             parte.parte_abreviacion || '-',
                             parte.encargado_nombre || '-',
+                            parte.tiempo || '-',
                             parte.tema || '-',
                             acciones
                         ];

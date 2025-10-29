@@ -60,28 +60,28 @@ div.select2-container--bootstrap-5 .select2-selection__rendered {
 /* Estilos específicos para las columnas de las tablas de escuela */
 #partesTable th:nth-child(1),
 #partesNVTable th:nth-child(1) {
-    width: 100px !important;
-    min-width: 100px !important;
+    width: 50px !important;
+    min-width: 50px !important;
 }
 #partesTable th:nth-child(2),
 #partesNVTable th:nth-child(2) {
-    width: 100px !important;
-    min-width: 100px !important;
+    width: 50px !important;
+    min-width: 50px !important;
 }
 #partesTable th:nth-child(3),
 #partesNVTable th:nth-child(3) {
-    width: 100px !important;
+    width: 400px !important;
     min-width: 300px !important;
 }
 #partesTable th:nth-child(4),
 #partesNVTable th:nth-child(4) {
-    width: 300px !important;
-    min-width: 300px !important;
+    width: 50px !important;
+    min-width: 50px !important;
 }
 #partesTable th:nth-child(5),
 #partesNVTable th:nth-child(5) {
-    width: 300px !important;
-    min-width: 100px !important;
+    width: 350px !important;
+    min-width: 250px !important;
 }
 #partesTable th:nth-child(6),
 #partesNVTable th:nth-child(6) {
@@ -92,33 +92,33 @@ div.select2-container--bootstrap-5 .select2-selection__rendered {
 
 /* Estilos específicos para las columnas de las tablas de escuela */
 #partesSegundaSeccionTable th:nth-child(1) {
-    width: 100px !important;
-    min-width: 100px !important;
+    width: 50px !important;
+    min-width: 50px !important;
 }
 
 #partesSegundaSeccionTable th:nth-child(2) {
-    width: 100px !important;
-    min-width: 100px !important;
+    width: 50px !important;
+    min-width: 50px !important;
 }
 
 #partesSegundaSeccionTable th:nth-child(3) {
-    width: 100px !important;
-    min-width: 300px !important;
+    width: 350px !important;
+    min-width: 350px !important;
 }
 
 #partesSegundaSeccionTable th:nth-child(4) {
-    width: 100px !important;
-    min-width: 300px !important;
+    width: 350px !important;
+    min-width: 350px !important;
 }
 
 #partesSegundaSeccionTable th:nth-child(5) {
-    width: 300px !important;
-    min-width: 100px !important;
+    width: 50px !important;
+    min-width: 50px !important;
 }
 
 #partesSegundaSeccionTable th:nth-child(6) {
-    width: 300px !important;
-    min-width: 100px !important;
+    width: 50px !important;
+    min-width: 50px !important;
 }
 #partesSegundaSeccionTable th:nth-child(7) {
     width: 100px !important;
