@@ -9,12 +9,14 @@ Se ha implementado un sistema de formulario público para que los usuarios pueda
 La URL pública tiene el siguiente formato:
 
 ```
-/informe/{congregacion_id}
+/informe/{congregacion_codigo}
 ```
 
 **Ejemplo:**
-- Para la congregación con ID 1: `http://tu-dominio.com/informe/1`
-- Para la congregación con ID 2: `http://tu-dominio.com/informe/2`
+- Para la congregación con código "LC": `http://tu-dominio.com/informe/LC`
+- Para la congregación con código "ADMIN": `http://tu-dominio.com/informe/ADMIN`
+
+**Nota:** Si el código no existe, se redirige automáticamente a la página de inicio con un mensaje de error.
 
 ## Características del Formulario
 

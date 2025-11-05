@@ -17,17 +17,18 @@ class PublicInformeController extends Controller
     /**
      * Mostrar formulario público para ingresar informes
      */
-    public function show($congregacion_id)
+    public function show($congregacion_codigo)
     {
-        // Verificar que la congregación existe
-        $congregacion = Congregacion::find($congregacion_id);
+        // Buscar congregación por código
+        $congregacion = Congregacion::where('codigo', $congregacion_codigo)->first();
 
+        // Si no existe, redirigir a la página de inicio
         if (!$congregacion) {
-            abort(404, 'Congregación no encontrada');
+            return redirect('/')->with('error', 'Código de congregación no válido');
         }
 
         // Obtener grupos de la congregación
-        $grupos = Grupo::where('congregacion_id', $congregacion_id)
+        $grupos = Grupo::where('congregacion_id', $congregacion->id)
                        ->where('estado', 1)
                        ->orderBy('nombre')
                        ->get();
@@ -64,15 +65,15 @@ class PublicInformeController extends Controller
     /**
      * Almacenar nuevo informe público
      */
-    public function store(Request $request, $congregacion_id)
+    public function store(Request $request, $congregacion_codigo)
     {
-        // Verificar que la congregación existe
-        $congregacion = Congregacion::find($congregacion_id);
+        // Buscar congregación por código
+        $congregacion = Congregacion::where('codigo', $congregacion_codigo)->first();
 
         if (!$congregacion) {
             return response()->json([
                 'success' => false,
-                'message' => 'Congregación no encontrada'
+                'message' => 'Código de congregación no válido'
             ], 404);
         }
 

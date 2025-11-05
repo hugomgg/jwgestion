@@ -200,8 +200,9 @@
         // Configuración global
         window.publicInformeConfig = {
             congregacionId: {{ $congregacion->id }},
-            getUsersByGrupoUrl: '{{ route("public.informe.usuarios-por-grupo", $congregacion->id) }}',
-            storeUrl: '{{ route("public.informe.store", $congregacion->id) }}',
+            congregacionCodigo: '{{ $congregacion->codigo }}',
+            getUsersByGrupoUrl: '{{ route("public.informe.usuarios-por-grupo", $congregacion->codigo) }}',
+            storeUrl: '{{ route("public.informe.store", $congregacion->codigo) }}',
             csrfToken: '{{ csrf_token() }}',
             recaptchaEnabled: {{ config('recaptcha.enabled') ? 'true' : 'false' }},
             recaptchaSiteKey: '{{ config('recaptcha.site_key') }}'

@@ -2,22 +2,24 @@
 
 ## URLs de Ejemplo
 
-Según las congregaciones existentes en el sistema:
+Según las congregaciones existentes en el sistema (usando códigos):
 
-### Congregación "Administración" (ID: 1)
+### Congregación "Administración"
 ```
-http://tu-dominio.com/informe/1
-```
-
-### Congregación "Lo Cañas" (ID: 2)
-```
-http://tu-dominio.com/informe/2
+http://tu-dominio.com/informe/ADMIN
 ```
 
-### Congregación "Los Copihues" (ID: 3)
+### Congregación "Lo Cañas"
 ```
-http://tu-dominio.com/informe/3
+http://tu-dominio.com/informe/LC
 ```
+
+### Congregación "Los Copihues"
+```
+http://tu-dominio.com/informe/LCP
+```
+
+**Importante:** Las URLs ahora usan el código de la congregación en lugar del ID. Si el código no existe, se redirige a la página de inicio.
 
 ## Flujo de Uso
 
