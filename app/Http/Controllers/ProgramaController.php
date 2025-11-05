@@ -1182,7 +1182,8 @@ class ProgramaController extends Controller
                             //Fecha en formato dd-mm-AAAA
                             'Fecha' => \Carbon\Carbon::parse($programa->fecha)->locale('es')->translatedFormat('d-m-Y'),
                             'Parte' => 'PD',
-                            'Nombre' => $programa->presidente_nombre ? $programa->presidente_nombre.'('.$programa->contador.')' : 'N/A',
+                            'Nombre' => $programa->presidente_nombre ? $programa->presidente_nombre: 'N/A',
+                            'Participaciones' => '('.$programa->contador.')',
                             'Rol' => 'Presidente',
                             'Sala' => '1',
                             'Tiempo' => '',
@@ -1203,7 +1204,8 @@ class ProgramaController extends Controller
                                 //Fecha en formato dd-mm-AAAA
                                 'Fecha' => \Carbon\Carbon::parse($programa->fecha)->locale('es')->translatedFormat('d-m-Y'),
                                 'Parte' => $parte->parte_abreviacion ?: 'N/A',
-                                'Nombre' => $parte->nombre_encargado ? $parte->nombre_encargado.'('.$parte->contador_encargado.')' : 'N/A',
+                                'Nombre' => $parte->nombre_encargado ? $parte->nombre_encargado : 'N/A',
+                                'Participaciones' => '('.$parte->contador_encargado.')',
                                 'Rol' => $parte->seccion_id == 2 ? 'Estudiante' : 'Encargado',
                                 'Sala' => $parte->sala_id ?: '',
                                 'Reemplazado' => $parte->nombre_encargado_reemplazado ?: '',
@@ -1224,7 +1226,8 @@ class ProgramaController extends Controller
                                     //Fecha en formato dd-mm-AAAA
                                     'Fecha' => \Carbon\Carbon::parse($programa->fecha)->locale('es')->translatedFormat('d-m-Y'),
                                     'Parte' => $parte->parte_abreviacion ?: 'N/A',
-                                    'Nombre' => $parte->nombre_ayudante.'('.$parte->contador_ayudante.')',
+                                    'Nombre' => $parte->nombre_ayudante ?: 'N/A',
+                                    'Participaciones' => '('.$parte->contador_ayudante.')',
                                     'Rol' => 'Ayudante',
                                     'Sala' => $parte->sala_id ?: '',
                                     'Reemplazado' => $parte->nombre_ayudante_reemplazado ?: '',
@@ -1251,6 +1254,7 @@ class ProgramaController extends Controller
                         'Fecha',
                         'Parte',
                         'Nombre',
+                        'Participaciones',
                         'Rol',
                         'Sala',
                         'Reemplazado',
@@ -1261,11 +1265,16 @@ class ProgramaController extends Controller
                 {
                     // Aplicar estilos a las filas de datos
                     foreach ($this->rowStyles as $row => $style) {
-                        $sheet->getStyle('A' . $row . ':F' . $row)->applyFromArray($style);
+                        $sheet->getStyle('A' . $row . ':G' . $row)->applyFromArray($style);
                     }
-
+                    //Columna G texto tachado
+                    $sheet->getStyle('G2:G' . $sheet->getHighestRow())->applyFromArray([
+                        'font' => [
+                            'strikethrough' => true,
+                        ],
+                    ]);
                     // Estilo para el header
-                    $sheet->getStyle('A1:F1')->applyFromArray([
+                    $sheet->getStyle('A1:G1')->applyFromArray([
                         'font' => [
                             'bold' => true,
                             'color' => ['rgb' => 'FFFFFF']
@@ -1277,7 +1286,7 @@ class ProgramaController extends Controller
                     ]);
 
                     // Autoajustar columnas
-                    foreach (range('A', 'F') as $column) {
+                    foreach (range('A', 'G') as $column) {
                         $sheet->getColumnDimension($column)->setAutoSize(true);
                     }
                 }
@@ -1466,6 +1475,91 @@ class ProgramaController extends Controller
         } catch (\Exception $e) {
             return redirect()->route('programas.index')
                 ->with('error', 'Error al exportar asignaciones: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Obtener información de una asignación específica por partes_programa.id
+     */
+    public function getAsignacionPorId($parteProgramaId)
+    {
+        try {
+            $currentUser = Auth::user();
+
+            // Consulta para obtener la parte de programa específica
+            $asignacion = DB::table('partes_programa as pp')
+                ->join('programas as p', 'pp.programa_id', '=', 'p.id')
+                ->join('partes_seccion as ps', 'pp.parte_id', '=', 'ps.id')
+                ->leftJoin('users as encargado', 'pp.encargado_id', '=', 'encargado.id')
+                ->leftJoin('users as ayudante', 'pp.ayudante_id', '=', 'ayudante.id')
+                ->leftJoin('users as creador', 'p.creador', '=', 'creador.id')
+                ->where('pp.id', $parteProgramaId)
+                ->where('creador.congregacion', $currentUser->congregacion)
+                ->select(
+                    'pp.id',
+                    'p.fecha',
+                    'pp.leccion',
+                    'pp.sala_id',
+                    'pp.orden',
+                    'pp.parte_id',
+                    'ps.nombre as parte_nombre',
+                    'ps.abreviacion as parte_abreviacion',
+                    'ps.tipo as parte_tipo',
+                    'ps.seccion_id',
+                    'encargado.id as encargado_id',
+                    'encargado.name as nombre_encargado',
+                    'ayudante.id as ayudante_id',
+                    'ayudante.name as nombre_ayudante'
+                )
+                ->first();
+
+            if (!$asignacion) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No se encontró la asignación o no tiene permisos para verla.'
+                ], 404);
+            }
+
+            // Calcular el número de intervención
+            // Obtener todas las asignaciones del mismo programa para calcular el orden correcto
+            $asignacionesDelPrograma = DB::table('partes_programa as pp')
+                ->join('partes_seccion as ps', 'pp.parte_id', '=', 'ps.id')
+                ->where('pp.programa_id', DB::table('partes_programa')
+                    ->where('id', $parteProgramaId)
+                    ->value('programa_id'))
+                ->whereIn('ps.seccion_id', [2]) // Tesoros de la Biblia y Seamos Mejores Maestros
+                ->orderBy('pp.orden', 'asc')
+                ->select('pp.id', 'pp.parte_id', 'pp.orden')
+                ->get();
+
+            $numeroIntervencion = 4;
+            foreach ($asignacionesDelPrograma as $item) {
+                if ($item->parte_id == 3) {
+                    if ($item->id == $parteProgramaId) {
+                        $numeroIntervencion = 3;
+                        break;
+                    }
+                } else {
+                    if ($item->id == $parteProgramaId) {
+                        break;
+                    }
+                    $numeroIntervencion++;
+                }
+            }
+
+            $asignacion->numero_intervencion = $numeroIntervencion;
+            $asignacion->fecha_formateada = \Carbon\Carbon::parse($asignacion->fecha)->locale('es')->translatedFormat('d \d\e F \d\e Y');
+
+            return response()->json([
+                'success' => true,
+                'data' => $asignacion
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al obtener la asignación: ' . $e->getMessage()
+            ], 500);
         }
     }
 }

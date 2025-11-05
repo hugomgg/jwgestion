@@ -2,6 +2,8 @@
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('css/informes-index.css') }}">
+<link href="{{ asset('css/select2.min.css') }}" rel="stylesheet" />
+<link href="{{ asset('css/select2-bootstrap-5-theme.min.css') }}" rel="stylesheet" />
 @endpush
 
 @section('content')
@@ -93,17 +95,14 @@
                         <table id="informesTable" class="table table-striped table-hover">
                             <thead class="table-dark">
                                 <tr>
-                                    <th>ID</th>
-                                    <th>Año</th>
-                                    <th>Mes</th>
-                                    <th>Usuario</th>
-                                    <th>Grupo</th>
-                                    <th>Servicio</th>
-                                    <th>Participa</th>
-                                    @if(Auth::user()->isAdmin() || Auth::user()->isSupervisor())
-                                        <th>Congregación</th>
-                                    @endif
-                                    <th>Acciones</th>
+                                    <th width="10%">ID</th>
+                                    <th width="10%">Año</th>
+                                    <th width="15%">Mes</th>
+                                    <th width="10%">Grupo</th>
+                                    <th width="25%">Usuario</th>
+                                    <th width="5%">Participa</th>
+                                    <th width="15%">Servicio</th>
+                                    <th width="10%">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -117,19 +116,19 @@
                                         @endphp
                                         {{ $meses[$informe->mes] ?? $informe->mes }}
                                     </td>
-                                    <td>{{ $informe->usuario_nombre }}</td>
                                     <td>
                                         <span class="badge bg-dark">{{ $informe->grupo_nombre }}</span>
                                     </td>
-                                    <td>
-                                        <span class="badge bg-warning text-dark">{{ $informe->servicio_nombre }}</span>
-                                    </td>
+                                    <td>{{ $informe->usuario_nombre }}</td>
                                     <td>
                                         @if($informe->participa)
                                             <span class="badge bg-success">Sí</span>
                                         @else
                                             <span class="badge bg-danger">No</span>
                                         @endif
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning text-dark">{{ $informe->servicio_nombre }}</span>
                                     </td>
                                     @if(Auth::user()->isAdmin() || Auth::user()->isSupervisor())
                                         <td>
@@ -255,23 +254,23 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="servicio_id" class="form-label">Servicio *</label>
-                                <select class="form-select" id="servicio_id" name="servicio_id" required>
-                                    <option value="">Seleccionar servicio...</option>
-                                    @foreach($servicios as $servicio)
-                                        <option value="{{ $servicio->id }}">{{ $servicio->nombre }}</option>
-                                    @endforeach
+                                <label for="participa" class="form-label">Participación *</label>
+                                <select class="form-select" id="participa" name="participa" required>
+                                    <option value="">Seleccionar participación...</option>
+                                    <option value="1">Sí</option>
+                                    <option value="0">No</option>
                                 </select>
                                 <div class="invalid-feedback"></div>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="participa" class="form-label">Participación *</label>
-                                <select class="form-select" id="participa" name="participa" required>
-                                    <option value="">Seleccionar participación...</option>
-                                    <option value="1">Sí</option>
-                                    <option value="0">No</option>
+                                <label for="servicio_id" class="form-label">Servicio *</label>
+                                <select class="form-select" id="servicio_id" name="servicio_id" required>
+                                    <option value="">Seleccionar servicio...</option>
+                                    @foreach($servicios as $servicio)
+                                        <option value="{{ $servicio->id }}">{{ $servicio->nombre }}</option>
+                                    @endforeach
                                 </select>
                                 <div class="invalid-feedback"></div>
                             </div>
@@ -380,23 +379,23 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="edit_servicio_id" class="form-label">Servicio *</label>
-                                <select class="form-select" id="edit_servicio_id" name="servicio_id" required>
-                                    <option value="">Seleccionar servicio...</option>
-                                    @foreach($servicios as $servicio)
-                                        <option value="{{ $servicio->id }}">{{ $servicio->nombre }}</option>
-                                    @endforeach
+                                <label for="edit_participa" class="form-label">Participación *</label>
+                                <select class="form-select" id="edit_participa" name="participa" required>
+                                    <option value="">Seleccionar participación...</option>
+                                    <option value="1">Sí</option>
+                                    <option value="0">No</option>
                                 </select>
                                 <div class="invalid-feedback"></div>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="edit_participa" class="form-label">Participación *</label>
-                                <select class="form-select" id="edit_participa" name="participa" required>
-                                    <option value="">Seleccionar participación...</option>
-                                    <option value="1">Sí</option>
-                                    <option value="0">No</option>
+                                <label for="edit_servicio_id" class="form-label">Servicio *</label>
+                                <select class="form-select" id="edit_servicio_id" name="servicio_id" required>
+                                    <option value="">Seleccionar servicio...</option>
+                                    @foreach($servicios as $servicio)
+                                        <option value="{{ $servicio->id }}">{{ $servicio->nombre }}</option>
+                                    @endforeach
                                 </select>
                                 <div class="invalid-feedback"></div>
                             </div>

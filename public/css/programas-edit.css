@@ -70,18 +70,18 @@ div.select2-container--bootstrap-5 .select2-selection__rendered {
 }
 #partesTable th:nth-child(3),
 #partesNVTable th:nth-child(3) {
-    width: 400px !important;
-    min-width: 300px !important;
+    width: 350px !important;
+    min-width: 350px !important;
 }
 #partesTable th:nth-child(4),
 #partesNVTable th:nth-child(4) {
-    width: 50px !important;
-    min-width: 50px !important;
+    width: 350px !important;
+    min-width: 350px !important;
 }
 #partesTable th:nth-child(5),
 #partesNVTable th:nth-child(5) {
-    width: 350px !important;
-    min-width: 250px !important;
+    width: 100px !important;
+    min-width: 100px !important;
 }
 #partesTable th:nth-child(6),
 #partesNVTable th:nth-child(6) {
@@ -102,13 +102,13 @@ div.select2-container--bootstrap-5 .select2-selection__rendered {
 }
 
 #partesSegundaSeccionTable th:nth-child(3) {
-    width: 350px !important;
-    min-width: 350px !important;
+    width: 250px !important;
+    min-width: 250px !important;
 }
 
 #partesSegundaSeccionTable th:nth-child(4) {
-    width: 350px !important;
-    min-width: 350px !important;
+    width: 250px !important;
+    min-width: 250px !important;
 }
 
 #partesSegundaSeccionTable th:nth-child(5) {
@@ -674,4 +674,107 @@ select#orador_inicial.form-select {
 .select2-dropdown[aria-labelledby="select2-select_historial_ayudante_tercera-container"] .select2-results__option {
     font-family: "Cascadia Mono", monospace !important;
     font-size: 12px !important;
+}
+
+/* Estilos para el modal de Ver Asignación */
+.asignacion-card {
+    border: 2px solid #000;
+    padding: 20px;
+    background-color: #fff;
+    font-family: Arial, sans-serif;
+}
+
+.asignacion-card h4 {
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 16px;
+}
+
+.asignacion-card .info-row {
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.asignacion-card .info-label {
+    font-weight: bold;
+    display: inline-block;
+    width: 80px;
+}
+
+.info-intervencion {
+    font-weight: bold;
+    display: inline-block;
+    width: 150px;
+}
+
+.asignacion-card .info-value {
+    color: #0000FF;
+    font-weight: normal;
+}
+
+.asignacion-card .sala-section {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.asignacion-card .checkbox-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.asignacion-card .checkbox {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #000;
+    display: inline-block;
+    margin-right: 10px;
+    position: relative;
+}
+
+.asignacion-card .checkbox.checked::after {
+    content: '✓';
+    position: absolute;
+    top: -5px;
+    left: 2px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.asignacion-card .nota-section {
+    margin-top: 20px;
+    font-size: 12px;
+}
+
+.asignacion-card .nota-title {
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.asignacion-card .nota-text {
+    font-size: 12px;
+    text-align: justify;
+    line-height: 1.6;
+}
+
+@media print {
+    .modal-header, .modal-footer, .btn-close {
+        display: none !important;
+    }
+    
+    .modal-dialog {
+        max-width: 100%;
+        margin: 0;
+    }
+    
+    .modal-content {
+        border: none;
+        box-shadow: none;
+    }
+    
+    .asignacion-card {
+        page-break-inside: avoid;
+    }
 }

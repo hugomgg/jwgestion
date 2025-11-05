@@ -27,6 +27,7 @@ class CongregacionController extends Controller
             'direccion' => 'nullable|string|max:500',
             'telefono' => 'nullable|string|max:20',
             'persona_contacto' => 'nullable|string|max:255',
+            'codigo' => 'nullable|string|max:64|unique:congregaciones,codigo',
             'estado' => 'required|boolean',
         ], [
             'nombre.required' => 'El nombre es obligatorio.',
@@ -35,6 +36,8 @@ class CongregacionController extends Controller
             'direccion.max' => 'La dirección no puede exceder 500 caracteres.',
             'telefono.max' => 'El teléfono no puede exceder 20 caracteres.',
             'persona_contacto.max' => 'La persona de contacto no puede exceder 255 caracteres.',
+            'codigo.max' => 'El código no puede exceder 64 caracteres.',
+            'codigo.unique' => 'Este código ya está en uso por otra congregación.',
             'estado.required' => 'El estado es obligatorio.',
             'estado.boolean' => 'El estado debe ser válido.',
         ]);
@@ -52,6 +55,7 @@ class CongregacionController extends Controller
                 'direccion' => $request->direccion,
                 'telefono' => $request->telefono,
                 'persona_contacto' => $request->persona_contacto,
+                'codigo' => $request->codigo,
                 'estado' => $request->estado,
             ]);
 
@@ -105,6 +109,7 @@ class CongregacionController extends Controller
                 'direccion' => 'nullable|string|max:500',
                 'telefono' => 'nullable|string|max:20',
                 'persona_contacto' => 'nullable|string|max:255',
+                'codigo' => 'nullable|string|max:64|unique:congregaciones,codigo,' . $id,
                 'estado' => 'required|boolean',
             ], [
                 'nombre.required' => 'El nombre es obligatorio.',
@@ -113,6 +118,8 @@ class CongregacionController extends Controller
                 'direccion.max' => 'La dirección no puede exceder 500 caracteres.',
                 'telefono.max' => 'El teléfono no puede exceder 20 caracteres.',
                 'persona_contacto.max' => 'La persona de contacto no puede exceder 255 caracteres.',
+                'codigo.max' => 'El código no puede exceder 64 caracteres.',
+                'codigo.unique' => 'Este código ya está en uso por otra congregación.',
                 'estado.required' => 'El estado es obligatorio.',
                 'estado.boolean' => 'El estado debe ser válido.',
             ]);
@@ -129,6 +136,7 @@ class CongregacionController extends Controller
                 'direccion' => $request->direccion,
                 'telefono' => $request->telefono,
                 'persona_contacto' => $request->persona_contacto,
+                'codigo' => $request->codigo,
                 'estado' => $request->estado,
             ]);
 
@@ -196,6 +204,7 @@ class CongregacionController extends Controller
                 'direccion' => 'nullable|string|max:1000',
                 'telefono' => 'nullable|string|max:20',
                 'persona_contacto' => 'nullable|string|max:255',
+                'codigo' => 'nullable|string|max:64|unique:congregaciones,codigo,' . $congregacionId,
             ], [
                 'nombre.required' => 'El nombre es obligatorio.',
                 'nombre.max' => 'El nombre no puede exceder 255 caracteres.',
@@ -203,6 +212,8 @@ class CongregacionController extends Controller
                 'direccion.max' => 'La dirección no puede exceder 1000 caracteres.',
                 'telefono.max' => 'El teléfono no puede exceder 20 caracteres.',
                 'persona_contacto.max' => 'La persona de contacto no puede exceder 255 caracteres.',
+                'codigo.max' => 'El código no puede exceder 64 caracteres.',
+                'codigo.unique' => 'Este código ya está en uso por otra congregación.',
             ]);
 
             if ($validator->fails()) {
@@ -217,6 +228,7 @@ class CongregacionController extends Controller
                 'direccion' => $request->direccion,
                 'telefono' => $request->telefono,
                 'persona_contacto' => $request->persona_contacto,
+                'codigo' => $request->codigo,
             ]);
 
             return response()->json([
@@ -231,5 +243,69 @@ class CongregacionController extends Controller
                 'message' => 'Error al actualizar la congregación: ' . $e->getMessage()
             ], 500);
         }
+    }
+
+    /**
+     * Generate a unique random code for congregation.
+     */
+    public function generarCodigo(Request $request)
+    {
+        try {
+            $codigo = $this->generarCodigoUnico();
+            
+            return response()->json([
+                'success' => true,
+                'codigo' => $codigo,
+                'message' => 'Código generado exitosamente.'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al generar el código: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Generate a unique 64-character code.
+     */
+    private function generarCodigoUnico()
+    {
+        $intentos = 0;
+        $maxIntentos = 10;
+        
+        do {
+            // Generar código aleatorio de 64 caracteres (letras y números)
+            $codigo = $this->generarCodigoAleatorio(64);
+            
+            // Verificar si el código ya existe
+            $existe = Congregacion::where('codigo', $codigo)->exists();
+            
+            $intentos++;
+            
+            if ($intentos >= $maxIntentos && $existe) {
+                throw new \Exception('No se pudo generar un código único después de ' . $maxIntentos . ' intentos.');
+            }
+            
+        } while ($existe);
+        
+        return $codigo;
+    }
+
+    /**
+     * Generate random alphanumeric code.
+     */
+    private function generarCodigoAleatorio($longitud = 64)
+    {
+        $caracteres = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $codigo = '';
+        $maxIndex = strlen($caracteres) - 1;
+        
+        for ($i = 0; $i < $longitud; $i++) {
+            $codigo .= $caracteres[random_int(0, $maxIndex)];
+        }
+        
+        return $codigo;
     }
 }

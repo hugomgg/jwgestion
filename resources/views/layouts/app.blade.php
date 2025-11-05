@@ -520,11 +520,24 @@
                         
                         @if(Auth::user() && Auth::user()->congregacion)
                         <div class="row">
-                            <div class="col-12">
+                            <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="congregacion_nombre" class="form-label">Nombre *</label>
                                     <input type="text" class="form-control" id="congregacion_nombre" name="nombre" value="{{ $congregacion->nombre }}" required>
                                     <div class="invalid-feedback"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="congregacion_codigo" class="form-label">Código</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="congregacion_codigo" name="codigo" value="{{ $congregacion->codigo }}" readonly>
+                                        <button type="button" class="btn btn-outline-secondary" id="btn_refresh_codigo" title="Generar código aleatorio">
+                                            <i class="fas fa-sync-alt"></i>
+                                        </button>
+                                    </div>
+                                    <div class="invalid-feedback"></div>
+                                    <small class="form-text text-muted">Código único de 64 caracteres</small>
                                 </div>
                             </div>
                         </div>
@@ -865,6 +878,40 @@
             });
         }
 
+        // Manejar el botón de refrescar código
+        $('#btn_refresh_codigo').on('click', function(e) {
+            e.preventDefault();
+            const btn = $(this);
+            const icon = btn.find('i');
+            
+            // Deshabilitar el botón y rotar el icono
+            btn.prop('disabled', true);
+            icon.addClass('fa-spin');
+            
+            $.ajax({
+                url: '/congregacion/generar-codigo',
+                method: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    if (response.success) {
+                        $('#congregacion_codigo').val(response.codigo);
+                        showMiCongregacionAlert('success', 'Código generado exitosamente.');
+                    }
+                },
+                error: function(xhr) {
+                    const response = xhr.responseJSON;
+                    const message = response.message || 'Error al generar el código. Intente nuevamente.';
+                    showMiCongregacionAlert('danger', message);
+                },
+                complete: function() {
+                    btn.prop('disabled', false);
+                    icon.removeClass('fa-spin');
+                }
+            });
+        });
+
         // Manejar el envío del formulario Mi Congregación
         $('#miCongregacionForm').on('submit', function(e) {
             e.preventDefault();
@@ -894,6 +941,7 @@
                             $('#congregacion_direccion').val(response.congregacion.direccion);
                             $('#congregacion_telefono').val(response.congregacion.telefono);
                             $('#congregacion_persona_contacto').val(response.congregacion.persona_contacto);
+                            $('#congregacion_codigo').val(response.congregacion.codigo);
                         }
                         
                         // Cerrar el modal y refrescar la página después de un breve retraso
@@ -935,6 +983,7 @@
             $('#congregacion_direccion').val('{{ $congregacion->direccion ?? '' }}');
             $('#congregacion_telefono').val('{{ $congregacion->telefono ?? '' }}');
             $('#congregacion_persona_contacto').val('{{ $congregacion->persona_contacto ?? '' }}');
+            $('#congregacion_codigo').val('{{ $congregacion->codigo ?? '' }}');
             @endif
         });
 

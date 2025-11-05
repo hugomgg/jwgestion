@@ -94,6 +94,9 @@ $(document).ready(function() {
             return;
         }
 
+        // Actualizar el campo hidden con la nueva fecha
+        $('#fecha_programa_hidden').val(nuevaFecha);
+
         // Preparar datos para la actualización
         const updateData = {
             fecha: nuevaFecha,
@@ -263,6 +266,9 @@ $(document).ready(function() {
                                 <button type="button" class="btn btn-sm btn-outline-secondary" onclick="moveParteSegundaSeccionDown(${parte.id})" title="Bajar" ${downDisabled}>
                                     <i class="fas fa-chevron-down"></i>
                                 </button>
+                                <button type="button" class="btn btn-sm btn-outline-info" onclick="verAsignacionDesdeTabla(${parte.id})" title="Ver Asignación">
+                                    <i class="fas fa-eye"></i>
+                                </button>
                                 <button type="button" class="btn btn-sm btn-outline-primary" onclick="editParteSegundaSeccion(${parte.id})" title="Editar">
                                     <i class="fas fa-edit"></i>
                                 </button>
@@ -344,8 +350,8 @@ $(document).ready(function() {
                             numero, // Columna Número
                             parte.parte_abreviacion || '-',
                             parte.encargado_nombre || '-',
-                            parte.tiempo || '-',
-                            parte.tema || '-'
+                            parte.tema || '-',
+                            parte.tiempo || '-'
                         ];
 
                         rowData.push(acciones);
@@ -1775,19 +1781,6 @@ $(document).ready(function() {
             contenedorFiltroSexo.show();
             // Obtener el sexo del encargado
             if (ayudanteId) {
-                // Hacer petición para obtener el sexo del encargado
-                $.ajax({
-                    url: `/verificar-sexos-usuarios`,
-                    method: 'GET',
-                    data: { encargado_id: encargadoId, ayudante_id: ayudanteId },
-                    async: false,
-                    success: function(response) {
-                        if (response.success && response.ayudante_sexo) {
-                            sexoForzado = response.ayudante_sexo;
-                        }
-                    }
-                });
-            }else{
                 // Hacer petición para obtener el sexo del ayudante
                 $.ajax({
                     url: `/verificar-sexo-encargado`,
@@ -1797,6 +1790,19 @@ $(document).ready(function() {
                     success: function(response) {
                         if (response.success && response.encargado_sexo) {
                             sexoForzado = response.encargado_sexo;
+                        }
+                    }
+                });
+            }else{
+                // Hacer petición para obtener el sexo del encargado
+                $.ajax({
+                    url: `/verificar-sexos-usuarios`,
+                    method: 'GET',
+                    data: { encargado_id: encargadoId, ayudante_id: ayudanteId },
+                    async: false,
+                    success: function(response) {
+                        if (response.success && response.ayudante_sexo) {
+                            sexoForzado = response.ayudante_sexo;
                         }
                     }
                 });
@@ -4125,8 +4131,8 @@ $(document).ready(function() {
                             numero, // Columna Número
                             parte.parte_abreviacion || '-',
                             parte.encargado_nombre || '-',
-                            parte.tiempo || '-',
                             parte.tema || '-',
+                            parte.tiempo || '-',
                             acciones
                         ];
 
@@ -4525,3 +4531,170 @@ $(document).ready(function() {
         $('#btn-eliminar-reemplazado-nv').prop('disabled', true);
     }
 });
+
+/**
+ * Función para ver asignación desde la tabla (usando el partes_programa.id)
+ */
+function verAsignacionDesdeTabla(parteProgramaId) {
+    if (!parteProgramaId) {
+        showAlert('alert-container', 'warning', 'No se pudo obtener el ID de la asignación.');
+        return;
+    }
+    
+    // Mostrar el modal
+    $('#verAsignacionModal').modal('show');
+    
+    // Cargar la asignación por parte_programa_id
+    cargarAsignacionPorId(parteProgramaId);
+}
+
+/**
+ * Función para cargar una asignación específica por partes_programa.id
+ */
+function cargarAsignacionPorId(parteProgramaId) {
+    const container = $('#asignacion-card-container');
+    
+    // Mostrar spinner de carga
+    container.html(`
+        <div class="text-center">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+        </div>
+    `);
+    
+    // Realizar petición AJAX
+    $.ajax({
+        url: `/programas/asignacion-por-id/${parteProgramaId}`,
+        method: 'GET',
+        success: function(response) {
+            if (response.success) {
+                mostrarAsignacion(response.data);
+            } else {
+                showModalAlert('ver-asignacion-alert-container', 'danger', response.message || 'Error al cargar la asignación.');
+                container.html(`
+                    <div class="alert alert-danger text-center">
+                        <i class="fas fa-exclamation-circle me-2"></i>Error al cargar la asignación
+                    </div>
+                `);
+            }
+        },
+        error: function(xhr) {
+            const message = xhr.responseJSON?.message || 'Error al cargar la asignación.';
+            showModalAlert('ver-asignacion-alert-container', 'danger', message);
+            container.html(`
+                <div class="alert alert-danger text-center">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Error al cargar la asignación
+                </div>
+            `);
+        }
+    });
+}
+
+/**
+ * Función para mostrar una asignación individual
+ */
+function mostrarAsignacion(asignacion) {
+    const container = $('#asignacion-card-container');
+    
+    if (!asignacion) {
+        container.html(`
+            <div class="alert alert-info text-center">
+                <i class="fas fa-info-circle me-2"></i>No se encontró la asignación.
+            </div>
+        `);
+        return;
+    }
+
+    const fechaFormateada = asignacion.fecha_formateada;
+    
+    // Obtener el nombre del encargado (estudiante)
+    const nombreUsuario = asignacion.nombre_encargado || '';
+    
+    // Determinar el nombre del ayudante si existe
+    let nombreAyudante = asignacion.nombre_ayudante || '';
+    
+    // Determinar en qué sala se presenta (basado en sala_id)
+    const salaId = parseInt(asignacion.sala_id) || 1;
+    const salaPrincipal = salaId === 1;
+    const salaAuxiliar1 = salaId === 2;
+    const salaAuxiliar2 = salaId === 3;
+    
+    // Generar HTML de la tarjeta de asignación
+    let html = `
+        <div class="asignacion-card" id="asignacion-para-imprimir">
+            <h4>ASIGNACIÓN PARA LA REUNIÓN<br>VIDA Y MINISTERIO CRISTIANOS</h4>
+            
+            <div class="info-row">
+                <span class="info-label">Nombre:</span>
+                <span class="info-value">${nombreUsuario}</span>
+            </div>
+            
+            <div class="info-row">
+                <span class="info-label">Ayudante:</span>
+                <span class="info-value">${nombreAyudante || ''}</span>
+            </div>
+            
+            <div class="info-row">
+                <span class="info-label">Fecha:</span>
+                <span class="info-value">${fechaFormateada}</span>
+            </div>
+            
+            <div class="info-row">
+                <span class="info-intervencion">Intervención núm.:</span>
+                <span class="info-value">${asignacion.numero_intervencion}</span>
+            </div>
+            
+            <div class="sala-section">
+                <div style="font-weight: bold; margin-bottom: 10px;">Se presentará en:</div>
+                <div class="checkbox-row">
+                    <span class="checkbox ${salaPrincipal ? 'checked' : ''}"></span>
+                    <span>Sala principal</span>
+                </div>
+                <div class="checkbox-row">
+                    <span class="checkbox ${salaAuxiliar1 ? 'checked' : ''}"></span>
+                    <span>Sala auxiliar 1</span>
+                </div>
+                <div class="checkbox-row">
+                    <span class="checkbox ${salaAuxiliar2 ? 'checked' : ''}"></span>
+                    <span>Sala auxiliar 2</span>
+                </div>
+            </div>
+            
+            <div class="nota-section">
+                <div class="nota-title">Nota al estudiante:</div>
+                <div class="nota-text">
+                    En la <i>Guía de actividades</i> encontrará la información que necesita para su intervención. 
+                    Repase también las indicaciones que se describen en las Instrucciones para la reunión 
+                    Vida y Ministerio Cristianos (S-38).
+                </div>
+                <div class="nota-text mt-2">
+                    S-38-S 11/23
+                </div>
+            </div>
+        </div>
+    `;
+    
+    container.html(html);
+}
+
+/**
+ * Función auxiliar para mostrar alertas en el modal
+ */
+function showModalAlert(containerId, type, message) {
+    const alertContainer = $('#' + containerId);
+    const alert = `
+        <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    `;
+    alertContainer.html(alert);
+    
+    // Auto-cerrar después de 5 segundos para alertas de éxito
+    if (type === 'success') {
+        setTimeout(() => {
+            alertContainer.find('.alert').alert('close');
+        }, 5000);
+    }
+}

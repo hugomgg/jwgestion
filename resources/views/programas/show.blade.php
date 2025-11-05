@@ -15,6 +15,15 @@
                         </div>
                         <div class="col-md-6">
                             <div class="d-flex justify-content-end gap-2">
+                                <!-- Botón Editar (solo para Organizador y Coordinador) -->
+                                @if($currentUser->isOrganizer() || $currentUser->isCoordinator())
+                                <a href="{{ route('programas.edit', $programa->id) }}" 
+                                   class="btn btn-warning" 
+                                   title="Editar programa">
+                                    <i class="fas fa-edit me-2"></i>Editar
+                                </a>
+                                @endif
+
                                 <!-- Botón Programa Anterior -->
                                 @if(isset($programaAnterior) && $programaAnterior)
                                 <a href="{{ route('programas.show', $programaAnterior->id) }}" 
@@ -111,10 +120,10 @@
                                             <thead>
                                                 <tr>
                                                     <th>Número</th>
-                                                    <th>Tiempo (min)</th>
                                                     <th>Parte</th>
                                                     <th>Encargado</th>
                                                     <th>Tema</th>
+                                                    <th>Tiempo (min)</th>
                                                 </tr>
                                             </thead>
                                             <tbody id="partesTableBody">
@@ -142,11 +151,11 @@
                                             <thead>
                                                 <tr>
                                                     <th>Número</th>
-                                                    <th>Sala</th>
-                                                    <th>Tiempo (min)</th>
                                                     <th>Parte</th>
                                                     <th>Encargado</th>
                                                     <th>Ayudante</th>
+                                                    <th>Sala</th>
+                                                    <th>Tiempo (min)</th>
                                                     <th>Lección</th>
                                                 </tr>
                                             </thead>
@@ -175,10 +184,10 @@
                                             <thead>
                                                 <tr>
                                                     <th>Número</th>
-                                                    <th>Tiempo (min)</th>
                                                     <th>Parte</th>
                                                     <th>Encargado</th>
                                                     <th>Tema</th>
+                                                    <th>Tiempo (min)</th>
                                                 </tr>
                                             </thead>
                                             <tbody id="partesNVTableBody">

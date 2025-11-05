@@ -17,6 +17,7 @@ class Congregacion extends Model
         'direccion',
         'telefono',
         'persona_contacto',
+        'codigo',
         'estado',
         'creador_id',
         'modificador_id',

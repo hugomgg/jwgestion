@@ -45,7 +45,7 @@ $(document).ready(function() {
         if (congregacion && informesTable.column(7).visible()) {
             informesTable.columns(7).search(congregacion);
         }
-        
+
         informesTable.draw();
     }
 
@@ -64,20 +64,20 @@ $(document).ready(function() {
     // Mostrar errores de validación
     function showValidationErrors(errors, prefix = '') {
         clearValidationErrors();
-        
+
         let errorList = [];
         let hasFieldErrors = false;
 
         $.each(errors, function(field, messages) {
             let fieldId = prefix ? `${prefix}_${field}` : field;
             let $field = $(`#${fieldId}`);
-            
+
             if ($field.length) {
                 hasFieldErrors = true;
                 $field.addClass('is-invalid');
                 $field.siblings('.invalid-feedback').html(messages[0]);
             }
-            
+
             // Agregar a la lista de errores general
             $.each(messages, function(index, message) {
                 errorList.push(`<li>${message}</li>`);
@@ -96,16 +96,16 @@ $(document).ready(function() {
     function showAlert(message, type = 'success') {
         let alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
         let icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle';
-        
+
         let alert = `
             <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
                 <i class="fas ${icon} me-2"></i>${message}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         `;
-        
+
         $('#alert-container').html(alert);
-        
+
         // Auto-ocultar después de 5 segundos
         setTimeout(function() {
             $('.alert').alert('close');
@@ -132,20 +132,20 @@ $(document).ready(function() {
     function filterUsersByGroup(grupoId, targetSelectId) {
         const $userSelect = $(`#${targetSelectId}`);
         const currentUserId = $userSelect.val(); // Preservar selección actual si es posible
-        
+
         // Limpiar opciones excepto la primera
         $userSelect.find('option:not(:first)').remove();
-        
+
         if (!grupoId) {
             // Si no hay grupo seleccionado, no mostrar usuarios
             // Solo mantener la opción por defecto "Seleccionar publicador..."
             return;
         }
-        
+
         // Mostrar indicador de carga
         $userSelect.append('<option value="" disabled>Cargando publicadores...</option>');
         $userSelect.prop('disabled', true);
-        
+
         // Hacer petición AJAX para obtener usuarios del grupo
         $.ajax({
             url: window.informesIndexConfig.usuariosPorGrupoRoute,
@@ -158,13 +158,13 @@ $(document).ready(function() {
             success: function(response) {
                 // Limpiar opciones de carga
                 $userSelect.find('option:not(:first)').remove();
-                
+
                 if (response.success && response.usuarios) {
                     response.usuarios.forEach(function(usuario) {
                         const selected = usuario.id == currentUserId ? 'selected' : '';
                         $userSelect.append(`<option value="${usuario.id}" ${selected}>${usuario.name}</option>`);
                     });
-                    
+
                     // Si no hay usuarios en el grupo
                     if (response.usuarios.length === 0) {
                         $userSelect.append('<option value="" disabled>No hay publicadores en este grupo</option>');
@@ -213,29 +213,29 @@ $(document).ready(function() {
     // Manejar formulario de agregar informe
     $('#addInformeForm').on('submit', function(e) {
         e.preventDefault();
-        
+
         // Validar formulario antes de enviar
         if (!validateForm('addInformeForm')) {
             return false;
         }
-        
+
         clearValidationErrors();
         clearErrorsAboveTabs('add');
-        
+
         let $submitBtn = $('#saveInformeBtn');
         let $spinner = $submitBtn.find('.spinner-border');
-        
+
         // Mostrar spinner
         $spinner.removeClass('d-none');
         $submitBtn.prop('disabled', true);
-        
+
         // Obtener datos del formulario
         let formData = new FormData(this);
         let csrfToken = $('meta[name="csrf-token"]').attr('content');
-        
+
         // Agregar token CSRF manualmente por si acaso
         formData.append('_token', csrfToken);
-        
+
         $.ajax({
             url: window.informesIndexConfig.storeRoute,
             type: 'POST',
@@ -277,14 +277,14 @@ $(document).ready(function() {
     // Manejar clic en ver informe
     $(document).on('click', '.view-informe', function() {
         let informeId = $(this).data('informe-id');
-        
+
         $.ajax({
             url: window.informesIndexConfig.showRoute.replace(':id', informeId),
             type: 'GET',
             success: function(response) {
                 if (response.success) {
                     let informe = response.informe;
-                    
+
                     // Llenar los campos del modal
                     $('#view_anio').text(informe.anio);
                     $('#view_mes').text(informe.nombre_mes);
@@ -295,11 +295,11 @@ $(document).ready(function() {
                     $('#view_cantidad_estudios').text(informe.cantidad_estudios || '0');
                     $('#view_horas').text(informe.horas || '-');
                     $('#view_comentario').text(informe.comentario || '-');
-                    
+
                     if ($('#view_congregacion').length) {
                         $('#view_congregacion').text(informe.congregacion_nombre);
                     }
-                    
+
                     $('#viewInformeModal').modal('show');
                 } else {
                     showAlert(response.message || 'Error al cargar el informe', 'error');
@@ -315,41 +315,41 @@ $(document).ready(function() {
     // Manejar clic en editar informe
     $(document).on('click', '.edit-informe', function() {
         let informeId = $(this).data('informe-id');
-        
+
         $.ajax({
             url: window.informesIndexConfig.editRoute.replace(':id', informeId),
             type: 'GET',
             success: function(response) {
                 if (response.success) {
                     let informe = response.informe;
-                    
+
                     // Array de nombres de meses
-                    const meses = ['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
+                    const meses = ['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
                                   'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-                    
+
                     // Llenar los campos del formulario de edición
                     $('#edit_informe_id').val(informe.id);
-                    
+
                     // Campos deshabilitados (solo lectura) con valores ocultos
                     $('#edit_anio_display').val(informe.anio);
                     $('#edit_anio').val(informe.anio);
-                    
+
                     $('#edit_mes_display').val(meses[informe.mes] || informe.mes);
                     $('#edit_mes').val(informe.mes);
-                    
+
                     $('#edit_grupo_display').val(informe.grupo ? informe.grupo.nombre : 'Sin grupo');
                     $('#edit_grupo_id').val(informe.grupo_id);
-                    
+
                     $('#edit_user_display').val(informe.usuario ? informe.usuario.name : 'Sin usuario');
                     $('#edit_user_id').val(informe.user_id);
-                    
+
                     // Campos editables
                     $('#edit_servicio_id').val(informe.servicio_id);
                     $('#edit_participa').val(informe.participa ? '1' : '0');
                     $('#edit_cantidad_estudios').val(informe.cantidad_estudios);
                     $('#edit_horas').val(informe.horas);
                     $('#edit_comentario').val(informe.comentario);
-                    
+
                     $('#editInformeModal').modal('show');
                 } else {
                     showAlert(response.message || 'Error al cargar el informe', 'error');
@@ -365,25 +365,25 @@ $(document).ready(function() {
     // Manejar formulario de editar informe
     $('#editInformeForm').on('submit', function(e) {
         e.preventDefault();
-        
+
         // Validar formulario antes de enviar
         if (!validateForm('editInformeForm')) {
             return false;
         }
-        
+
         clearValidationErrors();
         clearErrorsAboveTabs('edit');
-        
+
         let $submitBtn = $('#updateInformeBtn');
         let $spinner = $submitBtn.find('.spinner-border');
         let informeId = $('#edit_informe_id').val();
-        
+
         // Mostrar spinner
         $spinner.removeClass('d-none');
         $submitBtn.prop('disabled', true);
-        
+
         let formData = $(this).serialize();
-        
+
         $.ajax({
             url: window.informesIndexConfig.updateRoute.replace(':id', informeId),
             type: 'PUT',
@@ -421,10 +421,10 @@ $(document).ready(function() {
     $(document).on('click', '.delete-informe', function() {
         let informeId = $(this).data('informe-id');
         let informeName = $(this).data('informe-name');
-        
+
         $('#deleteInformeName').text(informeName);
         $('#deleteInformeModal').modal('show');
-        
+
         // Guardar el ID del informe para usar en la confirmación
         $('#confirmDeleteInformeBtn').data('informe-id', informeId);
     });
@@ -434,11 +434,11 @@ $(document).ready(function() {
         let informeId = $(this).data('informe-id');
         let $deleteBtn = $(this);
         let $spinner = $deleteBtn.find('.spinner-border');
-        
+
         // Mostrar spinner
         $spinner.removeClass('d-none');
         $deleteBtn.prop('disabled', true);
-        
+
         $.ajax({
             url: window.informesIndexConfig.destroyRoute.replace(':id', informeId),
             type: 'DELETE',
@@ -449,7 +449,7 @@ $(document).ready(function() {
                 if (response.success) {
                     $('#deleteInformeModal').modal('hide');
                     showAlert(response.message, 'success');
-                    
+
                     // Remover la fila de la tabla
                     $(`tr[data-informe-id="${informeId}"]`).fadeOut(300, function() {
                         informesTable.row($(this)).remove().draw();
@@ -491,7 +491,7 @@ $(document).ready(function() {
     // Funcionalidad de búsqueda rápida personalizada
     $('#informesTable_filter input').on('keyup', function() {
         let searchTerm = this.value.toLowerCase();
-        
+
         // Si hay término de búsqueda, limpiar filtros avanzados
         if (searchTerm.length > 0) {
             $('#anioFilter, #mesFilter, #usuarioFilter, #grupoFilter, #servicioFilter, #participaFilter, #congregacionFilter').val('');
@@ -510,7 +510,7 @@ $(document).ready(function() {
     function validateForm(formId) {
         let isValid = true;
         let $form = $(`#${formId}`);
-        
+
         // Validar campos requeridos
         $form.find('[required]').each(function() {
             if (!$(this).val()) {
@@ -524,7 +524,7 @@ $(document).ready(function() {
         $form.find('input[type="number"]').each(function() {
             let value = $(this).val();
             let min = $(this).attr('min');
-            
+
             if (value && min && parseFloat(value) < parseFloat(min)) {
                 $(this).addClass('is-invalid');
                 $(this).siblings('.invalid-feedback').text(`El valor mínimo es ${min}.`);

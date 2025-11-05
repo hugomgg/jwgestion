@@ -15,6 +15,13 @@
                         </div>
                         <div class="col-md-6">
                             <div class="d-flex justify-content-end gap-2">
+                                <!-- Botón Ver -->
+                                <a href="{{ route('programas.show', $programa->id) }}" 
+                                   class="btn btn-info" 
+                                   title="Ver programa">
+                                    <i class="fas fa-eye me-2"></i>Ver
+                                </a>
+
                                 <!-- Botón Programa Anterior -->
                                 @if(isset($programaAnterior) && $programaAnterior)
                                 <a href="{{ route('programas.edit', $programaAnterior->id) }}" 
@@ -62,6 +69,7 @@
                         @csrf
                         @method('PUT')
                         <input type="hidden" id="programa_id" name="programa_id" value="{{ $programa->id }}">
+                        <input type="hidden" id="fecha_programa_hidden" value="{{ $programa->fecha ? $programa->fecha->format('Y-m-d') : '' }}">
 
                         <div class="row">
                             <div class="col-md-6">
@@ -146,9 +154,9 @@
                                                     <tr>
                                                         <th style="width: 5%;">Núm.</th>
                                                         <th style="width: 5%;">Parte</th>
-                                                        <th style="width: 40%;">Encargado</th>
-                                                        <th style="width: 5%;">Tiempo (min)</th>
+                                                        <th style="width: 35%;">Encargado</th>
                                                         <th style="width: 35%;">Tema</th>
+                                                        <th style="width: 10%;">Tiempo (min)</th>
                                                         <th style="width: 10%;">Acciones</th>
                                                     </tr>
                                                 </thead>
@@ -189,8 +197,8 @@
                                                         <tr>
                                                             <th style="width: 5%">Núm.</th>
                                                             <th style="width: 5%">Parte</th>
-                                                            <th style="width: 35%">Estudiante</th>
-                                                            <th style="width: 35%">Ayudante</th>
+                                                            <th style="width: 25%">Estudiante</th>
+                                                            <th style="width: 25%">Ayudante</th>
                                                             <th style="width: 5%">Sala</th>
                                                             <th style="width: 5%">Tiempo (min)</th>
                                                             <th style="width: 10%">Lección</th>
@@ -230,11 +238,11 @@
                                             <table id="partesNVTable" class="table table-striped table-hover">
                                                 <thead>
                                                     <tr>
-                                                        <th style="width: 10%;">Núm.</th>
-                                                        <th style="width: 10%;">Parte</th>
-                                                        <th style="width: 30%;">Encargado</th>
+                                                        <th style="width: 5%;">Núm.</th>
+                                                        <th style="width: 5%;">Parte</th>
+                                                        <th style="width: 35%;">Encargado</th>
+                                                        <th style="width: 35%;">Tema</th>
                                                         <th style="width: 10%;">Tiempo (min)</th>
-                                                        <th style="width: 30%;">Tema</th>
                                                         <th style="width: 10%;">Acciones</th>
                                                     </tr>
                                                 </thead>
@@ -555,6 +563,36 @@
                     </button>
                 </div>
             </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Ver Asignación del Usuario -->
+<div class="modal fade" id="verAsignacionModal" tabindex="-1" aria-labelledby="verAsignacionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold" id="verAsignacionModalLabel">
+                    Datos de la Asignación
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <!-- Contenedor de alertas -->
+                <div id="ver-asignacion-alert-container"></div>
+                
+                <!-- Contenedor de la tarjeta de asignación -->
+                <div id="asignacion-card-container">
+                    <div class="text-center">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
         </div>
     </div>
 </div>

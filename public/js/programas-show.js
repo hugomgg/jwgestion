@@ -24,10 +24,10 @@ function loadPartes(programaId) {
                     html += `
                         <tr>
                             <td>${numero}</td>
-                            <td>${parte.tiempo || '-'}</td>
-                            <td>${parte.parte_nombre || parte.parte_abreviacion || '-'}</td>
+                            <td>${parte.parte_abreviacion || parte.parte_nombre || '-'}</td>
                             <td>${encargadoNombre}</td>
                             <td>${parte.tema || '-'}</td>
+                            <td>${parte.tiempo || '-'}</td>
                         </tr>
                     `;
                 });
@@ -74,11 +74,11 @@ function loadPartesSegundaSeccion(programaId) {
                     html += `
                         <tr>
                             <td>${numero}</td>
-                            <td>${salaBadge}</td>
-                            <td>${parte.tiempo || '-'}</td>
-                            <td>${parte.parte_nombre || parte.parte_abreviacion || '-'}</td>
+                            <td>${parte.parte_abreviacion || parte.parte_nombre || '-'}</td>
                             <td>${encargadoNombre}</td>
                             <td>${ayudanteNombre}</td>
+                            <td>${salaBadge}</td>
+                            <td>${parte.tiempo || '-'}</td>
                             <td>${parte.leccion || '-'}</td>
                         </tr>
                     `;
@@ -110,10 +110,10 @@ function loadPartesNV(programaId) {
                     html += `
                         <tr>
                             <td>${numero}</td>
-                            <td>${parte.tiempo || '-'}</td>
-                            <td>${parte.parte_nombre || parte.parte_abreviacion || '-'}</td>
+                            <td>${parte.parte_abreviacion || parte.parte_nombre || '-'}</td>
                             <td>${encargadoNombre}</td>
                             <td>${parte.tema || '-'}</td>
+                            <td>${parte.tiempo || '-'}</td>
                         </tr>
                     `;
                 });

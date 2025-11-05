@@ -47,6 +47,9 @@ Route::middleware('auth')->group(function () {
     // Exportar Asignaciones de programas (para coordinadores)
     Route::get('/programas/exportar-asignaciones', [App\Http\Controllers\ProgramaController::class, 'exportAsignaciones'])->name('programas.export.asignaciones');
 
+    // Obtener asignación específica por partes_programa.id
+    Route::get('/programas/asignacion-por-id/{id}', [App\Http\Controllers\ProgramaController::class, 'getAsignacionPorId'])->name('programas.asignacion-por-id');
+
     // Rutas de lectura para usuarios (perfil 1, 2, 3 y 4)
     Route::middleware('can:can.view.users')->group(function () {
         // Gesti?n de Usuarios - Lectura (perfil 1, 2, 3 y 4)
@@ -95,6 +98,7 @@ Route::middleware('auth')->group(function () {
     // Rutas para coordinadores y secretarios que pueden editar su propia congregaci?n
     Route::middleware('can:can.edit.own.congregation')->group(function () {
         Route::put('/congregacion/update', [App\Http\Controllers\CongregacionController::class, 'updateOwn'])->name('congregacion.update.own');
+        Route::post('/congregacion/generar-codigo', [App\Http\Controllers\CongregacionController::class, 'generarCodigo'])->name('congregacion.generar.codigo');
     });
 
     // Rutas de escritura para usuarios que requieren permisos de administrador (perfil 1), coordinador (perfil 3) o secretario (perfil 5)
