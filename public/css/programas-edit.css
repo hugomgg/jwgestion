@@ -70,13 +70,13 @@ div.select2-container--bootstrap-5 .select2-selection__rendered {
 }
 #partesTable th:nth-child(3),
 #partesNVTable th:nth-child(3) {
-    width: 350px !important;
-    min-width: 350px !important;
+    width: 250px !important;
+    min-width: 250px !important;
 }
 #partesTable th:nth-child(4),
 #partesNVTable th:nth-child(4) {
-    width: 350px !important;
-    min-width: 350px !important;
+    width: 450px !important;
+    min-width: 450px !important;
 }
 #partesTable th:nth-child(5),
 #partesNVTable th:nth-child(5) {
@@ -112,13 +112,13 @@ div.select2-container--bootstrap-5 .select2-selection__rendered {
 }
 
 #partesSegundaSeccionTable th:nth-child(5) {
-    width: 50px !important;
-    min-width: 50px !important;
+    width: 100px !important;
+    min-width: 100px !important;
 }
 
 #partesSegundaSeccionTable th:nth-child(6) {
-    width: 50px !important;
-    min-width: 50px !important;
+    width: 100px !important;
+    min-width: 100px !important;
 }
 #partesSegundaSeccionTable th:nth-child(7) {
     width: 100px !important;

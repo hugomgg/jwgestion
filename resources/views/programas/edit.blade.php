@@ -154,8 +154,8 @@
                                                     <tr>
                                                         <th style="width: 5%;">Núm.</th>
                                                         <th style="width: 5%;">Parte</th>
-                                                        <th style="width: 35%;">Encargado</th>
-                                                        <th style="width: 35%;">Tema</th>
+                                                        <th style="width: 25%;">Encargado</th>
+                                                        <th style="width: 45%;">Tema</th>
                                                         <th style="width: 10%;">Tiempo (min)</th>
                                                         <th style="width: 10%;">Acciones</th>
                                                     </tr>
@@ -199,8 +199,8 @@
                                                             <th style="width: 5%">Parte</th>
                                                             <th style="width: 25%">Estudiante</th>
                                                             <th style="width: 25%">Ayudante</th>
-                                                            <th style="width: 5%">Sala</th>
-                                                            <th style="width: 5%">Tiempo (min)</th>
+                                                            <th style="width: 10%">Sala</th>
+                                                            <th style="width: 10%">Tiempo (min)</th>
                                                             <th style="width: 10%">Lección</th>
                                                             <th style="width: 10%;">Acciones</th>
                                                         </tr>
@@ -240,8 +240,8 @@
                                                     <tr>
                                                         <th style="width: 5%;">Núm.</th>
                                                         <th style="width: 5%;">Parte</th>
-                                                        <th style="width: 35%;">Encargado</th>
-                                                        <th style="width: 35%;">Tema</th>
+                                                        <th style="width: 25%;">Encargado</th>
+                                                        <th style="width: 45%;">Tema</th>
                                                         <th style="width: 10%;">Tiempo (min)</th>
                                                         <th style="width: 10%;">Acciones</th>
                                                     </tr>
