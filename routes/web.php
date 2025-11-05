@@ -24,6 +24,11 @@ Route::post('password/email', [App\Http\Controllers\Auth\ForgotPasswordControlle
 Route::get('password/reset/{token}', [App\Http\Controllers\Auth\ResetPasswordController::class, 'showResetForm'])->name('password.reset');
 Route::post('password/reset', [App\Http\Controllers\Auth\ResetPasswordController::class, 'reset'])->name('password.update');
 
+// Rutas públicas para ingreso de informes
+Route::get('/informe/{congregacion_id}', [App\Http\Controllers\PublicInformeController::class, 'show'])->name('public.informe.show');
+Route::post('/informe/{congregacion_id}', [App\Http\Controllers\PublicInformeController::class, 'store'])->name('public.informe.store');
+Route::get('/informe/{congregacion_id}/usuarios-por-grupo', [App\Http\Controllers\PublicInformeController::class, 'getUsersByGrupo'])->name('public.informe.usuarios-por-grupo');
+
 // Ruta de exportar PDF de usuarios (solo para administradores)
 Route::middleware(['auth', 'admin'])->get('/usuarios/exportar-pdf', [App\Http\Controllers\UserController::class, 'exportPdf'])->name('users.export.pdf');
 
