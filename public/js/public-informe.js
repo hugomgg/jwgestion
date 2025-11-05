@@ -125,10 +125,10 @@ $(document).ready(function() {
         if (participa) {
             const servicioIdInt = parseInt(servicioId);
             if (serviciosConHoras.includes(servicioIdInt)) {
-                isValid = isValid && horas;
+                isValid = isValid && (horas > 0 && horas <= 100 && horas);
             }
         }
-        isValid = isValid && (cantidadEstudios >= 0 && cantidadEstudios <= 50 && cantidadEstudios !== null && cantidadEstudios !== '');
+        isValid = isValid && (cantidadEstudios >= 0 && cantidadEstudios <= 50 && cantidadEstudios);
         // Habilitar/deshabilitar botón de envío
         $('#submitBtn').prop('disabled', !isValid);
         
@@ -147,18 +147,27 @@ $(document).ready(function() {
         const participa = $(this).is(':checked');
         const servicioId = parseInt($('#servicio_id').val());
         const horasInput = $('#horas');
-        
-        // Habilitar/deshabilitar solo Estudios (Servicio siempre habilitado)
-        $('#cantidad_estudios').prop('disabled', !participa);
+        const horasContainer = $('#horas_container');
+        const cantidadEstudiosContainer = $('#cantidad_estudios_container');
+        const cantidadEstudiosInput = $('#cantidad_estudios');
         
         if (!participa) {
-            // Resetear y deshabilitar campos
-            $('#cantidad_estudios').val('0');
+            // Ocultar campo de estudios con animación
+            cantidadEstudiosContainer.slideUp(300);
+            cantidadEstudiosInput.val('0').prop('disabled', true);
+            
+            // Ocultar y resetear campo de horas
+            horasContainer.slideUp(300);
             horasInput.val('').prop('disabled', true);
             horasInput.attr('required', false);
-        }else {
-            // Si participa y el servicio requiere horas, habilitar horas
+        } else {
+            // Mostrar campo de estudios con animación
+            cantidadEstudiosContainer.slideDown(300);
+            cantidadEstudiosInput.prop('disabled', false);
+            
+            // Si participa y el servicio requiere horas, mostrar y habilitar horas
             if (serviciosConHoras.includes(servicioId)) {
+                horasContainer.slideDown(300);
                 horasInput.prop('disabled', false);
                 horasInput.attr('required', true);
             }
@@ -182,13 +191,17 @@ $(document).ready(function() {
         const participa = $('#participa').is(':checked');
         const servicioId = parseInt($(this).val());
         const horasInput = $('#horas');
+        const horasContainer = $('#horas_container');
+        
         if(participa) {
             if (serviciosConHoras.includes(servicioId)) {
-                // Habilitar horas para servicios específicos
+                // Mostrar y habilitar horas para servicios específicos
+                horasContainer.slideDown(300);
                 horasInput.prop('disabled', false);
                 horasInput.attr('required', true);
             } else {
-                // Deshabilitar horas para otros servicios
+                // Ocultar y deshabilitar horas para otros servicios
+                horasContainer.slideUp(300);
                 horasInput.val('');
                 horasInput.prop('disabled', true);
                 horasInput.attr('required', false);

@@ -60,7 +60,7 @@
                                 <!-- Usuario -->
                                 <div class="mb-4">
                                     <label for="user_id" class="form-label">
-                                        <i class="fas fa-user me-2"></i>Usuario *
+                                        <i class="fas fa-user me-2"></i>Publicador *
                                     </label>
                                     <select class="form-select form-select-lg" id="user_id" name="user_id" required disabled>
                                         <option value="">Seleccione primero un grupo...</option>
@@ -101,27 +101,26 @@
                                     <div class="form-check form-switch form-check-lg">
                                         <input class="form-check-input" type="checkbox" id="participa" name="participa" value="1">
                                         <label class="form-check-label" for="participa">
-                                            <i class="fas fa-check-circle me-2"></i>
                                             <strong>Participé en actividades este mes</strong>
                                         </label>
                                     </div>
-                                    <small class="text-muted">Active esta opción si participó en el ministerio durante el período seleccionado</small>
+                                    <small class="text-muted">Marque la casilla si participó en alguna faceta de la predicación durante el mes</small>
                                 </div>
 
                                 <!-- Estudios -->
-                                <div class="mb-4">
+                                <div class="mb-4" id="cantidad_estudios_container" style="display: none;">
                                     <label for="cantidad_estudios" class="form-label">
-                                        <i class="fas fa-book-reader me-2"></i>Cantidad de Estudios
+                                        <i class="fas fa-book-reader me-2"></i>Cantidad de Cursos
                                     </label>
                                     <input type="number" class="form-control form-control-lg" 
                                            id="cantidad_estudios" name="cantidad_estudios" 
                                            min="0" max="50" value="0" disabled>
                                     <div class="invalid-feedback"></div>
-                                    <small class="text-muted">Número de estudios bíblicos realizados (0-50)</small>
+                                    <small class="text-muted">Número de diferentes cursos bíblicos dirigidos (0-50)</small>
                                 </div>
 
                                 <!-- Horas -->
-                                <div class="mb-4">
+                                <div class="mb-4" id="horas_container" style="display: none;">
                                     <label for="horas" class="form-label">
                                         <i class="fas fa-clock me-2"></i>Horas de Servicio
                                     </label>
@@ -129,7 +128,7 @@
                                            id="horas" name="horas" 
                                            min="1" max="100"  value="0" disabled>
                                     <div class="invalid-feedback"></div>
-                                    <small class="text-muted">Horas dedicadas al ministerio (1-100)</small>
+                                    <small class="text-muted"> (Para precursores auxiliares, regulares y especiales, o misioneros en el campo) (1-100)</small>
                                 </div>
 
                                 <!-- Comentarios -->
