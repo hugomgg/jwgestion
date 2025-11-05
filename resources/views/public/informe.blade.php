@@ -144,6 +144,11 @@
                                     <small class="text-muted">Máximo 1000 caracteres</small>
                                 </div>
 
+                                <!-- reCAPTCHA -->
+                                @if(config('recaptcha.enabled'))
+                                <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response-informe">
+                                @endif
+
                                 <!-- Botón de envío -->
                                 <div class="d-grid gap-2">
                                     <button type="submit" class="btn btn-primary btn-lg" id="submitBtn" disabled>
@@ -162,6 +167,15 @@
                                 <i class="fas fa-info-circle me-1"></i>
                                 Los campos marcados con * son obligatorios
                             </small>
+                            @if(config('recaptcha.enabled'))
+                            <div class="mt-2">
+                                <small class="text-muted">
+                                    Este sitio está protegido por reCAPTCHA y aplican la
+                                    <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Política de Privacidad</a> y los
+                                    <a href="https://policies.google.com/terms" target="_blank" rel="noopener">Términos de Servicio</a> de Google.
+                                </small>
+                            </div>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -173,6 +187,12 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    
+    @if(config('recaptcha.enabled'))
+    <!-- Google reCAPTCHA -->
+    <script src="https://www.google.com/recaptcha/api.js?render={{ config('recaptcha.site_key') }}"></script>
+    @endif
+    
     <!-- Custom JS -->
     <script src="{{ asset('js/public-informe.js') }}"></script>
     
@@ -182,7 +202,9 @@
             congregacionId: {{ $congregacion->id }},
             getUsersByGrupoUrl: '{{ route("public.informe.usuarios-por-grupo", $congregacion->id) }}',
             storeUrl: '{{ route("public.informe.store", $congregacion->id) }}',
-            csrfToken: '{{ csrf_token() }}'
+            csrfToken: '{{ csrf_token() }}',
+            recaptchaEnabled: {{ config('recaptcha.enabled') ? 'true' : 'false' }},
+            recaptchaSiteKey: '{{ config('recaptcha.site_key') }}'
         };
     </script>
 </body>

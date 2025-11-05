@@ -26,7 +26,7 @@ Route::post('password/reset', [App\Http\Controllers\Auth\ResetPasswordController
 
 // Rutas públicas para ingreso de informes
 Route::get('/informe/{congregacion_id}', [App\Http\Controllers\PublicInformeController::class, 'show'])->name('public.informe.show');
-Route::post('/informe/{congregacion_id}', [App\Http\Controllers\PublicInformeController::class, 'store'])->name('public.informe.store');
+Route::post('/informe/{congregacion_id}', [App\Http\Controllers\PublicInformeController::class, 'store'])->middleware('recaptcha.informe')->name('public.informe.store');
 Route::get('/informe/{congregacion_id}/usuarios-por-grupo', [App\Http\Controllers\PublicInformeController::class, 'getUsersByGrupo'])->name('public.informe.usuarios-por-grupo');
 
 // Ruta de exportar PDF de usuarios (solo para administradores)

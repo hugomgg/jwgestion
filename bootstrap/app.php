@@ -18,6 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'check.user.status' => \App\Http\Middleware\CheckUserStatusMiddleware::class,
             'load.profile' => \App\Http\Middleware\LoadUserProfile::class,
             'recaptcha' => \App\Http\Middleware\VerifyRecaptcha::class,
+            'recaptcha.informe' => \App\Http\Middleware\VerifyRecaptchaInforme::class,
         ]);
         
         // Apply middlewares globally to web routes

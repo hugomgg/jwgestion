@@ -199,11 +199,9 @@ $(document).ready(function() {
     });
 
     /**
-     * Envío del formulario
+     * Función para enviar el formulario (después de obtener token reCAPTCHA si está habilitado)
      */
-    $('#informeForm').on('submit', function(e) {
-        e.preventDefault();
-        
+    function submitFormData() {
         // Limpiar errores previos
         clearValidationErrors();
         
@@ -224,6 +222,11 @@ $(document).ready(function() {
             horas: $('#horas').val() || null,
             comentario: $('#comentario').val() || null
         };
+        
+        // Agregar token de reCAPTCHA si está habilitado
+        if (config.recaptchaEnabled) {
+            formData['g-recaptcha-response'] = $('#g-recaptcha-response-informe').val();
+        }
         
         // Enviar datos
         $.ajax({
@@ -265,8 +268,43 @@ $(document).ready(function() {
                 // Habilitar botón de envío
                 submitBtn.prop('disabled', false);
                 submitBtn.html(originalText);
+                
+                // Regenerar token de reCAPTCHA si está habilitado
+                if (config.recaptchaEnabled && typeof grecaptcha !== 'undefined') {
+                    grecaptcha.ready(function() {
+                        grecaptcha.execute(config.recaptchaSiteKey, {action: 'informe_submit'})
+                            .then(function(token) {
+                                $('#g-recaptcha-response-informe').val(token);
+                            });
+                    });
+                }
             }
         });
+    }
+
+    /**
+     * Envío del formulario
+     */
+    $('#informeForm').on('submit', function(e) {
+        e.preventDefault();
+        
+        // Si reCAPTCHA está habilitado, generar token antes de enviar
+        if (config.recaptchaEnabled && typeof grecaptcha !== 'undefined') {
+            grecaptcha.ready(function() {
+                grecaptcha.execute(config.recaptchaSiteKey, {action: 'informe_submit'})
+                    .then(function(token) {
+                        $('#g-recaptcha-response-informe').val(token);
+                        submitFormData();
+                    })
+                    .catch(function(error) {
+                        console.error('Error al obtener token de reCAPTCHA:', error);
+                        showAlert('Error de verificación de seguridad. Por favor, recargue la página e intente nuevamente.', 'error');
+                    });
+            });
+        } else {
+            // Si reCAPTCHA no está habilitado, enviar directamente
+            submitFormData();
+        }
     });
 
     /**
@@ -327,4 +365,19 @@ $(document).ready(function() {
      */
     $('#submitBtn').prop('disabled', true);
     validateForm();
+    
+    /**
+     * Inicializar reCAPTCHA si está habilitado
+     */
+    if (config.recaptchaEnabled && typeof grecaptcha !== 'undefined') {
+        grecaptcha.ready(function() {
+            grecaptcha.execute(config.recaptchaSiteKey, {action: 'informe_submit'})
+                .then(function(token) {
+                    $('#g-recaptcha-response-informe').val(token);
+                })
+                .catch(function(error) {
+                    console.error('Error al inicializar reCAPTCHA:', error);
+                });
+        });
+    }
 });
