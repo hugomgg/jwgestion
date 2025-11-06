@@ -123,7 +123,7 @@ class PublicInformeController extends Controller
             }
 
             $grupo = Grupo::find($request->grupo_id);
-            if (!$grupo || $grupo->congregacion_id != $congregacion_id) {
+            if (!$grupo || $grupo->congregacion_id != $congregacion->id) {
                 return response()->json([
                     'success' => false,
                     'message' => 'El grupo no pertenece a la congregación'
@@ -131,7 +131,7 @@ class PublicInformeController extends Controller
             }
 
             // Verificar que no exista ya un informe para el mismo usuario, año y mes
-            $existeInforme = Informe::where('congregacion_id', $congregacion_id)
+            $existeInforme = Informe::where('congregacion_id', $congregacion->id)
                                    ->where('user_id', $request->user_id)
                                    ->where('anio', $anio)
                                    ->where('mes', $mes)
@@ -164,7 +164,7 @@ class PublicInformeController extends Controller
                 'mes' => $mes,
                 'user_id' => $request->user_id,
                 'grupo_id' => $request->grupo_id,
-                'congregacion_id' => $congregacion_id,
+                'congregacion_id' => $congregacion->id,
                 'servicio_id' => $request->servicio_id, // Siempre guardar el servicio
                 'participa' => $request->participa,
                 'cantidad_estudios' => $request->participa ? ($request->cantidad_estudios ?? 0) : 0,

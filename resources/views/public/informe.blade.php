@@ -126,7 +126,7 @@
                                     </label>
                                     <input type="number" class="form-control form-control-lg" 
                                            id="horas" name="horas" 
-                                           min="1" max="100"  value="0" disabled>
+                                           min="1" max="100"  disabled>
                                     <div class="invalid-feedback"></div>
                                     <small class="text-muted"> (Para precursores auxiliares, regulares y especiales, o misioneros en el campo) (1-100)</small>
                                 </div>
