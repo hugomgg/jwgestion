@@ -587,6 +587,7 @@ class ParteProgramaController extends Controller
                 $partesExistentes = DB::table('partes_programa')
                     ->where('programa_id', $programaId)
                     ->where('sala_id', 1)
+                    ->whereNotIn('parte_id', [20]) // Excluir parte NVC
                     ->pluck('parte_id')
                     ->toArray();
 
