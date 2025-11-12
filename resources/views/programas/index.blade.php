@@ -4,10 +4,26 @@
 <link rel="stylesheet" href="{{ asset('css/programas-index.css') }}">
 <link href="{{ asset('css/select2.min.css') }}" rel="stylesheet" />
 <link href="{{ asset('css/select2-bootstrap-5-theme.min.css') }}" rel="stylesheet" />
+<style>
+    /* Estilo para filas de programas de la semana actual */
+    #programasTable tbody tr.semana-actual-row,
+    #programasTable tbody tr.semana-actual-row td {
+        background-color: #FFE4B5 !important;
+    }
+    #programasTable tbody tr.semana-actual-row:hover,
+    #programasTable tbody tr.semana-actual-row:hover td {
+        background-color: #FFD18A !important;
+    }
+</style>
 @endpush
 
 @section('content')
 @if($currentUser->isCoordinator() || $currentUser->isOrganizer() ||  $currentUser->isSuborganizer())
+@php
+    // Calcular el lunes y domingo de la semana actual (solo fechas, sin hora)
+    $lunesSemanaActual = \Carbon\Carbon::now()->startOfWeek(\Carbon\Carbon::MONDAY)->startOfDay();
+    $domingoSemanaActual = \Carbon\Carbon::now()->endOfWeek(\Carbon\Carbon::SUNDAY)->endOfDay();
+@endphp
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">
@@ -116,7 +132,15 @@
                             </thead>
                             <tbody>
                                 @foreach($programas as $programa)
-                                <tr>
+                                @php
+                                    // Verificar si la fecha del programa está en la semana actual
+                                    $esSemanaActual = false;
+                                    if (isset($programa->fecha) && $programa->fecha) {
+                                        $fechaPrograma = \Carbon\Carbon::parse($programa->fecha)->startOfDay();
+                                        $esSemanaActual = $fechaPrograma->between($lunesSemanaActual, $domingoSemanaActual);
+                                    }
+                                @endphp
+                                <tr class="@if($esSemanaActual) semana-actual-row @endif">
                                     <td data-order="{{ $programa->fecha }}">{{ \Carbon\Carbon::parse($programa->fecha)->format('d/m/Y') }}</td>
                                     <td>{{ $programa->nombre_presidencia ?? '-' }}</td>
                                     <td>{{ $programa->nombre_orador_inicial ?? '-' }}</td>
