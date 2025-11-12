@@ -1776,25 +1776,11 @@ $(document).ready(function() {
         // Determinar si mostrar filtros de sexo (solo para tipo=3)
         const contenedorFiltroSexo = $('#filtro_sexo_ayudante_segunda_container');
         let sexoForzado = null;
-        if (tipo == 3) {
-            // Tipo 3: Mostrar filtros según el sexo del encargado
+        if (tipo == 3) { //Asignación Hombre y Mujer
             contenedorFiltroSexo.show();
             // Obtener el sexo del encargado
             if (ayudanteId) {
-                // Hacer petición para obtener el sexo del ayudante
-                $.ajax({
-                    url: `/verificar-sexo-encargado`,
-                    method: 'GET',
-                    data: { encargado_id: encargadoId },
-                    async: false,
-                    success: function(response) {
-                        if (response.success && response.encargado_sexo) {
-                            sexoForzado = response.encargado_sexo;
-                        }
-                    }
-                });
-            }else{
-                // Hacer petición para obtener el sexo del encargado
+                 // Se buscan ayudantes según el sexo del seleccionado
                 $.ajax({
                     url: `/verificar-sexos-usuarios`,
                     method: 'GET',
@@ -1803,6 +1789,19 @@ $(document).ready(function() {
                     success: function(response) {
                         if (response.success && response.ayudante_sexo) {
                             sexoForzado = response.ayudante_sexo;
+                        }
+                    }
+                });
+            }else{
+                // Se buscan ayudantes según el sexo del encargado
+                $.ajax({
+                    url: `/verificar-sexo-encargado`,
+                    method: 'GET',
+                    data: { encargado_id: encargadoId },
+                    async: false,
+                    success: function(response) {
+                        if (response.success && response.encargado_sexo) {
+                            sexoForzado = response.encargado_sexo;
                         }
                     }
                 });

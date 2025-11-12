@@ -2052,7 +2052,7 @@ class ParteProgramaController extends Controller
             }
 
             $esParteAmbosSexos = ($parteSeccion->tipo == 3);
-            $parametros = [$parteId, $user->congregacion];
+            $parametros = [$parteId, $user->congregacion,$encargadoId];
 
             // Obtener el sexo del encargado seleccionado para determinar el orden
             $encargadoSexo = null;
@@ -2065,7 +2065,7 @@ class ParteProgramaController extends Controller
                 $condicionSexo = ' AND u.sexo = ?';
                 $parametros[] = $sexoFiltro??$encargadoSexo;
             }
-            
+
             // Primera parte del UNION: usuarios que nunca han participado
             $usuariosPrimeraVez = DB::select("SELECT
                     'Primera vez' as fecha,
@@ -2088,6 +2088,7 @@ class ParteProgramaController extends Controller
                     AND ps.id= ?
                     AND u.congregacion = ?
                     AND u.estado = 1
+                    AND u.id != ?
                     $condicionSexo
             ", $parametros);
 

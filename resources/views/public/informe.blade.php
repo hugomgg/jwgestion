@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Envío de Informe - {{ $congregacion->nombre }}</title>
+    <title>Informe de Predicación - {{ $congregacion->nombre }}</title>
     
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -20,7 +20,7 @@
             <div class="col-lg-5 left-panel d-none d-lg-flex flex-column justify-content-center align-items-center">
                 <div class="text-center text-white p-5">
                     <i class="fas fa-file-alt icon-large mb-4"></i>
-                    <h2 class="mb-4">Sistema de Informes</h2>
+                    <h2 class="mb-4">Informes de Predicación</h2>
                     <h3 class="mb-3">{{ $congregacion->nombre }}</h3>
                     <p class="lead">Complete su informe mensual de actividades de forma rápida y sencilla</p>
                 </div>
@@ -33,7 +33,7 @@
                         <div class="card-header bg-primary text-white">
                             <h4 class="mb-0">
                                 <i class="fas fa-clipboard-check me-2"></i>
-                                Envío de Informe Mensual
+                                Informe de Predicación Mensual
                             </h4>
                         </div>
                         <div class="card-body p-4">
@@ -85,7 +85,7 @@
                                 <!-- Servicio -->
                                 <div class="mb-4">
                                     <label for="servicio_id" class="form-label">
-                                        <i class="fas fa-hands-helping me-2"></i>Servicio *
+                                        <i class="fas fa-briefcase me-2"></i>Servicio *
                                     </label>
                                     <select class="form-select form-select-lg" id="servicio_id" name="servicio_id" required>
                                         <option value="">Seleccione un servicio...</option>

@@ -1,14 +1,14 @@
 $(document).ready(function() {
     // Obtener configuración global
     const config = window.publicInformeConfig;
-    
+
     // Configurar CSRF token para todas las peticiones AJAX
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': config.csrfToken
         }
     });
-    
+
     // IDs de servicios que requieren horas (Precursor Regular=1, Precursor Especial=3)
     const serviciosConHoras = [1, 3];
 
@@ -17,9 +17,9 @@ $(document).ready(function() {
      */
     function showAlert(message, type = 'info') {
         const alertClass = type === 'error' ? 'danger' : type;
-        const iconClass = type === 'error' ? 'exclamation-triangle' : 
+        const iconClass = type === 'error' ? 'exclamation-triangle' :
                          type === 'success' ? 'check-circle' : 'info-circle';
-        
+
         const alert = $(`
             <div class="alert alert-${alertClass} alert-dismissible fade show" role="alert">
                 <i class="fas fa-${iconClass} me-2"></i>
@@ -27,12 +27,12 @@ $(document).ready(function() {
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         `);
-        
+
         $('#alert-container').html(alert);
-        
+
         // Scroll al inicio
         $('html, body').animate({ scrollTop: 0 }, 300);
-        
+
         // Auto-cerrar después de 8 segundos
         setTimeout(function() {
             alert.fadeOut('slow', function() {
@@ -54,7 +54,7 @@ $(document).ready(function() {
      */
     function showValidationErrors(errors) {
         clearValidationErrors();
-        
+
         $.each(errors, function(field, messages) {
             const input = $(`[name="${field}"]`);
             input.addClass('is-invalid');
@@ -68,17 +68,17 @@ $(document).ready(function() {
     $('#grupo_id').on('change', function() {
         const grupoId = $(this).val();
         const userSelect = $('#user_id');
-        
+
         // Resetear select de usuarios
         userSelect.html('<option value="">Cargando usuarios...</option>');
         userSelect.prop('disabled', true);
-        
+
         if (!grupoId) {
             userSelect.html('<option value="">Seleccione primero un grupo...</option>');
             validateForm();
             return;
         }
-        
+
         // Realizar petición AJAX
         $.ajax({
             url: config.getUsersByGrupoUrl,
@@ -117,10 +117,10 @@ $(document).ready(function() {
         const participa = $('#participa').is(':checked');
         const horas = $('#horas').val();
         const cantidadEstudios = $('#cantidad_estudios').val();
-        
+
         // Servicio es siempre obligatorio
         let isValid = grupoId && userId && periodo && servicioId;
-        
+
         // Si participa Y el servicio requiere horas, validar horas
         if (participa) {
             const servicioIdInt = parseInt(servicioId);
@@ -131,7 +131,7 @@ $(document).ready(function() {
         isValid = isValid && (cantidadEstudios >= 0 && cantidadEstudios <= 50 && cantidadEstudios);
         // Habilitar/deshabilitar botón de envío
         $('#submitBtn').prop('disabled', !isValid);
-        
+
         // Mostrar/ocultar mensaje de ayuda
         if (isValid) {
             $('#submitBtnHint').fadeOut();
@@ -150,12 +150,12 @@ $(document).ready(function() {
         const horasContainer = $('#horas_container');
         const cantidadEstudiosContainer = $('#cantidad_estudios_container');
         const cantidadEstudiosInput = $('#cantidad_estudios');
-        
+
         if (!participa) {
             // Ocultar campo de estudios con animación
             cantidadEstudiosContainer.slideUp(300);
             cantidadEstudiosInput.val('0').prop('disabled', true);
-            
+
             // Ocultar y resetear campo de horas
             horasContainer.slideUp(300);
             horasInput.val('').prop('disabled', true);
@@ -164,7 +164,7 @@ $(document).ready(function() {
             // Mostrar campo de estudios con animación
             cantidadEstudiosContainer.slideDown(300);
             cantidadEstudiosInput.prop('disabled', false);
-            
+
             // Si participa y el servicio requiere horas, mostrar y habilitar horas
             if (serviciosConHoras.includes(servicioId)) {
                 horasContainer.slideDown(300);
@@ -192,7 +192,7 @@ $(document).ready(function() {
         const servicioId = parseInt($(this).val());
         const horasInput = $('#horas');
         const horasContainer = $('#horas_container');
-        
+
         if(participa) {
             if (serviciosConHoras.includes(servicioId)) {
                 // Mostrar y habilitar horas para servicios específicos
@@ -217,13 +217,13 @@ $(document).ready(function() {
     function submitFormData() {
         // Limpiar errores previos
         clearValidationErrors();
-        
+
         // Deshabilitar botón de envío
         const submitBtn = $('#submitBtn');
         const originalText = submitBtn.html();
         submitBtn.prop('disabled', true);
         submitBtn.html('<span class="spinner-border spinner-border-sm me-2" role="status"></span>Enviando...');
-        
+
         // Preparar datos del formulario
         const formData = {
             grupo_id: $('#grupo_id').val(),
@@ -235,12 +235,12 @@ $(document).ready(function() {
             horas: $('#horas').val() || null,
             comentario: $('#comentario').val() || null
         };
-        
+
         // Agregar token de reCAPTCHA si está habilitado
         if (config.recaptchaEnabled) {
             formData['g-recaptcha-response'] = $('#g-recaptcha-response-informe').val();
         }
-        
+
         // Enviar datos
         $.ajax({
             url: config.storeUrl,
@@ -250,16 +250,16 @@ $(document).ready(function() {
             success: function(response) {
                 if (response.success) {
                     showAlert('¡Informe enviado exitosamente! Gracias por su colaboración.', 'success');
-                    
+
                     // Resetear formulario
                     $('#informeForm')[0].reset();
                     $('#cantidad_estudios').prop('disabled', true);
                     $('#horas').prop('disabled', true);
                     $('#user_id').html('<option value="">Seleccione primero un grupo...</option>').prop('disabled', true);
-                    
+
                     // Deshabilitar botón de envío después de resetear
                     $('#submitBtn').prop('disabled', true);
-                    
+
                     // Scroll al inicio
                     $('html, body').animate({ scrollTop: 0 }, 300);
                 } else {
@@ -281,7 +281,7 @@ $(document).ready(function() {
                 // Habilitar botón de envío
                 submitBtn.prop('disabled', false);
                 submitBtn.html(originalText);
-                
+
                 // Regenerar token de reCAPTCHA si está habilitado
                 if (config.recaptchaEnabled && typeof grecaptcha !== 'undefined') {
                     grecaptcha.ready(function() {
@@ -300,7 +300,13 @@ $(document).ready(function() {
      */
     $('#informeForm').on('submit', function(e) {
         e.preventDefault();
-        
+        const participa = $('#participa').is(':checked');
+        const comentario = $('#comentario').val().trim();
+        if (!participa && comentario === '') {
+            showAlert('Por favor, complete al menos un campo (Comentario o Participación)', 'error');
+            return;
+        }
+
         // Si reCAPTCHA está habilitado, generar token antes de enviar
         if (config.recaptchaEnabled && typeof grecaptcha !== 'undefined') {
             grecaptcha.ready(function() {
@@ -331,12 +337,12 @@ $(document).ready(function() {
         }
         validateForm();
     });
-    
+
     // Validar también cuando cambia user_id y periodo
     $('#user_id, #periodo').on('change', function() {
         validateForm();
     });
-    
+
     // Validar cuando cambian las horas
     $('#horas').on('input change', function() {
         validateForm();
@@ -349,12 +355,12 @@ $(document).ready(function() {
         const maxLength = 1000;
         const currentLength = $(this).val().length;
         const remaining = maxLength - currentLength;
-        
+
         let counterText = `${currentLength} / ${maxLength} caracteres`;
         if (remaining < 100) {
             counterText = `<span class="text-warning">${counterText} (${remaining} restantes)</span>`;
         }
-        
+
         // Actualizar o crear contador
         let counter = $(this).siblings('.char-counter');
         if (counter.length === 0) {
@@ -372,13 +378,13 @@ $(document).ready(function() {
     }).on('blur', function() {
         $(this).closest('.mb-4').removeClass('focused');
     });
-    
+
     /**
      * Inicializar estado del botón de envío (deshabilitado al cargar)
      */
     $('#submitBtn').prop('disabled', true);
     validateForm();
-    
+
     /**
      * Inicializar reCAPTCHA si está habilitado
      */
