@@ -117,3 +117,12 @@ div.select2-container--bootstrap-5 .select2-selection__rendered {
     width: 100px !important;
     max-width: 100px !important;
 }
+/* Estilo para filas de programas de la semana actual */
+#programasTable tbody tr.semana-actual-row,
+#programasTable tbody tr.semana-actual-row td {
+    background-color: #c6ecfc !important;
+}
+#programasTable tbody tr.semana-actual-row:hover,
+#programasTable tbody tr.semana-actual-row:hover td {
+    background-color: #a3e0fa !important;
+}

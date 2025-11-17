@@ -4,17 +4,6 @@
 <link rel="stylesheet" href="{{ asset('css/programas-index.css') }}">
 <link href="{{ asset('css/select2.min.css') }}" rel="stylesheet" />
 <link href="{{ asset('css/select2-bootstrap-5-theme.min.css') }}" rel="stylesheet" />
-<style>
-    /* Estilo para filas de programas de la semana actual */
-    #programasTable tbody tr.semana-actual-row,
-    #programasTable tbody tr.semana-actual-row td {
-        background-color: #FFE4B5 !important;
-    }
-    #programasTable tbody tr.semana-actual-row:hover,
-    #programasTable tbody tr.semana-actual-row:hover td {
-        background-color: #FFD18A !important;
-    }
-</style>
 @endpush
 
 @section('content')
