@@ -24,12 +24,6 @@
                                 <button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#advancedSearchCollapse" aria-expanded="false" aria-controls="advancedSearchCollapse">
                                     <i class="fas fa-search me-2"></i>Búsqueda Avanzada
                                 </button>
-                                
-                                @if(Auth::user()->canModify() && !Auth::user()->isSubsecretary() && !Auth::user()->isSuborganizer())
-                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addInformeModal">
-                                    <i class="fas fa-plus me-2"></i>Agregar Informe
-                                </button>
-                                @endif
                             </div>
                             
                             <!-- Collapse para Búsqueda Avanzada -->

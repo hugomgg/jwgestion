@@ -339,10 +339,28 @@ class InformeController extends Controller
                 'comentario' => $request->comentario,
             ]);
 
+            // Refrescar el informe desde la base de datos y cargar las relaciones
+            $informe = $informe->fresh(['user', 'grupo', 'servicio', 'user.congregacion']);
+
+            // Preparar datos para la respuesta
+            $informeData = [
+                'id' => $informe->id,
+                'anio' => $informe->anio,
+                'mes' => $informe->mes,
+                'participa' => $informe->participa,
+                'cantidad_estudios' => $informe->cantidad_estudios,
+                'horas' => $informe->horas,
+                'comentario' => $informe->comentario,
+                'usuario_nombre' => optional($informe->user)->name ?? '',
+                'grupo_nombre' => optional($informe->grupo)->nombre ?? '',
+                'servicio_nombre' => optional($informe->servicio)->nombre ?? '',
+                'congregacion_nombre' => optional(optional($informe->user)->congregacion)->nombre ?? '',
+            ];
+
             return response()->json([
                 'success' => true,
                 'message' => 'Informe actualizado exitosamente.',
-                'informe' => $informe
+                'data' => $informeData
             ]);
 
         } catch (\Exception $e) {

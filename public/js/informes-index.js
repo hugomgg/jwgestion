@@ -17,7 +17,7 @@ $(document).ready(function() {
     });
 
     // Aplicar filtros de búsqueda avanzada
-    $('#anioFilter, #mesFilter, #usuarioFilter, #grupoFilter, #servicioFilter, #participaFilter, #congregacionFilter').on('change', function() {
+    $('#anioFilter, #mesFilter, #grupoFilter, #servicioFilter').on('change', function() {
         applyAdvancedFilters();
     });
 
@@ -25,28 +25,16 @@ $(document).ready(function() {
     function applyAdvancedFilters() {
         let anio = $('#anioFilter').val();
         let mes = $('#mesFilter').val();
-        let usuario = $('#usuarioFilter').val();
         let grupo = $('#grupoFilter').val();
         let servicio = $('#servicioFilter').val();
-        let participa = $('#participaFilter').val();
-        let congregacion = $('#congregacionFilter').val();
 
         // Aplicar filtros a la tabla
         informesTable
-            .columns(1).search(anio) // Año
-            .columns(2).search(mes) // Mes
-            .columns(3).search(usuario) // Usuario
-            .columns(4).search(grupo) // Grupo
-            .columns(5).search(servicio) // Servicio
-            .columns(6).search(participa === '' ? '' : (participa === '1' ? 'Sí' : 'No')) // Participa
+            .columns(1).search(anio) // Año (columna 1)
+            .columns(2).search(mes ? (['','Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'][parseInt(mes)] || '') : '') // Mes (columna 2)
+            .columns(3).search(grupo) // Grupo (columna 3)
+            .columns(6).search(servicio) // Servicio (columna 6)
             .draw();
-
-        // Aplicar filtro de congregación si existe la columna
-        if (congregacion && informesTable.column(7).visible()) {
-            informesTable.columns(7).search(congregacion);
-        }
-
-        informesTable.draw();
     }
 
     // Limpiar errores de validación
@@ -395,7 +383,11 @@ $(document).ready(function() {
                 if (response.success) {
                     $('#editInformeModal').modal('hide');
                     showAlert(response.message, 'success');
-                    location.reload(); // Recargar para mostrar los datos actualizados
+                    
+                    // Actualizar la fila en DataTable sin recargar la página
+                    if (response.data && informesTable) {
+                        updateTableRow(response.data);
+                    }
                 } else {
                     showAlert(response.message || 'Error al actualizar el informe', 'error');
                 }
@@ -540,4 +532,86 @@ $(document).ready(function() {
         // Esta función puede ser implementada más tarde para exportar datos
         // TODO: Implementar exportación de informes
     };
+
+    // Función para actualizar una fila de la tabla sin recargar
+    function updateTableRow(data) {
+        // Obtener meses
+        const meses = ['','Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+        
+        // Buscar la fila en DataTable
+        let rowNode = informesTable.rows().nodes().toArray().find(function(node) {
+            return $(node).find('.edit-informe').data('informe-id') == data.id;
+        });
+
+        if (rowNode) {
+            let $row = $(rowNode);
+            let columns = [];
+            
+            // ID
+            columns.push(data.id);
+            
+            // Año
+            columns.push(data.anio);
+            
+            // Mes
+            columns.push(meses[data.mes] || data.mes);
+            
+            // Grupo
+            columns.push(`<span class="badge bg-dark">${data.grupo_nombre || ''}</span>`);
+            
+            // Usuario
+            columns.push(data.usuario_nombre || '');
+            
+            // Participa
+            if (data.participa) {
+                columns.push('<span class="badge bg-success">Sí</span>');
+            } else {
+                columns.push('<span class="badge bg-danger">No</span>');
+            }
+            
+            // Servicio
+            columns.push(`<span class="badge bg-warning text-dark">${data.servicio_nombre || ''}</span>`);
+            
+            // Congregación (solo para admin/supervisor)
+            if (window.informesIndexConfig.isAdmin || window.informesIndexConfig.isSupervisor) {
+                columns.push(`<span class="badge bg-secondary">${data.congregacion_nombre || ''}</span>`);
+            }
+            
+            // Acciones (mantener los botones existentes)
+            let actionsHtml = `
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-sm btn-info view-informe"
+                            data-informe-id="${data.id}"
+                            data-bs-toggle="tooltip"
+                            title="Ver informe">
+                        <i class="fas fa-eye"></i>
+                    </button>`;
+            
+            if (window.informesIndexConfig.canModify) {
+                actionsHtml += `
+                    <button type="button" class="btn btn-sm btn-warning edit-informe"
+                            data-informe-id="${data.id}"
+                            data-bs-toggle="tooltip"
+                            title="Editar informe">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-danger delete-informe"
+                            data-informe-id="${data.id}"
+                            data-informe-name="${data.usuario_nombre} - ${meses[data.mes] || data.mes} ${data.anio}"
+                            data-bs-toggle="tooltip"
+                            title="Eliminar informe">
+                        <i class="fas fa-trash"></i>
+                    </button>`;
+            }
+            
+            actionsHtml += `</div>`;
+            columns.push(actionsHtml);
+            
+            // Actualizar la fila
+            informesTable.row($row).data(columns).draw(false);
+            
+            // Reinicializar tooltips
+            $('[data-bs-toggle="tooltip"]').tooltip('dispose').tooltip();
+        }
+    }
 });

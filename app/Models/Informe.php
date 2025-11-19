@@ -78,6 +78,14 @@ class Informe extends Model
     }
 
     /**
+     * Alias de la relación usuario para compatibilidad.
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    /**
      * Relación con el modelo Grupo.
      */
     public function grupo()
