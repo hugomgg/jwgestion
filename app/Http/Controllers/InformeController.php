@@ -562,4 +562,96 @@ class InformeController extends Controller
             'usuarios' => $usuarios
         ]);
     }
+
+    /**
+     * Obtener periodos disponibles (año-mes únicos)
+     */
+    public function getPeriodos()
+    {
+        $currentUser = auth()->user();
+
+        $query = DB::table('informes')
+            ->select(DB::raw('DISTINCT anio, mes'))
+            ->where('estado', 1);
+
+        // Aplicar filtro de congregación según el rol
+        if (!($currentUser->isAdmin() || $currentUser->isSupervisor())) {
+            $query->where('congregacion_id', $currentUser->congregacion);
+        }
+
+        $periodos = $query->orderBy('anio', 'desc')
+                          ->orderBy('mes', 'desc')
+                          ->get();
+
+        return response()->json([
+            'success' => true,
+            'periodos' => $periodos
+        ]);
+    }
+
+    /**
+     * Obtener informes por grupo y periodo
+     */
+    public function getInformesPorGrupo(Request $request)
+    {
+        $currentUser = auth()->user();
+        $grupoId = $request->grupo_id;
+        $anio = $request->anio;
+        $mes = $request->mes;
+
+        if (!$grupoId || !$anio || !$mes) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Debe proporcionar grupo, año y mes'
+            ], 400);
+        }
+
+        // Obtener todos los usuarios del grupo
+        $queryUsuarios = User::where('grupo', $grupoId)->where('estado', 1);
+
+        // Aplicar filtro de congregación según el rol
+        if (!($currentUser->isAdmin() || $currentUser->isSupervisor())) {
+            $queryUsuarios->where('congregacion', $currentUser->congregacion);
+        }
+
+        $usuarios = $queryUsuarios->orderBy('name')->get();
+
+        // Obtener informes existentes para ese periodo y grupo
+        $informesExistentes = DB::table('informes as i')
+            ->join('servicios as s', 'i.servicio_id', '=', 's.id')
+            ->where('i.grupo_id', $grupoId)
+            ->where('i.anio', $anio)
+            ->where('i.mes', $mes)
+            ->where('i.estado', 1)
+            ->select(
+                'i.user_id',
+                'i.participa',
+                's.nombre as servicio_nombre',
+                'i.cantidad_estudios',
+                'i.horas',
+                'i.comentario'
+            )
+            ->get()
+            ->keyBy('user_id');
+
+        // Construir respuesta combinando usuarios e informes
+        $resultado = $usuarios->map(function($usuario) use ($informesExistentes) {
+            $informe = $informesExistentes->get($usuario->id);
+
+            return [
+                'user_id' => $usuario->id,
+                'nombre' => $usuario->name,
+                'participa' => $informe ? $informe->participa : 0,
+                'servicio_nombre' => $informe ? $informe->servicio_nombre : '-',
+                'cantidad_estudios' => $informe ? $informe->cantidad_estudios : 0,
+                'horas' => $informe ? $informe->horas : 0,
+                'comentario' => ($informe && $informe->comentario) ? $informe->comentario : '-'
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'data' => $resultado
+        ]);
+    }
 }

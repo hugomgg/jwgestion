@@ -24,6 +24,11 @@
                                 <button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#advancedSearchCollapse" aria-expanded="false" aria-controls="advancedSearchCollapse">
                                     <i class="fas fa-search me-2"></i>Búsqueda Avanzada
                                 </button>
+                                
+                                <!-- Botón Ver Informes -->
+                                <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#verInformesModal">
+                                    <i class="fas fa-eye me-2"></i>Informes por Grupo
+                                </button>
                             </div>
                             
                             <!-- Collapse para Búsqueda Avanzada -->
@@ -556,6 +561,70 @@
         </div>
     </div>
 </div>
+
+<!-- Modal Ver Informes -->
+<div class="modal fade" id="verInformesModal" tabindex="-1" aria-labelledby="verInformesModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="verInformesModalLabel">
+                    <i class="fas fa-eye me-2"></i>Ver Informes por Grupo
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Filtros -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label for="periodoFilterModal" class="form-label">Periodo:</label>
+                        <select class="form-select" id="periodoFilterModal">
+                            <option value="">Seleccione un periodo</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="grupoFilterModal" class="form-label">Grupo:</label>
+                        <select class="form-select" id="grupoFilterModal">
+                            <option value="">Seleccione un grupo</option>
+                            @foreach($grupos as $grupo)
+                                <option value="{{ $grupo->id }}">{{ $grupo->nombre }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Tabla de informes -->
+                <div id="informesGrupoContainer" class="d-none">
+                    <div class="table-responsive">
+                        <table id="informesGrupoTable" class="table table-striped table-hover table-bordered">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th width="10%" class="text-center">Participa</th>
+                                    <th width="15%">Servicio</th>
+                                    <th width="10%" class="text-center">Estudios</th>
+                                    <th width="10%" class="text-center">Horas</th>
+                                    <th width="20%">Comentario</th>
+                                </tr>
+                            </thead>
+                            <tbody id="informesGrupoTableBody">
+                                <!-- Los datos se cargarán dinámicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Mensaje cuando no hay datos -->
+                <div id="noDataMessage" class="alert alert-info d-none" role="alert">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Seleccione un periodo y grupo para ver los informes.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 @section('scripts')
@@ -569,6 +638,8 @@ window.informesIndexConfig = {
     updateRoute: '{{ route("informes.update", ":id") }}',
     destroyRoute: '{{ route("informes.destroy", ":id") }}',
     usuariosPorGrupoRoute: '{{ route("informes.usuarios-por-grupo") }}',
+    informesPorGrupoRoute: '{{ route("informes.informes-por-grupo") }}',
+    periodosRoute: '{{ route("informes.periodos") }}',
     
     // Configuración de permisos y UI
     canModify: @json(Auth::user()->canModify() && !Auth::user()->isSubsecretary() && !Auth::user()->isSuborganizer()),

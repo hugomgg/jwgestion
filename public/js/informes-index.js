@@ -615,3 +615,130 @@ $(document).ready(function() {
         }
     }
 });
+// ============================================
+// MODAL VER INFORMES POR GRUPO
+// ============================================
+
+// Cargar periodos al abrir el modal
+$('#verInformesModal').on('show.bs.modal', function() {
+    // Limpiar select de grupo
+    $('#grupoFilterModal').val('');
+    
+    // Limpiar tabla
+    $('#informesGrupoTableBody').empty();
+    
+    // Ocultar tabla y mostrar mensaje inicial
+    $('#informesGrupoContainer').addClass('d-none');
+    $('#noDataMessage').removeClass('d-none').html(
+        '<i class="fas fa-info-circle me-2"></i>Seleccione un periodo y grupo para ver los informes.'
+    );
+    
+    // Cargar periodos
+    cargarPeriodos();
+});
+
+// Función para cargar periodos disponibles
+function cargarPeriodos() {
+    $.ajax({
+        url: window.informesIndexConfig.periodosRoute,
+        type: 'GET',
+        success: function(response) {
+            if (response.success) {
+                let $select = $('#periodoFilterModal');
+                $select.empty();
+                $select.append('<option value="">Seleccione un periodo</option>');
+                
+                const meses = ['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
+                              'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+                
+                response.periodos.forEach(function(periodo) {
+                    let mesNombre = meses[periodo.mes] || periodo.mes;
+                    let texto = `${mesNombre} ${periodo.anio}`;
+                    $select.append(`<option value="${periodo.anio}-${periodo.mes}">${texto}</option>`);
+                });
+                
+                // Seleccionar el periodo más reciente (primer elemento después de "Seleccione...")
+                if (response.periodos.length > 0) {
+                    $select.val(`${response.periodos[0].anio}-${response.periodos[0].mes}`);
+                }
+            }
+        },
+        error: function(xhr) {
+            console.error('Error al cargar periodos:', xhr);
+        }
+    });
+}
+
+// Cambios en los filtros del modal
+$('#periodoFilterModal, #grupoFilterModal').on('change', function() {
+    cargarInformesGrupo();
+});
+
+// Función para cargar informes por grupo
+function cargarInformesGrupo() {
+    let periodo = $('#periodoFilterModal').val();
+    let grupoId = $('#grupoFilterModal').val();
+    
+    if (!periodo || !grupoId) {
+        $('#informesGrupoContainer').addClass('d-none');
+        $('#noDataMessage').removeClass('d-none');
+        return;
+    }
+    
+    // Separar año y mes del periodo
+    let [anio, mes] = periodo.split('-');
+    
+    $.ajax({
+        url: window.informesIndexConfig.informesPorGrupoRoute,
+        type: 'GET',
+        data: {
+            grupo_id: grupoId,
+            anio: anio,
+            mes: mes
+        },
+        success: function(response) {
+            if (response.success) {
+                mostrarInformesGrupo(response.data);
+            }
+        },
+        error: function(xhr) {
+            console.error('Error al cargar informes:', xhr);
+            showAlert('Error al cargar los informes', 'danger');
+        }
+    });
+}
+
+// Función para mostrar la tabla de informes
+function mostrarInformesGrupo(data) {
+    if (data.length === 0) {
+        $('#informesGrupoContainer').addClass('d-none');
+        $('#noDataMessage').removeClass('d-none').html(
+            '<i class="fas fa-info-circle me-2"></i>No hay usuarios en el grupo seleccionado.'
+        );
+        return;
+    }
+    
+    $('#noDataMessage').addClass('d-none');
+    $('#informesGrupoContainer').removeClass('d-none');
+    
+    let tbody = $('#informesGrupoTableBody');
+    tbody.empty();
+    
+    data.forEach(function(item) {
+        let participaIcon = item.participa == 1 
+            ? '<i class="fas fa-check-square text-success" title="Participa"></i>' 
+            : '<i class="fas fa-times text-danger" title="No participa"></i>';
+        
+        let row = `
+            <tr>
+                <td>${item.nombre}</td>
+                <td class="text-center">${participaIcon}</td>
+                <td>${item.servicio_nombre}</td>
+                <td class="text-center">${item.cantidad_estudios}</td>
+                <td class="text-center">${item.horas}</td>
+                <td>${item.comentario}</td>
+            </tr>
+        `;
+        tbody.append(row);
+    });
+}
