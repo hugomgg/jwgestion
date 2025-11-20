@@ -29,6 +29,11 @@
                                 <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#verInformesModal">
                                     <i class="fas fa-eye me-2"></i>Informes por Grupo
                                 </button>
+                                
+                                <!-- Botón Informe Congregación -->
+                                <button class="btn btn-success" type="button" data-bs-toggle="modal" data-bs-target="#informeCongregacionModal">
+                                    <i class="fas fa-chart-bar me-2"></i>Informe Congregación
+                                </button>
                             </div>
                             
                             <!-- Collapse para Búsqueda Avanzada -->
@@ -625,6 +630,149 @@
         </div>
     </div>
 </div>
+
+<!-- Modal Informe Congregación -->
+<div class="modal fade" id="informeCongregacionModal" tabindex="-1" aria-labelledby="informeCongregacionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="informeCongregacionModalLabel">
+                    <i class="fas fa-chart-bar me-2"></i>Informe de Congregación
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Filtro de Periodo -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <label for="periodoFilterCongregacion" class="form-label fw-bold">Periodo:</label>
+                        <select class="form-select" id="periodoFilterCongregacion">
+                            <option value="">Seleccione un periodo</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Indicador de carga -->
+                <div id="loadingCongregacionStats" class="text-center d-none">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                    </div>
+                    <p class="mt-2">Cargando estadísticas...</p>
+                </div>
+
+                <!-- Contenedor de estadísticas -->
+                <div id="congregacionStatsContainer" class="d-none">
+                    <div class="row g-3">
+                        <!-- Usuarios Activos -->
+                        <div class="col-md-6">
+                            <div class="card border-primary">
+                                <div class="card-body">
+                                    <h6 class="card-title text-primary">
+                                        <i class="fas fa-users me-2"></i>Usuarios Activos
+                                    </h6>
+                                    <h3 class="mb-0" id="stat_usuarios_activos">-</h3>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Usuarios Inactivos -->
+                        <div class="col-md-6">
+                            <div class="card border-secondary">
+                                <div class="card-body">
+                                    <h6 class="card-title text-secondary">
+                                        <i class="fas fa-users me-2"></i>Usuarios Inactivos
+                                    </h6>
+                                    <h3 class="mb-0" id="stat_usuarios_inactivos">-</h3>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Publicadores -->
+                        <div class="col-md-6">
+                            <div class="card border-info">
+                                <div class="card-body">
+                                    <h6 class="card-title text-info">
+                                        <i class="fas fa-user-tie me-2"></i>Publicadores
+                                    </h6>
+                                    <h3 class="mb-0" id="stat_publicadores">-</h3>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Estudios de Publicadores -->
+                        <div class="col-md-6">
+                            <div class="card border-info">
+                                <div class="card-body">
+                                    <h6 class="card-title text-info">
+                                        <i class="fas fa-book-reader me-2"></i>Estudios de Publicadores
+                                    </h6>
+                                    <h3 class="mb-0" id="stat_estudios_publicadores">-</h3>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Precursores Auxiliares -->
+                        <div class="col-md-6">
+                            <div class="card border-warning">
+                                <div class="card-body">
+                                    <h6 class="card-title text-warning">
+                                        <i class="fas fa-user-tie me-2"></i>Precursores Auxiliares
+                                    </h6>
+                                    <h3 class="mb-0" id="stat_precursores_auxiliares">-</h3>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Estudios de Precursores Auxiliares -->
+                        <div class="col-md-6">
+                            <div class="card border-warning">
+                                <div class="card-body">
+                                    <h6 class="card-title text-warning">
+                                        <i class="fas fa-book-reader me-2"></i>Estudios de Prec. Auxiliares
+                                    </h6>
+                                    <h3 class="mb-0" id="stat_estudios_precursores_auxiliares">-</h3>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Precursores Regulares -->
+                        <div class="col-md-6">
+                            <div class="card border-success">
+                                <div class="card-body">
+                                    <h6 class="card-title text-success">
+                                        <i class="fas fa-user-tie me-2"></i>Precursores Regulares
+                                    </h6>
+                                    <h3 class="mb-0" id="stat_precursores_regulares">-</h3>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Estudios de Precursores Regulares -->
+                        <div class="col-md-6">
+                            <div class="card border-success">
+                                <div class="card-body">
+                                    <h6 class="card-title text-success">
+                                        <i class="fas fa-book-reader me-2"></i>Estudios de Prec. Regulares
+                                    </h6>
+                                    <h3 class="mb-0" id="stat_estudios_precursores_regulares">-</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mensaje cuando no hay datos -->
+                <div id="noDataCongregacionMessage" class="alert alert-info" role="alert">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Seleccione un periodo para ver las estadísticas.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 @section('scripts')
@@ -638,6 +786,7 @@ window.informesIndexConfig = {
     updateRoute: '{{ route("informes.update", ":id") }}',
     destroyRoute: '{{ route("informes.destroy", ":id") }}',
     usuariosPorGrupoRoute: '{{ route("informes.usuarios-por-grupo") }}',
+    informeCongregacionRoute: '{{ route("informes.informe-congregacion") }}',
     informesPorGrupoRoute: '{{ route("informes.informes-por-grupo") }}',
     periodosRoute: '{{ route("informes.periodos") }}',
     

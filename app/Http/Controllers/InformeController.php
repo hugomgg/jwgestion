@@ -654,4 +654,98 @@ class InformeController extends Controller
             'data' => $resultado
         ]);
     }
+
+    /**
+     * Obtener estadísticas de congregación por periodo
+     */
+    public function getInformeCongregacion(Request $request)
+    {
+        $currentUser = auth()->user();
+        $anio = $request->anio;
+        $mes = $request->mes;
+
+        if (!$anio || !$mes) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Debe proporcionar año y mes'
+            ], 400);
+        }
+
+        // Determinar la congregación según el rol del usuario
+        $congregacionId = null;
+        if (!($currentUser->isAdmin() || $currentUser->isSupervisor())) {
+            $congregacionId = $currentUser->congregacion;
+        }
+
+        // Query base para usuarios activos y perfil <> 10 Estudiante
+        $queryUsuariosActivos = User::where('estado_espiritual', 1)->where('estado', 1)->whereNotIn('perfil', [10]);
+        if ($congregacionId) {
+            $queryUsuariosActivos->where('congregacion', $congregacionId);
+        }
+        $usuariosActivos = $queryUsuariosActivos->count();
+
+        // Query para usuarios inactivos y perfil <> 10 Estudiante
+        $queryUsuariosInactivos = User::where('estado_espiritual', 2)->where('estado', 1)->whereNotIn('perfil', [10]);
+        if ($congregacionId) {
+            $queryUsuariosInactivos->where('congregacion', $congregacionId);
+        }
+        $usuariosInactivos = $queryUsuariosInactivos->count();
+
+        // Query base para informes del periodo
+        $queryInformes = DB::table('informes')
+            ->where('anio', $anio)
+            ->where('mes', $mes)
+            ->where('estado', 1);
+
+        if ($congregacionId) {
+            $queryInformes->where('congregacion_id', $congregacionId);
+        }
+
+        // Publicadores (servicio_id = 4)
+        $publicadores = (clone $queryInformes)
+            ->where('servicio_id', 4)
+            ->where('participa', 1)
+            ->count();
+
+        $estudiosPublicadores = (clone $queryInformes)
+            ->where('servicio_id', 4)
+            ->where('participa', 1)
+            ->sum('cantidad_estudios');
+
+        // Precursores Auxiliares (servicio_id = 3)
+        $precursoresAuxiliares = (clone $queryInformes)
+            ->where('servicio_id', 3)
+            ->where('participa', 1)
+            ->count();
+
+        $estudiosPrecursoresAuxiliares = (clone $queryInformes)
+            ->where('servicio_id', 3)
+            ->where('participa', 1) 
+            ->sum('cantidad_estudios');
+
+        // Precursores Regulares (servicio_id = 1)
+        $precursoresRegulares = (clone $queryInformes)
+            ->where('servicio_id', 1)
+            ->where('participa', 1)
+            ->count();
+
+        $estudiosPrecursoresRegulares = (clone $queryInformes)
+            ->where('servicio_id', 1)
+            ->where('participa', 1)
+            ->sum('cantidad_estudios');
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'usuarios_activos' => $usuariosActivos,
+                'usuarios_inactivos' => $usuariosInactivos,
+                'publicadores' => $publicadores,
+                'estudios_publicadores' => $estudiosPublicadores,
+                'precursores_auxiliares' => $precursoresAuxiliares,
+                'estudios_precursores_auxiliares' => $estudiosPrecursoresAuxiliares,
+                'precursores_regulares' => $precursoresRegulares,
+                'estudios_precursores_regulares' => $estudiosPrecursoresRegulares,
+            ]
+        ]);
+    }
 }

@@ -92,6 +92,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/informes/usuarios-por-grupo', [App\Http\Controllers\InformeController::class, 'getUsersByGroup'])->name('informes.usuarios-por-grupo');
         Route::get('/informes/periodos', [App\Http\Controllers\InformeController::class, 'getPeriodos'])->name('informes.periodos');
         Route::get('/informes/informes-por-grupo', [App\Http\Controllers\InformeController::class, 'getInformesPorGrupo'])->name('informes.informes-por-grupo');
+        Route::get('/informes/informe-congregacion', [App\Http\Controllers\InformeController::class, 'getInformeCongregacion'])->name('informes.informe-congregacion');
         Route::get('/informes/{id}', [App\Http\Controllers\InformeController::class, 'show'])->name('informes.show');
         Route::get('/informes/{id}/edit', [App\Http\Controllers\InformeController::class, 'edit'])->name('informes.edit');
         Route::post('/informes', [App\Http\Controllers\InformeController::class, 'store'])->name('informes.store');

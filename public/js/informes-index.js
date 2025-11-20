@@ -742,3 +742,108 @@ function mostrarInformesGrupo(data) {
         tbody.append(row);
     });
 }
+
+// ===== INFORME CONGREGACIÓN =====
+
+// Cargar periodos para el modal de Informe Congregación
+$('#informeCongregacionModal').on('show.bs.modal', function() {
+    cargarPeriodosCongregacion();
+});
+
+// Función para cargar periodos en el selector
+function cargarPeriodosCongregacion() {
+    $.ajax({
+        url: window.informesIndexConfig.periodosRoute,
+        method: 'GET',
+        success: function(response) {
+            if (response.success) {
+                let select = $('#periodoFilterCongregacion');
+                select.empty();
+                select.append('<option value="">Seleccione un periodo</option>');
+                
+                const meses = ['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
+                              'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+                
+                response.periodos.forEach(function(periodo) {
+                    let mesNombre = meses[periodo.mes] || periodo.mes;
+                    let valor = `${periodo.anio}-${periodo.mes}`;
+                    let texto = `${mesNombre} ${periodo.anio}`;
+                    select.append(`<option value="${valor}">${texto}</option>`);
+                });
+                
+                // Seleccionar el periodo más reciente (primera opción después de "Seleccione...")
+                if (response.periodos.length > 0) {
+                    select.val(`${response.periodos[0].anio}-${response.periodos[0].mes}`);
+                    cargarEstadisticasCongregacion();
+                }
+            }
+        },
+        error: function() {
+            console.error('Error al cargar periodos');
+        }
+    });
+}
+
+// Evento change para el selector de periodo
+$('#periodoFilterCongregacion').on('change', function() {
+    cargarEstadisticasCongregacion();
+});
+
+// Función para cargar estadísticas de congregación
+function cargarEstadisticasCongregacion() {
+    let periodo = $('#periodoFilterCongregacion').val();
+    
+    if (!periodo) {
+        $('#congregacionStatsContainer').addClass('d-none');
+        $('#noDataCongregacionMessage').removeClass('d-none');
+        $('#loadingCongregacionStats').addClass('d-none');
+        return;
+    }
+    
+    // Dividir periodo en año y mes
+    let [anio, mes] = periodo.split('-');
+    
+    // Mostrar indicador de carga
+    $('#loadingCongregacionStats').removeClass('d-none');
+    $('#congregacionStatsContainer').addClass('d-none');
+    $('#noDataCongregacionMessage').addClass('d-none');
+    
+    // Realizar petición AJAX
+    $.ajax({
+        url: window.informesIndexConfig.informeCongregacionRoute,
+        method: 'GET',
+        data: {
+            anio: anio,
+            mes: mes
+        },
+        success: function(response) {
+            $('#loadingCongregacionStats').addClass('d-none');
+            
+            if (response.success) {
+                // Actualizar las estadísticas
+                $('#stat_usuarios_activos').text(response.data.usuarios_activos);
+                $('#stat_usuarios_inactivos').text(response.data.usuarios_inactivos);
+                $('#stat_publicadores').text(response.data.publicadores);
+                $('#stat_estudios_publicadores').text(response.data.estudios_publicadores);
+                $('#stat_precursores_auxiliares').text(response.data.precursores_auxiliares);
+                $('#stat_estudios_precursores_auxiliares').text(response.data.estudios_precursores_auxiliares);
+                $('#stat_precursores_regulares').text(response.data.precursores_regulares);
+                $('#stat_estudios_precursores_regulares').text(response.data.estudios_precursores_regulares);
+                
+                // Mostrar contenedor de estadísticas
+                $('#congregacionStatsContainer').removeClass('d-none');
+                $('#noDataCongregacionMessage').addClass('d-none');
+            } else {
+                $('#noDataCongregacionMessage').removeClass('d-none').html(
+                    '<i class="fas fa-exclamation-circle me-2"></i>' + (response.message || 'No se pudieron cargar las estadísticas.')
+                );
+            }
+        },
+        error: function(xhr) {
+            $('#loadingCongregacionStats').addClass('d-none');
+            $('#noDataCongregacionMessage').removeClass('d-none').html(
+                '<i class="fas fa-exclamation-triangle me-2"></i>Error al cargar las estadísticas.'
+            );
+        }
+    });
+}
