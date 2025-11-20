@@ -283,6 +283,7 @@ $(document).ready(function() {
                     $('#view_cantidad_estudios').text(informe.cantidad_estudios || '0');
                     $('#view_horas').text(informe.horas || '-');
                     $('#view_comentario').text(informe.comentario || '-');
+                    $('#view_nota').text(informe.nota || '-');
 
                     if ($('#view_congregacion').length) {
                         $('#view_congregacion').text(informe.congregacion_nombre);
@@ -337,6 +338,7 @@ $(document).ready(function() {
                     $('#edit_cantidad_estudios').val(informe.cantidad_estudios);
                     $('#edit_horas').val(informe.horas);
                     $('#edit_comentario').val(informe.comentario);
+                    $('#edit_nota').val(informe.nota);
 
                     $('#editInformeModal').modal('show');
                 } else {

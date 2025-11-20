@@ -433,6 +433,17 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <label for="edit_nota" class="form-label">Nota</label>
+                                <textarea class="form-control" id="edit_nota" name="nota" rows="3" maxlength="1000"></textarea>
+                                <div class="invalid-feedback"></div>
+                                <small class="form-text text-muted">Máximo 1000 caracteres</small>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -522,6 +533,15 @@
                         <div class="mb-3">
                             <label class="form-label fw-bold">Comentario:</label>
                             <p class="form-control-plaintext" id="view_comentario">-</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Nota:</label>
+                            <p class="form-control-plaintext" id="view_nota">-</p>
                         </div>
                     </div>
                 </div>

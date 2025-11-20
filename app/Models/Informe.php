@@ -27,6 +27,7 @@ class Informe extends Model
         'cantidad_estudios',
         'horas',
         'comentario',
+        'nota',
         'estado',
         'creador_id',
         'modificador_id',

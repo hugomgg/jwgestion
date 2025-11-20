@@ -35,6 +35,7 @@ class InformeController extends Controller
                 'i.cantidad_estudios',
                 'i.horas',
                 'i.comentario',
+                'i.nota',
                 'i.estado',
                 'u.name as usuario_nombre',
                 'g.nombre as grupo_nombre',
@@ -152,6 +153,7 @@ class InformeController extends Controller
                 'cantidad_estudios' => $request->cantidad_estudios ?? 0,
                 'horas' => $request->horas,
                 'comentario' => $request->comentario,
+                'nota' => $request->nota,
                 'estado' => 1,
             ]);
 
@@ -337,6 +339,7 @@ class InformeController extends Controller
                 'cantidad_estudios' => $request->cantidad_estudios ?? 0,
                 'horas' => $request->horas,
                 'comentario' => $request->comentario,
+                'nota' => $request->nota,
             ]);
 
             // Refrescar el informe desde la base de datos y cargar las relaciones
@@ -351,6 +354,7 @@ class InformeController extends Controller
                 'cantidad_estudios' => $informe->cantidad_estudios,
                 'horas' => $informe->horas,
                 'comentario' => $informe->comentario,
+                'nota' => $informe->nota,
                 'usuario_nombre' => optional($informe->user)->name ?? '',
                 'grupo_nombre' => optional($informe->grupo)->nombre ?? '',
                 'servicio_nombre' => optional($informe->servicio)->nombre ?? '',
