@@ -1002,6 +1002,9 @@ function cargarRegistroPublicador() {
             $('#loadingRegistroPublicador').addClass('d-none');
             
             if (response.success) {
+                // Actualizar encabezado de la tabla con el año
+                $('#registroPublicadorTable thead th:first-child').text(`Año de servicio ${anio}`);
+                
                 // Mostrar información del usuario
                 let userInfo = response.user_info;
                 $('#info_nombre').text(userInfo.nombre);
