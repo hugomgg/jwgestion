@@ -1072,6 +1072,9 @@ function cargarRegistroPublicador() {
                 
                 $('#registroPublicadorContainer').removeClass('d-none');
                 $('#noDataRegistroMessage').addClass('d-none');
+                
+                // Cargar datos del año anterior
+                cargarRegistroPublicadorAnterior(anio, userId);
             } else {
                 $('#noDataRegistroMessage').removeClass('d-none').html(
                     '<i class="fas fa-exclamation-circle me-2"></i>' + (response.message || 'No se pudo cargar el registro.')
@@ -1083,6 +1086,91 @@ function cargarRegistroPublicador() {
             $('#noDataRegistroMessage').removeClass('d-none').html(
                 '<i class="fas fa-exclamation-triangle me-2"></i>Error al cargar el registro.'
             );
+        }
+    });
+}
+
+// Función para cargar el registro del año anterior
+function cargarRegistroPublicadorAnterior(anioActual, userId) {
+    let anioAnterior = parseInt(anioActual) - 1;
+    
+    // Actualizar encabezado de la tabla del año anterior
+    $('#registroPublicadorTableAnterior thead th:first-child').text(`Año de servicio ${anioAnterior}`);
+    
+    // Realizar petición AJAX
+    $.ajax({
+        url: window.informesIndexConfig.registroPublicadorRoute,
+        method: 'GET',
+        data: {
+            anio: anioAnterior,
+            user_id: userId
+        },
+        success: function(response) {
+            if (response.success) {
+                // Construir tabla del año anterior
+                let tbody = $('#registroPublicadorTableAnteriorBody');
+                tbody.empty();
+                
+                response.registro.forEach(function(item) {
+                    let row = '<tr';
+                    if (item.mes_nombre === 'Total') {
+                        row += ' class="table-secondary fw-bold"';
+                    }
+                    row += '>';
+                    
+                    // Año de servicio
+                    row += `<td>${item.mes_nombre}</td>`;
+                    
+                    // Participación en el ministerio
+                    if (item.mes_nombre === 'Total') {
+                        row += '<td></td>';
+                    } else {
+                        row += '<td class="text-center">';
+                        if (item.participa == 1) {
+                            row += '<input type="checkbox" checked disabled>';
+                        } else {
+                            row += '<input type="checkbox" disabled>';
+                        }
+                        row += '</td>';
+                    }
+                    
+                    // Cursos bíblicos
+                    row += `<td class="text-center">${item.cantidad_estudios > 0 ? item.cantidad_estudios : ''}</td>`;
+                    
+                    // Precursor auxiliar
+                    if (item.mes_nombre === 'Total') {
+                        row += '<td></td>';
+                    } else {
+                        row += '<td class="text-center">';
+                        if (item.es_precursor_auxiliar == 1) {
+                            row += '<input type="checkbox" checked disabled>';
+                        } else {
+                            row += '<input type="checkbox" disabled>';
+                        }
+                        row += '</td>';
+                    }
+                    
+                    // Horas
+                    row += `<td class="text-center">${item.horas !== null && item.horas > 0 ? item.horas : ''}</td>`;
+                    
+                    // Notas
+                    row += `<td>${item.nota || ''}</td>`;
+                    
+                    row += '</tr>';
+                    tbody.append(row);
+                });
+            } else {
+                // Si no hay datos del año anterior, mostrar mensaje en la tabla
+                let tbody = $('#registroPublicadorTableAnteriorBody');
+                tbody.empty();
+                tbody.append('<tr><td colspan="6" class="text-center text-muted">No hay datos disponibles para el año ' + anioAnterior + '</td></tr>');
+            }
+        },
+        error: function(xhr) {
+            // En caso de error, mostrar mensaje en la tabla
+            let tbody = $('#registroPublicadorTableAnteriorBody');
+            tbody.empty();
+            tbody.append('<tr><td colspan="6" class="text-center text-danger">Error al cargar datos del año ' + anioAnterior + '</td></tr>');
         }
     });
 }

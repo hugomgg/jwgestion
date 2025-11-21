@@ -63,11 +63,13 @@
     font-size: 12px !important;
 }
 /* Estilos para tabla de registro por publicador */
-#registroPublicadorTable {
+#registroPublicadorTable,
+#registroPublicadorTableAnterior {
     font-size: 11px;
 }
 
-#registroPublicadorTable thead th {
+#registroPublicadorTable thead th,
+#registroPublicadorTableAnterior thead th {
     background-color: #343a40;
     color: white;
     font-weight: bold;
@@ -77,20 +79,24 @@
     font-size: 10px;
 }
 
-#registroPublicadorTable tbody td {
+#registroPublicadorTable tbody td,
+#registroPublicadorTableAnterior tbody td {
     padding: 4px 6px;
     vertical-align: middle;
 }
 
-#registroPublicadorTable tbody tr.table-secondary {
+#registroPublicadorTable tbody tr.table-secondary,
+#registroPublicadorTableAnterior tbody tr.table-secondary {
     background-color: #e9ecef !important;
 }
 
-#registroPublicadorTable input[type="checkbox"] {
+#registroPublicadorTable input[type="checkbox"],
+#registroPublicadorTableAnterior input[type="checkbox"] {
     cursor: default;
 }
 
-#registroPublicadorTable tbody td:first-child {
+#registroPublicadorTable tbody td:first-child,
+#registroPublicadorTableAnterior tbody td:first-child {
     font-weight: 500;
 }
 

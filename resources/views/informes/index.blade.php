@@ -886,7 +886,7 @@
 
                 <!-- Tabla de registro -->
                 <div id="registroPublicadorContainer" class="d-none">
-                    <div class="table-responsive">
+                    <div class="table-responsive mb-4">
                         <table class="table table-bordered table-sm" id="registroPublicadorTable">
                             <thead class="table-dark">
                                 <tr>
@@ -899,6 +899,25 @@
                                 </tr>
                             </thead>
                             <tbody id="registroPublicadorTableBody">
+                                <!-- Los datos se cargarán dinámicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Tabla de registro año anterior -->
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-sm" id="registroPublicadorTableAnterior">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th style="width: 100px;">Año de servicio</th>
+                                    <th style="width: 80px;" class="text-center">Participación en el ministerio</th>
+                                    <th style="width: 80px;" class="text-center">Cursos bíblicos</th>
+                                    <th style="width: 80px;" class="text-center">Precursor auxiliar</th>
+                                    <th style="width: 100px;" class="text-center">Horas<br><small>(Si es precursor o misionero que sirve en el campo)</small></th>
+                                    <th>Notas</th>
+                                </tr>
+                            </thead>
+                            <tbody id="registroPublicadorTableAnteriorBody">
                                 <!-- Los datos se cargarán dinámicamente -->
                             </tbody>
                         </table>
