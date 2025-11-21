@@ -884,43 +884,63 @@
                     <p class="mt-2">Cargando registro...</p>
                 </div>
 
-                <!-- Tabla de registro -->
+                <!-- Tabs de registro -->
                 <div id="registroPublicadorContainer" class="d-none">
-                    <div class="table-responsive mb-4">
-                        <table class="table table-bordered table-sm" id="registroPublicadorTable">
-                            <thead class="table-dark">
-                                <tr>
-                                    <th style="width: 100px;">Año de servicio</th>
-                                    <th style="width: 80px;" class="text-center">Participación en el ministerio</th>
-                                    <th style="width: 80px;" class="text-center">Cursos bíblicos</th>
-                                    <th style="width: 80px;" class="text-center">Precursor auxiliar</th>
-                                    <th style="width: 100px;" class="text-center">Horas<br><small>(Si es precursor o misionero que sirve en el campo)</small></th>
-                                    <th>Notas</th>
-                                </tr>
-                            </thead>
-                            <tbody id="registroPublicadorTableBody">
-                                <!-- Los datos se cargarán dinámicamente -->
-                            </tbody>
-                        </table>
-                    </div>
+                    <ul class="nav nav-tabs" id="registroPublicadorTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="tab-anio-actual" data-bs-toggle="tab" data-bs-target="#tabpanel-anio-actual" type="button" role="tab" aria-controls="tabpanel-anio-actual" aria-selected="true">
+                                <span id="tab-anio-actual-text">Año Actual</span>
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="tab-anio-anterior" data-bs-toggle="tab" data-bs-target="#tabpanel-anio-anterior" type="button" role="tab" aria-controls="tabpanel-anio-anterior" aria-selected="false">
+                                <span id="tab-anio-anterior-text">Año Anterior</span>
+                            </button>
+                        </li>
+                    </ul>
+                    
+                    <div class="tab-content" id="registroPublicadorTabsContent">
+                        <!-- Tab Año Actual -->
+                        <div class="tab-pane fade show active" id="tabpanel-anio-actual" role="tabpanel" aria-labelledby="tab-anio-actual">
+                            <div class="table-responsive mt-3">
+                                <table class="table table-bordered table-sm" id="registroPublicadorTable">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th style="width: 100px;">Año de servicio</th>
+                                            <th style="width: 80px;" class="text-center">Participación en el ministerio</th>
+                                            <th style="width: 80px;" class="text-center">Cursos bíblicos</th>
+                                            <th style="width: 80px;" class="text-center">Precursor auxiliar</th>
+                                            <th style="width: 100px;" class="text-center">Horas<br><small>(Si es precursor o misionero que sirve en el campo)</small></th>
+                                            <th>Notas</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="registroPublicadorTableBody">
+                                        <!-- Los datos se cargarán dinámicamente -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
 
-                    <!-- Tabla de registro año anterior -->
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-sm" id="registroPublicadorTableAnterior">
-                            <thead class="table-dark">
-                                <tr>
-                                    <th style="width: 100px;">Año de servicio</th>
-                                    <th style="width: 80px;" class="text-center">Participación en el ministerio</th>
-                                    <th style="width: 80px;" class="text-center">Cursos bíblicos</th>
-                                    <th style="width: 80px;" class="text-center">Precursor auxiliar</th>
-                                    <th style="width: 100px;" class="text-center">Horas<br><small>(Si es precursor o misionero que sirve en el campo)</small></th>
-                                    <th>Notas</th>
-                                </tr>
-                            </thead>
-                            <tbody id="registroPublicadorTableAnteriorBody">
-                                <!-- Los datos se cargarán dinámicamente -->
-                            </tbody>
-                        </table>
+                        <!-- Tab Año Anterior -->
+                        <div class="tab-pane fade" id="tabpanel-anio-anterior" role="tabpanel" aria-labelledby="tab-anio-anterior">
+                            <div class="table-responsive mt-3">
+                                <table class="table table-bordered table-sm" id="registroPublicadorTableAnterior">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th style="width: 100px;">Año de servicio</th>
+                                            <th style="width: 80px;" class="text-center">Participación en el ministerio</th>
+                                            <th style="width: 80px;" class="text-center">Cursos bíblicos</th>
+                                            <th style="width: 80px;" class="text-center">Precursor auxiliar</th>
+                                            <th style="width: 100px;" class="text-center">Horas<br><small>(Si es precursor o misionero que sirve en el campo)</small></th>
+                                            <th>Notas</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="registroPublicadorTableAnteriorBody">
+                                        <!-- Los datos se cargarán dinámicamente -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
 

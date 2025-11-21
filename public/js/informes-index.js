@@ -1005,6 +1005,13 @@ function cargarRegistroPublicador() {
                 // Actualizar encabezado de la tabla con el año
                 $('#registroPublicadorTable thead th:first-child').text(`Año de servicio ${anio}`);
                 
+                // Actualizar título del tab con el año actual
+                $('#tab-anio-actual-text').text(anio);
+                
+                // Actualizar título del tab con el año anterior
+                let anioAnterior = parseInt(anio) - 1;
+                $('#tab-anio-anterior-text').text(anioAnterior);
+                
                 // Mostrar información del usuario
                 let userInfo = response.user_info;
                 $('#info_nombre').text(userInfo.nombre);
@@ -1069,6 +1076,9 @@ function cargarRegistroPublicador() {
                     row += '</tr>';
                     tbody.append(row);
                 });
+                
+                // Activar la primera pestaña
+                $('#tab-anio-actual').tab('show');
                 
                 $('#registroPublicadorContainer').removeClass('d-none');
                 $('#noDataRegistroMessage').addClass('d-none');
