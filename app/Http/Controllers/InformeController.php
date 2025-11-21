@@ -752,4 +752,169 @@ class InformeController extends Controller
             ]
         ]);
     }
+
+    /**
+     * Obtener años distintos de informes para registro
+     */
+    public function getAniosRegistro()
+    {
+        $currentUser = auth()->user();
+
+        // Query base para años
+        $query = DB::table('informes')
+            ->select(DB::raw('DISTINCT anio'))
+            ->where('estado', 1);
+
+        // Filtrar por congregación según el rol
+        if (!($currentUser->isAdmin() || $currentUser->isSupervisor())) {
+            $query->where('congregacion_id', $currentUser->congregacion);
+        }
+
+        $anios = $query->orderBy('anio', 'desc')
+                      ->pluck('anio')
+                      ->toArray();
+
+        return response()->json([
+            'success' => true,
+            'anios' => $anios
+        ]);
+    }
+
+    /**
+     * Obtener registro de publicador por año
+     */
+    public function getRegistroPublicador(Request $request)
+    {
+        $currentUser = auth()->user();
+        $anio = $request->anio;
+        $userId = $request->user_id;
+
+        if (!$anio || !$userId) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Debe proporcionar año y usuario'
+            ], 400);
+        }
+
+        // Verificar que el usuario existe
+        $usuario = User::find($userId);
+        if (!$usuario) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Usuario no encontrado'
+            ], 404);
+        }
+
+        // Verificar permisos según el rol
+        if (!($currentUser->isAdmin() || $currentUser->isSupervisor())) {
+            if ($currentUser->congregacion != $usuario->congregacion) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No tiene permisos para ver este registro'
+                ], 403);
+            }
+        }
+
+        // Obtener información del usuario
+        $userInfo = [
+            'nombre' => $usuario->name,
+            'fecha_nacimiento' => $usuario->fecha_nacimiento ? date('d/m/Y', strtotime($usuario->fecha_nacimiento)) : '-',
+            'fecha_bautismo' => $usuario->fecha_bautismo ? date('d/m/Y', strtotime($usuario->fecha_bautismo)) : '-',
+            'es_anciano' => $usuario->nombramiento == 1,
+            'es_siervo' => $usuario->nombramiento == 2,
+            'es_precursor_regular' => $usuario->servicio == 1,
+            'es_precursor_especial' => $usuario->servicio == 2,
+            'es_misionero' => $usuario->servicio == 5,
+        ];
+
+        // Definir rango de meses: septiembre año anterior a agosto año actual
+        $mesesData = [];
+        $mesesNombres = [
+            'Septiembre', 'Octubre', 'Noviembre', 'Diciembre',
+            'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto'
+        ];
+
+        // Crear array de meses desde septiembre del año anterior hasta agosto del año actual
+        for ($i = 0; $i < 12; $i++) {
+            if ($i < 4) {
+                // Septiembre a Diciembre del año anterior
+                $mes = 9 + $i;
+                $anioMes = $anio - 1;
+            } else {
+                // Enero a Agosto del año actual
+                $mes = $i - 3;
+                $anioMes = $anio;
+            }
+
+            $mesesData[] = [
+                'mes_nombre' => $mesesNombres[$i],
+                'mes' => $mes,
+                'anio' => $anioMes
+            ];
+        }
+
+        // Obtener todos los informes del usuario para el período
+        $informes = DB::table('informes')
+            ->where('user_id', $userId)
+            ->where('estado', 1)
+            ->where(function($query) use ($anio) {
+                $query->where(function($q) use ($anio) {
+                    // Septiembre a Diciembre del año anterior
+                    $q->where('anio', $anio - 1)
+                      ->whereBetween('mes', [9, 12]);
+                })->orWhere(function($q) use ($anio) {
+                    // Enero a Agosto del año actual
+                    $q->where('anio', $anio)
+                      ->whereBetween('mes', [1, 8]);
+                });
+            })
+            ->get()
+            ->keyBy(function($item) {
+                return $item->anio . '-' . $item->mes;
+            });
+
+        // Construir resultado con todos los meses
+        $registro = [];
+        $totalEstudios = 0;
+        $totalHoras = 0;
+
+        foreach ($mesesData as $mesData) {
+            $key = $mesData['anio'] . '-' . $mesData['mes'];
+            $informe = $informes->get($key);
+
+            $registro[] = [
+                'mes_nombre' => $mesData['mes_nombre'],
+                'mes' => $mesData['mes'],
+                'anio' => $mesData['anio'],
+                'participa' => $informe ? $informe->participa : 0,
+                'cantidad_estudios' => $informe ? $informe->cantidad_estudios : 0,
+                'es_precursor_auxiliar' => $informe ? ($informe->servicio_id == 3 ? 1 : 0) : 0,
+                'horas' => $informe ? $informe->horas : null,
+                'nota' => $informe ? $informe->nota : ''
+            ];
+
+            if ($informe) {
+                $totalEstudios += $informe->cantidad_estudios;
+                $totalHoras += $informe->horas ?? 0;
+            }
+        }
+
+        // Agregar fila de totales
+        $registro[] = [
+            'mes_nombre' => 'Total',
+            'mes' => null,
+            'anio' => null,
+            'participa' => null,
+            'cantidad_estudios' => $totalEstudios,
+            'es_precursor_auxiliar' => null,
+            'horas' => $totalHoras,
+            'nota' => ''
+        ];
+
+        return response()->json([
+            'success' => true,
+            'user_info' => $userInfo,
+            'registro' => $registro
+        ]);
+    }
 }

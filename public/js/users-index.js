@@ -762,8 +762,22 @@ $(document).ready(function() {
                     $('#edit_perfil').val(user.perfil);
                     $('#edit_estado').val(user.estado);
                     $('#edit_congregacion').val(user.congregacion);
-                    $('#edit_fecha_nacimiento').val(user.fecha_nacimiento);
-                    $('#edit_fecha_bautismo').val(user.fecha_bautismo);
+                    
+                    // Formatear fechas para inputs tipo date (YYYY-MM-DD)
+                    if (user.fecha_nacimiento) {
+                        let fechaNac = user.fecha_nacimiento.split(' ')[0]; // Tomar solo la parte de fecha si viene con hora
+                        $('#edit_fecha_nacimiento').val(fechaNac);
+                    } else {
+                        $('#edit_fecha_nacimiento').val('');
+                    }
+                    
+                    if (user.fecha_bautismo) {
+                        let fechaBau = user.fecha_bautismo.split(' ')[0]; // Tomar solo la parte de fecha si viene con hora
+                        $('#edit_fecha_bautismo').val(fechaBau);
+                    } else {
+                        $('#edit_fecha_bautismo').val('');
+                    }
+                    
                     $('#edit_telefono').val(user.telefono);
                     $('#edit_persona_contacto').val(user.persona_contacto);
                     $('#edit_telefono_contacto').val(user.telefono_contacto);

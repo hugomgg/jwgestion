@@ -34,6 +34,11 @@
                                 <button class="btn btn-success" type="button" data-bs-toggle="modal" data-bs-target="#informeCongregacionModal">
                                     <i class="fas fa-chart-bar me-2"></i>Informe Congregación
                                 </button>
+                                
+                                <!-- Botón Registro por Publicador -->
+                                <button class="btn btn-warning" type="button" data-bs-toggle="modal" data-bs-target="#registroPublicadorModal">
+                                    <i class="fas fa-clipboard-list me-2"></i>Registro por Publicador
+                                </button>
                             </div>
                             
                             <!-- Collapse para Búsqueda Avanzada -->
@@ -793,6 +798,125 @@
         </div>
     </div>
 </div>
+
+<!-- Modal Registro por Publicador -->
+<div class="modal fade" id="registroPublicadorModal" tabindex="-1" aria-labelledby="registroPublicadorModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="registroPublicadorModalLabel">
+                    <i class="fas fa-clipboard-list me-2"></i>Registro de Publicador de la Congregación
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Filtros -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-4">
+                        <label for="registroAnioFilter" class="form-label fw-bold">Año de servicio:</label>
+                        <select class="form-select" id="registroAnioFilter">
+                            <option value="">Seleccione un año</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="registroGrupoFilter" class="form-label fw-bold">Grupo:</label>
+                        <select class="form-select" id="registroGrupoFilter">
+                            <option value="">Seleccione un grupo</option>
+                            @foreach($grupos as $grupo)
+                                <option value="{{ $grupo->id }}">{{ $grupo->nombre }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="registroPublicadorFilter" class="form-label fw-bold">Publicador:</label>
+                        <select class="form-select" id="registroPublicadorFilter">
+                            <option value="">Seleccione un publicador</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Información del publicador -->
+                <div id="registroPublicadorInfo" class="d-none mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p class="mb-1"><strong>Nombre:</strong> <span id="info_nombre">-</span></p>
+                                    <p class="mb-1"><strong>Fecha de nacimiento:</strong> <span id="info_fecha_nacimiento">-</span></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p class="mb-1"><strong>Fecha de bautismo:</strong> <span id="info_fecha_bautismo">-</span></p>
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-12">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" id="info_anciano" disabled>
+                                        <label class="form-check-label" for="info_anciano">Anciano</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" id="info_siervo" disabled>
+                                        <label class="form-check-label" for="info_siervo">Siervo ministerial</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" id="info_precursor_regular" disabled>
+                                        <label class="form-check-label" for="info_precursor_regular">Precursor regular</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" id="info_precursor_especial" disabled>
+                                        <label class="form-check-label" for="info_precursor_especial">Precursor especial</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" id="info_misionero" disabled>
+                                        <label class="form-check-label" for="info_misionero">Misionero que sirve en el campo</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Indicador de carga -->
+                <div id="loadingRegistroPublicador" class="text-center d-none">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                    </div>
+                    <p class="mt-2">Cargando registro...</p>
+                </div>
+
+                <!-- Tabla de registro -->
+                <div id="registroPublicadorContainer" class="d-none">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-sm" id="registroPublicadorTable">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th style="width: 100px;">Año de servicio</th>
+                                    <th style="width: 80px;" class="text-center">Participación en el ministerio</th>
+                                    <th style="width: 80px;" class="text-center">Cursos bíblicos</th>
+                                    <th style="width: 80px;" class="text-center">Precursor auxiliar</th>
+                                    <th style="width: 100px;" class="text-center">Horas<br><small>(Si es precursor o misionero que sirve en el campo)</small></th>
+                                    <th>Notas</th>
+                                </tr>
+                            </thead>
+                            <tbody id="registroPublicadorTableBody">
+                                <!-- Los datos se cargarán dinámicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Mensaje cuando no hay datos -->
+                <div id="noDataRegistroMessage" class="alert alert-info" role="alert">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Seleccione un año, grupo y publicador para ver el registro.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 @section('scripts')
@@ -807,6 +931,8 @@ window.informesIndexConfig = {
     destroyRoute: '{{ route("informes.destroy", ":id") }}',
     usuariosPorGrupoRoute: '{{ route("informes.usuarios-por-grupo") }}',
     informeCongregacionRoute: '{{ route("informes.informe-congregacion") }}',
+    registroPublicadorRoute: '{{ route("informes.registro-publicador") }}',
+    aniosRegistroRoute: '{{ route("informes.anios-registro") }}',
     informesPorGrupoRoute: '{{ route("informes.informes-por-grupo") }}',
     periodosRoute: '{{ route("informes.periodos") }}',
     

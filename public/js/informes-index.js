@@ -849,3 +849,237 @@ function cargarEstadisticasCongregacion() {
         }
     });
 }
+
+// ===== REGISTRO POR PUBLICADOR =====
+
+// Cargar años al abrir el modal (usando evento de Bootstrap 5)
+const registroPublicadorModalElement = document.getElementById('registroPublicadorModal');
+if (registroPublicadorModalElement) {
+    registroPublicadorModalElement.addEventListener('show.bs.modal', function() {
+        cargarAniosRegistro();
+        $('#registroGrupoFilter').val('');
+        $('#registroPublicadorFilter').empty().append('<option value="">Seleccione un publicador</option>');
+        $('#registroPublicadorInfo').addClass('d-none');
+        $('#registroPublicadorContainer').addClass('d-none');
+        $('#noDataRegistroMessage').removeClass('d-none');
+    });
+}
+
+// Función para cargar años disponibles
+function cargarAniosRegistro() {
+    let select = $('#registroAnioFilter');
+    
+    if (select.length === 0) {
+        console.error('El select registroAnioFilter no existe en el DOM');
+        return;
+    }
+    
+    select.empty();
+    select.append('<option value="">Seleccione un año</option>');
+    
+    // Determinar el año por defecto según el mes actual
+    let fechaActual = new Date();
+    let mesActual = fechaActual.getMonth() + 1; // getMonth() devuelve 0-11
+    let anioActual = fechaActual.getFullYear();
+    let anioDefecto;
+    
+    // Si el mes actual es >= septiembre (9), seleccionar año actual + 1
+    if (mesActual >= 9) {
+        anioDefecto = anioActual + 1;
+    } else {
+        anioDefecto = anioActual;
+    }
+    
+    // Obtener años desde el backend
+    $.ajax({
+        url: window.informesIndexConfig.aniosRegistroRoute,
+        method: 'GET',
+        success: function(response) {
+            let aniosDisponibles = [];
+            
+            if (response.success && response.anios && response.anios.length > 0) {
+                aniosDisponibles = response.anios;
+            }
+            
+            // Asegurar que el año calculado esté en la lista
+            if (!aniosDisponibles.includes(anioDefecto)) {
+                aniosDisponibles.unshift(anioDefecto);
+                aniosDisponibles.sort((a, b) => b - a); // Ordenar descendente
+            }
+            
+            // Agregar todos los años al select
+            aniosDisponibles.forEach(function(anio) {
+                select.append(`<option value="${anio}">${anio}</option>`);
+            });
+            
+            // Seleccionar el año calculado por defecto
+            select.val(anioDefecto);
+            
+            console.log('Años cargados correctamente, año seleccionado:', anioDefecto);
+        },
+        error: function() {
+            console.error('Error al cargar años de informes');
+            // En caso de error, al menos agregar el año calculado
+            select.append(`<option value="${anioDefecto}">${anioDefecto}</option>`);
+            select.val(anioDefecto);
+        }
+    });
+}
+
+// Evento change para el selector de grupo
+$('#registroGrupoFilter').on('change', function() {
+    let grupoId = $(this).val();
+    let select = $('#registroPublicadorFilter');
+    
+    select.empty().append('<option value="">Seleccione un publicador</option>');
+    $('#registroPublicadorInfo').addClass('d-none');
+    $('#registroPublicadorContainer').addClass('d-none');
+    $('#noDataRegistroMessage').removeClass('d-none');
+    
+    if (!grupoId) {
+        return;
+    }
+    
+    // Cargar usuarios del grupo
+    $.ajax({
+        url: window.informesIndexConfig.usuariosPorGrupoRoute,
+        method: 'GET',
+        data: { grupo_id: grupoId },
+        success: function(response) {
+            if (response.success && response.usuarios) {
+                response.usuarios.forEach(function(usuario) {
+                    select.append(`<option value="${usuario.id}">${usuario.name}</option>`);
+                });
+            }
+        },
+        error: function() {
+            console.error('Error al cargar usuarios');
+        }
+    });
+});
+
+// Evento change para el selector de publicador
+$('#registroPublicadorFilter').on('change', function() {
+    cargarRegistroPublicador();
+});
+
+// Evento change para el año
+$('#registroAnioFilter').on('change', function() {
+    let userId = $('#registroPublicadorFilter').val();
+    if (userId) {
+        cargarRegistroPublicador();
+    }
+});
+
+// Función para cargar el registro del publicador
+function cargarRegistroPublicador() {
+    let anio = $('#registroAnioFilter').val();
+    let userId = $('#registroPublicadorFilter').val();
+    
+    if (!anio || !userId) {
+        $('#registroPublicadorInfo').addClass('d-none');
+        $('#registroPublicadorContainer').addClass('d-none');
+        $('#noDataRegistroMessage').removeClass('d-none');
+        $('#loadingRegistroPublicador').addClass('d-none');
+        return;
+    }
+    
+    // Mostrar indicador de carga
+    $('#loadingRegistroPublicador').removeClass('d-none');
+    $('#registroPublicadorInfo').addClass('d-none');
+    $('#registroPublicadorContainer').addClass('d-none');
+    $('#noDataRegistroMessage').addClass('d-none');
+    
+    // Realizar petición AJAX
+    $.ajax({
+        url: window.informesIndexConfig.registroPublicadorRoute,
+        method: 'GET',
+        data: {
+            anio: anio,
+            user_id: userId
+        },
+        success: function(response) {
+            $('#loadingRegistroPublicador').addClass('d-none');
+            
+            if (response.success) {
+                // Mostrar información del usuario
+                let userInfo = response.user_info;
+                $('#info_nombre').text(userInfo.nombre);
+                $('#info_fecha_nacimiento').text(userInfo.fecha_nacimiento);
+                $('#info_fecha_bautismo').text(userInfo.fecha_bautismo);
+                $('#info_anciano').prop('checked', userInfo.es_anciano);
+                $('#info_siervo').prop('checked', userInfo.es_siervo);
+                $('#info_precursor_regular').prop('checked', userInfo.es_precursor_regular);
+                $('#info_precursor_especial').prop('checked', userInfo.es_precursor_especial);
+                $('#info_misionero').prop('checked', userInfo.es_misionero);
+                $('#registroPublicadorInfo').removeClass('d-none');
+                
+                // Construir tabla
+                let tbody = $('#registroPublicadorTableBody');
+                tbody.empty();
+                
+                response.registro.forEach(function(item) {
+                    let row = '<tr';
+                    if (item.mes_nombre === 'Total') {
+                        row += ' class="table-secondary fw-bold"';
+                    }
+                    row += '>';
+                    
+                    // Año de servicio
+                    row += `<td>${item.mes_nombre}</td>`;
+                    
+                    // Participación en el ministerio
+                    if (item.mes_nombre === 'Total') {
+                        row += '<td></td>';
+                    } else {
+                        row += '<td class="text-center">';
+                        if (item.participa == 1) {
+                            row += '<input type="checkbox" checked disabled>';
+                        } else {
+                            row += '<input type="checkbox" disabled>';
+                        }
+                        row += '</td>';
+                    }
+                    
+                    // Cursos bíblicos
+                    row += `<td class="text-center">${item.cantidad_estudios > 0 ? item.cantidad_estudios : ''}</td>`;
+                    
+                    // Precursor auxiliar
+                    if (item.mes_nombre === 'Total') {
+                        row += '<td></td>';
+                    } else {
+                        row += '<td class="text-center">';
+                        if (item.es_precursor_auxiliar == 1) {
+                            row += '<input type="checkbox" checked disabled>';
+                        } else {
+                            row += '<input type="checkbox" disabled>';
+                        }
+                        row += '</td>';
+                    }
+                    
+                    // Horas
+                    row += `<td class="text-center">${item.horas !== null && item.horas > 0 ? item.horas : ''}</td>`;
+                    
+                    // Notas
+                    row += `<td>${item.nota || ''}</td>`;
+                    
+                    row += '</tr>';
+                    tbody.append(row);
+                });
+                
+                $('#registroPublicadorContainer').removeClass('d-none');
+                $('#noDataRegistroMessage').addClass('d-none');
+            } else {
+                $('#noDataRegistroMessage').removeClass('d-none').html(
+                    '<i class="fas fa-exclamation-circle me-2"></i>' + (response.message || 'No se pudo cargar el registro.')
+                );
+            }
+        },
+        error: function(xhr) {
+            $('#loadingRegistroPublicador').addClass('d-none');
+            $('#noDataRegistroMessage').removeClass('d-none').html(
+                '<i class="fas fa-exclamation-triangle me-2"></i>Error al cargar el registro.'
+            );
+        }
+    });
+}

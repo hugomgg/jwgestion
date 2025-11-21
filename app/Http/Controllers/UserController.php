@@ -438,6 +438,14 @@ class UserController extends Controller
             // Agregar IDs de asignaciones
             $userData['asignaciones'] = $user->asignaciones->pluck('id')->toArray();
 
+            // Formatear fechas para inputs tipo date (YYYY-MM-DD)
+            if ($user->fecha_nacimiento) {
+                $userData['fecha_nacimiento'] = date('Y-m-d', strtotime($user->fecha_nacimiento));
+            }
+            if ($user->fecha_bautismo) {
+                $userData['fecha_bautismo'] = date('Y-m-d', strtotime($user->fecha_bautismo));
+            }
+
             // Agregar opciones de congregaciones y grupos según el perfil
             if ($currentUser->isCoordinator()) {
                 $userData['congregaciones_disponibles'] = Congregacion::where('id', $currentUser->congregacion)->where('estado', 1)->get();

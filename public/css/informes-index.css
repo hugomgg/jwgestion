@@ -62,3 +62,40 @@
     vertical-align: middle !important;
     font-size: 12px !important;
 }
+/* Estilos para tabla de registro por publicador */
+#registroPublicadorTable {
+    font-size: 11px;
+}
+
+#registroPublicadorTable thead th {
+    background-color: #343a40;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    vertical-align: middle;
+    padding: 8px 5px;
+    font-size: 10px;
+}
+
+#registroPublicadorTable tbody td {
+    padding: 4px 6px;
+    vertical-align: middle;
+}
+
+#registroPublicadorTable tbody tr.table-secondary {
+    background-color: #e9ecef !important;
+}
+
+#registroPublicadorTable input[type="checkbox"] {
+    cursor: default;
+}
+
+#registroPublicadorTable tbody td:first-child {
+    font-weight: 500;
+}
+
+/* Estilos para labels de checkboxes deshabilitados en información del publicador */
+#registroPublicadorInfo .form-check-label {
+    color: #000 !important;
+    opacity: 1 !important;
+}
