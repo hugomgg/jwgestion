@@ -842,10 +842,36 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <p class="mb-1"><strong>Nombre:</strong> <span id="info_nombre">-</span></p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
                                     <p class="mb-1"><strong>Fecha de nacimiento:</strong> <span id="info_fecha_nacimiento">-</span></p>
                                 </div>
                                 <div class="col-md-6">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" id="info_hombre" disabled>
+                                        <label class="form-check-label" for="info_hombre">Hombre</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" id="info_mujer" disabled>
+                                        <label class="form-check-label" for="info_mujer">Mujer</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
                                     <p class="mb-1"><strong>Fecha de bautismo:</strong> <span id="info_fecha_bautismo">-</span></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" id="info_otras_ovejas" disabled>
+                                        <label class="form-check-label" for="info_otras_ovejas">Otras ovejas</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" id="info_ungido" disabled>
+                                        <label class="form-check-label" for="info_ungido">Ungido</label>
+                                    </div>
                                 </div>
                             </div>
                             <div class="row mt-2">

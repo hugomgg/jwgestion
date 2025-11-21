@@ -1017,6 +1017,15 @@ function cargarRegistroPublicador() {
                 $('#info_nombre').text(userInfo.nombre);
                 $('#info_fecha_nacimiento').text(userInfo.fecha_nacimiento);
                 $('#info_fecha_bautismo').text(userInfo.fecha_bautismo);
+                
+                // Sexo: 1=Hombre, 2=Mujer
+                $('#info_hombre').prop('checked', userInfo.sexo == 1);
+                $('#info_mujer').prop('checked', userInfo.sexo == 2);
+                
+                // Esperanza: 1=Ungido, 2=Otras ovejas
+                $('#info_ungido').prop('checked', userInfo.esperanza == 1);
+                $('#info_otras_ovejas').prop('checked', userInfo.esperanza == 2);
+                
                 $('#info_anciano').prop('checked', userInfo.es_anciano);
                 $('#info_siervo').prop('checked', userInfo.es_siervo);
                 $('#info_precursor_regular').prop('checked', userInfo.es_precursor_regular);

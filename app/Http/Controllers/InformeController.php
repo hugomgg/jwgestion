@@ -820,6 +820,8 @@ class InformeController extends Controller
             'nombre' => $usuario->name,
             'fecha_nacimiento' => $usuario->fecha_nacimiento ? date('d/m/Y', strtotime($usuario->fecha_nacimiento)) : '-',
             'fecha_bautismo' => $usuario->fecha_bautismo ? date('d/m/Y', strtotime($usuario->fecha_bautismo)) : '-',
+            'sexo' => $usuario->sexo,
+            'esperanza' => $usuario->esperanza,
             'es_anciano' => $usuario->nombramiento == 1,
             'es_siervo' => $usuario->nombramiento == 2,
             'es_precursor_regular' => $usuario->servicio == 1,
