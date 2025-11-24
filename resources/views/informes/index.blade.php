@@ -812,13 +812,13 @@
             <div class="modal-body">
                 <!-- Filtros -->
                 <div class="row g-3 mb-4">
-                    <div class="col-md-4">
+                    <div class="col-md-2">
                         <label for="registroAnioFilter" class="form-label fw-bold">Año de servicio:</label>
                         <select class="form-select" id="registroAnioFilter">
                             <option value="">Seleccione un año</option>
                         </select>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label for="registroGrupoFilter" class="form-label fw-bold">Grupo:</label>
                         <select class="form-select" id="registroGrupoFilter">
                             <option value="">Seleccione un grupo</option>
@@ -833,7 +833,14 @@
                             <option value="">Seleccione un publicador</option>
                         </select>
                     </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="button" class="btn btn-danger" id="btnExportarPDF" disabled>
+                            <i class="fas fa-file-pdf me-2"></i>Exportar PDF
+                        </button>
+                    </div>
                 </div>
+
+                
 
                 <!-- Información del publicador -->
                 <div id="registroPublicadorInfo" class="d-none mb-3">
@@ -999,6 +1006,7 @@ window.informesIndexConfig = {
     registroPublicadorRoute: '{{ route("informes.registro-publicador") }}',
     aniosRegistroRoute: '{{ route("informes.anios-registro") }}',
     informesPorGrupoRoute: '{{ route("informes.informes-por-grupo") }}',
+    exportarRegistroPDFRoute: '{{ route("informes.exportar-registro-pdf") }}',
     periodosRoute: '{{ route("informes.periodos") }}',
     
     // Configuración de permisos y UI

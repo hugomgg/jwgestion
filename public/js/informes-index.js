@@ -937,8 +937,12 @@ $('#registroGrupoFilter').on('change', function() {
     $('#noDataRegistroMessage').removeClass('d-none');
     
     if (!grupoId) {
+        $('#btnExportarPDF').prop('disabled', true);
         return;
     }
+    
+    // Habilitar botón si hay grupo seleccionado
+    $('#btnExportarPDF').prop('disabled', false);
     
     // Cargar usuarios del grupo
     $.ajax({
@@ -960,6 +964,17 @@ $('#registroGrupoFilter').on('change', function() {
 
 // Evento change para el selector de publicador
 $('#registroPublicadorFilter').on('change', function() {
+    let userId = $(this).val();
+    
+    // Habilitar/deshabilitar botón según selección
+    if (userId) {
+        $('#btnExportarPDF').prop('disabled', false);
+    } else {
+        let grupoId = $('#registroGrupoFilter').val();
+        // Solo deshabilitar si tampoco hay grupo seleccionado
+        $('#btnExportarPDF').prop('disabled', !grupoId);
+    }
+    
     cargarRegistroPublicador();
 });
 
@@ -969,6 +984,30 @@ $('#registroAnioFilter').on('change', function() {
     if (userId) {
         cargarRegistroPublicador();
     }
+});
+
+// Evento para exportar PDF
+$('#btnExportarPDF').on('click', function() {
+    let anio = $('#registroAnioFilter').val();
+    let grupoId = $('#registroGrupoFilter').val();
+    let userId = $('#registroPublicadorFilter').val();
+    
+    if (!anio) {
+        alert('Debe seleccionar un año');
+        return;
+    }
+    
+    // Construir URL con parámetros
+    let url = window.informesIndexConfig.exportarRegistroPDFRoute + '?anio=' + anio;
+    
+    if (userId) {
+        url += '&user_id=' + userId;
+    } else if (grupoId) {
+        url += '&grupo_id=' + grupoId;
+    }
+    
+    // Abrir en nueva ventana para descargar PDF
+    window.open(url, '_blank');
 });
 
 // Función para cargar el registro del publicador

@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Barryvdh\DomPDF\Facade\Pdf as PDF;
 
 class InformeController extends Controller
 {
@@ -919,4 +920,195 @@ class InformeController extends Controller
             'registro' => $registro
         ]);
     }
+
+    /**
+     * Exportar registro de publicadores a PDF
+     */
+    public function exportarRegistroPDF(Request $request)
+    {
+        $currentUser = Auth::user();
+        $anio = $request->input('anio');
+        $userId = $request->input('user_id');
+        $grupoId = $request->input('grupo_id');
+
+        if (!$anio) {
+            abort(400, 'Debe especificar un año');
+        }
+
+        // Determinar los usuarios a exportar
+        $usuarios = [];
+
+        if ($userId) {
+            // Exportar solo un usuario
+            $usuario = User::find($userId);
+            if (!$usuario) {
+                abort(404, 'Usuario no encontrado');
+            }
+            
+            // Verificar permisos
+            if (!$currentUser->isAdmin() && !$currentUser->isSupervisor()) {
+                if ($currentUser->congregacion != $usuario->congregacion) {
+                    abort(403, 'No tiene permisos para exportar este registro');
+                }
+            }
+            
+            $usuarios = [$usuario];
+        } elseif ($grupoId) {
+            // Exportar todos los usuarios del grupo
+            $grupo = Grupo::find($grupoId);
+            if (!$grupo) {
+                abort(404, 'Grupo no encontrado');
+            }
+            
+            // Verificar permisos
+            if (!$currentUser->isAdmin() && !$currentUser->isSupervisor()) {
+                if ($currentUser->congregacion != $grupo->congregacion_id) {
+                    abort(403, 'No tiene permisos para exportar este grupo');
+                }
+            }
+            
+            $usuarios = User::where('grupo', $grupoId)
+                ->where('estado_espiritual', 1)
+                ->orderBy('name')
+                ->get();
+        } else {
+            // Exportar todos los usuarios de la congregación
+            $congregacionId = $currentUser->isAdmin() || $currentUser->isSupervisor() 
+                ? $request->input('congregacion_id', $currentUser->congregacion)
+                : $currentUser->congregacion;
+            
+            $usuarios = User::where('congregacion', $congregacionId)
+                ->where('estado_espiritual', 1)
+                ->orderBy('name')
+                ->get();
+        }
+
+        // Convertir a colección si es array
+        if (is_array($usuarios)) {
+            $usuarios = collect($usuarios);
+        }
+
+        if ($usuarios->isEmpty()) {
+            abort(404, 'No se encontraron usuarios para exportar');
+        }
+
+        // Generar datos para cada usuario
+        $datosPublicadores = [];
+        foreach ($usuarios as $usuario) {
+            $datosPublicadores[] = $this->obtenerDatosRegistroUsuario($usuario, $anio);
+        }
+
+        // Generar PDF
+        $pdf = PDF::loadView('informes.pdf.registro-publicadores', [
+            'anio' => $anio,
+            'datosPublicadores' => $datosPublicadores
+        ]);
+
+        $pdf->setPaper('letter', 'portrait');
+
+        return $pdf->download('registro-publicadores-' . $anio . '.pdf');
+    }
+
+    /**
+     * Obtener datos de registro para un usuario específico
+     */
+    private function obtenerDatosRegistroUsuario($usuario, $anio)
+    {
+        // Información del usuario
+        $userInfo = [
+            'nombre' => $usuario->name,
+            'fecha_nacimiento' => $usuario->fecha_nacimiento ? date('d/m/Y', strtotime($usuario->fecha_nacimiento)) : '-',
+            'fecha_bautismo' => $usuario->fecha_bautismo ? date('d/m/Y', strtotime($usuario->fecha_bautismo)) : '-',
+            'sexo' => $usuario->sexo,
+            'esperanza' => $usuario->esperanza,
+            'es_anciano' => $usuario->nombramiento == 1,
+            'es_siervo' => $usuario->nombramiento == 2,
+            'es_precursor_regular' => $usuario->servicio == 1,
+            'es_precursor_especial' => $usuario->servicio == 2,
+            'es_misionero' => $usuario->servicio == 5,
+        ];
+
+        // Obtener registros para ambos años
+        $registroActual = $this->obtenerRegistroPorAnio($usuario->id, $anio);
+        $registroAnterior = $this->obtenerRegistroPorAnio($usuario->id, $anio - 1);
+
+        return [
+            'user_info' => $userInfo,
+            'registro_actual' => $registroActual,
+            'registro_anterior' => $registroAnterior,
+            'anio_actual' => $anio,
+            'anio_anterior' => $anio - 1
+        ];
+    }
+
+    /**
+     * Obtener registro de informes por año
+     */
+    private function obtenerRegistroPorAnio($userId, $anio)
+    {
+        $mesesNombres = [
+            'Septiembre', 'Octubre', 'Noviembre', 'Diciembre',
+            'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto'
+        ];
+
+        $mesesData = [];
+        
+        for ($i = 0; $i < 12; $i++) {
+            if ($i < 4) {
+                $mes = 9 + $i;
+                $anioMes = $anio - 1;
+            } else {
+                $mes = $i - 3;
+                $anioMes = $anio;
+            }
+
+            $mesesData[] = [
+                'mes' => $mes,
+                'anio' => $anioMes,
+                'mes_nombre' => $mesesNombres[$i]
+            ];
+        }
+
+        $registro = [];
+        $totalEstudios = 0;
+        $totalHoras = 0;
+
+        foreach ($mesesData as $mesData) {
+            $informe = Informe::where('user_id', $userId)
+                ->where('anio', $mesData['anio'])
+                ->where('mes', $mesData['mes'])
+                ->first();
+
+            $cantidadEstudios = $informe ? $informe->cantidad_estudios : 0;
+            $horas = $informe ? $informe->horas : null;
+            $esPrecursorAuxiliar = $informe && $informe->servicio_id == 3 ? 1 : 0;
+
+            $totalEstudios += $cantidadEstudios;
+            if ($horas !== null) {
+                $totalHoras += $horas;
+            }
+
+            $registro[] = [
+                'mes_nombre' => $mesData['mes_nombre'],
+                'participa' => $informe ? $informe->participa : 0,
+                'cantidad_estudios' => $cantidadEstudios,
+                'es_precursor_auxiliar' => $esPrecursorAuxiliar,
+                'horas' => $horas,
+                'nota' => $informe ? $informe->nota : ''
+            ];
+        }
+
+        // Agregar fila de totales
+        $registro[] = [
+            'mes_nombre' => 'Total',
+            'participa' => null,
+            'cantidad_estudios' => $totalEstudios,
+            'es_precursor_auxiliar' => null,
+            'horas' => $totalHoras,
+            'nota' => ''
+        ];
+
+        return $registro;
+    }
+
 }

@@ -95,6 +95,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/informes/informe-congregacion', [App\Http\Controllers\InformeController::class, 'getInformeCongregacion'])->name('informes.informe-congregacion');
         Route::get('/informes/anios-registro', [App\Http\Controllers\InformeController::class, 'getAniosRegistro'])->name('informes.anios-registro');
         Route::get('/informes/registro-publicador', [App\Http\Controllers\InformeController::class, 'getRegistroPublicador'])->name('informes.registro-publicador');
+        Route::get('/informes/exportar-registro-pdf', [App\Http\Controllers\InformeController::class, 'exportarRegistroPDF'])->name('informes.exportar-registro-pdf');
         Route::get('/informes/{id}', [App\Http\Controllers\InformeController::class, 'show'])->name('informes.show');
         Route::get('/informes/{id}/edit', [App\Http\Controllers\InformeController::class, 'edit'])->name('informes.edit');
         Route::post('/informes', [App\Http\Controllers\InformeController::class, 'store'])->name('informes.store');
