@@ -24,18 +24,6 @@ $(document).ready(function() {
     // Inicializar Select2 para filtros de año y mes
     initializeFiltrosSelect2();
 
-    // Manejar clic en botón buscar
-    $('#btnBuscarProgramas').on('click', function() {
-        const anioSeleccionado = $('#filtro_anio').val();
-        
-        if (!anioSeleccionado) {
-            mostrarAlerta('Por favor, seleccione un año para buscar.', 'warning');
-            return;
-        }
-        
-        buscarProgramasPorAnio(anioSeleccionado);
-    });
-
     // Función para inicializar Select2 para coordinadores
     function initializeSelect2ForCoordinators() {
         $('#add_presidencia').select2({
@@ -467,18 +455,18 @@ function initializeFiltrosSelect2() {
             // Habilitar el dropdown de mes y cargar meses disponibles
             $('#mesDropdownBtn').prop('disabled', false);
 
-            // Pequeño delay para evitar conflictos con el dropdown
+            // Cargar meses disponibles primero
+            cargarMesesDisponibles(anioSeleccionado);
+            
+            // Luego buscar programas por año automáticamente
             setTimeout(function() {
-                cargarMesesDisponibles(anioSeleccionado);
+                buscarProgramasPorAnio(anioSeleccionado);
             }, 100);
         } else {
             // Deshabilitar el dropdown de mes y limpiar selección
             $('#mesDropdownBtn').prop('disabled', true);
             limpiarSeleccionMeses();
         }
-
-        // NO aplicar filtro automáticamente, solo con el botón buscar
-        // aplicarFiltroTabla();
 
         // Actualizar estado del botón Exportar PDF
         if (window.actualizarBotonesExportacion) {

@@ -36,11 +36,6 @@
                                     <option value="">Todos</option>
                                 </select>
 
-                                <!-- Botón Buscar con icono Lupa -->
-                                <button type="button" class="btn btn-primary" id="btnBuscarProgramas" title="Buscar programas">
-                                    <i class="fas fa-search"></i>
-                                </button>
-
                                 <!-- Botón Nuevo Programa -->
                                 @if($currentUser->isCoordinator() || $currentUser->isOrganizer())
                                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProgramaModal">
