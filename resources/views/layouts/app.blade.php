@@ -24,8 +24,14 @@
     <link href="{{ asset('css/select2.min.css') }}" rel="stylesheet" />
     <link href="{{ asset('css/select2-bootstrap-5-theme.min.css') }}" rel="stylesheet" />
 
+    <!-- Dark Mode CSS -->
+    <link href="{{ asset('css/dark-mode.css') }}" rel="stylesheet" />
+
     <!-- Scripts -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+    
+    <!-- Dark Mode Script (debe cargarse temprano para evitar flash) -->
+    <script src="{{ asset('js/dark-mode.js') }}"></script>
     
     <!-- Estilos para el menú lateral -->
     <style>
@@ -174,7 +180,6 @@
                     <i class="fas fa-landmark me-2"></i>
                     {{ config('app.name', 'Laravel') }}
                 </h5>
-                //Se define variable PHP de la congregación
                 @php
                     $congregacion = Auth::user()->congregacion()->first();
                 @endphp
@@ -411,6 +416,11 @@
                         @endif
                     @endguest
                 </a>
+                
+                <!-- Botón de cambio de tema -->
+                <button class="theme-toggle-btn ms-auto" type="button" aria-label="Cambiar tema">
+                    <i class="fas fa-moon"></i>
+                </button>
             </div>
         </nav>
 

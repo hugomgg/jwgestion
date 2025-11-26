@@ -121,8 +121,10 @@ div.select2-container--bootstrap-5 .select2-selection__rendered {
 #programasTable tbody tr.semana-actual-row,
 #programasTable tbody tr.semana-actual-row td {
     background-color: #c6ecfc !important;
+    color: #000000 !important;
 }
 #programasTable tbody tr.semana-actual-row:hover,
 #programasTable tbody tr.semana-actual-row:hover td {
     background-color: #a3e0fa !important;
+    color: #000000 !important;
 }

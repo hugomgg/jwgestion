@@ -101,7 +101,7 @@
 }
 
 /* Estilos para labels de checkboxes deshabilitados en información del publicador */
-#registroPublicadorInfo .form-check-label {
+.form-check-label {
     color: #000 !important;
     opacity: 1 !important;
 }
