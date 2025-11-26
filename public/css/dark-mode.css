@@ -365,7 +365,22 @@
 }
 
 [data-theme="dark"] .select2-container--bootstrap-5 .select2-selection__rendered {
-    color: var(--text-primary);
+    color: var(--text-primary) !important;
+}
+
+/* Texto seleccionado en Select2 */
+[data-theme="dark"] .select2-container--bootstrap-5 .select2-selection--single .select2-selection__rendered {
+    color: #ffffff !important;
+}
+
+[data-theme="dark"] .select2-container--bootstrap-5 .select2-selection--multiple .select2-selection__choice {
+    background-color: var(--bg-tertiary);
+    border-color: var(--border-color);
+    color: #ffffff !important;
+}
+
+[data-theme="dark"] .select2-container--bootstrap-5 .select2-selection--multiple .select2-selection__choice__remove {
+    color: #ffffff !important;
 }
 
 [data-theme="dark"] .select2-container--bootstrap-5 .select2-search__field {
