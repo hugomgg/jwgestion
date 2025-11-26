@@ -7,7 +7,7 @@ $(document).ready(function() {
     }
 
     // Inicializar DataTable
-    $('#programasTable').DataTable({
+    const programasTable = $('#programasTable').DataTable({
         language: {
             url: '/js/datatables-es-ES.json'
         },
@@ -18,8 +18,23 @@ $(document).ready(function() {
         ]
     });
 
+    // Guardar referencia a la tabla globalmente para el filtrado
+    window.programasTable = programasTable;
+
     // Inicializar Select2 para filtros de año y mes
     initializeFiltrosSelect2();
+
+    // Manejar clic en botón buscar
+    $('#btnBuscarProgramas').on('click', function() {
+        const anioSeleccionado = $('#filtro_anio').val();
+        
+        if (!anioSeleccionado) {
+            mostrarAlerta('Por favor, seleccione un año para buscar.', 'warning');
+            return;
+        }
+        
+        buscarProgramasPorAnio(anioSeleccionado);
+    });
 
     // Función para inicializar Select2 para coordinadores
     function initializeSelect2ForCoordinators() {
@@ -441,7 +456,7 @@ function initializeFiltrosSelect2() {
         width: '120px'
     });
 
-    // Cargar años disponibles
+    // Cargar años disponibles (esto también seleccionará automáticamente el año más reciente)
     cargarAniosDisponibles();
 
     // Evento cuando cambia el año seleccionado
@@ -462,8 +477,8 @@ function initializeFiltrosSelect2() {
             limpiarSeleccionMeses();
         }
 
-        // Aplicar filtro a la tabla
-        aplicarFiltroTabla();
+        // NO aplicar filtro automáticamente, solo con el botón buscar
+        // aplicarFiltroTabla();
 
         // Actualizar estado del botón Exportar PDF
         if (window.actualizarBotonesExportacion) {
@@ -534,6 +549,13 @@ function cargarAniosDisponibles() {
                     response.anios.forEach(function(anio) {
                         $selectAnio.append(`<option value="${anio}">${anio}</option>`);
                     });
+
+                    // Seleccionar automáticamente el año más reciente si está disponible
+                    if (window.anioMasReciente && response.anios.includes(window.anioMasReciente)) {
+                        $selectAnio.val(window.anioMasReciente).trigger('change');
+                        
+                        // NO aplicamos filtro aquí porque los datos ya vienen filtrados del controlador
+                    }
                 }
             } else {
                 const errorMessage = response && response.message ? response.message : 'Respuesta inválida del servidor';
@@ -659,35 +681,42 @@ function aplicarFiltroTabla() {
     }).get();
 
     // Si DataTable está inicializado
-    if ($.fn.DataTable.isDataTable('#programasTable')) {
-        const table = $('#programasTable').DataTable();
+    let table = window.programasTable;
+    
+    if (!table && $.fn.DataTable.isDataTable('#programasTable')) {
+        table = $('#programasTable').DataTable();
+    }
 
+    if (table) {
         // Remover filtros anteriores
         $.fn.dataTable.ext.search.pop();
 
-        // Agregar nuevo filtro
-        $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
-            const fechaPrograma = data[0]; // Primera columna es la fecha
-            const fechaParts = fechaPrograma.split('/');
+        // Solo aplicar filtro si hay un año seleccionado
+        if (anioSeleccionado) {
+            // Agregar nuevo filtro
+            $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+                const fechaPrograma = data[0]; // Primera columna es la fecha
+                const fechaParts = fechaPrograma.split('/');
 
-            if (fechaParts.length === 3) {
-                const dia = fechaParts[0];
-                const mes = fechaParts[1].padStart(2, '0'); // Asegurar formato de 2 dígitos
-                const anio = fechaParts[2];
+                if (fechaParts.length === 3) {
+                    const dia = fechaParts[0];
+                    const mes = fechaParts[1].padStart(2, '0'); // Asegurar formato de 2 dígitos
+                    const anio = fechaParts[2];
 
-                // Verificar filtro de año
-                if (anioSeleccionado && anio !== anioSeleccionado) {
-                    return false;
+                    // Verificar filtro de año
+                    if (anioSeleccionado && anio !== anioSeleccionado) {
+                        return false;
+                    }
+
+                    // Verificar filtro de meses (si hay meses seleccionados)
+                    if (mesesSeleccionados.length > 0 && !mesesSeleccionados.includes(mes)) {
+                        return false;
+                    }
                 }
 
-                // Verificar filtro de meses (si hay meses seleccionados)
-                if (mesesSeleccionados.length > 0 && !mesesSeleccionados.includes(mes)) {
-                    return false;
-                }
-            }
-
-            return true;
-        });
+                return true;
+            });
+        }
 
         // Redibujar la tabla
         table.draw();
@@ -739,4 +768,159 @@ function actualizarTextoBotonMeses() {
     if (window.actualizarBotonesExportacion) {
         window.actualizarBotonesExportacion();
     }
+}
+
+// Función para buscar programas por año mediante AJAX
+function buscarProgramasPorAnio(anio) {
+    const csrfToken = $('meta[name="csrf-token"]').attr('content');
+
+    if (!csrfToken) {
+        console.error('CSRF token not found');
+        mostrarAlerta('Error de configuración: Token CSRF no encontrado', 'danger');
+        return;
+    }
+
+    // Mostrar indicador de carga
+    const $btnBuscar = $('#btnBuscarProgramas');
+    const textoOriginal = $btnBuscar.html();
+    $btnBuscar.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i>');
+
+    $.ajax({
+        url: '/programas/buscar-por-anio',
+        method: 'GET',
+        headers: {
+            'X-CSRF-TOKEN': csrfToken
+        },
+        data: { anio: anio },
+        success: function(response) {
+            if (response && response.success && response.programas) {
+                // Obtener referencia a la tabla DataTable
+                let table = window.programasTable;
+                
+                if (!table && $.fn.DataTable.isDataTable('#programasTable')) {
+                    table = $('#programasTable').DataTable();
+                }
+
+                if (table) {
+                    // Limpiar la tabla
+                    table.clear();
+
+                    // Verificar si hay programas
+                    if (response.programas.length === 0) {
+                        mostrarAlerta(`No se encontraron programas para el año ${anio}.`, 'info');
+                        table.draw();
+                        return;
+                    }
+
+                    // Calcular lunes y domingo de la semana actual para destacar
+                    const hoy = new Date();
+                    const diaSemana = hoy.getDay();
+                    const diffLunes = diaSemana === 0 ? -6 : 1 - diaSemana; // Domingo = 0, ajustar a lunes
+                    const diffDomingo = diaSemana === 0 ? 0 : 7 - diaSemana;
+                    
+                    const lunesSemanaActual = new Date(hoy);
+                    lunesSemanaActual.setDate(hoy.getDate() + diffLunes);
+                    lunesSemanaActual.setHours(0, 0, 0, 0);
+                    
+                    const domingoSemanaActual = new Date(hoy);
+                    domingoSemanaActual.setDate(hoy.getDate() + diffDomingo);
+                    domingoSemanaActual.setHours(23, 59, 59, 999);
+
+                    // Agregar las filas con los nuevos datos
+                    response.programas.forEach(function(programa) {
+                        // Formatear fecha
+                        const fechaParts = programa.fecha.split('-'); // YYYY-MM-DD
+                        const fechaFormateada = `${fechaParts[2]}/${fechaParts[1]}/${fechaParts[0]}`; // DD/MM/YYYY
+                        
+                        // Verificar si está en la semana actual
+                        const fechaPrograma = new Date(programa.fecha);
+                        fechaPrograma.setHours(0, 0, 0, 0);
+                        const esSemanaActual = fechaPrograma >= lunesSemanaActual && fechaPrograma <= domingoSemanaActual;
+
+                        // Construir botones de acción
+                        let botonesAccion = `
+                            <div class="btn-group" role="group">
+                                <a href="/programas/${programa.id}" class="btn btn-sm btn-info" data-bs-toggle="tooltip" title="Ver programa">
+                                    <i class="fas fa-eye"></i>
+                                </a>`;
+                        
+                        // Solo agregar botones de editar/eliminar si el usuario es coordinador u organizador
+                        if (typeof window.isCoordinatorOrOrganizer !== 'undefined' && window.isCoordinatorOrOrganizer) {
+                            botonesAccion += `
+                                <a href="/programas/${programa.id}/edit" class="btn btn-sm btn-warning" data-bs-toggle="tooltip" title="Editar programa">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button type="button" class="btn btn-sm btn-danger delete-programa" 
+                                        data-id="${programa.id}"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#confirmDeleteModal"
+                                        title="Eliminar programa">
+                                    <i class="fas fa-trash"></i>
+                                </button>`;
+                        }
+                        
+                        botonesAccion += `</div>`;
+
+                        // Crear elemento TD con data-order para la fecha
+                        const fechaTd = `<td data-order="${programa.fecha}">${fechaFormateada}</td>`;
+
+                        // Agregar fila usando HTML directo para evitar problemas de serialización
+                        const newRow = table.row.add($(`
+                            <tr class="${esSemanaActual ? 'semana-actual-row' : ''}">
+                                <td data-order="${programa.fecha}">${fechaFormateada}</td>
+                                <td>${programa.nombre_presidencia || '-'}</td>
+                                <td>${programa.nombre_orador_inicial || '-'}</td>
+                                <td>${programa.numero_cancion_pre != null ? programa.numero_cancion_pre : '-'}</td>
+                                <td>${programa.numero_cancion_en != null ? programa.numero_cancion_en : '-'}</td>
+                                <td>${programa.numero_cancion_post != null ? programa.numero_cancion_post : '-'}</td>
+                                <td>${programa.nombre_orador_final || '-'}</td>
+                                <td>${botonesAccion}</td>
+                            </tr>
+                        `)[0]);
+                    });
+
+                    // Redibujar la tabla
+                    table.draw();
+
+                    // Re-inicializar tooltips de Bootstrap
+                    if (typeof bootstrap !== 'undefined' && bootstrap.Tooltip) {
+                        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+                        tooltipTriggerList.map(function (tooltipTriggerEl) {
+                            return new bootstrap.Tooltip(tooltipTriggerEl);
+                        });
+                    }
+
+                    // Reasignar eventos de eliminación
+                    $('.delete-programa').off('click').on('click', function() {
+                        window.programaIdToDelete = $(this).data('id');
+                    });
+
+                    //mostrarAlerta(`Se encontraron ${response.programas.length} programas para el año ${anio}.`, 'success');
+                } else {
+                    mostrarAlerta('Error: No se pudo acceder a la tabla de programas.', 'danger');
+                }
+            } else {
+                const errorMessage = response && response.message ? response.message : 'Respuesta inválida del servidor';
+                mostrarAlerta('Error al buscar programas: ' + errorMessage, 'danger');
+            }
+        },
+        error: function(xhr, status, error) {
+            let errorMessage = 'Error al conectar con el servidor';
+            if (xhr.status === 403) {
+                errorMessage = 'No tienes permiso para realizar esta acción';
+            } else if (xhr.status === 404) {
+                errorMessage = 'Ruta no encontrada';
+            } else if (xhr.status === 500) {
+                errorMessage = 'Error interno del servidor';
+            } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                errorMessage = xhr.responseJSON.message;
+            }
+
+            mostrarAlerta(errorMessage, 'danger');
+        },
+        complete: function() {
+            // Restaurar botón
+            $btnBuscar.prop('disabled', false).html(textoOriginal);
+        }
+    });
 }

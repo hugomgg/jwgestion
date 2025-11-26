@@ -28,7 +28,16 @@ class ProgramaController extends Controller
             return redirect()->route('home')
                 ->with('error', 'No tienes permiso para acceder a esta sección2.');
         }
+        // Obtener el año más reciente de los programas
+        $anioMasReciente = DB::table('programas')
+            ->join('users as creador', 'programas.creador', '=', 'creador.id')
+            ->where('creador.congregacion', $currentUser->congregacion)
+            ->whereNotNull('programas.fecha')
+            ->orderBy('programas.fecha', 'desc')
+            ->value(DB::raw('YEAR(programas.fecha)'));
+
         // Consulta base con JOIN para obtener los nombres relacionados
+        // Filtrar solo programas del año más reciente
         $query = DB::table('programas')
             ->leftJoin('users as orador_inicial', 'programas.orador_inicial', '=', 'orador_inicial.id')
             ->leftJoin('users as presidencia', 'programas.presidencia', '=', 'presidencia.id')
@@ -38,7 +47,7 @@ class ProgramaController extends Controller
             ->leftJoin('canciones as cancion_post', 'programas.cancion_post', '=', 'cancion_post.id')
             ->leftJoin('users as creador', 'programas.creador', '=', 'creador.id')
             ->leftJoin('users as modificador', 'programas.modificador', '=', 'modificador.id')
-             ->where('creador.congregacion', $currentUser->congregacion)
+            ->where('creador.congregacion', $currentUser->congregacion)
             ->select(
                 'programas.id',
                 'programas.fecha',
@@ -57,6 +66,11 @@ class ProgramaController extends Controller
                 'programas.created_at',
                 'programas.updated_at'
             );
+
+        // Aplicar filtro de año más reciente si existe
+        if ($anioMasReciente) {
+            $query->whereRaw('YEAR(programas.fecha) = ?', [$anioMasReciente]);
+        }
 
         $programas = $query->orderBy('programas.fecha', 'desc')->get();
 
@@ -120,7 +134,71 @@ class ProgramaController extends Controller
             ->orderBy('numero')
             ->get();
 
-        return view('programas.index', compact('programas', 'usuarios', 'canciones', 'usuariosPresidencia', 'usuariosOradorInicial', 'currentUser'));
+        return view('programas.index', compact('programas', 'usuarios', 'canciones', 'usuariosPresidencia', 'usuariosOradorInicial', 'currentUser', 'anioMasReciente'));
+    }
+
+    /**
+     * Obtener programas por año (AJAX)
+     */
+    public function getProgramasPorAnio(Request $request)
+    {
+        $currentUser = auth()->user();
+        
+        // Validar que el usuario tenga permisos
+        if (!($currentUser->isCoordinator() || $currentUser->isOrganizer() || $currentUser->isSubsecretary() || $currentUser->isSuborganizer())) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No tienes permiso para acceder a esta sección.'
+            ], 403);
+        }
+
+        $anio = $request->input('anio');
+
+        if (!$anio) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Debe especificar un año.'
+            ], 400);
+        }
+
+        // Consulta con JOIN para obtener programas del año especificado
+        $query = DB::table('programas')
+            ->leftJoin('users as orador_inicial', 'programas.orador_inicial', '=', 'orador_inicial.id')
+            ->leftJoin('users as presidencia', 'programas.presidencia', '=', 'presidencia.id')
+            ->leftJoin('users as orador_final', 'programas.orador_final', '=', 'orador_final.id')
+            ->leftJoin('canciones as cancion_pre', 'programas.cancion_pre', '=', 'cancion_pre.id')
+            ->leftJoin('canciones as cancion_en', 'programas.cancion_en', '=', 'cancion_en.id')
+            ->leftJoin('canciones as cancion_post', 'programas.cancion_post', '=', 'cancion_post.id')
+            ->leftJoin('users as creador', 'programas.creador', '=', 'creador.id')
+            ->leftJoin('users as modificador', 'programas.modificador', '=', 'modificador.id')
+            ->where('creador.congregacion', $currentUser->congregacion)
+            ->whereRaw('YEAR(programas.fecha) = ?', [$anio])
+            ->select(
+                'programas.id',
+                'programas.fecha',
+                'programas.estado',
+                'orador_inicial.name as nombre_orador_inicial',
+                'presidencia.name as nombre_presidencia',
+                'orador_final.name as nombre_orador_final',
+                'cancion_pre.nombre as nombre_cancion_pre',
+                'cancion_pre.numero as numero_cancion_pre',
+                'cancion_en.nombre as nombre_cancion_en',
+                'cancion_en.numero as numero_cancion_en',
+                'cancion_post.nombre as nombre_cancion_post',
+                'cancion_post.numero as numero_cancion_post',
+                'creador.name as creado_por_nombre',
+                'modificador.name as modificado_por_nombre',
+                'programas.created_at',
+                'programas.updated_at'
+            )
+            ->orderBy('programas.fecha', 'desc')
+            ->get()
+            ->values(); // Convertir a array indexado numéricamente
+
+        return response()->json([
+            'success' => true,
+            'programas' => $query
+        ]);
     }
 
     /**

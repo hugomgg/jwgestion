@@ -40,6 +40,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/programas/anios-disponibles', [App\Http\Controllers\ProgramaController::class, 'getAniosDisponibles'])->name('programas.anios-disponibles');
     Route::get('/programas/meses-disponibles/{anio}', [App\Http\Controllers\ProgramaController::class, 'getMesesDisponibles'])->name('programas.meses-disponibles');
 
+    // Ruta para obtener programas por año (AJAX)
+    Route::get('/programas/buscar-por-anio', [App\Http\Controllers\ProgramaController::class, 'getProgramasPorAnio'])->name('programas.buscar-por-anio');
+
     // Exportar PDF de programas (para coordinadores)
     Route::get('/programas/exportar-pdf', [App\Http\Controllers\ProgramaController::class, 'exportPdf'])->name('programas.export.pdf');
 

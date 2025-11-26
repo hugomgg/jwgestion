@@ -31,6 +31,16 @@
                                     <i class="fas fa-download me-2"></i>Exportar Documentos
                                 </button>
 
+                                <!-- Select2 para filtrar por Año -->
+                                <select class="form-select" id="filtro_anio" style="width: 120px;">
+                                    <option value="">Todos</option>
+                                </select>
+
+                                <!-- Botón Buscar con icono Lupa -->
+                                <button type="button" class="btn btn-primary" id="btnBuscarProgramas" title="Buscar programas">
+                                    <i class="fas fa-search"></i>
+                                </button>
+
                                 <!-- Botón Nuevo Programa -->
                                 @if($currentUser->isCoordinator() || $currentUser->isOrganizer())
                                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProgramaModal">
@@ -44,14 +54,6 @@
                                 <div class="card card-body">
                                     <h6 class="mb-3"><i class="fas fa-download me-2"></i>Exportar Documentos</h6>
                                     <div class="row g-3 align-items-end">
-                                        <!-- Select2 para filtrar por Año -->
-                                        <div class="col-md-3">
-                                            <label for="filtro_anio" class="form-label">Año</label>
-                                            <select class="form-select" id="filtro_anio" style="width: 100%;">
-                                                <option value="">Todos</option>
-                                            </select>
-                                        </div>
-
                                         <!-- Dropdown para filtrar por Mes -->
                                         <div class="col-md-6">
                                             <label class="form-label">Mes</label>
@@ -307,6 +309,12 @@ $(document).ready(function() {
         xls: `{{ route('programas.export.xls') }}`,
         asignaciones: `{{ route('programas.export.asignaciones') }}`
     };
+
+    // Pasar el año más reciente desde el controlador
+    window.anioMasReciente = {{ $anioMasReciente ?? 'null' }};
+
+    // Indicar si el usuario es coordinador u organizador
+    window.isCoordinatorOrOrganizer = {{ ($currentUser->isCoordinator() || $currentUser->isOrganizer()) ? 'true' : 'false' }};
 });
 </script>
 @endpush
