@@ -9,6 +9,16 @@
 
     <title>{{ config('app.name', 'Laravel') }}</title>
 
+    <!-- Script inline para evitar flash de tema (DEBE ir primero) -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('app-theme');
+            if (savedTheme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        })();
+    </script>
+
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">

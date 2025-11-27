@@ -539,9 +539,9 @@ function cargarAniosDisponibles() {
                     });
 
                     // Seleccionar automáticamente el año más reciente si está disponible
-                    if (window.anioMasReciente && response.anios.includes(window.anioMasReciente)) {
+                    //if (window.anioMasReciente && response.anios.includes(window.anioMasReciente)) {
+                    if (window.anioMasReciente) {
                         $selectAnio.val(window.anioMasReciente).trigger('change');
-                        
                         // NO aplicamos filtro aquí porque los datos ya vienen filtrados del controlador
                     }
                 }
@@ -846,14 +846,10 @@ function buscarProgramasPorAnio(anio) {
                                     <i class="fas fa-trash"></i>
                                 </button>`;
                         }
-                        
                         botonesAccion += `</div>`;
 
-                        // Crear elemento TD con data-order para la fecha
-                        const fechaTd = `<td data-order="${programa.fecha}">${fechaFormateada}</td>`;
-
                         // Agregar fila usando HTML directo para evitar problemas de serialización
-                        const newRow = table.row.add($(`
+                        table.row.add($(`
                             <tr class="${esSemanaActual ? 'semana-actual-row' : ''}">
                                 <td data-order="${programa.fecha}">${fechaFormateada}</td>
                                 <td>${programa.nombre_presidencia || '-'}</td>
