@@ -167,6 +167,23 @@
             margin-right: 1rem;
         }
         
+        /* Estilos para navbar-brand responsivo */
+        @media (max-width: 768px) {
+            .navbar-brand {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start !important;
+                line-height: 1.3;
+            }
+            
+            .navbar-brand small,
+            .navbar-brand .badge {
+                display: block;
+                margin-left: 0 !important;
+                margin-top: 0.25rem;
+            }
+        }
+        
         @media (max-width: 768px) {
             .sidebar {
                 width: 280px;

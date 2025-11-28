@@ -70,6 +70,15 @@
     border-right: 1px solid var(--border-color);
 }
 
+/* Botón toggle sidebar */
+[data-theme="dark"] #sidebarToggle {
+    color: #ffffff !important;
+}
+
+[data-theme="dark"] #sidebarToggle i {
+    color: #ffffff !important;
+}
+
 [data-theme="dark"] .sidebar-header {
     border-bottom: 1px solid var(--border-color);
 }
