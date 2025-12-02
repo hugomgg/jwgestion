@@ -13,7 +13,19 @@
     <script>
         (function() {
             const savedTheme = localStorage.getItem('app-theme');
-            if (savedTheme === 'dark') {
+            let theme = 'light';
+            
+            if (savedTheme) {
+                // Si hay tema guardado, usarlo
+                theme = savedTheme;
+            } else {
+                // Si no hay tema guardado, detectar preferencia del sistema
+                if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    theme = 'dark';
+                }
+            }
+            
+            if (theme === 'dark') {
                 document.documentElement.setAttribute('data-theme', 'dark');
             }
         })();

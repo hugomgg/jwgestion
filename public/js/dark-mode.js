@@ -24,11 +24,21 @@
         },
 
         /**
-         * Get saved theme from localStorage
+         * Get saved theme from localStorage or system preference
          */
         getSavedTheme: function() {
             const saved = localStorage.getItem(this.THEME_KEY);
-            return saved === this.THEME_DARK ? this.THEME_DARK : this.THEME_LIGHT;
+            
+            if (saved) {
+                return saved === this.THEME_DARK ? this.THEME_DARK : this.THEME_LIGHT;
+            }
+            
+            // Si no hay tema guardado, usar preferencia del sistema
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                return this.THEME_DARK;
+            }
+            
+            return this.THEME_LIGHT;
         },
 
         /**
