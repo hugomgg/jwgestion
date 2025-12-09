@@ -60,7 +60,7 @@
         .parte-content {
             font-size: 12px;
             flex: 1;
-            height: 9px;
+            height: 8px;
         }
 
         .parte-asignado {
@@ -69,7 +69,7 @@
             min-width: 80px;
             font-family: "Cascadia Mono", monospace !important;
             font-size: 10px;
-            height: 9px;
+            height: 8px;
         }
 
         .clear { clear: both; }
