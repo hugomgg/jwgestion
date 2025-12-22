@@ -7,9 +7,9 @@
     <title>Informe de Predicación - {{ $congregacion->nombre }}</title>
     
     <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ asset('css/bootstrap/bootstrap.min.css') }}" rel="stylesheet">
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ asset('css/fontawesome/all.min.css') }}">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ asset('css/public-informe.css') }}">
 </head>
@@ -183,9 +183,9 @@
     </div>
 
     <!-- Bootstrap 5 JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ asset('js/bootstrap/bootstrap.bundle.min.js') }}"></script>
     <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="{{ asset('js/jquery-3.7.0.min.js') }}"></script>
     
     @if(config('recaptcha.enabled'))
     <!-- Google reCAPTCHA -->
