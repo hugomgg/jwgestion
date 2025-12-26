@@ -583,6 +583,9 @@
                                         <button type="button" class="btn btn-outline-secondary" id="btn_refresh_codigo" title="Generar código aleatorio">
                                             <i class="fas fa-sync-alt"></i>
                                         </button>
+                                        <button type="button" class="btn btn-outline-primary" id="btn_copy_informe_link" title="Copiar enlace del informe">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
                                     </div>
                                     <div class="invalid-feedback"></div>
                                     <small class="form-text text-muted">Código único de 64 caracteres</small>
@@ -633,6 +636,29 @@
                         @endif
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Confirmar Cambio de Código -->
+    <div class="modal fade" id="confirmCodigoModal" tabindex="-1" aria-labelledby="confirmCodigoModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmCodigoModalLabel">Confirmar Cambio de Código</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Está seguro de cambiar el código del informe de su Congregación?</p>
+                    <p class="text-warning"><small>Esta acción generará un nuevo código único y se actualizará en la base de datos.</small></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="confirmCodigoBtn">
+                        <span class="spinner-border spinner-border-sm me-2 d-none" role="status"></span>
+                        Aceptar
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -929,11 +955,24 @@
         // Manejar el botón de refrescar código
         $('#btn_refresh_codigo').on('click', function(e) {
             e.preventDefault();
-            const btn = $(this);
-            const icon = btn.find('i');
             
-            // Deshabilitar el botón y rotar el icono
-            btn.prop('disabled', true);
+            // Mostrar modal de confirmación
+            $('#confirmCodigoModal').modal('show');
+        });
+
+        // Manejar confirmación de cambio de código
+        $('#confirmCodigoBtn').on('click', function(e) {
+            e.preventDefault();
+            
+            const confirmBtn = $(this);
+            const spinner = confirmBtn.find('.spinner-border');
+            const refreshBtn = $('#btn_refresh_codigo');
+            const icon = refreshBtn.find('i');
+            
+            // Deshabilitar botones y mostrar spinner
+            confirmBtn.prop('disabled', true);
+            spinner.removeClass('d-none');
+            refreshBtn.prop('disabled', true);
             icon.addClass('fa-spin');
             
             $.ajax({
@@ -945,7 +984,29 @@
                 success: function(response) {
                     if (response.success) {
                         $('#congregacion_codigo').val(response.codigo);
-                        showMiCongregacionAlert('success', 'Código generado exitosamente.');
+                        
+                        // Actualizar el código en la base de datos
+                        $.ajax({
+                            url: '{{ route("congregacion.update.own") }}',
+                            method: 'PUT',
+                            data: {
+                                _token: '{{ csrf_token() }}',
+                                nombre: $('#congregacion_nombre').val(),
+                                direccion: $('#congregacion_direccion').val(),
+                                telefono: $('#congregacion_telefono').val(),
+                                persona_contacto: $('#congregacion_persona_contacto').val(),
+                                codigo: response.codigo
+                            },
+                            success: function(updateResponse) {
+                                showMiCongregacionAlert('success', 'Código generado y actualizado exitosamente.');
+                                $('#confirmCodigoModal').modal('hide');
+                            },
+                            error: function(xhr) {
+                                const updateResponse = xhr.responseJSON;
+                                const message = updateResponse.message || 'Error al actualizar el código. Intente nuevamente.';
+                                showMiCongregacionAlert('danger', message);
+                            }
+                        });
                     }
                 },
                 error: function(xhr) {
@@ -954,9 +1015,46 @@
                     showMiCongregacionAlert('danger', message);
                 },
                 complete: function() {
-                    btn.prop('disabled', false);
+                    confirmBtn.prop('disabled', false);
+                    spinner.addClass('d-none');
+                    refreshBtn.prop('disabled', false);
                     icon.removeClass('fa-spin');
                 }
+            });
+        });
+
+        // Manejar el botón de copiar enlace del informe
+        $('#btn_copy_informe_link').on('click', function(e) {
+            e.preventDefault();
+            
+            const codigo = $('#congregacion_codigo').val();
+            if (!codigo) {
+                showMiCongregacionAlert('warning', 'No hay código disponible para copiar.');
+                return;
+            }
+            
+            // Construir el enlace con el host actual
+            const enlace = window.location.origin + '/informe/' + codigo;
+            
+            // Copiar al portapapeles
+            navigator.clipboard.writeText(enlace).then(function() {
+                // Cambiar temporalmente el icono y mostrar feedback
+                const btn = $('#btn_copy_informe_link');
+                const icon = btn.find('i');
+                const originalClass = icon.attr('class');
+                
+                icon.removeClass('fa-copy').addClass('fa-check');
+                btn.removeClass('btn-outline-primary').addClass('btn-success');
+                
+                showMiCongregacionAlert('success', 'Enlace copiado al portapapeles.');
+                
+                // Restaurar el icono después de 2 segundos
+                setTimeout(function() {
+                    icon.attr('class', originalClass);
+                    btn.removeClass('btn-success').addClass('btn-outline-primary');
+                }, 2000);
+            }).catch(function(err) {
+                showMiCongregacionAlert('danger', 'Error al copiar el enlace: ' + err);
             });
         });
 
