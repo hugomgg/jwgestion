@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @push('styles')
-<link rel="stylesheet" href="{{ asset('css/informes-index.css') }}">
+@vite(['resources/css/informes-index.css'])
 <link href="{{ asset('css/select2.min.css') }}" rel="stylesheet" />
 <link href="{{ asset('css/select2-bootstrap-5-theme.min.css') }}" rel="stylesheet" />
 @endpush
@@ -1040,5 +1040,5 @@ window.informesIndexConfig = {
     @endif
 };
 </script>
-<script src="{{ asset('js/informes-index.js') }}"></script>
+@vite(['resources/js/informes-index.js'])
 @endsection

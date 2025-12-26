@@ -1,0 +1,107 @@
+/* Estilos para asegurar que ambas tablas de escuela tengan el mismo ancho */
+#informesTable {
+    width: 100% !important;
+    table-layout: fixed !important;
+}
+
+#informesTable th,
+#informesTable td {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+}
+
+/* Asegurar que los contenedores de tabla tengan el mismo ancho */
+.tab-pane .table-responsive {
+    width: 100% !important;
+    overflow-x: auto;
+}
+
+/* Estilos específicos para las columnas de las tablas de escuela */
+#informesTable th:nth-child(1) {
+    width: 100px !important;
+    min-width: 100px !important;
+}
+#informesTable th:nth-child(2) {
+    width: 100px !important;
+    min-width: 100px !important;
+}
+#informesTable th:nth-child(3) {
+    width: 150px !important;
+    min-width: 150px !important;
+}
+#informesTable th:nth-child(4) {
+    width: 100px !important;
+    min-width: 100px !important;
+}
+#informesTable th:nth-child(5) {
+    width: 250px !important;
+    min-width: 250px !important;
+}
+#informesTable th:nth-child(6) {
+    width: 50px !important;
+    min-width: 50px !important;
+}
+#informesTable th:nth-child(7) {
+    width: 150px !important;
+    min-width: 150px !important;
+}
+#informesTable th:nth-child(8) {
+    width: 100px !important;
+    min-width: 100px !important;
+}
+
+/* Altura de filas para tabla de informes por grupo */
+#informesGrupoTable tbody tr {
+    height: 25px !important;
+}
+
+#informesGrupoTable tbody td {
+    height: 25px !important;
+    padding: 5px 8px !important;
+    vertical-align: middle !important;
+    font-size: 12px !important;
+}
+/* Estilos para tabla de registro por publicador */
+#registroPublicadorTable,
+#registroPublicadorTableAnterior {
+    font-size: 11px;
+}
+
+#registroPublicadorTable thead th,
+#registroPublicadorTableAnterior thead th {
+    background-color: #343a40;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    vertical-align: middle;
+    padding: 8px 5px;
+    font-size: 12px;
+}
+
+#registroPublicadorTable tbody td,
+#registroPublicadorTableAnterior tbody td {
+    padding: 4px 6px;
+    vertical-align: middle;
+}
+
+#registroPublicadorTable tbody tr.table-secondary,
+#registroPublicadorTableAnterior tbody tr.table-secondary {
+    background-color: #e9ecef !important;
+}
+
+#registroPublicadorTable input[type="checkbox"],
+#registroPublicadorTableAnterior input[type="checkbox"] {
+    cursor: default;
+}
+
+#registroPublicadorTable tbody td:first-child,
+#registroPublicadorTableAnterior tbody td:first-child {
+    font-weight: 500;
+}
+
+/* Estilos para labels de checkboxes deshabilitados en información del publicador */
+.form-check-label {
+    color: #000 !important;
+    opacity: 1 !important;
+}

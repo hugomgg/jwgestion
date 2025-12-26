@@ -1,0 +1,935 @@
+$(document).ready(function() {
+    // Inicializar Select2 cuando se abran los modales
+    $('#addUserModal').on('shown.bs.modal', function() {
+        // Limpiar errores al abrir el modal
+        clearErrorsAboveTabs('add');
+        clearValidationErrors();
+        
+        // Destruir Select2 si ya existe
+        if ($('#asignaciones').hasClass('select2-hidden-accessible')) {
+            $('#asignaciones').select2('destroy');
+        }
+
+        // Inicializar Select2 para modal de agregar
+        $('#asignaciones').select2({
+            theme: 'bootstrap-5',
+            placeholder: "Selecciona asignaciones...",
+            allowClear: true,
+            width: '100%',
+            dropdownParent: $('#addUserModal'),
+            language: {
+                noResults: function() {
+                    return "No se encontraron resultados";
+                },
+                searching: function() {
+                    return "Buscando...";
+                }
+            }
+        });
+
+        // Preseleccionar congregación para perfiles específicos
+        if (window.usersIndexConfig.userCongregacion) {
+            $('#congregacion').val(window.usersIndexConfig.userCongregacion);
+        }
+    });
+
+    $('#editUserModal').on('shown.bs.modal', function() {
+        // Limpiar errores al abrir el modal
+        clearErrorsAboveTabs('edit');
+        clearValidationErrors();
+        
+        // Destruir Select2 si ya existe
+        if ($('#edit_asignaciones').hasClass('select2-hidden-accessible')) {
+            $('#edit_asignaciones').select2('destroy');
+        }
+
+        // Inicializar Select2 para modal de editar
+        $('#edit_asignaciones').select2({
+            theme: 'bootstrap-5',
+            placeholder: "Selecciona asignaciones...",
+            allowClear: true,
+            width: '100%',
+            dropdownParent: $('#editUserModal'),
+            language: {
+                noResults: function() {
+                    return "No se encontraron resultados";
+                },
+                searching: function() {
+                    return "Buscando...";
+                }
+            }
+        });
+    });
+
+    // Destruir Select2 cuando se cierren los modales
+    $('#addUserModal').on('hidden.bs.modal', function() {
+        // Limpiar errores al cerrar el modal
+        clearErrorsAboveTabs('add');
+        clearValidationErrors();
+        
+        if ($('#asignaciones').hasClass('select2-hidden-accessible')) {
+            $('#asignaciones').select2('destroy');
+        }
+    });
+
+    $('#editUserModal').on('hidden.bs.modal', function() {
+        // Limpiar errores al cerrar el modal
+        clearErrorsAboveTabs('edit');
+        clearValidationErrors();
+        
+        if ($('#edit_asignaciones').hasClass('select2-hidden-accessible')) {
+            $('#edit_asignaciones').select2('destroy');
+        }
+    });
+
+    // Función para filtrar grupos por congregación
+    function filterGruposByCongregacion(congregacionId, grupoSelectId) {
+        const $grupoSelect = $(grupoSelectId);
+        const currentValue = $grupoSelect.val();
+        
+        // Guardar todas las opciones si no están guardadas
+        if (!$grupoSelect.data('all-options')) {
+            $grupoSelect.data('all-options', $grupoSelect.find('option').clone());
+        }
+        
+        // Limpiar el select
+        $grupoSelect.empty();
+        
+        // Restaurar la opción vacía
+        $grupoSelect.append('<option value="">Seleccionar grupo...</option>');
+        
+        // Filtrar y agregar opciones según la congregación seleccionada
+        const allOptions = $grupoSelect.data('all-options');
+        allOptions.each(function() {
+            const $option = $(this);
+            const optionCongregacionId = $option.data('congregacion-id');
+            
+            // Si no es la opción vacía y coincide con la congregación, agregarla
+            if ($option.val() !== '' && (congregacionId === '' || optionCongregacionId == congregacionId)) {
+                $grupoSelect.append($option.clone());
+            }
+        });
+        
+        // Intentar mantener el valor seleccionado si sigue siendo válido
+        if (currentValue && $grupoSelect.find(`option[value="${currentValue}"]`).length > 0) {
+            $grupoSelect.val(currentValue);
+        } else {
+            $grupoSelect.val('');
+        }
+    }
+
+    // Listener para cambio de congregación en modal de agregar
+    $('#congregacion').on('change', function() {
+        const congregacionId = $(this).val();
+        filterGruposByCongregacion(congregacionId, '#grupo');
+    });
+
+    // Listener para cambio de congregación en modal de editar
+    $('#edit_congregacion').on('change', function() {
+        const congregacionId = $(this).val();
+        filterGruposByCongregacion(congregacionId, '#edit_grupo');
+    });
+
+    // Inicializar DataTable
+    var table = $('#usersTable').DataTable({
+        responsive: true,
+        language: {
+            url: '/js/datatables-es-ES.json'
+        },
+        pageLength: 10,
+        lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+        dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>rtip',
+        columnDefs: window.usersIndexConfig.datatablesColumnDefs
+    });
+
+    // Función para mostrar alertas
+    function showAlert(type, message) {
+        const alertContainer = $('#alert-container');
+        const alert = `
+            <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        `;
+        alertContainer.html(alert);
+
+        // Auto-hide success alerts after 5 seconds
+        if (type === 'success') {
+            setTimeout(() => {
+                $('.alert').alert('close');
+            }, 5000);
+        }
+    }
+
+    // Función para limpiar errores de validación
+    function clearValidationErrors() {
+        $('.form-control, .form-select').removeClass('is-invalid');
+        $('.invalid-feedback').text('');
+    }
+
+    // Función para mostrar errores de validación
+    function showValidationErrors(errors, modalType = 'add') {
+        clearValidationErrors();
+        
+        // Determinar el contenedor de errores según el modal
+        const errorContainerId = modalType === 'edit' ? 'editUserErrorContainer' : 'addUserErrorContainer';
+        const errorListId = modalType === 'edit' ? 'editUserErrorList' : 'addUserErrorList';
+        
+        const errorContainer = $('#' + errorContainerId);
+        const errorList = $('#' + errorListId);
+        
+        // Limpiar lista de errores
+        errorList.empty();
+        
+        // Agregar errores a la lista sobre los tabs
+        let hasErrors = false;
+        $.each(errors, function(field, messages) {
+            hasErrors = true;
+            
+            // Agregar error al contenedor sobre los tabs
+            if (Array.isArray(messages)) {
+                messages.forEach(function(message) {
+                    errorList.append(`<li>${message}</li>`);
+                });
+            } else {
+                errorList.append(`<li>${messages}</li>`);
+            }
+            
+            // También marcar el input correspondiente
+            const input = $(`[name="${field}"]`);
+            input.addClass('is-invalid');
+            input.siblings('.invalid-feedback').text(Array.isArray(messages) ? messages[0] : messages);
+        });
+        
+        // Mostrar u ocultar el contenedor de errores
+        if (hasErrors) {
+            errorContainer.removeClass('d-none');
+            
+            // Scroll al top del modal para ver los errores
+            const modalBody = errorContainer.closest('.modal-body');
+            if (modalBody.length) {
+                modalBody.animate({ scrollTop: 0 }, 300);
+            }
+        } else {
+            errorContainer.addClass('d-none');
+        }
+    }
+    
+    // Función para limpiar errores sobre los tabs
+    function clearErrorsAboveTabs(modalType = 'add') {
+        const errorContainerId = modalType === 'edit' ? 'editUserErrorContainer' : 'addUserErrorContainer';
+        const errorListId = modalType === 'edit' ? 'editUserErrorList' : 'addUserErrorList';
+        
+        const errorContainer = $('#' + errorContainerId);
+        const errorList = $('#' + errorListId);
+        
+        errorContainer.addClass('d-none');
+        errorList.empty();
+    }
+    
+    // Función para validar campos requeridos del lado del cliente
+    function validateRequiredFields(formId, modalType = 'add') {
+        const form = $('#' + formId);
+        const requiredFields = form.find('[required]');
+        const errors = {};
+        let isValid = true;
+        
+        requiredFields.each(function() {
+            const field = $(this);
+            const fieldName = field.attr('name');
+            const fieldValue = field.val();
+            const fieldLabel = field.prev('label').text().replace('*', '').trim();
+            
+            // Validar si el campo está vacío
+            if (!fieldValue || fieldValue.trim() === '') {
+                isValid = false;
+                errors[fieldName] = [`El campo ${fieldLabel} es obligatorio.`];
+            }
+        });
+        
+        // Mostrar errores si los hay
+        if (!isValid) {
+            showValidationErrors(errors, modalType);
+        }
+        
+        return isValid;
+    }
+
+    // Filtro por congregación
+    $('#congregacionFilter').on('change', function() {
+        const selectedCongregacion = $(this).val();
+
+        if (selectedCongregacion === '') {
+            table.column(3).search('').draw();
+        } else {
+            table.column(3).search(selectedCongregacion).draw();
+        }
+    });
+
+    // Filtro por grupo
+    $('#grupoFilter').on('change', function() {
+        const selectedGrupo = $(this).val();
+        const grupoColumnIndex = window.usersIndexConfig.isLimitedUser ? 4 : 3;
+
+        if (selectedGrupo === '') {
+            table.column(grupoColumnIndex).search('').draw();
+        } else {
+            table.column(grupoColumnIndex).search(selectedGrupo).draw();
+        }
+    });
+
+    // Filtro por nombramiento
+    $('#nombramientoFilter').on('change', function() {
+        const selectedNombramiento = $(this).val();
+        const nombramientoColumnIndex = window.usersIndexConfig.isLimitedUser ? 5 : 4;
+
+        if (selectedNombramiento === '') {
+            table.column(nombramientoColumnIndex).search('').draw();
+        } else {
+            table.column(nombramientoColumnIndex).search(selectedNombramiento).draw();
+        }
+    });
+
+    // Filtro por servicio
+    $('#servicioFilter').on('change', function() {
+        const selectedServicio = $(this).val();
+        const servicioColumnIndex = window.usersIndexConfig.isLimitedUser ? 6 : 5;
+
+        if (selectedServicio === '') {
+            table.column(servicioColumnIndex).search('').draw();
+        } else {
+            table.column(servicioColumnIndex).search(selectedServicio).draw();
+        }
+    });
+
+    // Filtro por perfil
+    $('#perfilFilter').on('change', function() {
+        const selectedPerfil = $(this).val();
+
+        if (selectedPerfil === '') {
+            table.column(2).search('').draw();
+        } else {
+            table.column(2).search(selectedPerfil).draw();
+        }
+    });
+
+    // Filtro por estado espiritual
+    let currentEstadoEspiritualFilter = null;
+
+    $('#estadoEspiritualFilter').on('change', function() {
+        const selectedEstadoEspiritual = $(this).val();
+
+        // Limpiar filtro anterior si existe
+        if (currentEstadoEspiritualFilter !== null) {
+            $.fn.dataTable.ext.search.pop();
+        }
+
+        if (selectedEstadoEspiritual) {
+            currentEstadoEspiritualFilter = selectedEstadoEspiritual;
+            const estadoEspiritualColumnIndex = window.usersIndexConfig.isLimitedUser ? 7 : 6;
+
+            // Agregar nuevo filtro
+            $.fn.dataTable.ext.search.push(
+                function(settings, data, dataIndex) {
+                    const estadoEspiritualColumn = data[estadoEspiritualColumnIndex];
+                    return estadoEspiritualColumn.includes(selectedEstadoEspiritual);
+                }
+            );
+        } else {
+            currentEstadoEspiritualFilter = null;
+        }
+
+        table.draw();
+    });
+
+    // Filtro por asignación (para coordinadores, organizadores y suborganizadores)
+    if (window.usersIndexConfig.showAsignacionFilter) {
+        let currentAsignacionFilter = null;
+
+        $('#asignacionFilter').on('change', function() {
+            const selectedAsignacion = $(this).val();
+
+            // Limpiar filtro anterior si existe
+            if (currentAsignacionFilter !== null) {
+                $.fn.dataTable.ext.search.splice($.fn.dataTable.ext.search.indexOf(currentAsignacionFilter), 1);
+            }
+
+            if (selectedAsignacion === '') {
+                currentAsignacionFilter = null;
+                table.draw();
+            } else {
+                // Para coordinadores, organizadores y suborganizadores: Asignación está en columna 7
+                const asignacionColumnIndex = 7;
+
+                // Crear nueva función de filtro
+                currentAsignacionFilter = function(settings, data, dataIndex) {
+                    if (settings.nTable !== table.table().node()) {
+                        return true;
+                    }
+                    const asignacionColumn = data[asignacionColumnIndex];
+                    return asignacionColumn.includes(selectedAsignacion);
+                };
+
+                // Agregar el nuevo filtro
+                $.fn.dataTable.ext.search.push(currentAsignacionFilter);
+                table.draw();
+            }
+        });
+    }
+
+    // Filtro por estado
+    let currentEstadoFilter = null;
+
+    function applyEstadoFilter(selectedEstado) {
+        // Limpiar filtro anterior si existe
+        if (currentEstadoFilter !== null) {
+            $.fn.dataTable.ext.search.splice($.fn.dataTable.ext.search.indexOf(currentEstadoFilter), 1);
+        }
+
+        if (selectedEstado === '') {
+            currentEstadoFilter = null;
+            table.draw();
+        } else {
+            // Mapear valores numéricos a textos para la búsqueda
+            const textoEstado = selectedEstado === '1' ? 'Habilitado' : 'Deshabilitado';
+            const estadoColumnIndex = window.usersIndexConfig.estadoColumnIndex;
+
+            // Crear nueva función de filtro
+            currentEstadoFilter = function(settings, data, dataIndex) {
+                if (settings.nTable !== table.table().node()) {
+                    return true;
+                }
+                const estadoColumn = data[estadoColumnIndex];
+                return estadoColumn.indexOf(textoEstado) !== -1;
+            };
+
+            // Agregar el nuevo filtro
+            $.fn.dataTable.ext.search.push(currentEstadoFilter);
+            table.draw();
+        }
+    }
+
+    $('#estadoFilter').on('change', function() {
+        const selectedEstado = $(this).val();
+        applyEstadoFilter(selectedEstado);
+    });
+
+    // Aplicar filtro por defecto: mostrar solo usuarios habilitados
+    $('#estadoFilter').val('1');
+    applyEstadoFilter('1');
+
+    // Manejar clic en botón Ver
+    $(document).on('click', '.view-user', function() {
+        const userId = $(this).data('user-id');
+
+        // Cargar datos del usuario
+        $.ajax({
+            url: `/usuarios/${userId}/edit`,
+            method: 'GET',
+            success: function(response) {
+                if (response.success) {
+                    const user = response.user;
+
+                    // Llenar los campos del modal
+                    $('#view_name').text(user.name || '-');
+                    $('#view_nombre_completo').text(user.nombre_completo || '-');
+                    $('#view_email').text(user.email || '-');
+
+                    // Cargar datos de las relaciones
+                    loadUserRelationData(user);
+
+                    // Mostrar información de auditoría
+                    $('#view_creado_por').text(user.creado_por_nombre ?
+                        `${user.creado_por_nombre} - ${user.creado_por_timestamp}` : '-');
+                    $('#view_modificado_por').text(user.modificado_por_nombre ?
+                        `${user.modificado_por_nombre} - ${user.modificado_por_timestamp}` : '-');
+
+                    // Mostrar modal
+                    $('#viewUserModal').modal('show');
+                } else {
+                    showAlert('danger', response.message || 'Error al cargar los datos del usuario.');
+                }
+            },
+            error: function(xhr) {
+                const response = xhr.responseJSON;
+                const message = response?.message || 'Error al cargar los datos del usuario.';
+                showAlert('danger', message);
+            }
+        });
+    });
+
+    // Función para cargar datos de relaciones
+    function loadUserRelationData(user) {
+        // Buscar congregación
+        if (window.usersIndexConfig.congregaciones) {
+            window.usersIndexConfig.congregaciones.forEach(function(congregacion) {
+                if (congregacion.id == user.congregacion) {
+                    $('#view_congregacion').text(congregacion.nombre);
+                }
+            });
+        }
+
+        // Buscar perfil
+        if (window.usersIndexConfig.perfiles) {
+            window.usersIndexConfig.perfiles.forEach(function(perfil) {
+                if (perfil.id == user.perfil) {
+                    $('#view_perfil').text(perfil.privilegio);
+                }
+            });
+        }
+
+        // Buscar sexo
+        if (window.usersIndexConfig.sexos) {
+            window.usersIndexConfig.sexos.forEach(function(sexoItem) {
+                if (sexoItem.id == user.sexo) {
+                    $('#view_sexo').text(sexoItem.nombre);
+                }
+            });
+        }
+
+        // Buscar servicio
+        let servicioEncontrado = false;
+        if (window.usersIndexConfig.servicios) {
+            window.usersIndexConfig.servicios.forEach(function(servicio) {
+                if (servicio.id == user.servicio) {
+                    $('#view_servicio').text(servicio.nombre);
+                    servicioEncontrado = true;
+                }
+            });
+        }
+        if (!servicioEncontrado) {
+            $('#view_servicio').text('-');
+        }
+
+        // Buscar nombramiento
+        if (window.usersIndexConfig.nombramientos) {
+            window.usersIndexConfig.nombramientos.forEach(function(nombramiento) {
+                if (nombramiento.id == user.nombramiento) {
+                    $('#view_nombramiento').text(nombramiento.nombre);
+                }
+            });
+        }
+
+        // Buscar esperanza
+        if (window.usersIndexConfig.esperanzas) {
+            window.usersIndexConfig.esperanzas.forEach(function(esperanza) {
+                if (esperanza.id == user.esperanza) {
+                    $('#view_esperanza').text(esperanza.nombre);
+                }
+            });
+        }
+
+        // Buscar grupo
+        if (window.usersIndexConfig.grupos) {
+            window.usersIndexConfig.grupos.forEach(function(grupo) {
+                if (grupo.id == user.grupo_id) {
+                    $('#view_grupo').text(grupo.nombre);
+                }
+            });
+        }
+
+        // Buscar estado espiritual
+        if (window.usersIndexConfig.estadosEspirituales) {
+            window.usersIndexConfig.estadosEspirituales.forEach(function(estadoEspiritual) {
+                if (estadoEspiritual.id == user.estado_espiritual) {
+                    $('#view_estado_espiritual').text(estadoEspiritual.nombre);
+                }
+            });
+        }
+
+        // Campos directos
+        $('#view_fecha_nacimiento').text(user.fecha_nacimiento || '-');
+        $('#view_fecha_bautismo').text(user.fecha_bautismo || '-');
+        $('#view_telefono').text(user.telefono || '-');
+        $('#view_persona_contacto').text(user.persona_contacto || '-');
+        $('#view_telefono_contacto').text(user.telefono_contacto || '-');
+        $('#view_observacion').text(user.observacion || '-');
+        $('#view_estado').html(user.estado == 1 ?
+            '<span class="badge bg-success">Habilitado</span>' :
+            '<span class="badge bg-danger">Deshabilitado</span>');
+
+        // Mostrar asignaciones
+        if (user.asignaciones && Array.isArray(user.asignaciones) && user.asignaciones.length > 0) {
+            let asignacionesHtml = '';
+            user.asignaciones.forEach(function(asignacionId) {
+                if (window.usersIndexConfig.asignaciones) {
+                    window.usersIndexConfig.asignaciones.forEach(function(asignacion) {
+                        if (asignacion.id == asignacionId) {
+                            asignacionesHtml += '<span class="badge bg-info me-1 mb-1">' + asignacion.nombre + '</span>';
+                        }
+                    });
+                }
+            });
+            $('#view_asignaciones').html(asignacionesHtml || '-');
+        } else {
+            $('#view_asignaciones').text('-');
+        }
+    }
+
+    // Limpiar formulario al cerrar modal
+    $('#addUserModal').on('hidden.bs.modal', function() {
+        $('#addUserForm')[0].reset();
+        clearValidationErrors();
+        $('#saveUserBtn .spinner-border').addClass('d-none');
+        $('#saveUserBtn').prop('disabled', false);
+        // Limpiar Select2 si existe
+        if ($('#asignaciones').hasClass('select2-hidden-accessible')) {
+            $('#asignaciones').val([]).trigger('change');
+        }
+
+        // Preseleccionar congregación después del reset para perfiles específicos
+        if (window.usersIndexConfig.userCongregacion) {
+            setTimeout(function() {
+                $('#congregacion').val(window.usersIndexConfig.userCongregacion);
+            }, 100);
+        }
+    });
+
+    // Función para construir la fila HTML de un usuario
+    function buildUserRowHtml(user, asignaciones) {
+        const config = window.usersIndexConfig;
+        const isLimitedUser = config.isLimitedUser;
+        const showAsignacion = config.showAsignacionFilter;
+        const canModify = config.canModify;
+        
+        // Determinar si se debe mostrar la columna congregación
+        // isLimitedUser = true significa que NO es Coordinador/Secretario/Organizador
+        // Por lo tanto, showCongregacion = true cuando isLimitedUser = true (Admin/Supervisor)
+        const showCongregacion = isLimitedUser;
+        
+        // Construir badges de asignaciones
+        let asignacionesHtml = '';
+        if (asignaciones && asignaciones.length > 0) {
+            asignaciones.forEach(function(asig) {
+                asignacionesHtml += `<span class="badge bg-info me-1">${asig.abreviacion}</span>`;
+            });
+        } else {
+            asignacionesHtml = '<span class="text-muted">-</span>';
+        }
+
+        // Construir HTML de la fila
+        let rowHtml = `
+            <tr data-user-id="${user.id}">
+                <td>${user.id}</td>
+                <td>${user.name}</td>
+                <td><span class="badge bg-info">${user.privilegio_perfil}</span></td>
+        `;
+
+        // Agregar columna congregación solo para Admin y Supervisor
+        if (showCongregacion) {
+            rowHtml += `<td><span class="badge bg-secondary">${user.nombre_congregacion}</span></td>`;
+        }
+
+        rowHtml += `
+                <td><span class="badge bg-dark">${user.nombre_grupo}</span></td>
+                <td>${user.nombre_nombramiento ? '<span class="badge bg-primary">' + user.nombre_nombramiento + '</span>' : '<span class="text-muted">-</span>'}</td>
+                <td>${user.nombre_servicio ? '<span class="badge bg-warning text-dark">' + user.nombre_servicio + '</span>' : '<span class="text-muted">-</span>'}</td>
+                <td><span class="badge bg-light text-dark">${user.nombre_estado_espiritual}</span></td>
+        `;
+
+        // Agregar columna asignación solo para usuarios autorizados
+        if (showAsignacion) {
+            rowHtml += `<td>${asignacionesHtml}</td>`;
+        }
+
+        // Agregar columna estado
+        const estadoBadge = user.estado == 1 
+            ? '<span class="badge bg-success">Habilitado</span>' 
+            : '<span class="badge bg-danger">Deshabilitado</span>';
+        
+        rowHtml += `
+                <td>${estadoBadge}</td>
+                <td>
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-sm btn-info view-user"
+                                data-user-id="${user.id}"
+                                data-bs-toggle="tooltip"
+                                title="Ver usuario">
+                            <i class="fas fa-eye"></i>
+                        </button>
+        `;
+
+        // Agregar botón de editar si el usuario tiene permisos
+        if (canModify) {
+            rowHtml += `
+                        <button type="button" class="btn btn-sm btn-warning edit-user"
+                                data-user-id="${user.id}"
+                                data-bs-toggle="tooltip"
+                                title="Editar usuario">
+                            <i class="fas fa-edit"></i>
+                        </button>
+            `;
+        }
+
+        rowHtml += `
+                    </div>
+                </td>
+            </tr>
+        `;
+
+        return rowHtml;
+    }
+
+    // Envío del formulario
+    $('#addUserForm').on('submit', function(e) {
+        e.preventDefault();
+
+        const form = $(this);
+        const submitBtn = $('#saveUserBtn');
+        const spinner = submitBtn.find('.spinner-border');
+
+        // Limpiar errores previos
+        clearValidationErrors();
+        clearErrorsAboveTabs('add');
+        
+        // Validar campos requeridos del lado del cliente
+        if (!validateRequiredFields('addUserForm', 'add')) {
+            return false;
+        }
+
+        // Deshabilitar botón y mostrar spinner
+        submitBtn.prop('disabled', true);
+        spinner.removeClass('d-none');
+
+        $.ajax({
+            url: window.usersIndexConfig.storeRoute,
+            method: 'POST',
+            data: form.serialize(),
+            success: function(response) {
+                if (response.success) {
+                    // Cerrar modal
+                    $('#addUserModal').modal('hide');
+
+                    // Mostrar mensaje de éxito
+                    showAlert('success', response.message);
+
+                    // Agregar nueva fila a la tabla
+                    const newRowHtml = buildUserRowHtml(response.user, response.asignaciones);
+                    table.row.add($(newRowHtml)).draw(false);
+
+                    // Reinicializar tooltips
+                    $('[data-bs-toggle="tooltip"]').tooltip();
+                }
+            },
+            error: function(xhr) {
+                const response = xhr.responseJSON;
+
+                if (xhr.status === 422 && response.errors) {
+                    // Errores de validación - mostrar sobre los tabs
+                    showValidationErrors(response.errors, 'add');
+                } else {
+                    // Otros errores - mostrar en contenedor sobre tabs
+                    const message = response.message || 'Error al crear el usuario. Intente nuevamente.';
+                    showValidationErrors({ general: [message] }, 'add');
+                }
+            },
+            complete: function() {
+                // Rehabilitar botón y ocultar spinner
+                submitBtn.prop('disabled', false);
+                spinner.addClass('d-none');
+            }
+        });
+    });
+
+    // Inicializar tooltips
+    $('[data-bs-toggle="tooltip"]').tooltip();
+
+    // Variables para almacenar datos del usuario a eliminar
+    let userToDelete = null;
+
+    // Manejar clic en botón Editar
+    $(document).on('click', '.edit-user', function() {
+        const userId = $(this).data('user-id');
+
+        // Limpiar formulario y errores
+        $('#editUserForm')[0].reset();
+        clearValidationErrors();
+        clearErrorsAboveTabs('edit');
+
+        // Cargar datos del usuario
+        $.ajax({
+            url: `/usuarios/${userId}/edit`,
+            method: 'GET',
+            success: function(response) {
+                if (response.success) {
+                    const user = response.user;
+
+                    // Llenar formulario
+                    $('#edit_user_id').val(user.id);
+                    $('#edit_name').val(user.name);
+                    $('#edit_nombre_completo').val(user.nombre_completo);
+                    $('#edit_email').val(user.email);
+                    $('#edit_perfil').val(user.perfil);
+                    $('#edit_estado').val(user.estado);
+                    $('#edit_congregacion').val(user.congregacion);
+                    
+                    // Formatear fechas para inputs tipo date (YYYY-MM-DD)
+                    if (user.fecha_nacimiento) {
+                        let fechaNac = user.fecha_nacimiento.split(' ')[0]; // Tomar solo la parte de fecha si viene con hora
+                        $('#edit_fecha_nacimiento').val(fechaNac);
+                    } else {
+                        $('#edit_fecha_nacimiento').val('');
+                    }
+                    
+                    if (user.fecha_bautismo) {
+                        let fechaBau = user.fecha_bautismo.split(' ')[0]; // Tomar solo la parte de fecha si viene con hora
+                        $('#edit_fecha_bautismo').val(fechaBau);
+                    } else {
+                        $('#edit_fecha_bautismo').val('');
+                    }
+                    
+                    $('#edit_telefono').val(user.telefono);
+                    $('#edit_persona_contacto').val(user.persona_contacto);
+                    $('#edit_telefono_contacto').val(user.telefono_contacto);
+                    $('#edit_sexo').val(user.sexo);
+                    $('#edit_servicio').val(user.servicio);
+                    $('#edit_nombramiento').val(user.nombramiento);
+                    $('#edit_esperanza').val(user.esperanza);
+                    $('#edit_grupo').val(user.grupo_id);
+                    $('#edit_estado_espiritual').val(user.estado_espiritual);
+                    $('#edit_observacion').val(user.observacion);
+
+                    // Cargar asignaciones del usuario
+                    if (user.asignaciones && Array.isArray(user.asignaciones)) {
+                        $('#edit_asignaciones').val(user.asignaciones).trigger('change');
+                    } else {
+                        $('#edit_asignaciones').val([]).trigger('change');
+                    }
+
+                    // Mostrar modal
+                    $('#editUserModal').modal('show');
+                } else {
+                    showAlert('danger', response.message || 'Error al cargar los datos del usuario.');
+                }
+            },
+            error: function(xhr) {
+                const response = xhr.responseJSON;
+                const message = response?.message || 'Error al cargar los datos del usuario.';
+                showAlert('danger', message);
+            }
+        });
+    });
+
+    // Limpiar formulario de edición al cerrar modal
+    $('#editUserModal').on('hidden.bs.modal', function() {
+        $('#editUserForm')[0].reset();
+        clearValidationErrors();
+        $('#updateUserBtn .spinner-border').addClass('d-none');
+        $('#updateUserBtn').prop('disabled', false);
+        // Limpiar Select2 si existe
+        if ($('#edit_asignaciones').hasClass('select2-hidden-accessible')) {
+            $('#edit_asignaciones').val([]).trigger('change');
+        }
+    });
+
+    // Envío del formulario de edición
+    $('#editUserForm').on('submit', function(e) {
+        e.preventDefault();
+
+        const form = $(this);
+        const userId = $('#edit_user_id').val();
+        const submitBtn = $('#updateUserBtn');
+        const spinner = submitBtn.find('.spinner-border');
+
+        // Limpiar errores previos
+        clearValidationErrors();
+        clearErrorsAboveTabs('edit');
+        
+        // Validar campos requeridos del lado del cliente
+        if (!validateRequiredFields('editUserForm', 'edit')) {
+            return false;
+        }
+
+        // Deshabilitar botón y mostrar spinner
+        submitBtn.prop('disabled', true);
+        spinner.removeClass('d-none');
+
+        $.ajax({
+            url: `/usuarios/${userId}`,
+            method: 'PUT',
+            data: form.serialize(),
+            success: function(response) {
+                if (response.success) {
+                    // Cerrar modal
+                    $('#editUserModal').modal('hide');
+
+                    // Mostrar mensaje de éxito
+                    showAlert('success', response.message);
+
+                    // Actualizar la fila existente en la tabla
+                    const rowElement = $(`tr[data-user-id="${userId}"]`);
+                    
+                    if (rowElement.length > 0) {
+                        // Obtener la fila de DataTable
+                        const dtRow = table.row(rowElement);
+                        
+                        // Crear el nuevo HTML de la fila
+                        const updatedRowHtml = buildUserRowHtml(response.user, response.asignaciones);
+                        const newRow = $(updatedRowHtml);
+                        
+                        // Reemplazar el contenido de la fila existente
+                        rowElement.html(newRow.html());
+                        
+                        // Invalidar la caché de DataTables para esta fila
+                        dtRow.invalidate();
+                        
+                        // Redibujar solo esta fila (sin perder el filtro o posición)
+                        table.draw(false);
+                        
+                        // Reinicializar tooltips
+                        $('[data-bs-toggle="tooltip"]').tooltip();
+                    }
+                }
+            },
+            error: function(xhr) {
+                const response = xhr.responseJSON;
+
+                if (xhr.status === 422 && response.errors) {
+                    // Errores de validación - mostrar sobre los tabs
+                    showValidationErrors(response.errors, 'edit');
+                } else {
+                    // Otros errores - mostrar en contenedor sobre tabs
+                    const message = response.message || 'Error al actualizar el usuario. Intente nuevamente.';
+                    showValidationErrors({ general: [message] }, 'edit');
+                }
+            },
+            complete: function() {
+                // Rehabilitar botón y ocultar spinner
+                submitBtn.prop('disabled', false);
+                spinner.addClass('d-none');
+            }
+        });
+    });
+
+    // Manejar exportación PDF
+    $('#exportPdfBtn').on('click', function(e) {
+        e.preventDefault();
+
+        // Obtener los filtros actuales
+        const filters = {
+            congregacion: $('#congregacionFilter').val(),
+            grupo: $('#grupoFilter').val(),
+            nombramiento: $('#nombramientoFilter').val(),
+            servicio: $('#servicioFilter').val(),
+            estadoEspiritual: $('#estadoEspiritualFilter').val(),
+            perfil: $('#perfilFilter').val(),
+            estado: $('#estadoFilter').val(),
+            asignacion: $('#asignacionFilter').val()
+        };
+
+        // Construir la URL con los parámetros de filtro
+        const params = new URLSearchParams();
+        Object.keys(filters).forEach(key => {
+            if (filters[key]) {
+                params.append(key, filters[key]);
+            }
+        });
+
+        // Crear la URL completa
+        const url = `${window.usersIndexConfig.exportPdfRoute}?${params.toString()}`;
+
+        // Usar window.location.href para mantener la sesión
+        window.location.href = url;
+    });
+
+});

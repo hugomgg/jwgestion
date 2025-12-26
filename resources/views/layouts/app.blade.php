@@ -45,14 +45,8 @@
     <link href="{{ asset('css/select2.min.css') }}" rel="stylesheet" />
     <link href="{{ asset('css/select2-bootstrap-5-theme.min.css') }}" rel="stylesheet" />
 
-    <!-- Dark Mode CSS -->
-    <link href="{{ asset('css/dark-mode.css') }}" rel="stylesheet" />
-
     <!-- Scripts -->
-    @vite(['resources/sass/app.scss', 'resources/js/app.js'])
-    
-    <!-- Dark Mode Script (debe cargarse temprano para evitar flash) -->
-    <script src="{{ asset('js/dark-mode.js') }}"></script>
+    @vite(['resources/sass/app.scss', 'resources/js/app.js', 'resources/css/dark-mode.css', 'resources/js/dark-mode.js'])
     
     <!-- Estilos para el menú lateral -->
     <style>

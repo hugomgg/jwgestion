@@ -1,0 +1,780 @@
+/* Estilos globales para Select2 con fuente Cascadia Mono */
+.select2-container--bootstrap-5 .select2-selection,
+.select2-container--bootstrap-5 .select2-selection__rendered {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+.select2-container--bootstrap-5 .select2-dropdown .select2-results__options .select2-results__option {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Forzar estilos después de la inicialización de Select2 */
+.select2-container--bootstrap-5 .select2-selection {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+.select2-container--bootstrap-5 .select2-selection__rendered {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Estilos con mayor especificidad para campos específicos */
+div.select2-container--bootstrap-5.select2-container--focus .select2-selection,
+div.select2-container--bootstrap-5 .select2-selection {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+div.select2-container--bootstrap-5 .select2-selection__rendered {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Estilos para asegurar que ambas tablas de escuela tengan el mismo ancho */
+#partesTable,
+#partesNVTable,
+#partesSegundaSeccionTable {
+    width: 100% !important;
+    table-layout: fixed !important;
+}
+#partesTable th,
+#partesNVTable th,
+#partesSegundaSeccionTable th,
+#partesTable td,
+#partesNVTable td,
+#partesSegundaSeccionTable td {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+}
+
+/* Asegurar que los contenedores de tabla tengan el mismo ancho */
+.tab-pane .table-responsive {
+    width: 100% !important;
+    overflow-x: auto;
+}
+
+/* Estilos específicos para las columnas de las tablas de escuela */
+#partesTable th:nth-child(1),
+#partesNVTable th:nth-child(1) {
+    width: 50px !important;
+    min-width: 50px !important;
+}
+#partesTable th:nth-child(2),
+#partesNVTable th:nth-child(2) {
+    width: 50px !important;
+    min-width: 50px !important;
+}
+#partesTable th:nth-child(3),
+#partesNVTable th:nth-child(3) {
+    width: 250px !important;
+    min-width: 250px !important;
+}
+#partesTable th:nth-child(4),
+#partesNVTable th:nth-child(4) {
+    width: 450px !important;
+    min-width: 450px !important;
+}
+#partesTable th:nth-child(5),
+#partesNVTable th:nth-child(5) {
+    width: 100px !important;
+    min-width: 100px !important;
+}
+#partesTable th:nth-child(6),
+#partesNVTable th:nth-child(6) {
+    width: 100px !important;
+    min-width: 100px !important;
+}
+
+
+/* Estilos específicos para las columnas de las tablas de escuela */
+#partesSegundaSeccionTable th:nth-child(1) {
+    width: 50px !important;
+    min-width: 50px !important;
+}
+
+#partesSegundaSeccionTable th:nth-child(2) {
+    width: 50px !important;
+    min-width: 50px !important;
+}
+
+#partesSegundaSeccionTable th:nth-child(3) {
+    width: 250px !important;
+    min-width: 250px !important;
+}
+
+#partesSegundaSeccionTable th:nth-child(4) {
+    width: 250px !important;
+    min-width: 250px !important;
+}
+
+#partesSegundaSeccionTable th:nth-child(5) {
+    width: 100px !important;
+    min-width: 100px !important;
+}
+
+#partesSegundaSeccionTable th:nth-child(6) {
+    width: 100px !important;
+    min-width: 100px !important;
+}
+#partesSegundaSeccionTable th:nth-child(7) {
+    width: 100px !important;
+    min-width: 100px !important;
+}
+#partesSegundaSeccionTable th:nth-child(8) {
+    width: 100px !important;
+    min-width: 100px !important;
+}
+
+
+/* Aplicar los mismos estilos a las celdas del cuerpo de la tabla */
+#partesSegundaSeccionTable td:nth-child(1) {
+    width: 100px !important;
+    max-width: 100px !important;
+}
+
+#partesSegundaSeccionTable td:nth-child(2) {
+    width: 100px !important;
+    max-width: 100px !important;
+}
+
+#partesSegundaSeccionTable td:nth-child(3) {
+    width: 100px !important;
+    max-width: 300px !important;
+}
+
+#partesSegundaSeccionTable td:nth-child(4) {
+    width: 100px !important;
+    max-width: 300px !important;
+}
+
+#partesSegundaSeccionTable td:nth-child(5) {
+    width: 300px !important;
+    min-width: 100px !important;
+}
+
+#partesSegundaSeccionTable td:nth-child(6) {
+    width: 300px !important;
+    max-width: 100px !important;
+}
+#partesSegundaSeccionTable td:nth-child(7) {
+    width: 100px !important;
+    max-width: 100px !important;
+}
+#partesSegundaSeccionTable td:nth-child(8) {
+    width: 100px !important;
+    max-width: 100px !important;
+}
+
+/* Estilos para los tabs de Escuela - Más específicos y robustos */
+#escuelaTabs.nav-tabs {
+    border-bottom: 1px solid #dee2e6 !important;
+    margin-bottom: 0 !important;
+    padding: 0 !important;
+    position: relative !important;
+}
+
+#escuelaTabs.nav-tabs .nav-link {
+    border: 1px solid #dee2e6 !important;
+    border-bottom: 1px solid #dee2e6 !important;
+    background-color: #f8f9fa !important;
+    color: #495057 !important;
+    font-weight: 500 !important;
+    transition: all 0.3s ease !important;
+    position: relative !important;
+}
+
+#escuelaTabs.nav-tabs .nav-link:hover {
+    background-color: #e9ecef !important;
+    border-color: #adb5bd !important;
+    color: #495057 !important;
+}
+
+#escuelaTabs.nav-tabs .nav-link.active {
+    background-color: #ffffff !important;
+    border-color: #dee2e6 #dee2e6 #ffffff !important;
+    border-bottom: 2px solid #ffffff !important;
+    color: #495057 !important;
+    font-weight: 600 !important;
+    margin-bottom: -1px !important;
+    position: relative !important;
+    z-index: 2 !important;
+}
+
+#escuelaTabs.nav-tabs .nav-link.active i {
+    color: #0d6efd !important;
+}
+
+/* Reforzar la línea horizontal del contenedor de tabs */
+#escuelaTabs.nav-tabs::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background-color: #dee2e6 !important;
+    z-index: 1 !important;
+}
+
+/* Asegurar que los tabs inactivos mantengan su borde inferior visible */
+#escuelaTabs.nav-tabs .nav-link:not(.active) {
+    border-bottom: 1px solid #dee2e6 !important;
+}
+
+/* Contenedor de contenido de tabs con bordes continuos y más específicos */
+#escuelaTabsContent.tab-content {
+    border: 1px solid #dee2e6 !important;
+    border-top: none !important;
+    padding: 1.5rem !important;
+    background-color: #ffffff !important;
+    border-radius: 0 0 0.375rem 0.375rem !important;
+    margin-top: -1px !important;
+    position: relative !important;
+}
+
+/* Asegurar que no haya espacio entre el contenedor de tabs y el contenido */
+#escuelaTabs + #escuelaTabsContent {
+    margin-top: -1px !important;
+}
+
+/* Estilos adicionales para mantener la línea horizontal visible */
+.nav-tabs {
+    border-bottom: 1px solid #dee2e6 !important;
+}
+
+.tab-content {
+    border-left: 1px solid #dee2e6 !important;
+    border-right: 1px solid #dee2e6 !important;
+    border-bottom: 1px solid #dee2e6 !important;
+    border-top: none !important;
+}
+
+/* Estilos para los encabezados dentro de los tabs */
+.tab-pane h6 {
+    color: #495057;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+/* Mejorar la apariencia de los botones en los tabs */
+.tab-pane .btn-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+    transition: all 0.3s ease;
+}
+
+.tab-pane .btn-primary:hover {
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+    transform: translateY(-1px);
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+/* Asegurar que el dropdown específico del campo encargado use Consolas */
+.select2-dropdown[aria-labelledby="select2-encargado_display_segunda_seccion-container"],
+.select2-dropdown[aria-labelledby="select2-encargado_id_segunda_seccion-container"] {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px;
+}
+
+.select2-dropdown[aria-labelledby="select2-encargado_display_segunda_seccion-container"] .select2-results__option,
+.select2-dropdown[aria-labelledby="select2-encargado_id_segunda_seccion-container"] .select2-results__option {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px;
+}
+
+/* Asegurar que el dropdown específico del campo ayudante use Consolas */
+.select2-dropdown[aria-labelledby="select2-ayudante_display_segunda_seccion-container"],
+.select2-dropdown[aria-labelledby="select2-ayudante_id_segunda_seccion-container"] {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px;
+}
+
+.select2-dropdown[aria-labelledby="select2-ayudante_display_segunda_seccion-container"] .select2-results__option,
+.select2-dropdown[aria-labelledby="select2-ayudante_id_segunda_seccion-container"] .select2-results__option {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px;
+}
+
+/* Estilo para el select de orador inicial */
+#orador_inicial,
+#orador_inicial option,
+.form-select#orador_inicial {
+    font-size: 12px !important;
+    font-family: "Cascadia Mono", monospace !important;
+}
+
+/* Asegurar que se mantenga después de la carga */
+select#orador_inicial.form-select {
+    font-size: 12px !important;
+}
+
+/* Aplicar fuente Consolas al Select2 del campo Historial de Encargado */
+#historial_encargado_segunda_seccion + .select2-container {
+    font-family: "Cascadia Mono", monospace !important;
+}
+
+#historial_encargado_segunda_seccion + .select2-container .select2-selection {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+#historial_encargado_segunda_seccion + .select2-container .select2-selection__rendered {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Aplicar fuente Consolas al Select2 del campo Historial de Ayudante */
+#historial_ayudante_segunda_seccion + .select2-container {
+    font-family: "Cascadia Mono", monospace !important;
+}
+
+#historial_ayudante_segunda_seccion + .select2-container .select2-selection {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+#historial_ayudante_segunda_seccion + .select2-container .select2-selection__rendered {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Dropdown del historial de encargado */
+.select2-dropdown[aria-labelledby="select2-historial_encargado_segunda_seccion-container"] {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+.select2-dropdown[aria-labelledby="select2-historial_encargado_segunda_seccion-container"] .select2-results__option {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Dropdown del historial de ayudante */
+.select2-dropdown[aria-labelledby="select2-historial_ayudante_segunda_seccion-container"] {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+.select2-dropdown[aria-labelledby="select2-historial_ayudante_segunda_seccion-container"] .select2-results__option {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Estilos para el Select2 del modal buscar orador inicial */
+#select_orador_inicial + .select2-container .select2-selection {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+#select_orador_inicial + .select2-container .select2-selection__rendered {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Para el dropdown del modal buscar orador inicial */
+.select2-dropdown[aria-labelledby="select2-select_orador_inicial-container"] .select2-results__option {
+    font-size: 12px !important;
+}
+
+/* Estilos para el Select2 del modal historial orador inicial */
+#select_historial_orador_inicial + .select2-container .select2-selection {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+#select_historial_orador_inicial + .select2-container .select2-selection__rendered {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Para el dropdown del modal historial orador inicial */
+.select2-dropdown[aria-labelledby="select2-select_historial_orador_inicial-container"] .select2-results__option {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Estilos para el Select2 del modal buscar orador final */
+#select_orador_final + .select2-container .select2-selection {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+#select_orador_final + .select2-container .select2-selection__rendered {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Para el dropdown del modal buscar orador final */
+.select2-dropdown[aria-labelledby="select2-select_orador_final-container"] .select2-results__option {
+    font-size: 12px !important;
+}
+
+/* Estilos para el Select2 del modal historial orador final */
+#select_historial_orador_final + .select2-container .select2-selection {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+#select_historial_orador_final + .select2-container .select2-selection__rendered {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Para el dropdown del modal historial orador final */
+.select2-dropdown[aria-labelledby="select2-select_historial_orador_final-container"] .select2-results__option {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Estilos para el Select2 del modal buscar presidencia */
+#select_presidencia + .select2-container .select2-selection {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+#select_presidencia + .select2-container .select2-selection__rendered {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Para el dropdown del modal buscar presidencia */
+.select2-dropdown[aria-labelledby="select2-select_presidencia-container"] .select2-results__option {
+    font-size: 12px !important;
+}
+
+/* Estilos para el input de búsqueda del select2 de presidencia */
+.select2-container--open .select2-dropdown[aria-labelledby="select2-select_presidencia-container"] .select2-search__field,
+#select_presidencia + .select2-container + .select2-container--open .select2-dropdown .select2-search__field,
+.select2-container--default .select2-search--dropdown .select2-search__field[aria-labelledby="select2-select_presidencia-container"] {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 14px !important;
+    font-weight: normal !important;
+    color: inherit !important;
+}
+
+/* Estilos para el Select2 del modal historial presidencia */
+#select_historial_presidencia + .select2-container .select2-selection {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+#select_historial_presidencia + .select2-container .select2-selection__rendered {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Para el dropdown del modal historial presidencia */
+.select2-dropdown[aria-labelledby="select2-select_historial_presidencia-container"] .select2-results__option {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Estilos para el Select2 del modal buscar canción inicial */
+#select_cancion_inicial + .select2-container .select2-selection {
+    font-size: 12px !important;
+}
+
+#select_cancion_inicial + .select2-container .select2-selection__rendered {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+.select2-dropdown[aria-labelledby="select2-select_cancion_inicial-container"] .select2-results__option {
+    font-size: 12px !important;
+}
+
+/* Estilos para el Select2 del modal buscar canción intermedia */
+#select_cancion_intermedia + .select2-container .select2-selection {
+    font-size: 12px !important;
+}
+
+#select_cancion_intermedia + .select2-container .select2-selection__rendered {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+.select2-dropdown[aria-labelledby="select2-select_cancion_intermedia-container"] .select2-results__option {
+    font-size: 12px !important;
+}
+
+/* Estilos para el Select2 del modal buscar canción final */
+#select_cancion_final + .select2-container .select2-selection {
+    font-size: 12px !important;
+}
+
+#select_cancion_final + .select2-container .select2-selection__rendered {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+.select2-dropdown[aria-labelledby="select2-select_cancion_final-container"] .select2-results__option {
+    font-size: 12px !important;
+}
+
+/* Estilos para el Select2 del modal buscar parte segunda sección */
+#parte_id_segunda_seccion + .select2-container .select2-selection {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+#parte_id_segunda_seccion + .select2-container .select2-selection__rendered {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+.select2-dropdown[aria-labelledby="select2-parte_id_segunda_seccion-container"] .select2-results__option {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Estilos para el Select2 del modal buscar parte tercera sección */
+#parte_id_tercera_seccion + .select2-container .select2-selection {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+#parte_id_tercera_seccion + .select2-container .select2-selection__rendered {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+.select2-dropdown[aria-labelledby="select2-parte_id_tercera_seccion-container"] .select2-results__option {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Estilos para el Select2 del modal buscar encargado segunda sección */
+#encargado_id_segunda_seccion + .select2-container .select2-selection {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+#encargado_id_segunda_seccion + .select2-container .select2-selection__rendered {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+.select2-dropdown[aria-labelledby="select2-encargado_id_segunda_seccion-container"] .select2-results__option {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Estilos para el Select2 del modal buscar ayudante segunda sección */
+#ayudante_id_segunda_seccion + .select2-container .select2-selection {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+#ayudante_id_segunda_seccion + .select2-container .select2-selection__rendered {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+.select2-dropdown[aria-labelledby="select2-ayudante_id_segunda_seccion-container"] .select2-results__option {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Estilos para el Select2 del modal buscar encargado tercera sección */
+#encargado_id_tercera_seccion + .select2-container .select2-selection {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+#encargado_id_tercera_seccion + .select2-container .select2-selection__rendered {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+.select2-dropdown[aria-labelledby="select2-encargado_id_tercera_seccion-container"] .select2-results__option {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Estilos para el Select2 del modal buscar ayudante tercera sección */
+#ayudante_id_tercera_seccion + .select2-container .select2-selection {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+#ayudante_id_tercera_seccion + .select2-container .select2-selection__rendered {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+.select2-dropdown[aria-labelledby="select2-ayudante_id_tercera_seccion-container"] .select2-results__option {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Estilos para el Select2 del modal buscar historial encargado segunda sección */
+#select_historial_encargado_segunda + .select2-container .select2-selection {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+#select_historial_encargado_segunda + .select2-container .select2-selection__rendered {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+.select2-dropdown[aria-labelledby="select2-select_historial_encargado_segunda-container"] .select2-results__option {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Estilos para el Select2 del modal buscar historial ayudante segunda sección */
+#select_historial_ayudante_segunda + .select2-container .select2-selection {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+#select_historial_ayudante_segunda + .select2-container .select2-selection__rendered {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+.select2-dropdown[aria-labelledby="select2-select_historial_ayudante_segunda-container"] .select2-results__option {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Estilos para el Select2 del modal buscar historial encargado tercera sección */
+#select_historial_encargado_tercera + .select2-container .select2-selection {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+#select_historial_encargado_tercera + .select2-container .select2-selection__rendered {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+.select2-dropdown[aria-labelledby="select2-select_historial_encargado_tercera-container"] .select2-results__option {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Estilos para el Select2 del modal buscar historial ayudante tercera sección */
+#select_historial_ayudante_tercera + .select2-container .select2-selection {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+#select_historial_ayudante_tercera + .select2-container .select2-selection__rendered {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+.select2-dropdown[aria-labelledby="select2-select_historial_ayudante_tercera-container"] .select2-results__option {
+    font-family: "Cascadia Mono", monospace !important;
+    font-size: 12px !important;
+}
+
+/* Estilos para el modal de Ver Asignación */
+.asignacion-card {
+    border: 2px solid #000;
+    padding: 20px;
+    background-color: #fff;
+    font-family: Arial, sans-serif;
+}
+
+.asignacion-card h4 {
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 16px;
+}
+
+.asignacion-card .info-row {
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.asignacion-card .info-label {
+    font-weight: bold;
+    display: inline-block;
+    width: 80px;
+}
+
+.info-intervencion {
+    font-weight: bold;
+    display: inline-block;
+    width: 150px;
+}
+
+.asignacion-card .info-value {
+    color: #0000FF;
+    font-weight: normal;
+}
+
+.asignacion-card .sala-section {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.asignacion-card .checkbox-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.asignacion-card .checkbox {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #000;
+    display: inline-block;
+    margin-right: 10px;
+    position: relative;
+}
+
+.asignacion-card .checkbox.checked::after {
+    content: '✓';
+    position: absolute;
+    top: -5px;
+    left: 2px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.asignacion-card .nota-section {
+    margin-top: 20px;
+    font-size: 12px;
+}
+
+.asignacion-card .nota-title {
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.asignacion-card .nota-text {
+    font-size: 12px;
+    text-align: justify;
+    line-height: 1.6;
+}
+
+@media print {
+    .modal-header, .modal-footer, .btn-close {
+        display: none !important;
+    }
+    
+    .modal-dialog {
+        max-width: 100%;
+        margin: 0;
+    }
+    
+    .modal-content {
+        border: none;
+        box-shadow: none;
+    }
+    
+    .asignacion-card {
+        page-break-inside: avoid;
+    }
+}

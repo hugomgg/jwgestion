@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @push('styles')
-<link rel="stylesheet" href="{{ asset('css/users-index.css') }}">
+@vite(['resources/css/users-index.css'])
 @endpush
 @section('content')
 <div class="container-fluid">
@@ -1103,5 +1103,5 @@ window.usersIndexConfig = {
     asignaciones: @json(isset($asignaciones) ? $asignaciones->map(function($a) { return ['id' => $a->id, 'nombre' => $a->nombre]; }) : [])
 };
 </script>
-<script src="{{ asset('js/users-index.js') }}"></script>
+@vite(['resources/js/users-index.js'])
 @endsection

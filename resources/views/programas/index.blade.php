@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @push('styles')
-<link rel="stylesheet" href="{{ asset('css/programas-index.css') }}">
+@vite(['resources/css/programas-index.css'])
 <link href="{{ asset('css/select2.min.css') }}" rel="stylesheet" />
 <link href="{{ asset('css/select2-bootstrap-5-theme.min.css') }}" rel="stylesheet" />
 @endpush
@@ -290,7 +290,7 @@
 @endif
 @push('scripts')
 <script src="{{ asset('js/select2.min.js') }}"></script>
-<script src="{{ asset('js/programas-index.js') }}"></script>
+@vite(['resources/js/programas-index.js'])
 <script>
 $(document).ready(function() {
     // Inicializar Select2

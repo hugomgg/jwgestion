@@ -242,7 +242,7 @@
 </div>
 @endif
 @push('scripts')
-<script src="{{ asset('js/programas-show.js') }}"></script>
+@vite(['resources/js/programas-show.js'])
 <script>
 $(document).ready(function() {
     initProgramasShow({{ $programa->id }});

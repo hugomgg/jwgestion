@@ -1308,9 +1308,9 @@ window.editingParteTwoData = false; // Variable para controlar la carga en modo 
 // Variables para manejar reemplazados
 let programmaticChange = false; // Variable para evitar detección de reemplazado en cambios programáticos
 </script>
-<script src="{{ asset('js/programas-edit.js') }}"></script>
+@vite(['resources/js/programas-edit.js'])
 @endpush
 @push('styles')
-<link rel="stylesheet" href="{{ asset('css/programas-edit.css') }}">
+@vite(['resources/css/programas-edit.css'])
 @endpush
 @endsection

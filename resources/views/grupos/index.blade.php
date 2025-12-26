@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @push('styles')
-<link rel="stylesheet" href="{{ asset('css/grupos-index.css') }}">
+@vite(['resources/css/grupos-index.css'])
 @endpush
 @section('content')
 <div class="container-fluid">
@@ -250,5 +250,5 @@ $(document).ready(function() {
     }
 });
 </script>
-<script src="{{ asset('js/grupos-index.js') }}"></script>
+@vite(['resources/js/grupos-index.js'])
 @endsection

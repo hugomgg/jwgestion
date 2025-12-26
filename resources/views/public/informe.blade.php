@@ -193,7 +193,7 @@
     @endif
     
     <!-- Custom JS -->
-    <script src="{{ asset('js/public-informe.js') }}"></script>
+    @vite(['resources/js/public-informe.js'])
     
     <script>
         // Configuración global
