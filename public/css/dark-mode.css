@@ -163,6 +163,11 @@
     color: var(--text-primary);
 }
 
+/* Campo congregación en modal edit grupo - texto negro en dark mode */
+[data-theme="dark"] #edit_congregacion_id {
+    color: #212529 !important;
+}
+
 [data-theme="dark"] .form-control::placeholder {
     color: var(--text-secondary);
 }
