@@ -1,0 +1,112 @@
+{
+  "resources/css/dark-mode.css": {
+    "file": "assets/dark-mode-N1F1zwuv.css",
+    "src": "resources/css/dark-mode.css",
+    "isEntry": true
+  },
+  "resources/css/grupos-index.css": {
+    "file": "assets/grupos-index-BFYaCmRz.css",
+    "src": "resources/css/grupos-index.css",
+    "isEntry": true
+  },
+  "resources/css/informes-index.css": {
+    "file": "assets/informes-index-ssMPx5S-.css",
+    "src": "resources/css/informes-index.css",
+    "isEntry": true
+  },
+  "resources/css/programas-edit.css": {
+    "file": "assets/programas-edit-DWpq8cHi.css",
+    "src": "resources/css/programas-edit.css",
+    "isEntry": true
+  },
+  "resources/css/programas-index.css": {
+    "file": "assets/programas-index-CEWyHOug.css",
+    "src": "resources/css/programas-index.css",
+    "isEntry": true
+  },
+  "resources/css/public-informe.css": {
+    "file": "assets/public-informe-DMpqTE4z.css",
+    "src": "resources/css/public-informe.css",
+    "isEntry": true
+  },
+  "resources/css/users-index.css": {
+    "file": "assets/users-index-YiuaHlNy.css",
+    "src": "resources/css/users-index.css",
+    "isEntry": true
+  },
+  "resources/fonts/nunito/nunito-latin-400-normal.woff": {
+    "file": "assets/nunito-latin-400-normal-DKg4f3fz.woff",
+    "src": "resources/fonts/nunito/nunito-latin-400-normal.woff"
+  },
+  "resources/fonts/nunito/nunito-latin-400-normal.woff2": {
+    "file": "assets/nunito-latin-400-normal-r8SDr6Up.woff2",
+    "src": "resources/fonts/nunito/nunito-latin-400-normal.woff2"
+  },
+  "resources/fonts/nunito/nunito-latin-ext-400-normal.woff": {
+    "file": "assets/nunito-latin-ext-400-normal-CjMJVfGn.woff",
+    "src": "resources/fonts/nunito/nunito-latin-ext-400-normal.woff"
+  },
+  "resources/fonts/nunito/nunito-latin-ext-400-normal.woff2": {
+    "file": "assets/nunito-latin-ext-400-normal-i-8OOpdj.woff2",
+    "src": "resources/fonts/nunito/nunito-latin-ext-400-normal.woff2"
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-DOpSkyxC.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true
+  },
+  "resources/js/dark-mode.js": {
+    "file": "assets/dark-mode-DWLP4fhx.js",
+    "name": "dark-mode",
+    "src": "resources/js/dark-mode.js",
+    "isEntry": true
+  },
+  "resources/js/grupos-index.js": {
+    "file": "assets/grupos-index-NR-_3yUX.js",
+    "name": "grupos-index",
+    "src": "resources/js/grupos-index.js",
+    "isEntry": true
+  },
+  "resources/js/informes-index.js": {
+    "file": "assets/informes-index-D4geOxiv.js",
+    "name": "informes-index",
+    "src": "resources/js/informes-index.js",
+    "isEntry": true
+  },
+  "resources/js/programas-edit.js": {
+    "file": "assets/programas-edit-CpabTofG.js",
+    "name": "programas-edit",
+    "src": "resources/js/programas-edit.js",
+    "isEntry": true
+  },
+  "resources/js/programas-index.js": {
+    "file": "assets/programas-index-CMLkqy2D.js",
+    "name": "programas-index",
+    "src": "resources/js/programas-index.js",
+    "isEntry": true
+  },
+  "resources/js/programas-show.js": {
+    "file": "assets/programas-show-l0sNRNKZ.js",
+    "name": "programas-show",
+    "src": "resources/js/programas-show.js",
+    "isEntry": true
+  },
+  "resources/js/public-informe.js": {
+    "file": "assets/public-informe-BQImyxRY.js",
+    "name": "public-informe",
+    "src": "resources/js/public-informe.js",
+    "isEntry": true
+  },
+  "resources/js/users-index.js": {
+    "file": "assets/users-index-CvJE_mGt.js",
+    "name": "users-index",
+    "src": "resources/js/users-index.js",
+    "isEntry": true
+  },
+  "resources/sass/app.scss": {
+    "file": "assets/app-DB8PpO0i.css",
+    "src": "resources/sass/app.scss",
+    "isEntry": true
+  }
+}
