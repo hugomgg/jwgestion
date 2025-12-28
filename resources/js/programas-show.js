@@ -128,3 +128,6 @@ function loadPartesNV(programaId) {
         }
     });
 }
+
+// Exponer función globalmente para que pueda ser llamada desde el blade template
+window.initProgramasShow = initProgramasShow;

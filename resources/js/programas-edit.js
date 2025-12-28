@@ -4382,6 +4382,20 @@ $(document).ready(function() {
         // Deshabilitar el botón de eliminar
         $('#btn-eliminar-reemplazado-nv').prop('disabled', true);
     }
+
+    // Exponer funciones globalmente para que puedan ser llamadas desde onclick en HTML
+    window.moveParteSegundaSeccionUp = moveParteSegundaSeccionUp;
+    window.moveParteSegundaSeccionDown = moveParteSegundaSeccionDown;
+    window.editParteSegundaSeccion = editParteSegundaSeccion;
+    window.deleteParteSegundaSeccion = deleteParteSegundaSeccion;
+    window.moveParteUp = moveParteUp;
+    window.moveParteDown = moveParteDown;
+    window.editParte = editParte;
+    window.deleteParte = deleteParte;
+    window.moveParteNVUp = moveParteNVUp;
+    window.moveParteNVDown = moveParteNVDown;
+    window.editParteNV = editParteNV;
+    window.deleteParteNV = deleteParteNV;
 });
 
 /**
@@ -4550,3 +4564,6 @@ function showModalAlert(containerId, type, message) {
         }, 5000);
     }
 }
+
+// Exponer funciones globalmente para que puedan ser llamadas desde onclick en HTML
+window.verAsignacionDesdeTabla = verAsignacionDesdeTabla;
