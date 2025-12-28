@@ -79,6 +79,9 @@ $(document).ready(function() {
     // Inicializar Select2 si es coordinador (esta función será llamada desde el Blade)
     window.initializeSelect2ForCoordinators = initializeSelect2ForCoordinators;
 
+    // Inicializar Select2 automáticamente
+    initializeSelect2ForCoordinators();
+
     // Manejar envío del formulario de agregar
     $('#addProgramaForm').submit(function(e) {
         e.preventDefault();
@@ -353,6 +356,9 @@ $(document).ready(function() {
             $('#addProgramaForm')[0].reset();
         });
     };
+
+    // Inicializar eventos del modal para Select2
+    handleModalEventsForSelect2();
 
     // Función para manejar el estado de los botones de exportación
     function actualizarBotonesExportacion() {

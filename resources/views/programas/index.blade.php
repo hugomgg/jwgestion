@@ -290,14 +290,8 @@
 @endif
 @push('scripts')
 <script src="{{ asset('js/select2.min.js') }}"></script>
-@vite(['resources/js/programas-index.js'])
 <script>
-$(document).ready(function() {
-    // Inicializar Select2
-    initializeSelect2ForCoordinators();
-    handleModalEventsForSelect2();
-
-    // Definir rutas para exportación
+    // Definir rutas para exportación ANTES de cargar el JS principal
     window.exportRoutes = {
         pdf: `{{ route('programas.export.pdf') }}`,
         programaXls: `{{ route('programas.export.programa-xls') }}`,
@@ -310,7 +304,7 @@ $(document).ready(function() {
 
     // Indicar si el usuario es coordinador u organizador
     window.isCoordinatorOrOrganizer = {{ ($currentUser->isCoordinator() || $currentUser->isOrganizer()) ? 'true' : 'false' }};
-});
 </script>
+@vite(['resources/js/programas-index.js'])
 @endpush
 @endsection
