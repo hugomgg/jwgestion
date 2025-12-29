@@ -130,6 +130,10 @@
                                 return $parte->sala_id == 2;
                             });
 
+                             $mejoresMaestrosAuxiliar2 = $mejoresMaestros->filter(function($parte) {
+                                return $parte->sala_id == 3;
+                            });
+
                             $vidaCristiana = $programa->partes->filter(function($parte) {
                                 return $parte->seccion_id == 3;
                             });
@@ -192,6 +196,26 @@
                             @endforeach
                         @endif
 
+                        <!-- SEAMOS MEJORES MAESTROS - SALA AUXILIAR 2 -->
+                        @if($mejoresMaestrosAuxiliar2->count() > 0)
+                            <div class="seccion-header mejores-maestros">
+                                SEAMOS MEJORES MAESTROS - SALA AUXILIAR 2
+                            </div>
+                            @foreach($mejoresMaestrosAuxiliar2 as $parte)
+                                <div class="parte-item">
+                                    <div class="parte-content">
+                                        {{ str_pad($parte->tiempo ?? '', 2, '0', STR_PAD_LEFT) }} min. {{ ($loop->iteration + 3) }}) {{ $parte->tema ?? $parte->parte_nombre }}
+                                    </div>
+                                    <div class="parte-asignado">
+                                        {{ $parte->encargado_nombre ?? 'Sin asignar' }}
+                                        @if($parte->ayudante_nombre)
+                                            | {{ mb_str_pad(substr($parte->ayudante_nombre, 0, 20), 20, '.', STR_PAD_RIGHT) }}
+                                        @endif
+                                    </div>
+                                </div>
+                            @endforeach
+                        @endif
+
                         <!-- NUESTRA VIDA CRISTIANA -->
                         @if($vidaCristiana->count() > 0)
                             <div class="seccion-header vida-cristiana">
@@ -210,12 +234,21 @@
                                     <div class="parte-content">
                                         @if($parte->parte_id == 24)
                                             {{ $parte->parte_nombre }}:
+                                        @elseif($parte->parte_id == 25)
+                                        <!-- Guardar datos PHP para imprimir despues de presidencia y oración final -->
+                                        @php
+                                                $visitaSC_tiempo = str_pad($parte->tiempo ?? '', 2, '0', STR_PAD_LEFT);
+                                                $visitaSC_tema = $parte->tema ?? $parte->parte_nombre;
+                                                $visitaSC_encargado = $parte->encargado_nombre ?? 'Sin asignar';
+                                        @endphp
                                         @else
                                             {{ str_pad($parte->tiempo ?? '', 2, '0', STR_PAD_LEFT) }} min. {{ ($loop->iteration + $mejoresMaestrosPrincipal->count() + 3) }}) {{ $parte->tema ?? $parte->parte_nombre }}
                                         @endif
                                     </div>
                                     <div class="parte-asignado">
-                                        {{ $parte->encargado_nombre ?? 'Sin asignar' }}
+                                        @if($parte->parte_id != 25)
+                                            {{ $parte->encargado_nombre ?? 'Sin asignar' }}
+                                        @endif
                                     </div>
                                 </div>
                             @endforeach
@@ -239,6 +272,21 @@
                                     ORADOR FINAL: {{ $programa->nombre_orador_final?? 'Sin asignar' }}
                                 </div>
                             </div>
+                        @endif
+                        @if(isset($visitaSC_encargado))
+                            <div class="parte-item" style="margin-top: 5px;">
+                                <div class="parte-content">
+                                    {{ $visitaSC_tiempo }} min. {{ $visitaSC_tema }}
+                                </div>
+                                <div class="parte-asignado">
+                                    {{ $visitaSC_encargado }}
+                                </div>
+                            </div>
+                            @php
+                                $visitaSC_tiempo = null;
+                                $visitaSC_tema = null;
+                                $visitaSC_encargado = null;
+                            @endphp
                         @endif
                     @else
                         <!-- Si no hay partes, mostrar datos básicos -->

@@ -200,16 +200,27 @@ class ProgramaExport implements FromCollection, WithHeadings, WithStyles, WithCo
                     $contador = $mejoresMaestrosPrincipal->count() + 4;
                     $partesArray = $vidaCristiana->values();
                     $indiceParte=0;
+                    $esVisitaSC = false;
                     foreach ($vidaCristiana as $index => $parte) {
                         $tiempo = str_pad($parte->tiempo ?? '', 2, '0', STR_PAD_LEFT);
                         $contenido = $parte->parte_id != 24 ? "{$tiempo} min. {$contador}) " . ($parte->tema ?? $parte->parte_nombre) : $parte->parte_nombre;
-                        $data->push([
-                            'tema' => $contenido,
-                            'asignado' => '',
-                            'ayudante' => $parte->encargado_nombre ?? 'Sin asignar'
-                        ]);
-                        $indiceParte++;
-                        $contador++;
+                        //Si es parte 25 guardar: tema,asignado='',ayudante=encargado_nombre en variable, en caso contrario push y contar
+                        if($parte->parte_id == 25){
+                            $sc=[
+                                'tema' => "{$tiempo} min. " . ($parte->tema ?? $parte->parte_nombre),
+                                'asignado' => '',
+                                'ayudante' => $parte->encargado_nombre ?? 'Sin asignar'
+                            ];
+                            $esVisitaSC = true;
+                        }else{
+                            $data->push([
+                                'tema' => $contenido,
+                                'asignado' => '',
+                                'ayudante' => $parte->encargado_nombre ?? 'Sin asignar'
+                            ]);
+                            $indiceParte++;
+                            $contador++;
+                        }
                     }
                     for($i = $indiceParte; $i <= 3; $i++){
                         $data->push(['', '', '']);
@@ -222,6 +233,9 @@ class ProgramaExport implements FromCollection, WithHeadings, WithStyles, WithCo
                         'asignado' => '',
                         'ayudante' => $programa->nombre_presidencia ?? 'Sin asignar'
                     ]);
+                    if($esVisitaSC){
+                        $data->push($sc);
+                    }
                 }else{
                     $data->push(['', '', '']);
                 }
