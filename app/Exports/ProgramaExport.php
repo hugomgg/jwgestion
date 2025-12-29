@@ -218,9 +218,9 @@ class ProgramaExport implements FromCollection, WithHeadings, WithStyles, WithCo
                                 'asignado' => '',
                                 'ayudante' => $parte->encargado_nombre ?? 'Sin asignar'
                             ]);
-                            $indiceParte++;
-                            $contador++;
                         }
+                        $indiceParte++;
+                        $contador++;
                     }
                     for($i = $indiceParte; $i <= 3; $i++){
                         $data->push(['', '', '']);
