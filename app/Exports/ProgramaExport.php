@@ -84,6 +84,10 @@ class ProgramaExport implements FromCollection, WithHeadings, WithStyles, WithCo
                     return $parte->sala_id == 2;
                 });
 
+                $mejoresMaestrosAuxiliar2 = $mejoresMaestros->filter(function($parte) {
+                    return $parte->sala_id == 3;
+                });
+
                 $vidaCristiana = collect($programa->partes)->filter(function($parte) {
                     return $parte->seccion_id == 3;
                 });
@@ -114,9 +118,12 @@ class ProgramaExport implements FromCollection, WithHeadings, WithStyles, WithCo
                     foreach ($mejoresMaestrosPrincipal as $parte) {
                         $tiempo = str_pad($parte->tiempo ?? '', 2, '0', STR_PAD_LEFT);
                         $contenido = "{$tiempo} min. {$contador}) " . ($parte->tema ?? $parte->parte_nombre);
-                        $ayudante = $parte->ayudante_nombre ?? 'Sin asignar';
                         $asignado = $parte->encargado_nombre ?? 'Sin asignar';
-
+                        $ayudante = $parte->ayudante_nombre ?? 'Sin asignar';
+                        if($parte->encargado_nombre && !$parte->ayudante_nombre){
+                            $ayudante = $asignado;
+                            $asignado = '';
+                        }
                         $data->push([
                             'tema' => $contenido,
                             'asignado' => $asignado,
@@ -138,6 +145,35 @@ class ProgramaExport implements FromCollection, WithHeadings, WithStyles, WithCo
                         $contenido = "{$tiempo} min. {$contador}) " . ($parte->tema ?? $parte->parte_nombre);
                         $asignado = $parte->encargado_nombre ?? 'Sin asignar';
                         $ayudante = $parte->ayudante_nombre ?? 'Sin asignar';
+                         if($parte->encargado_nombre && !$parte->ayudante_nombre){
+                            $ayudante = $asignado;
+                            $asignado = '';
+                        }
+                        $data->push([
+                            'tema' => $contenido,
+                            'asignado' => $asignado,
+                            'ayudante' => "|".$ayudante
+                        ]);
+                        $contador++;
+                    }
+                    for($i = $contador; $i <= 7; $i++){
+                        $data->push(['', '', '']);
+                    }
+                }
+
+                // SEAMOS MEJORES MAESTROS - SALA AUXILIAR 2
+                if ($mejoresMaestrosAuxiliar2->count() > 0) {
+                    $data->push(['SEAMOS MEJORES MAESTROS - SALA AUXILIAR 2', '']);
+                    $contador = 4;
+                    foreach ($mejoresMaestrosAuxiliar2 as $parte) {
+                        $tiempo = str_pad($parte->tiempo ?? '', 2, '0', STR_PAD_LEFT);
+                        $contenido = "{$tiempo} min. {$contador}) " . ($parte->tema ?? $parte->parte_nombre);
+                        $asignado = $parte->encargado_nombre ?? 'Sin asignar';
+                        $ayudante = $parte->ayudante_nombre ?? 'Sin asignar';
+                         if($parte->encargado_nombre && !$parte->ayudante_nombre){
+                            $ayudante = $asignado;
+                            $asignado = '';
+                        }
                         $data->push([
                             'tema' => $contenido,
                             'asignado' => $asignado,
