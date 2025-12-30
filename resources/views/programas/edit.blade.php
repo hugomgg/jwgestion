@@ -1137,7 +1137,7 @@
                 </div>
 
                 <div class="mb-3">
-                    <label for="select_historial_encargado_segunda_seccion" class="form-label">Historial del Estudiante</label>
+                    <label for="select_historial_encargado_segunda_seccion" class="form-label">Historial del Estudiante (Escribir "R-" para ver reemplazos realizados)</label>
                     <select class="form-select" id="select_historial_encargado_segunda_seccion" style="width: 100%;" disabled>
                         <option value="">Seleccionar un estudiante primero...</option>
                     </select>
@@ -1193,7 +1193,7 @@
                 </div>
 
                 <div class="mb-3">
-                    <label for="select_historial_ayudante_segunda_seccion" class="form-label">Historial del Ayudante</label>
+                    <label for="select_historial_ayudante_segunda_seccion" class="form-label">Historial del Ayudante (Escribir "R-" para ver reemplazos realizados)</label>
                     <select class="form-select" id="select_historial_ayudante_segunda_seccion" style="width: 100%;" disabled>
                         <option value="">Seleccionar un ayudante primero...</option>
                     </select>

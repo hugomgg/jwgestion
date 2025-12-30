@@ -908,8 +908,8 @@ class UserController extends Controller
                     'pp.programa_id',
                     's.abreviacion as sala_abreviacion',
                     'ps.abreviacion as parte_abreviacion',
-                    DB::raw("CASE WHEN encargado_reemplazado_id IS NOT NULL AND encargado_id={$encargadoId} THEN concat('(R)', encargado.name) ELSE encargado.name END as encargado_nombre"),
-                    DB::raw("CASE WHEN ayudante_reemplazado_id IS NOT NULL AND ayudante_id={$encargadoId} THEN concat('(R)', ayudante.name) ELSE ayudante.name END as ayudante_nombre")
+                    DB::raw("CASE WHEN encargado_reemplazado_id IS NOT NULL AND encargado_id={$encargadoId} THEN concat('R-', encargado.name) ELSE encargado.name END as encargado_nombre"),
+                    DB::raw("CASE WHEN ayudante_reemplazado_id IS NOT NULL AND ayudante_id={$encargadoId} THEN concat('R-', ayudante.name) ELSE ayudante.name END as ayudante_nombre")
                 )
                 ->orderBy('prog.fecha', 'desc')
                 ->get();
