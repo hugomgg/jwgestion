@@ -1606,18 +1606,22 @@ class ProgramaController extends Controller
                     ->where('id', $parteProgramaId)
                     ->value('programa_id'))
                 ->whereIn('ps.seccion_id', [1,2]) //Tesoros de la Biblia y Seamos Mejores Maestros
+                //ordenar por sala_id,seccion_id y orden
+                ->orderBy('pp.sala_id', 'asc')
+                ->orderBy('ps.seccion_id', 'asc')
                 ->orderBy('pp.orden', 'asc')
-                ->select('pp.id', 'pp.parte_id', 'pp.orden')
+                ->select('pp.id', 'pp.parte_id', 'pp.orden', 'ps.seccion_id')
                 ->get();
 
-            $numeroIntervencion = 3;
+            $numeroIntervencion = 4;
+            //Recorrer arreglo de $asignacionesDelPrograma donde $item->seccion_id=2
             foreach ($asignacionesDelPrograma as $item) {
                 if ($item->parte_id == 3) {
                     if ($item->id == $parteProgramaId) {
                         $numeroIntervencion = 3;
                         break;
                     }
-                } else {
+                } elseif($item->seccion_id == 2) {
                     if ($item->id == $parteProgramaId) {
                         break;
                     }
