@@ -82,7 +82,7 @@
                     
                     <div class="mb-3">
                         <label for="congregacion_id" class="form-label">Congregación *</label>
-                        <select class="form-select" id="congregacion_id" name="congregacion_id" required {{ count($congregaciones) == 1 ? 'readonly' : '' }}>
+                        <select class="form-select" id="congregacion_id" name="congregacion_id" required {{ count($congregaciones) == 1 ? 'readonly' : '' }} style="color: #000 !important;">
                             @if(count($congregaciones) == 0)
                                 <option value="">No hay congregaciones disponibles</option>
                             @elseif(count($congregaciones) == 1)
