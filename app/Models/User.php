@@ -310,7 +310,7 @@ class User extends Authenticatable
      */
     public function canAccessAdminMenu()
     {
-        return $this->perfil == 1 || $this->perfil == 2 || $this->perfil == 3 || $this->perfil == 6 || $this->perfil == 7 || $this->perfil == 8;
+        return $this->perfil == 1 || $this->perfil == 2 || $this->perfil == 3 || $this->perfil == 4 || $this->perfil == 5 || $this->perfil == 6 || $this->perfil == 7 || $this->perfil == 8;
     }
 
     /**

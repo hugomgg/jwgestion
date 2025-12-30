@@ -7,7 +7,7 @@
 @endpush
 
 @section('content')
-@if($currentUser->isCoordinator() || $currentUser->isOrganizer() ||  $currentUser->isSuborganizer())
+@if($currentUser->isCoordinator() || $currentUser->isSubcoordinator() || $currentUser->isOrganizer() ||  $currentUser->isSuborganizer())
 @php
     // Calcular el lunes y domingo de la semana actual (solo fechas, sin hora)
     $lunesSemanaActual = \Carbon\Carbon::now()->startOfWeek(\Carbon\Carbon::MONDAY)->startOfDay();

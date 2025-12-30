@@ -24,7 +24,7 @@ class ProgramaController extends Controller
     {
         $currentUser = auth()->user();
         //No permite ver programas si $currentUser->perfil no es 3 (Coordinador), 7 (Organizador), 6 (Subsecretario) o 8 (SubOrganizador)
-        if (!($currentUser->isCoordinator() || $currentUser->isOrganizer() || $currentUser->isSubsecretary() || $currentUser->isSuborganizer())) {
+        if (!($currentUser->isCoordinator() || $currentUser->isSubcoordinator() || $currentUser->isOrganizer() || $currentUser->isSubsecretary() || $currentUser->isSuborganizer())) {
             return redirect()->route('home')
                 ->with('error', 'No tienes permiso para acceder a esta sección2.');
         }
@@ -145,7 +145,7 @@ class ProgramaController extends Controller
         $currentUser = auth()->user();
         
         // Validar que el usuario tenga permisos
-        if (!($currentUser->isCoordinator() || $currentUser->isOrganizer() || $currentUser->isSubsecretary() || $currentUser->isSuborganizer())) {
+        if (!($currentUser->isCoordinator() || $currentUser->isSubcoordinator() || $currentUser->isOrganizer() || $currentUser->isSubsecretary() || $currentUser->isSuborganizer())) {
             return response()->json([
                 'success' => false,
                 'message' => 'No tienes permiso para acceder a esta sección.'

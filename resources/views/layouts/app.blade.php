@@ -246,7 +246,7 @@
                     </a>
                 </li>
                 @endif
-                @if(auth()->user()->isCoordinator() || auth()->user()->isOrganizer() || auth()->user()->isSubsecretary() || auth()->user()->isSuborganizer())
+                @if(auth()->user()->isCoordinator() || auth()->user()->isSubcoordinator() || auth()->user()->isOrganizer() || auth()->user()->isSuborganizer())
                 <li>
                     <a href="{{ route('programas.index') }}" class="nav-link {{ request()->routeIs('programas.*') ? 'active' : '' }}">
                         <i class="fas fa-calendar"></i>Programas
@@ -279,7 +279,7 @@
                     </a>
                 </li>
                 @endif
-                @if(auth()->user()->isCoordinator() || auth()->user()->isOrganizer() || auth()->user()->isSubsecretary() || auth()->user()->isSuborganizer())
+                @if(auth()->user()->isCoordinator() || auth()->user()->isSubcoordinator() || auth()->user()->isOrganizer() || auth()->user()->isSuborganizer())
                 <li>
                     <a href="{{ route('programas.index') }}" class="nav-link {{ request()->routeIs('programas.*') ? 'active' : '' }}">
                         <i class="fas fa-calendar"></i>Programas

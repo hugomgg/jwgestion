@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-@if($currentUser->isCoordinator() || $currentUser->isOrganizer() || $currentUser->isSubsecretary() || $currentUser->isSuborganizer())
+@if($currentUser->isCoordinator() || $currentUser->isSubcoordinator() || $currentUser->isOrganizer() || $currentUser->isSubsecretary() || $currentUser->isSuborganizer())
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">

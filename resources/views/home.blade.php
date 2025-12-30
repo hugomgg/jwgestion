@@ -42,7 +42,7 @@
                                 <i class="fas fa-eye me-2"></i>
                                 <strong>Bienvenido, {{ Auth::user()->name }}!</strong>
                                 <span class="badge bg-warning ms-2">{{ Auth::user()->role_name }}</span>
-                                <br><small>Como {{ Auth::user()->role_name }}, tienes acceso a la gestión o visualización de usuarios, informes y/o programa.</small>
+                                <br><small>Como {{ Auth::user()->role_name }}, tienes acceso a la gestión o visualización de usuarios, grupos y/o informes y/o programas.</small>
                             </div>
                             @endif
                         </div>
@@ -84,7 +84,54 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div class="col-md-4">
+                            <div class="card border-primary">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-users fa-3x text-warning mb-3"></i>
+                                    <h5>Gestión de Grupos de Predicación</h5>
+                                    <p class="text-muted">
+                                        @if(Auth::user()->isAdmin())
+                                            Crear, editar y administrar informes de predicación
+                                        @else
+                                            Ver y consultar listado de informes de predicación
+                                        @endif
+                                    </p>
+                                    <a href="{{ route('grupos.index') }}" class="btn btn-warning">
+                                        <i class="fas fa-arrow-right me-2"></i>Acceder
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        @if(Auth::user()->isCoordinator() || Auth::user()->isSubcoordinator() || Auth::user()->isOrganizer() || Auth::user()->isSuborganizer())
+                        <div class="col-md-4">
+                            <div class="card border-primary">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-users fa-3x text-info mb-3"></i>
+                                    <h5>Gestión de Programas de Reunión</h5>
+                                    <p class="text-muted">
+                                        @if(Auth::user()->isCoordinator() || Auth::user()->isOrganizer())
+                                            Crear, editar y administrar informes de predicación
+                                        @else
+                                            Ver y consultar listado de informes de predicación
+                                        @endif
+                                    </p>
+                                    <a href="{{ route('programas.index') }}" class="btn btn-info">
+                                        <i class="fas fa-arrow-right me-2"></i>Acceder
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
                     @else
+                        <div class="col-12 mt-3">
+                            <div class="alert alert-success">
+                                <i class="fas fa-graduation-cap me-2"></i>
+                                <strong>Bienvenido, {{ Auth::user()->name }}!</strong>
+                                <span class="badge bg-success ms-2">{{ Auth::user()->role_name }}</span>
+                                <br><small>Como {{ Auth::user()->role_name }}, accede a tus cursos y recursos de aprendizaje desde este panel.</small>
+                            </div>
+                        </div>
                         <!-- Dashboard para Estudiantes -->
                         <div class="col-md-6">
                             <div class="card border-info">
@@ -109,15 +156,6 @@
                                         <i class="fas fa-clock me-2"></i>Próximamente
                                     </button>
                                 </div>
-                            </div>
-                        </div>
-
-                        <div class="col-12 mt-3">
-                            <div class="alert alert-success">
-                                <i class="fas fa-graduation-cap me-2"></i>
-                                <strong>Bienvenido, {{ Auth::user()->name }}!</strong>
-                                <span class="badge bg-success ms-2">{{ Auth::user()->role_name }}</span>
-                                <br><small>Como {{ Auth::user()->role_name }}, accede a tus cursos y recursos de aprendizaje desde este panel.</small>
                             </div>
                         </div>
                     @endif
