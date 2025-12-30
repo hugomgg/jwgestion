@@ -885,6 +885,7 @@ class UserController extends Controller
      */
     public function getHistorialSegundaSeccion($encargadoId,$parteId)
     {
+        //Historial de participaciones del usuario en partes de la segunda sección como estudiante o ayudante
         try {
             // Verificar que el usuario existe
             $usuario = User::findOrFail($encargadoId);
@@ -907,13 +908,8 @@ class UserController extends Controller
                     'pp.programa_id',
                     's.abreviacion as sala_abreviacion',
                     'ps.abreviacion as parte_abreviacion',
-                    'encargado.name as encargado_nombre',
-                    'ayudante.name as ayudante_nombre',
-                    DB::raw("CASE
-                        WHEN pp.encargado_id = {$encargadoId} THEN 'Encargado'
-                        WHEN pp.ayudante_id = {$encargadoId} THEN 'Ayudante'
-                        ELSE 'N/A'
-                    END as rol")
+                    DB::raw("CASE WHEN encargado_reemplazado_id IS NOT NULL AND encargado_id={$encargadoId} THEN concat('(R)', encargado.name) ELSE encargado.name END as encargado_nombre"),
+                    DB::raw("CASE WHEN ayudante_reemplazado_id IS NOT NULL AND ayudante_id={$encargadoId} THEN concat('(R)', ayudante.name) ELSE ayudante.name END as ayudante_nombre")
                 )
                 ->orderBy('prog.fecha', 'desc')
                 ->get();
