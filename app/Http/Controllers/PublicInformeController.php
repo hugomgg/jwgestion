@@ -196,18 +196,18 @@ class PublicInformeController extends Controller
     {
         $periodos = [];
 
-        // Mes actual
-        $mesActual = Carbon::now();
-        $periodos[] = [
-            'value' => $mesActual->format('Y-m'),
-            'label' => $this->getNombreMes($mesActual->month) . ' ' . $mesActual->year
-        ];
-
         // Mes anterior
         $mesAnterior = Carbon::now()->subMonth();
         $periodos[] = [
             'value' => $mesAnterior->format('Y-m'),
             'label' => $this->getNombreMes($mesAnterior->month) . ' ' . $mesAnterior->year
+        ];
+
+        //2 meses anteriores
+        $dosMesesAnterior = Carbon::now()->subMonths(2);
+        $periodos[] = [
+            'value' => $dosMesesAnterior->format('Y-m'),
+            'label' => $this->getNombreMes($dosMesesAnterior->month) . ' ' . $dosMesesAnterior->year . ' (atrasado)'
         ];
 
         return $periodos;
