@@ -415,9 +415,12 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-info" id="verAsignacionBtn" style="display: none;" onclick="verAsignacionDesdeParteProgramaModal()">
+                        <i class="fas fa-eye"></i> Ver
+                    </button>
                     <button type="submit" class="btn btn-primary" id="saveParteBtn">
                         <span class="spinner-border spinner-border-sm me-2 d-none" role="status"></span>
-                        Guardar Asignación
+                        Guardar
                     </button>
                 </div>
             </form>
@@ -559,7 +562,7 @@
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-primary" id="saveParteSegundaSeccionBtn">
                         <span class="spinner-border spinner-border-sm me-2 d-none" role="status"></span>
-                        Guardar Asignación
+                        Guardar
                     </button>
                 </div>
             </form>
@@ -704,7 +707,7 @@
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-primary" id="saveTerceraSeccionBtn">
                         <span class="spinner-border spinner-border-sm me-2 d-none" role="status"></span>
-                        Guardar Asignación
+                        Guardar
                     </button>
                 </div>
             </form>
@@ -794,7 +797,7 @@
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-primary" id="saveParteNVBtn">
                         <span class="spinner-border spinner-border-sm me-2 d-none" role="status"></span>
-                        Guardar Asignación
+                        Guardar
                     </button>
                 </div>
             </form>

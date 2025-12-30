@@ -370,7 +370,8 @@ $(document).ready(function() {
 
     function openCreateParteModal() {
         isEditMode = false;
-        $('#saveParteBtn').text('Guardar Asignación');
+        $('#parteProgramaModalLabel').text('Nueva Asignación de Tesoros de la Biblia');
+        $('#saveParteBtn').text('Guardar');
         $('#parteProgramaForm')[0].reset();
 
         // Limpiar alertas del modal
@@ -379,6 +380,9 @@ $(document).ready(function() {
         // Mostrar select y ocultar input de texto para "Asignación" en modo "nuevo"
         $('#parte_id').show();
         $('#parte_display').hide();
+
+        // Ocultar botón Ver en modo crear
+        $('#verAsignacionBtn').hide();
 
         // Ocultar campo y botón de encargado reemplazado en modo "nuevo"
         $('#encargado_reemplazado_display').closest('.col-md-6').hide();
@@ -409,7 +413,7 @@ $(document).ready(function() {
     function editParte(id) {
         isEditMode = true;
         $('#parteProgramaModalLabel').text('Editar Asignación de Tesoros de la Biblia');
-        $('#saveParteBtn').text('Actualizar Asignación');
+        $('#saveParteBtn').text('Actualizar');
 
         // Limpiar alertas del modal
         $('#modal-alert-container').empty();
@@ -454,6 +458,13 @@ $(document).ready(function() {
 
                         // Habilitar el botón de buscar encargado ya que hay una parte seleccionada
                         $('#btn-buscar-encargado').prop('disabled', false);
+
+                        // Mostrar botón Ver solo si parte_id = 3
+                        if (parte.parte_id === 3) {
+                            $('#verAsignacionBtn').show();
+                        } else {
+                            $('#verAsignacionBtn').hide();
+                        }
 
                         // Habilitar/deshabilitar el botón de historial según si hay encargado
                         if (parte.encargado_id) {
@@ -955,7 +966,7 @@ $(document).ready(function() {
 
         $('#parteProgramaSegundaSeccionForm')[0].reset();
         $('#parte_programa_segunda_seccion_id').val('');
-        $('#saveParteSegundaSeccionBtn').text('Guardar Asignación');
+        $('#saveParteSegundaSeccionBtn').text('Guardar');
         // Limpiar errores previos
         $('.is-invalid').removeClass('is-invalid');
         $('.invalid-feedback').text('');
@@ -1005,7 +1016,7 @@ $(document).ready(function() {
         isEditMode = true;
         $('#parteProgramaSegundaSeccionModalLabel').text('Editar Asignación');
         $('#parte_programa_segunda_seccion_id').val(id);
-        $('#saveParteSegundaSeccionBtn').text('Actualizar Asignación');
+        $('#saveParteSegundaSeccionBtn').text('Actualizar');
 
         // Limpiar errores previos
         $('.is-invalid').removeClass('is-invalid');
@@ -4028,7 +4039,7 @@ $(document).ready(function() {
     function openCreateParteNVModal() {
         isEditMode = false;
         $('#parteProgramaNVModalLabel').text('Nueva Asignación de Nuestra Vida Cristiana');
-        $('#saveParteNVBtn').text('Guardar Asignación');
+        $('#saveParteNVBtn').text('Guardar');
         $('#parteProgramaNVForm')[0].reset();
         $('#programa_id_parte_nv').val($('#programa_id').val());
 
@@ -4071,7 +4082,7 @@ $(document).ready(function() {
     function openEditParteNVModal(id) {
         isEditMode = true;
         $('#parteProgramaNVModalLabel').text('Editar Asignación de Nuestra Vida Cristiana');
-        $('#saveParteNVBtn').text('Actualizar Asignación');
+        $('#saveParteNVBtn').text('Actualizar');
 
         // Limpiar alertas del modal
         $('#modal-alert-container-nv').empty();
@@ -4566,5 +4577,14 @@ function showModalAlert(containerId, type, message) {
     }
 }
 
+// Función para ver asignación desde el modal de edición de parte
+function verAsignacionDesdeParteProgramaModal() {
+    const parteProgramaId = $('#parte_programa_id').val();
+    if (parteProgramaId) {
+        verAsignacionDesdeTabla(parteProgramaId);
+    }
+}
+
 // Exponer funciones globalmente para que puedan ser llamadas desde onclick en HTML
 window.verAsignacionDesdeTabla = verAsignacionDesdeTabla;
+window.verAsignacionDesdeParteProgramaModal = verAsignacionDesdeParteProgramaModal;

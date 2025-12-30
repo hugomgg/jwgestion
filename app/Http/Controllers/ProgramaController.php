@@ -1605,12 +1605,12 @@ class ProgramaController extends Controller
                 ->where('pp.programa_id', DB::table('partes_programa')
                     ->where('id', $parteProgramaId)
                     ->value('programa_id'))
-                ->whereIn('ps.seccion_id', [2]) // Tesoros de la Biblia y Seamos Mejores Maestros
+                ->whereIn('ps.seccion_id', [1,2]) //Tesoros de la Biblia y Seamos Mejores Maestros
                 ->orderBy('pp.orden', 'asc')
                 ->select('pp.id', 'pp.parte_id', 'pp.orden')
                 ->get();
 
-            $numeroIntervencion = 4;
+            $numeroIntervencion = 3;
             foreach ($asignacionesDelPrograma as $item) {
                 if ($item->parte_id == 3) {
                     if ($item->id == $parteProgramaId) {
@@ -1624,7 +1624,6 @@ class ProgramaController extends Controller
                     $numeroIntervencion++;
                 }
             }
-
             $asignacion->numero_intervencion = $numeroIntervencion;
             $asignacion->fecha_formateada = \Carbon\Carbon::parse($asignacion->fecha)->locale('es')->translatedFormat('d \d\e F \d\e Y');
 
