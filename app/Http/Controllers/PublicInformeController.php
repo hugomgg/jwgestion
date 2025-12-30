@@ -34,7 +34,7 @@ class PublicInformeController extends Controller
                        ->get();
 
         // Obtener servicios activos
-        $servicios = Servicio::where('estado', 1)
+        $servicios = Servicio::where('estado', 1)->whereIn('id', [1,3,4]) //Solo servicios permitidos
                              ->orderBy('nombre')
                              ->get();
 
