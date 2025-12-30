@@ -596,7 +596,7 @@ class ParteProgramaController extends Controller
                 }
             }
 
-            $partes = $query->orderBy('orden')
+            $partes = $query->orderBy('nombre', 'asc')
                 ->get(['id', 'nombre', 'abreviacion', 'tiempo']);
 
             return response()->json([
