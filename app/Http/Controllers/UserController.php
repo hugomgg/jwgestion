@@ -122,7 +122,7 @@ class UserController extends Controller
         $servicios = Servicio::where('estado', 1)->get();
         $nombramientos = Nombramiento::where('estado', 1)->get();
         $esperanzas = Esperanza::where('estado', 1)->get();
-        $asignaciones = Asignacion::where('estado', 1)->get();
+        $asignaciones = Asignacion::where('estado', 1)->orderBy('nombre')->get();
         $estadosEspirituales = EstadoEspiritual::where('estado', 1)->get();
 
         // Si es coordinador, subcoordinador, secretario u organizador, solo mostrar su congregación
