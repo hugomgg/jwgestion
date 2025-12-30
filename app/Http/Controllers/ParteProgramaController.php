@@ -2067,19 +2067,19 @@ class ParteProgramaController extends Controller
             }
 
             // Primera parte del UNION: usuarios que nunca han participado
-            $usuariosPrimeraVez = DB::select("SELECT
+            $usuariosPrimeraVez = DB::select("SELECT DISTINCT
                     'Primera vez' as fecha,
                     '__' as abreviacion_parte,
                     '__' as sala_abreviacion,
                     u.name,
                     '__' as tipo,
-                    au.asignacion_id AS as1,
+                    -- au.asignacion_id AS as1,
                     u.id,
                     u.sexo,
                     0 as contador
                 FROM users u
                 INNER JOIN asignaciones_users au ON au.user_id = u.id
-                INNER JOIN partes_seccion ps ON ps.asignacion_id = au.asignacion_id
+                INNER JOIN partes_seccion ps ON (ps.asignacion_id = au.asignacion_id OR au.asignacion_id = 5)
                 LEFT JOIN (SELECT pp.encargado_id,pp.ayudante_id,pp.parte_id,ps.asignacion_id
                             FROM partes_programa pp
                             INNER JOIN partes_seccion ps ON ps.id=pp.parte_id
@@ -2119,7 +2119,7 @@ class ParteProgramaController extends Controller
                             au.user_id,au.asignacion_id
                         FROM
                             asignaciones_users au
-                        INNER JOIN asignacion_parte ap ON au.asignacion_id = ap.asignacion_id
+                        INNER JOIN asignacion_parte ap ON (au.asignacion_id = ap.asignacion_id OR au.asignacion_id = 5)
                     )
                     ,
                     ultima_participacion AS (
@@ -2129,7 +2129,7 @@ class ParteProgramaController extends Controller
                         INNER JOIN partes_programa pp ON p.id=pp.programa_id
                         INNER JOIN usuarios_asignacion_seleccionada uas ON (uas.user_id=pp.encargado_id OR uas.user_id=pp.ayudante_id)
                         INNER JOIN partes_seccion ps ON pp.parte_id= ps.id 
-                        WHERE ps.asignacion_id = uas.asignacion_id
+                        WHERE ps.asignacion_id = uas.asignacion_id or uas.asignacion_id = 5
                         GROUP BY uas.user_id
                     ),
                     ayudantes_encargado AS (
