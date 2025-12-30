@@ -1715,6 +1715,7 @@ $(document).ready(function() {
             url: url,
             method: 'GET',
             data: params,
+            async: false,
             success: function(response) {
                 if (response.success) {
                     const select = $('#select_ayudante_segunda_seccion');
