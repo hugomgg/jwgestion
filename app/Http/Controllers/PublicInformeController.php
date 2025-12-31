@@ -10,6 +10,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\InformeGrupalNotification;
 use Carbon\Carbon;
 
 class PublicInformeController extends Controller
@@ -175,6 +177,9 @@ class PublicInformeController extends Controller
                 'modificador_id' => $request->user_id,
             ]);
 
+            // Enviar email a los responsables del grupo
+            $this->enviarEmailInformeGrupal($grupo, $usuario, $anio, $mes);
+
             return response()->json([
                 'success' => true,
                 'message' => 'Informe enviado exitosamente',
@@ -225,5 +230,99 @@ class PublicInformeController extends Controller
         ];
 
         return $meses[$mes] ?? '';
+    }
+
+    /**
+     * Enviar email a los responsables del grupo con el resumen de informes
+     */
+    private function enviarEmailInformeGrupal($grupo, $publicador, $anio, $mes)
+    {
+        try {
+            // Obtener usuarios destinatarios (perfiles: COORDINADOR, SUBCOORDINADOR, SECRETARIO, SUBSECRETARIO, ORGANIZADOR)
+            $destinatarios = User::where('grupo', $grupo->id)
+                ->where('estado', 1)
+                ->whereIn('perfil', [3, 4, 5, 6, 7]) // COORDINADOR, SUBCOORDINADOR, SECRETARIO, SUBSECRETARIO, ORGANIZADOR
+                ->whereNotNull('email')
+                ->where('email', '!=', '')
+                ->get();
+
+            // Si no hay destinatarios, no enviar email
+            if ($destinatarios->isEmpty()) {
+                return;
+            }
+
+            // Obtener todos los informes del grupo para el periodo
+            $informesData = $this->obtenerInformesDelGrupo($grupo->id, $anio, $mes);
+
+            // Construir el periodo en formato legible
+            $periodo = $this->getNombreMes($mes) . ' ' . $anio;
+
+            // Obtener nombre de la congregación
+            $congregacion = Congregacion::find($grupo->congregacion_id);
+            $congregacionNombre = $congregacion ? $congregacion->nombre : 'Congregación';
+
+            // Enviar notificación a cada destinatario
+            Notification::send(
+                $destinatarios,
+                new InformeGrupalNotification(
+                    $grupo->nombre,
+                    $publicador->name,
+                    $congregacionNombre,
+                    $periodo,
+                    $informesData
+                )
+            );
+
+        } catch (\Exception $e) {
+            // Registrar el error pero no detener el proceso
+            \Log::error('Error al enviar email de informe grupal: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Obtener informes del grupo para un periodo específico
+     */
+    private function obtenerInformesDelGrupo($grupoId, $anio, $mes)
+    {
+        // Obtener todos los usuarios del grupo
+        $usuarios = User::where('grupo', $grupoId)
+            ->where('estado', 1)
+            ->orderBy('name')
+            ->get();
+
+        // Obtener informes existentes para ese periodo y grupo
+        $informesExistentes = DB::table('informes as i')
+            ->join('servicios as s', 'i.servicio_id', '=', 's.id')
+            ->where('i.grupo_id', $grupoId)
+            ->where('i.anio', $anio)
+            ->where('i.mes', $mes)
+            ->where('i.estado', 1)
+            ->select(
+                'i.user_id',
+                'i.participa',
+                's.nombre as servicio_nombre',
+                'i.cantidad_estudios',
+                'i.horas',
+                'i.comentario'
+            )
+            ->get()
+            ->keyBy('user_id');
+
+        // Construir array con todos los usuarios e informes
+        $resultado = $usuarios->map(function($usuario) use ($informesExistentes) {
+            $informe = $informesExistentes->get($usuario->id);
+
+            return [
+                'user_id' => $usuario->id,
+                'nombre' => $usuario->name,
+                'participa' => $informe ? $informe->participa : 0,
+                'servicio_nombre' => $informe ? $informe->servicio_nombre : '-',
+                'cantidad_estudios' => $informe ? $informe->cantidad_estudios : 0,
+                'horas' => $informe ? $informe->horas : 0,
+                'comentario' => ($informe && $informe->comentario) ? $informe->comentario : '-'
+            ];
+        });
+
+        return $resultado->toArray();
     }
 }
