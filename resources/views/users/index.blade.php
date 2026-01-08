@@ -107,6 +107,7 @@
                                             <label for="perfilFilter" class="form-label">Perfiles:</label>
                                             <select class="form-select" id="perfilFilter">
                                                 <option value="">Todos</option>
+                                                <option value="todos-publicadores">Todos los publicadores</option>
                                                 @foreach($perfiles as $perfil)
                                                     <option value="{{ $perfil->privilegio }}">{{ $perfil->privilegio }}</option>
                                                 @endforeach

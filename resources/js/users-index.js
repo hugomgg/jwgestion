@@ -308,6 +308,9 @@ $(document).ready(function() {
 
         if (selectedPerfil === '') {
             table.column(2).search('').draw();
+        } else if (selectedPerfil === 'todos-publicadores') {
+            // Buscar todos excepto Estudiante usando regex negativa
+            table.column(2).search('^(?!.*Estudiante).*$', true, false).draw();
         } else {
             table.column(2).search(selectedPerfil).draw();
         }

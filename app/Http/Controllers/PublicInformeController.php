@@ -55,6 +55,7 @@ class PublicInformeController extends Controller
 
         $usuarios = User::where('grupo', $grupo_id)
                        ->where('estado', 1)
+                       ->where('perfil', '!=', 10) // Excluir perfil VISITANTE
                        ->orderBy('name')
                        ->get(['id', 'name']);
 
