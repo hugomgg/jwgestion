@@ -806,10 +806,8 @@ $(document).ready(function() {
                     $('#parte_display').val(parte.nombre);
                     $('#parte_id_hidden').val(parte.id);
 
-                    // Autocompletar el tiempo si está disponible
-                    if (parte.tiempo) {
-                        $('#tiempo_parte').val(parte.tiempo);
-                    }
+                    // NO sobrescribir el tiempo en modo edición, ya que se estableció desde parte_programa
+                    // El tiempo de la parte_seccion es solo referencial para nuevas asignaciones
 
                     // Ejecutar callback si se proporciona
                     if (typeof callback === 'function') {
@@ -4108,11 +4106,13 @@ $(document).ready(function() {
                     // Llenar el formulario con los datos
                     $('#parte_programa_nv_id').val(parte.id);
                     $('#programa_id_parte_nv').val(parte.programa_id);
-                    $('#tiempo_parte_nv').val(parte.tiempo);
                     $('#tema_parte_nv').val(parte.tema);
 
-                    // Seleccionar la parte
-                    $('#parte_id_nv').val(parte.parte_id).trigger('change');
+                    // Seleccionar la parte sin disparar change para evitar sobrescribir el tiempo
+                    $('#parte_id_nv').val(parte.parte_id);
+                    
+                    // Establecer el tiempo DESPUÉS de seleccionar la parte para que no se sobrescriba
+                    $('#tiempo_parte_nv').val(parte.tiempo);
 
                     $('#encargado_display_nv').val(parte.encargado.name);
                     $('#encargado_id_nv').val(parte.encargado.id);
@@ -4193,10 +4193,8 @@ $(document).ready(function() {
                         $('#parte_display_nv').val(parte.nombre);
                         $('#parte_id_hidden_nv').val(parte.id);
 
-                        // Autocompletar el tiempo si está disponible
-                        if (parte.tiempo) {
-                            $('#tiempo_parte_nv').val(parte.tiempo);
-                        }
+                        // NO sobrescribir el tiempo en modo edición, ya que se estableció desde parte_programa
+                        // El tiempo de la parte_seccion es solo referencial para nuevas asignaciones
 
                     } else {
                         $('#parte_id_nv').empty().append('<option value="">Error al cargar la parte</option>');
