@@ -89,6 +89,10 @@
                                                 <button type="button" class="btn btn-outline-success" id="exportXlsBtn" disabled>
                                                     <i class="fas fa-file-excel me-2"></i>Resumen XLS
                                                 </button>
+                                                <!-- Botón Resumen Vista -->
+                                                <button type="button" class="btn btn-outline-primary" id="exportResumenVistaBtn" disabled>
+                                                    <i class="fas fa-table me-2"></i>Resumen Vista
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -296,6 +300,7 @@
         pdf: `{{ route('programas.export.pdf') }}`,
         programaXls: `{{ route('programas.export.programa-xls') }}`,
         xls: `{{ route('programas.export.xls') }}`,
+        resumenVista: `{{ route('programas.export.resumen-vista') }}`,
         asignaciones: `{{ route('programas.export.asignaciones') }}`
     };
 

@@ -12,6 +12,7 @@ export default defineConfig({
                 'resources/css/users-index.css',
                 'resources/css/public-informe.css',
                 'resources/css/programas-index.css',
+                'resources/css/programas-resumen.css',
                 'resources/css/programas-edit.css',
                 'resources/css/informes-index.css',
                 'resources/css/grupos-index.css',

@@ -1,6 +1,6 @@
 {
   "resources/css/dark-mode.css": {
-    "file": "assets/dark-mode-N1F1zwuv.css",
+    "file": "assets/dark-mode-CGX1ShC2.css",
     "src": "resources/css/dark-mode.css",
     "isEntry": true
   },
@@ -20,8 +20,13 @@
     "isEntry": true
   },
   "resources/css/programas-index.css": {
-    "file": "assets/programas-index-CEWyHOug.css",
+    "file": "assets/programas-index-BUUfhlQB.css",
     "src": "resources/css/programas-index.css",
+    "isEntry": true
+  },
+  "resources/css/programas-resumen.css": {
+    "file": "assets/programas-resumen-aQU-gvC2.css",
+    "src": "resources/css/programas-resumen.css",
     "isEntry": true
   },
   "resources/css/public-informe.css": {
@@ -81,7 +86,7 @@
     "isEntry": true
   },
   "resources/js/programas-index.js": {
-    "file": "assets/programas-index-BsUBGVt1.js",
+    "file": "assets/programas-index-CbnuQH1h.js",
     "name": "programas-index",
     "src": "resources/js/programas-index.js",
     "isEntry": true

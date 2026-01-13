@@ -128,3 +128,9 @@ div.select2-container--bootstrap-5 .select2-selection__rendered {
     background-color: #a3e0fa !important;
     color: #000000 !important;
 }
+/* Estilo hover para filas con colores alternados */
+#programasTable tbody tr:not(.semana-actual-row):hover td {
+    filter: brightness(0.92);
+}
+
+

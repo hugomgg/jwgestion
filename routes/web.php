@@ -52,6 +52,9 @@ Route::middleware('auth')->group(function () {
     // Exportar XLS de programas (para coordinadores)
     Route::get('/programas/exportar-xls', [App\Http\Controllers\ProgramaController::class, 'exportXls'])->name('programas.export.xls');
 
+    // Resumen Vista de programas (para coordinadores)
+    Route::get('/programas/resumen-vista', [App\Http\Controllers\ProgramaController::class, 'resumenVista'])->name('programas.export.resumen-vista');
+
     // Exportar Asignaciones de programas (para coordinadores)
     Route::get('/programas/exportar-asignaciones', [App\Http\Controllers\ProgramaController::class, 'exportAsignaciones'])->name('programas.export.asignaciones');
 

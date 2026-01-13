@@ -369,6 +369,7 @@ $(document).ready(function() {
         const $btnPdf = $('#exportPdfBtn');
         const $btnProgramaXls = $('#exportProgramaXlsBtn');
         const $btnXls = $('#exportXlsBtn');
+        const $btnResumenVista = $('#exportResumenVistaBtn');
         const $btnAsignaciones = $('#exportAsignacionesBtn');
 
         if (anioSeleccionado && mesesSeleccionados.length > 0) {
@@ -376,6 +377,7 @@ $(document).ready(function() {
             $btnPdf.removeClass('disabled').prop('disabled', false);
             $btnProgramaXls.removeClass('disabled').prop('disabled', false);
             $btnXls.removeClass('disabled').prop('disabled', false);
+            $btnResumenVista.removeClass('disabled').prop('disabled', false);
             $btnAsignaciones.removeClass('disabled').prop('disabled', false);
 
             // Guardar URLs en data attributes para uso posterior
@@ -387,17 +389,20 @@ $(document).ready(function() {
             $btnPdf.data('export-url', window.exportRoutes.pdf + baseUrl);
             $btnProgramaXls.data('export-url', window.exportRoutes.programaXls + baseUrl);
             $btnXls.data('export-url', window.exportRoutes.xls + baseUrl);
+            $btnResumenVista.data('export-url', window.exportRoutes.resumenVista + baseUrl);
             $btnAsignaciones.data('export-url', window.exportRoutes.asignaciones + baseUrl);
         } else {
             // Deshabilitar botones
             $btnPdf.addClass('disabled').prop('disabled', true);
             $btnProgramaXls.addClass('disabled').prop('disabled', true);
             $btnXls.addClass('disabled').prop('disabled', true);
+            $btnResumenVista.addClass('disabled').prop('disabled', true);
             $btnAsignaciones.addClass('disabled').prop('disabled', true);
             
             $btnPdf.removeData('export-url');
             $btnProgramaXls.removeData('export-url');
             $btnXls.removeData('export-url');
+            $btnResumenVista.removeData('export-url');
             $btnAsignaciones.removeData('export-url');
         }
     }
@@ -406,7 +411,7 @@ $(document).ready(function() {
     window.actualizarBotonesExportacion = actualizarBotonesExportacion;
 
     // Manejar clic en botones de exportación
-    $('#exportPdfBtn, #exportProgramaXlsBtn, #exportXlsBtn, #exportAsignacionesBtn').on('click', function(e) {
+    $('#exportPdfBtn, #exportProgramaXlsBtn, #exportXlsBtn, #exportResumenVistaBtn, #exportAsignacionesBtn').on('click', function(e) {
         e.preventDefault();
         const url = $(this).data('export-url');
         if (url && !$(this).prop('disabled')) {
