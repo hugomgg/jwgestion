@@ -827,7 +827,8 @@ function buscarProgramasPorAnio(anio) {
                         const fechaFormateada = `${fechaParts[2]}/${fechaParts[1]}/${fechaParts[0]}`; // DD/MM/YYYY
                         
                         // Verificar si está en la semana actual
-                        const fechaPrograma = new Date(programa.fecha);
+                        // Crear fecha usando año, mes, día para evitar problemas de zona horaria
+                        const fechaPrograma = new Date(parseInt(fechaParts[0]), parseInt(fechaParts[1]) - 1, parseInt(fechaParts[2]));
                         fechaPrograma.setHours(0, 0, 0, 0);
                         const esSemanaActual = fechaPrograma >= lunesSemanaActual && fechaPrograma <= domingoSemanaActual;
 
