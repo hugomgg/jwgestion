@@ -1107,116 +1107,42 @@ class ProgramaController extends Controller
                 $mesesSQL = implode(',', $meses);
             }
 
-            // Consulta para obtener los programas con sus partes
-            $query = DB::table('programas as p')
-                ->Join('users as creador', 'p.creador', '=', 'creador.id')
-                ->leftJoin('users as presidente', 'p.presidencia', '=', 'presidente.id')
-                ->leftJoin('congregaciones as c', 'presidente.congregacion', '=', 'c.id')
-                ->leftJoinSub("SELECT usuario,count(usuario) AS contador 
-                    FROM
-                        programas p
-                        INNER JOIN 
-                        (
-                        SELECT presidencia AS usuario,id AS programa_id FROM programas
-                        UNION 
-                        SELECT encargado_id AS usuario,programa_id FROM partes_programa
-                        UNION 
-                        SELECT ayudante_id AS usuario,programa_id FROM partes_programa
-                        ) usuarios ON usuarios.programa_id=p.id
-                    WHERE YEAR(p.fecha) = {$anio} AND MONTH(p.fecha) IN ($mesesSQL) AND usuario IS NOT null
-                    GROUP BY usuario ", 'posts_count1', function ($join) {
-                        $join->on('presidente.id', '=', 'posts_count1.usuario');
-                    })
-                ->where('creador.congregacion', $currentUser->congregacion)
-                ->whereNotNull('p.fecha');
-
-            // Aplicar filtros de fecha si se proporcionan
-            if ($anio) {
-                // Cambiar whereYear (SQLite) por whereRaw con YEAR (MySQL)
-                $query->whereRaw('YEAR(p.fecha) = ?', [$anio]);
-
-                // Si hay meses específicos seleccionados, filtrar por ellos
-                if ($meses && is_array($meses) && !empty($meses)) {
-                    $query->where(function($q) use ($meses) {
-                        foreach ($meses as $mes) {
-                            // Cambiar whereMonth (SQLite) por whereRaw con MONTH (MySQL)
-                            $q->orWhereRaw('MONTH(p.fecha) = ?', [$mes]);
-                        }
-                    });
-                }
-            }
-
-            $programas = $query->select(
-                    'p.id',
-                    'p.fecha',
-                    'p.presidencia',
-                    'c.nombre as congregacion_nombre',
-                    'presidente.name as presidente_nombre',
-                    'posts_count1.contador'
-                )
-                ->orderBy('p.fecha', 'asc')
-                ->get();
-
-            // Agregar las partes a cada programa
-            foreach ($programas as &$programa) {
-                $programa->partes = DB::table('partes_programa as pp')
-                    ->leftJoin('users as encargado', 'pp.encargado_id', '=', 'encargado.id')
-                    ->leftJoin('users as ayudante', 'pp.ayudante_id', '=', 'ayudante.id')
-                    ->leftJoin('users as encargadoreemplazado', 'pp.encargado_reemplazado_id', '=', 'encargadoreemplazado.id')
-                    ->leftJoin('users as ayudantereemplazado', 'pp.ayudante_reemplazado_id', '=', 'ayudantereemplazado.id')
-                    ->leftJoin('partes_seccion as ps', 'pp.parte_id', '=', 'ps.id')
-                    ->leftJoinSub("SELECT usuario,count(usuario) AS contador 
-                        FROM
-                            programas p
-                            INNER JOIN 
-                            (
-                            SELECT presidencia AS usuario,id AS programa_id FROM programas
+            // Usar la misma consulta SQL que resumenVista()
+            $query = "WITH
+                    asignados_presidentes AS (
+                        SELECT presidencia AS usuario,p.id AS programa_id,ps.abreviacion,'Presidente' AS rol,0 AS seccion_id,1 AS sala_id,0 AS orden,NULL as reemplazado
+                        FROM programas p INNER JOIN partes_seccion ps ON ps.id=27 WHERE presidencia IS NOT NULL
                             UNION 
-                            SELECT encargado_id AS usuario,programa_id FROM partes_programa
+                        SELECT encargado_id AS usuario,programa_id,ps.abreviacion,CASE WHEN seccion_id=2 THEN 'Estudiante' ELSE 'Encargado' END AS rol,ps.seccion_id,pp.sala_id,pp.orden,pp.encargado_reemplazado_id AS reemplazado
+                        FROM partes_programa pp INNER JOIN partes_seccion ps ON ps.id=pp.parte_id WHERE encargado_id IS NOT NULL 
                             UNION 
-                            SELECT ayudante_id AS usuario,programa_id FROM partes_programa
-                            ) usuarios ON usuarios.programa_id=p.id
-                        WHERE YEAR(p.fecha) = {$anio} AND MONTH(p.fecha) IN ($mesesSQL) AND usuario IS NOT null
-                        GROUP BY usuario ", 'posts_count2', function ($join) {
-                            $join->on('encargado.id', '=', 'posts_count2.usuario');
-                        })
-                    ->leftJoinSub("SELECT usuario,count(usuario) AS contador 
-                        FROM
-                            programas p
-                            INNER JOIN 
-                            (
-                            SELECT presidencia AS usuario,id AS programa_id FROM programas
-                            UNION 
-                            SELECT encargado_id AS usuario,programa_id FROM partes_programa
-                            UNION 
-                            SELECT ayudante_id AS usuario,programa_id FROM partes_programa
-                            ) usuarios ON usuarios.programa_id=p.id
-                        WHERE YEAR(p.fecha) = {$anio} AND MONTH(p.fecha) IN ($mesesSQL) AND usuario IS NOT null
-                        GROUP BY usuario ", 'posts_count3', function ($join) {
-                            $join->on('ayudante.id', '=', 'posts_count3.usuario');
-                        })
-                    ->where('pp.programa_id', $programa->id)
-                    ->select(
-                        'pp.tema',
-                        'pp.tiempo',
-                        'ps.abreviacion as parte_abreviacion',
-                        'encargado.name as nombre_encargado',
-                        'ayudante.name as nombre_ayudante',
-                        'encargadoreemplazado.name as nombre_encargado_reemplazado',
-                        'ayudantereemplazado.name as nombre_ayudante_reemplazado',
-                        'pp.sala_id',
-                        'ps.seccion_id',
-                        DB::raw('CASE WHEN pp.parte_id = 3 THEN 99 ELSE pp.orden END as orden'),
-                        'posts_count2.contador as contador_encargado',
-                        'posts_count3.contador as contador_ayudante')
-                    ->orderBy('ps.seccion_id', 'asc')
-                    ->orderBy('pp.sala_id', 'asc')
-                    ->orderBy('pp.orden', 'asc')
-                    ->get();
-            }
+                        SELECT ayudante_id AS usuario,programa_id,ps.abreviacion,'Ayudante' AS rol,ps.seccion_id,pp.sala_id,pp.orden,pp.ayudante_reemplazado_id AS reemplazado
+                        FROM partes_programa pp INNER JOIN partes_seccion ps ON ps.id=pp.parte_id WHERE ayudante_id IS NOT NULL 
+                    ),
+                    programas_seleccionados AS (
+                        SELECT p.id,p.fecha,ROW_NUMBER() OVER () AS correlativo
+                        FROM programas p 
+                        INNER JOIN users u ON u.id=p.creador
+                        WHERE YEAR(p.fecha) = {$anio} AND MONTH(p.fecha) IN ({$mesesSQL}) AND u.congregacion = {$currentUser->congregacion} 
+                    ),
+                    usuarios_agrupados AS (
+                        SELECT usuario,count(*) AS contador
+                        FROM asignados_presidentes up
+                        INNER JOIN programas_seleccionados ps ON ps.id=up.programa_id
+                        GROUP BY usuario
+                    )
+                    SELECT up.programa_id,DATE_FORMAT(ps.fecha, '%d/%m/%Y') AS fecha, u.name AS nombre ,up.abreviacion AS parte,ua.contador AS participaciones,up.rol,up.sala_id AS sala,ur.name AS reemplazado,MOD(ps.correlativo-1,10) AS color_index 
+                    FROM asignados_presidentes up
+                    INNER JOIN programas_seleccionados ps ON ps.id=up.programa_id
+                    INNER JOIN users u ON u.id=up.usuario
+                    INNER JOIN usuarios_agrupados ua ON ua.usuario=u.id
+                    LEFT JOIN users ur ON ur.id=up.reemplazado 
+                    ORDER BY programa_id,seccion_id,sala_id,orden";
+            
+            $data = DB::select($query);
 
-            // Verificar si hay programas para exportar
-            if ($programas->isEmpty()) {
+            // Verificar si hay datos para exportar
+            if (empty($data)) {
                 return redirect()->route('programas.index')
                     ->with('error', 'No hay programas disponibles para el período seleccionado.');
             }
@@ -1236,38 +1162,37 @@ class ProgramaController extends Controller
                 $fileName .= '_' . date('Y-m-d');
             }
 
-            // Crear Excel usando Laravel Excel
-            return Excel::download(new class($programas) implements \Maatwebsite\Excel\Concerns\FromCollection, \Maatwebsite\Excel\Concerns\WithHeadings, \Maatwebsite\Excel\Concerns\WithStyles {
-                private $programas;
+            // Crear Excel usando Laravel Excel con los mismos datos que resumenVista()
+            return Excel::download(new class($data) implements \Maatwebsite\Excel\Concerns\FromCollection, \Maatwebsite\Excel\Concerns\WithHeadings, \Maatwebsite\Excel\Concerns\WithStyles {
+                private $data;
                 private $rowStyles = [];
 
-                public function __construct($programas)
+                public function __construct($data)
                 {
-                    $this->programas = $programas;
+                    $this->data = $data;
                 }
 
                 public function collection()
                 {
-                    $data = collect();
+                    $collection = collect();
                     $rowIndex = 2; // Empezar desde la fila 2 (después del header)
 
-                    foreach ($this->programas as $programaIndex => $programa) {
-                        // Determinar el color de fondo para este programa
-                        $backgroundColor = $this->getProgramBackgroundColor($programaIndex);
+                    foreach ($this->data as $row) {
+                        // Determinar el color de fondo basado en color_index
+                        $backgroundColor = $this->getProgramBackgroundColor($row->color_index);
 
-                        //Agregar fila para el presidente
-                        $data->push([
-                            //Fecha en formato dd-mm-AAAA
-                            'Fecha' => \Carbon\Carbon::parse($programa->fecha)->locale('es')->translatedFormat('d-m-Y'),
-                            'Parte' => 'PD',
-                            'Nombre' => $programa->presidente_nombre ? $programa->presidente_nombre: 'N/A',
-                            'Participaciones' => '('.$programa->contador.')',
-                            'Rol' => 'Presidente',
-                            'Sala' => '1',
-                            'Tiempo' => '',
+                        // Agregar fila con los mismos campos que resumenVista()
+                        $collection->push([
+                            'Fecha' => $row->fecha,
+                            'Parte' => $row->parte,
+                            'Nombre' => $row->nombre,
+                            'Participaciones' => $row->participaciones,
+                            'Rol' => $row->rol,
+                            'Sala' => $row->sala,
+                            'Reemplazado' => $row->reemplazado ?? '',
                         ]);
 
-                        // Aplicar estilo a la fila del presidente
+                        // Aplicar estilo a la fila
                         $this->rowStyles[$rowIndex] = [
                             'fill' => [
                                 'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
@@ -1275,55 +1200,9 @@ class ProgramaController extends Controller
                             ]
                         ];
                         $rowIndex++;
-
-                        foreach ($programa->partes as $parte) {
-                            // Agregar fila para el encargado (Estudiante)
-                            $data->push([
-                                //Fecha en formato dd-mm-AAAA
-                                'Fecha' => \Carbon\Carbon::parse($programa->fecha)->locale('es')->translatedFormat('d-m-Y'),
-                                'Parte' => $parte->parte_abreviacion ?: 'N/A',
-                                'Nombre' => $parte->nombre_encargado ? $parte->nombre_encargado : 'N/A',
-                                'Participaciones' => '('.$parte->contador_encargado.')',
-                                'Rol' => $parte->seccion_id == 2 ? 'Estudiante' : 'Encargado',
-                                'Sala' => $parte->sala_id ?: '',
-                                'Reemplazado' => $parte->nombre_encargado_reemplazado ?: '',
-                            ]);
-
-                            // Aplicar estilo a la fila del estudiante
-                            $this->rowStyles[$rowIndex] = [
-                                'fill' => [
-                                    'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
-                                    'startColor' => ['rgb' => $backgroundColor]
-                                ]
-                            ];
-                            $rowIndex++;
-
-                            // Si hay ayudante, agregar fila adicional para el ayudante
-                            if ($parte->nombre_ayudante) {
-                                $data->push([
-                                    //Fecha en formato dd-mm-AAAA
-                                    'Fecha' => \Carbon\Carbon::parse($programa->fecha)->locale('es')->translatedFormat('d-m-Y'),
-                                    'Parte' => $parte->parte_abreviacion ?: 'N/A',
-                                    'Nombre' => $parte->nombre_ayudante ?: 'N/A',
-                                    'Participaciones' => '('.$parte->contador_ayudante.')',
-                                    'Rol' => 'Ayudante',
-                                    'Sala' => $parte->sala_id ?: '',
-                                    'Reemplazado' => $parte->nombre_ayudante_reemplazado ?: '',
-                                ]);
-
-                                // Aplicar estilo a la fila del ayudante
-                                $this->rowStyles[$rowIndex] = [
-                                    'fill' => [
-                                        'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
-                                        'startColor' => ['rgb' => $backgroundColor]
-                                    ]
-                                ];
-                                $rowIndex++;
-                            }
-                        }
                     }
 
-                    return $data;
+                    return $collection;
                 }
 
                 public function headings(): array
@@ -1332,7 +1211,7 @@ class ProgramaController extends Controller
                         'Fecha',
                         'Parte',
                         'Nombre',
-                        'Participaciones',
+                        'Participa',
                         'Rol',
                         'Sala',
                         'Reemplazado',
@@ -1345,12 +1224,16 @@ class ProgramaController extends Controller
                     foreach ($this->rowStyles as $row => $style) {
                         $sheet->getStyle('A' . $row . ':G' . $row)->applyFromArray($style);
                     }
-                    //Columna G texto tachado
-                    $sheet->getStyle('G2:G' . $sheet->getHighestRow())->applyFromArray([
-                        'font' => [
-                            'strikethrough' => true,
-                        ],
-                    ]);
+                    
+                    // Columna G (Reemplazado) con texto tachado cuando tenga contenido
+                    if ($sheet->getHighestRow() > 1) {
+                        $sheet->getStyle('G2:G' . $sheet->getHighestRow())->applyFromArray([
+                            'font' => [
+                                'strikethrough' => true,
+                            ],
+                        ]);
+                    }
+                    
                     // Estilo para el header
                     $sheet->getStyle('A1:G1')->applyFromArray([
                         'font' => [
@@ -1369,23 +1252,23 @@ class ProgramaController extends Controller
                     }
                 }
 
-                private function getProgramBackgroundColor($programIndex)
+                private function getProgramBackgroundColor($colorIndex)
                 {
-                    // Colores alternados para diferentes programas
+                    // Colores alternados basados en color_index (0-9)
                     $colors = [
-                        'E8F5E8', // Verde muy claro
-                        'F3E5F5', // Púrpura muy claro
-                        'E3F2FD', // Azul muy claro
-                        'FFF3E0', // Naranja muy claro
-                        'FCE4EC', // Rosa muy claro
-                        'E8F5E8', // Verde muy claro (repetir patrón)
-                        'F3E5F5', // Púrpura muy claro
-                        'E3F2FD', // Azul muy claro
-                        'FFF3E0', // Naranja muy claro
-                        'FCE4EC', // Rosa muy claro
+                        'E8F5E8', // 0 - Verde muy claro
+                        'F3E5F5', // 1 - Púrpura muy claro
+                        'E3F2FD', // 2 - Azul muy claro
+                        'FFF3E0', // 3 - Naranja muy claro
+                        'FCE4EC', // 4 - Rosa muy claro
+                        'E8F5E8', // 5 - Verde muy claro
+                        'F3E5F5', // 6 - Púrpura muy claro
+                        'E3F2FD', // 7 - Azul muy claro
+                        'FFF3E0', // 8 - Naranja muy claro
+                        'FCE4EC', // 9 - Rosa muy claro
                     ];
 
-                    return $colors[$programIndex % count($colors)];
+                    return $colors[$colorIndex % 10];
                 }
             }, $fileName . '.xlsx');
 
