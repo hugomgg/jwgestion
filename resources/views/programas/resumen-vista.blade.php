@@ -46,15 +46,15 @@
                             </thead>
                             <tbody>
                                 @foreach($data as $row)
-                                <tr data-color-index="{{ $row['color_index'] }}">
-                                    <td>{{ $row['fecha'] }}</td>
-                                    <td>{{ $row['parte'] }}</td>
-                                    <td>{{ $row['nombre'] }}</td>
-                                    <td>{{ $row['participaciones'] }}</td>
-                                    <td>{{ $row['rol'] }}</td>
-                                    <td>{{ $row['sala'] }}</td>
-                                    <td style="text-decoration: {{ $row['reemplazado'] ? 'line-through' : 'none' }};">
-                                        {{ $row['reemplazado'] }}
+                                <tr data-color-index="{{ $row->color_index }}">
+                                    <td>{{ $row->fecha }}</td>
+                                    <td>{{ $row->parte }}</td>
+                                    <td>{{ $row->nombre }}</td>
+                                    <td>{{ $row->participaciones }}</td>
+                                    <td>{{ $row->rol }}</td>
+                                    <td>{{ $row->sala }}</td>
+                                    <td style="text-decoration: {{ $row->reemplazado ? 'line-through' : 'none' }};">
+                                        {{ $row->reemplazado }}
                                     </td>
                                 </tr>
                                 @endforeach

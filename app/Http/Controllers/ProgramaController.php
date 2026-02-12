@@ -1421,164 +1421,37 @@ class ProgramaController extends Controller
             }
 
             // Consulta para obtener los programas con sus partes
-            $query = DB::table('programas as p')
-                ->Join('users as creador', 'p.creador', '=', 'creador.id')
-                ->leftJoin('users as presidente', 'p.presidencia', '=', 'presidente.id')
-                ->leftJoin('congregaciones as c', 'presidente.congregacion', '=', 'c.id')
-                ->leftJoinSub("SELECT usuario,count(usuario) AS contador 
-                    FROM
-                        programas p
-                        INNER JOIN 
-                        (
-                        SELECT presidencia AS usuario,id AS programa_id FROM programas
-                        UNION 
-                        SELECT encargado_id AS usuario,programa_id FROM partes_programa
-                        UNION 
-                        SELECT ayudante_id AS usuario,programa_id FROM partes_programa
-                        ) usuarios ON usuarios.programa_id=p.id
-                    WHERE YEAR(p.fecha) = {$anio} AND MONTH(p.fecha) IN ($mesesSQL) AND usuario IS NOT null
-                    GROUP BY usuario ", 'posts_count1', function ($join) {
-                        $join->on('presidente.id', '=', 'posts_count1.usuario');
-                    })
-                ->where('creador.congregacion', $currentUser->congregacion)
-                ->whereNotNull('p.fecha');
-
-            // Aplicar filtros de fecha si se proporcionan
-            if ($anio) {
-                $query->whereRaw('YEAR(p.fecha) = ?', [$anio]);
-
-                // Si hay meses específicos seleccionados, filtrar por ellos
-                if ($meses && is_array($meses) && !empty($meses)) {
-                    $query->where(function($q) use ($meses) {
-                        foreach ($meses as $mes) {
-                            $q->orWhereRaw('MONTH(p.fecha) = ?', [$mes]);
-                        }
-                    });
-                }
-            }
-
-            $programas = $query->select(
-                    'p.id',
-                    'p.fecha',
-                    'p.presidencia',
-                    'c.nombre as congregacion_nombre',
-                    'presidente.name as presidente_nombre',
-                    'posts_count1.contador'
-                )
-                ->orderBy('p.fecha', 'asc')
-                ->get();
-
-            // Agregar las partes a cada programa
-            foreach ($programas as &$programa) {
-                $programa->partes = DB::table('partes_programa as pp')
-                    ->leftJoin('users as encargado', 'pp.encargado_id', '=', 'encargado.id')
-                    ->leftJoin('users as ayudante', 'pp.ayudante_id', '=', 'ayudante.id')
-                    ->leftJoin('users as encargadoreemplazado', 'pp.encargado_reemplazado_id', '=', 'encargadoreemplazado.id')
-                    ->leftJoin('users as ayudantereemplazado', 'pp.ayudante_reemplazado_id', '=', 'ayudantereemplazado.id')
-                    ->leftJoin('partes_seccion as ps', 'pp.parte_id', '=', 'ps.id')
-                    ->leftJoinSub("SELECT usuario,count(usuario) AS contador 
-                        FROM
-                            programas p
-                            INNER JOIN 
-                            (
-                            SELECT presidencia AS usuario,id AS programa_id FROM programas
+            $query = "WITH
+                    asignados_presidentes AS (
+                        SELECT presidencia AS usuario,p.id AS programa_id,ps.abreviacion,'Presidente' AS rol,0 AS seccion_id,1 AS sala_id,0 AS orden,NULL as reemplazado
+                        FROM programas p INNER JOIN partes_seccion ps ON ps.id=27 WHERE presidencia IS NOT NULL
                             UNION 
-                            SELECT encargado_id AS usuario,programa_id FROM partes_programa
+                        SELECT encargado_id AS usuario,programa_id,ps.abreviacion,CASE WHEN seccion_id=2 THEN 'Estudiante' ELSE 'Encargado' END AS rol,ps.seccion_id,pp.sala_id,pp.orden,pp.encargado_reemplazado_id AS reemplazado
+                        FROM partes_programa pp INNER JOIN partes_seccion ps ON ps.id=pp.parte_id WHERE encargado_id IS NOT NULL 
                             UNION 
-                            SELECT ayudante_id AS usuario,programa_id FROM partes_programa
-                            ) usuarios ON usuarios.programa_id=p.id
-                        WHERE YEAR(p.fecha) = {$anio} AND MONTH(p.fecha) IN ($mesesSQL) AND usuario IS NOT null
-                        GROUP BY usuario ", 'posts_count2', function ($join) {
-                            $join->on('encargado.id', '=', 'posts_count2.usuario');
-                        })
-                    ->leftJoinSub("SELECT usuario,count(usuario) AS contador 
-                        FROM
-                            programas p
-                            INNER JOIN 
-                            (
-                            SELECT presidencia AS usuario,id AS programa_id FROM programas
-                            UNION 
-                            SELECT encargado_id AS usuario,programa_id FROM partes_programa
-                            UNION 
-                            SELECT ayudante_id AS usuario,programa_id FROM partes_programa
-                            ) usuarios ON usuarios.programa_id=p.id
-                        WHERE YEAR(p.fecha) = {$anio} AND MONTH(p.fecha) IN ($mesesSQL) AND usuario IS NOT null
-                        GROUP BY usuario ", 'posts_count3', function ($join) {
-                            $join->on('ayudante.id', '=', 'posts_count3.usuario');
-                        })
-                    ->where('pp.programa_id', $programa->id)
-                    ->select(
-                        'pp.tema',
-                        'pp.tiempo',
-                        'ps.abreviacion as parte_abreviacion',
-                        'encargado.name as nombre_encargado',
-                        'ayudante.name as nombre_ayudante',
-                        'encargadoreemplazado.name as nombre_encargado_reemplazado',
-                        'ayudantereemplazado.name as nombre_ayudante_reemplazado',
-                        'pp.sala_id',
-                        'ps.seccion_id',
-                        DB::raw('CASE WHEN pp.parte_id = 3 THEN 99 ELSE pp.orden END as orden'),
-                        'posts_count2.contador as contador_encargado',
-                        'posts_count3.contador as contador_ayudante')
-                    ->orderBy('ps.seccion_id', 'asc')
-                    ->orderBy('pp.sala_id', 'asc')
-                    ->orderBy('pp.orden', 'asc')
-                    ->get();
-            }
-
-            // Verificar si hay programas para mostrar
-            if ($programas->isEmpty()) {
-                return redirect()->route('programas.index')
-                    ->with('error', 'No hay programas disponibles para el período seleccionado.');
-            }
-
-            // Preparar datos para la vista
-            $data = collect();
-            $programIndex = 0;
-            
-            foreach ($programas as $programa) {
-                // Agregar fila para el presidente
-                $data->push([
-                    'fecha' => \Carbon\Carbon::parse($programa->fecha)->locale('es')->translatedFormat('d-m-Y'),
-                    'parte' => 'PD',
-                    'nombre' => $programa->presidente_nombre ? $programa->presidente_nombre : 'N/A',
-                    'participaciones' => '(' . $programa->contador . ')',
-                    'rol' => 'Presidente',
-                    'sala' => '1',
-                    'reemplazado' => '',
-                    'color_index' => $programIndex % 10
-                ]);
-
-                foreach ($programa->partes as $parte) {
-                    // Agregar fila para el encargado (Estudiante)
-                    $data->push([
-                        'fecha' => \Carbon\Carbon::parse($programa->fecha)->locale('es')->translatedFormat('d-m-Y'),
-                        'parte' => $parte->parte_abreviacion ?: 'N/A',
-                        'nombre' => $parte->nombre_encargado ? $parte->nombre_encargado : 'N/A',
-                        'participaciones' => '(' . $parte->contador_encargado . ')',
-                        'rol' => $parte->seccion_id == 2 ? 'Estudiante' : 'Encargado',
-                        'sala' => $parte->sala_id ?: '',
-                        'reemplazado' => $parte->nombre_encargado_reemplazado ?: '',
-                        'color_index' => $programIndex % 10
-                    ]);
-
-                    // Si hay ayudante, agregar fila adicional para el ayudante
-                    if ($parte->nombre_ayudante) {
-                        $data->push([
-                            'fecha' => \Carbon\Carbon::parse($programa->fecha)->locale('es')->translatedFormat('d-m-Y'),
-                            'parte' => $parte->parte_abreviacion ?: 'N/A',
-                            'nombre' => $parte->nombre_ayudante ?: 'N/A',
-                            'participaciones' => '(' . $parte->contador_ayudante . ')',
-                            'rol' => 'Ayudante',
-                            'sala' => $parte->sala_id ?: '',
-                            'reemplazado' => $parte->nombre_ayudante_reemplazado ?: '',
-                            'color_index' => $programIndex % 10
-                        ]);
-                    }
-                }
-                
-                $programIndex++;
-            }
+                        SELECT ayudante_id AS usuario,programa_id,ps.abreviacion,'Ayudante' AS rol,ps.seccion_id,pp.sala_id,pp.orden,pp.ayudante_reemplazado_id AS reemplazado
+                        FROM partes_programa pp INNER JOIN partes_seccion ps ON ps.id=pp.parte_id WHERE ayudante_id IS NOT NULL 
+                    ),
+                    programas_seleccionados AS (
+                        SELECT p.id,p.fecha,ROW_NUMBER() OVER () AS correlativo
+                        FROM programas p 
+                        INNER JOIN users u ON u.id=p.creador
+                        WHERE YEAR(p.fecha) = '{$anio}' AND MONTH(p.fecha) IN ({$mesesSQL}) AND u.congregacion = {$currentUser->congregacion} 
+                    ),
+                    usuarios_agrupados AS (
+                        SELECT usuario,count(*) AS contador
+                        FROM asignados_presidentes up
+                        INNER JOIN programas_seleccionados ps ON ps.id=up.programa_id
+                        GROUP BY usuario
+                    )
+                    SELECT up.programa_id,DATE_FORMAT(ps.fecha, '%d/%m/%Y') AS fecha, u.name AS nombre ,up.abreviacion AS parte,ua.contador AS participaciones,up.rol,up.sala_id AS sala,ur.name AS reemplazado,MOD(ps.correlativo-1,10) AS color_index 
+                    FROM asignados_presidentes up
+                    INNER JOIN programas_seleccionados ps ON ps.id=up.programa_id
+                    INNER JOIN users u ON u.id=up.usuario
+                    INNER JOIN usuarios_agrupados ua ON ua.usuario=u.id
+                    LEFT JOIN users ur ON ur.id=up.reemplazado 
+                    ORDER BY programa_id,seccion_id,sala_id,orden";
+                $data = DB::select($query);
 
             return view('programas.resumen-vista', [
                 'data' => $data,
