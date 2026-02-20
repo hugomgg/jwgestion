@@ -218,6 +218,11 @@
                 @if(Auth::user() && Auth::user()->congregacion)
                     <small class="text-light">{{ $congregacion->nombre ?? 'Sin Congregación' }}</small>
                 @endif
+                <div class="mt-1">
+                    <span class="badge" style="background-color: rgba(255,255,255,0.15); color: rgba(255,255,255,0.7); font-size: 0.7rem; font-weight: 400; letter-spacing: 0.05em;">
+                        {{ config('app.version', 'v1.0.0') }}
+                    </span>
+                </div>
             </div>
             
             <ul class="sidebar-menu">
