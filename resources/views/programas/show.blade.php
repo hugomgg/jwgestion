@@ -24,37 +24,7 @@
                                 </a>
                                 @endif
 
-                                <!-- Botón Programa Anterior -->
-                                @if(isset($programaAnterior) && $programaAnterior)
-                                <a href="{{ route('programas.show', $programaAnterior->id) }}" 
-                                   class="btn btn-outline-primary" 
-                                   title="Programa anterior">
-                                    <i class="fas fa-chevron-left"></i>
-                                </a>
-                                @else
-                                <button type="button" 
-                                        class="btn btn-outline-secondary" 
-                                        disabled 
-                                        title="No hay programa anterior">
-                                    <i class="fas fa-chevron-left"></i>
-                                </button>
-                                @endif
 
-                                <!-- Botón Programa Posterior -->
-                                @if(isset($programaPosterior) && $programaPosterior)
-                                <a href="{{ route('programas.show', $programaPosterior->id) }}" 
-                                   class="btn btn-outline-primary" 
-                                   title="Programa posterior">
-                                    <i class="fas fa-chevron-right"></i>
-                                </a>
-                                @else
-                                <button type="button" 
-                                        class="btn btn-outline-secondary" 
-                                        disabled 
-                                        title="No hay programa posterior">
-                                    <i class="fas fa-chevron-right"></i>
-                                </button>
-                                @endif
 
                                 <!-- Botón Volver -->
                                 <a href="{{ route('programas.index') }}" class="btn btn-secondary">
@@ -240,6 +210,93 @@
         </div>
     </div>
 </div>
+
+<!-- Botones flotantes de navegación entre programas -->
+@if(isset($programaAnterior) && $programaAnterior)
+<a href="{{ route('programas.show', $programaAnterior->id) }}"
+   class="btn-nav-flotante btn-nav-anterior"
+   title="Programa anterior">
+    <i class="fas fa-chevron-left"></i>
+    <span class="btn-nav-label">Anterior</span>
+</a>
+@else
+<button type="button" class="btn-nav-flotante btn-nav-anterior disabled" disabled title="No hay programa anterior">
+    <i class="fas fa-chevron-left"></i>
+    <span class="btn-nav-label">Anterior</span>
+</button>
+@endif
+
+@if(isset($programaPosterior) && $programaPosterior)
+<a href="{{ route('programas.show', $programaPosterior->id) }}"
+   class="btn-nav-flotante btn-nav-posterior"
+   title="Programa posterior">
+    <span class="btn-nav-label">Posterior</span>
+    <i class="fas fa-chevron-right"></i>
+</a>
+@else
+<button type="button" class="btn-nav-flotante btn-nav-posterior disabled" disabled title="No hay programa posterior">
+    <span class="btn-nav-label">Posterior</span>
+    <i class="fas fa-chevron-right"></i>
+</button>
+@endif
+
+<style>
+.btn-nav-flotante {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1050;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 14px;
+    border-radius: 8px;
+    background: #0d6efd;
+    color: #fff;
+    border: none;
+    box-shadow: 0 4px 16px rgba(13,110,253,0.35);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: background 0.2s, box-shadow 0.2s, max-width 0.3s ease;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    max-width: 46px;
+}
+.btn-nav-flotante:hover {
+    background: #0b5ed7;
+    color: #fff;
+    box-shadow: 0 6px 22px rgba(13,110,253,0.5);
+    max-width: 160px;
+    transform: translateY(-50%);
+}
+.btn-nav-flotante.disabled {
+    background: #adb5bd;
+    box-shadow: none;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+.btn-nav-flotante .btn-nav-label {
+    display: inline-block;
+    max-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    transition: max-width 0.3s ease, opacity 0.3s ease;
+    opacity: 0;
+}
+.btn-nav-flotante:hover .btn-nav-label {
+    max-width: 120px;
+    opacity: 1;
+}
+.btn-nav-anterior {
+    left: 8px;
+}
+.btn-nav-posterior {
+    right: 8px;
+}
+</style>
+
 @endif
 @push('scripts')
 @vite(['resources/js/programas-show.js'])
