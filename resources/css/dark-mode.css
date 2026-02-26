@@ -637,3 +637,25 @@ body,
 [data-theme="dark"] #resumenTable tbody tr td {
     color: #000000 !important;
 }
+
+/* ====================================
+   THEAD - Light mode override
+   ==================================== */
+
+/* Sobreescribe Bootstrap table-dark en modo claro */
+thead.table-dark,
+thead.table-dark tr,
+thead.table-dark th {
+    background-color: #f3f4f6 !important;
+    color: #000000 !important;
+    border-color: #999999 !important;
+}
+
+/* Restaura el estilo original table-dark en modo oscuro */
+[data-theme="dark"] thead.table-dark,
+[data-theme="dark"] thead.table-dark tr,
+[data-theme="dark"] thead.table-dark th {
+    background-color: #212529 !important;
+    color: #ffffff !important;
+    border-color: #CCCCCC !important;
+}
