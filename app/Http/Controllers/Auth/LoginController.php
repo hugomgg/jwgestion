@@ -31,6 +31,18 @@ class LoginController extends Controller
     protected $redirectTo = '/home';
 
     /**
+     * Máximo de intentos de login antes de bloquear.
+     * @var int
+     */
+    protected $maxAttempts = 3;
+
+    /**
+     * Minutos de bloqueo tras superar el máximo de intentos.
+     * @var int
+     */
+    protected $decayMinutes = 5;
+
+    /**
      * Create a new controller instance.
      *
      * @return void
@@ -51,7 +63,7 @@ class LoginController extends Controller
     {
         $credentials = $request->only($this->username(), 'password');
         $credentials['estado'] = 1; // Solo usuarios activos
-        
+
         return $credentials;
     }
 
@@ -71,6 +83,11 @@ class LoginController extends Controller
                 $this->username() => ['Su cuenta está inactiva. Contacte al administrador.'],
             ]);
         }
+
+        // Registrar el timestamp exacto de login para todos los usuarios.
+        // El middleware EnforceSessionExpiry usará esto para expirar sesiones
+        // de "remember me" que superen el tiempo máximo permitido (8 horas).
+        $request->session()->put('auth.login_at', time());
 
         return redirect()->intended($this->redirectPath());
     }

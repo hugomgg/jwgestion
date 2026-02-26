@@ -29,22 +29,22 @@ class InformeController extends Controller
             ->join('congregaciones as c', 'i.congregacion_id', '=', 'c.id')
             ->join('servicios as s', 'i.servicio_id', '=', 's.id')
             ->select([
-            'i.id',
-            'i.anio',
-            'i.mes',
-            'i.participa',
-            'i.cantidad_estudios',
-            'i.horas',
-            'i.comentario',
-            'i.nota',
-            'i.estado',
-            'u.name as usuario_nombre',
-            'g.nombre as grupo_nombre',
-            'c.nombre as congregacion_nombre',
-            's.nombre as servicio_nombre',
-            'i.created_at',
-            'i.updated_at'
-        ]);
+                'i.id',
+                'i.anio',
+                'i.mes',
+                'i.participa',
+                'i.cantidad_estudios',
+                'i.horas',
+                'i.comentario',
+                'i.nota',
+                'i.estado',
+                'u.name as usuario_nombre',
+                'g.nombre as grupo_nombre',
+                'c.nombre as congregacion_nombre',
+                's.nombre as servicio_nombre',
+                'i.created_at',
+                'i.updated_at'
+            ]);
         //Obtener todos los años de los informes existentes
         $anios = DB::table('informes')
             ->select(DB::raw('DISTINCT anio'))
@@ -53,9 +53,11 @@ class InformeController extends Controller
             ->toArray();
 
         // Aplicar filtros según el rol del usuario
-        if ($currentUser->isCoordinator() || $currentUser->isSubcoordinator() ||
-        $currentUser->isSecretary() || $currentUser->isSubsecretary() ||
-        $currentUser->isOrganizer() || $currentUser->isSuborganizer()) {
+        if (
+            $currentUser->isCoordinator() || $currentUser->isSubcoordinator() ||
+            $currentUser->isSecretary() || $currentUser->isSubsecretary() ||
+            $currentUser->isOrganizer() || $currentUser->isSuborganizer()
+        ) {
             // Solo mostrar informes de su congregación
             $query->where('i.congregacion_id', $currentUser->congregacion);
         }
@@ -78,7 +80,8 @@ class InformeController extends Controller
             'grupos',
             'congregaciones',
             'servicios'
-            , 'anios'
+            ,
+            'anios'
         ));
     }
 
@@ -164,8 +167,7 @@ class InformeController extends Controller
                 'informe' => $informe
             ]);
 
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Error al crear el informe: ' . $e->getMessage()
@@ -186,13 +188,13 @@ class InformeController extends Controller
             ->join('congregaciones as c', 'i.congregacion_id', '=', 'c.id')
             ->join('servicios as s', 'i.servicio_id', '=', 's.id')
             ->select([
-            'i.*',
-            'u.name as usuario_nombre',
-            'u.nombre_completo as usuario_nombre_completo',
-            'g.nombre as grupo_nombre',
-            'c.nombre as congregacion_nombre',
-            's.nombre as servicio_nombre'
-        ])
+                'i.*',
+                'u.name as usuario_nombre',
+                'u.nombre_completo as usuario_nombre_completo',
+                'g.nombre as grupo_nombre',
+                'c.nombre as congregacion_nombre',
+                's.nombre as servicio_nombre'
+            ])
             ->where('i.id', $id)
             ->first();
 
@@ -213,9 +215,18 @@ class InformeController extends Controller
 
         // Agregar nombres de meses
         $meses = [
-            1 => 'Enero', 2 => 'Febrero', 3 => 'Marzo', 4 => 'Abril',
-            5 => 'Mayo', 6 => 'Junio', 7 => 'Julio', 8 => 'Agosto',
-            9 => 'Septiembre', 10 => 'Octubre', 11 => 'Noviembre', 12 => 'Diciembre'
+            1 => 'Enero',
+            2 => 'Febrero',
+            3 => 'Marzo',
+            4 => 'Abril',
+            5 => 'Mayo',
+            6 => 'Junio',
+            7 => 'Julio',
+            8 => 'Agosto',
+            9 => 'Septiembre',
+            10 => 'Octubre',
+            11 => 'Noviembre',
+            12 => 'Diciembre'
         ];
 
         $informe->nombre_mes = $meses[$informe->mes] ?? '';
@@ -369,8 +380,7 @@ class InformeController extends Controller
                 'data' => $informeData
             ]);
 
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Error al actualizar el informe: ' . $e->getMessage()
@@ -410,8 +420,7 @@ class InformeController extends Controller
                 'message' => 'Informe eliminado exitosamente.'
             ]);
 
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Error al eliminar el informe: ' . $e->getMessage()
@@ -430,9 +439,11 @@ class InformeController extends Controller
         }
 
         // Coordinadores, secretarios y organizadores solo pueden gestionar informes de su congregación
-        if ($currentUser->isCoordinator() || $currentUser->isSubcoordinator() ||
-        $currentUser->isSecretary() || $currentUser->isSubsecretary() ||
-        $currentUser->isOrganizer() || $currentUser->isSuborganizer()) {
+        if (
+            $currentUser->isCoordinator() || $currentUser->isSubcoordinator() ||
+            $currentUser->isSecretary() || $currentUser->isSubsecretary() ||
+            $currentUser->isOrganizer() || $currentUser->isSuborganizer()
+        ) {
             return $currentUser->congregacion == $targetUser->congregacion;
         }
 
@@ -450,9 +461,11 @@ class InformeController extends Controller
         }
 
         // Coordinadores, secretarios y organizadores solo pueden ver informes de su congregación
-        if ($currentUser->isCoordinator() || $currentUser->isSubcoordinator() ||
-        $currentUser->isSecretary() || $currentUser->isSubsecretary() ||
-        $currentUser->isOrganizer() || $currentUser->isSuborganizer()) {
+        if (
+            $currentUser->isCoordinator() || $currentUser->isSubcoordinator() ||
+            $currentUser->isSecretary() || $currentUser->isSubsecretary() ||
+            $currentUser->isOrganizer() || $currentUser->isSuborganizer()
+        ) {
             return $currentUser->congregacion == $informe->congregacion_id;
         }
 
@@ -468,9 +481,11 @@ class InformeController extends Controller
             return User::where('estado', 1)->select('id', 'name', 'congregacion')->get();
         }
 
-        if ($currentUser->isCoordinator() || $currentUser->isSubcoordinator() ||
-        $currentUser->isSecretary() || $currentUser->isSubsecretary() ||
-        $currentUser->isOrganizer() || $currentUser->isSuborganizer()) {
+        if (
+            $currentUser->isCoordinator() || $currentUser->isSubcoordinator() ||
+            $currentUser->isSecretary() || $currentUser->isSubsecretary() ||
+            $currentUser->isOrganizer() || $currentUser->isSuborganizer()
+        ) {
             return User::where('congregacion', $currentUser->congregacion)
                 ->where('estado', 1)
                 ->select('id', 'name', 'congregacion')
@@ -489,9 +504,11 @@ class InformeController extends Controller
             return Grupo::where('estado', 1)->select('id', 'nombre', 'congregacion_id')->get();
         }
 
-        if ($currentUser->isCoordinator() || $currentUser->isSubcoordinator() ||
-        $currentUser->isSecretary() || $currentUser->isSubsecretary() ||
-        $currentUser->isOrganizer() || $currentUser->isSuborganizer()) {
+        if (
+            $currentUser->isCoordinator() || $currentUser->isSubcoordinator() ||
+            $currentUser->isSecretary() || $currentUser->isSubsecretary() ||
+            $currentUser->isOrganizer() || $currentUser->isSuborganizer()
+        ) {
             return Grupo::where('congregacion_id', $currentUser->congregacion)
                 ->where('estado', 1)
                 ->select('id', 'nombre', 'congregacion_id')
@@ -510,9 +527,11 @@ class InformeController extends Controller
             return Congregacion::where('estado', 1)->select('id', 'nombre')->get();
         }
 
-        if ($currentUser->isCoordinator() || $currentUser->isSubcoordinator() ||
-        $currentUser->isSecretary() || $currentUser->isSubsecretary() ||
-        $currentUser->isOrganizer() || $currentUser->isSuborganizer()) {
+        if (
+            $currentUser->isCoordinator() || $currentUser->isSubcoordinator() ||
+            $currentUser->isSecretary() || $currentUser->isSubsecretary() ||
+            $currentUser->isOrganizer() || $currentUser->isSuborganizer()
+        ) {
             return Congregacion::where('id', $currentUser->congregacion)
                 ->where('estado', 1)
                 ->select('id', 'nombre')
@@ -550,15 +569,22 @@ class InformeController extends Controller
         $query = User::where('grupo', $grupoId)->where('estado', 1);
 
         if ($currentUser->isAdmin() || $currentUser->isSupervisor()) {
-        // Administradores y supervisores pueden ver usuarios de cualquier grupo
-        }
-        else if ($currentUser->isCoordinator() || $currentUser->isSubcoordinator() ||
-        $currentUser->isSecretary() || $currentUser->isSubsecretary() ||
-        $currentUser->isOrganizer() || $currentUser->isSuborganizer()) {
+            // Administradores y supervisores pueden ver usuarios de cualquier grupo
+        } else if (
+            $currentUser->isCoordinator() || $currentUser->isSubcoordinator() ||
+            $currentUser->isSecretary() || $currentUser->isSubsecretary() ||
+            $currentUser->isOrganizer() || $currentUser->isSuborganizer()
+        ) {
+            // Verificar que el grupo pertenezca a la congregación del usuario
+            if ($grupo->congregacion_id != $currentUser->congregacion) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No tiene permisos para ver usuarios de este grupo'
+                ], 403);
+            }
             // Solo pueden ver usuarios de su misma congregación
             $query->where('congregacion', $currentUser->congregacion);
-        }
-        else {
+        } else {
             return response()->json([
                 'success' => false,
                 'message' => 'No tiene permisos para ver esta información'
@@ -621,6 +647,14 @@ class InformeController extends Controller
 
         // Aplicar filtro de congregación según el rol
         if (!($currentUser->isAdmin() || $currentUser->isSupervisor())) {
+            // Verificar que el grupo pertenezca a la congregación del usuario
+            $grupo = Grupo::find($grupoId);
+            if (!$grupo || $grupo->congregacion_id != $currentUser->congregacion) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No tiene permisos para ver informes de este grupo'
+                ], 403);
+            }
             $queryUsuarios->where('congregacion', $currentUser->congregacion);
         }
 
@@ -634,13 +668,13 @@ class InformeController extends Controller
             ->where('i.mes', $mes)
             ->where('i.estado', 1)
             ->select(
-            'i.user_id',
-            'i.participa',
-            's.nombre as servicio_nombre',
-            'i.cantidad_estudios',
-            'i.horas',
-            'i.comentario'
-        )
+                'i.user_id',
+                'i.participa',
+                's.nombre as servicio_nombre',
+                'i.cantidad_estudios',
+                'i.horas',
+                'i.comentario'
+            )
             ->get()
             ->keyBy('user_id');
 
@@ -649,13 +683,13 @@ class InformeController extends Controller
             $informe = $informesExistentes->get($usuario->id);
 
             return [
-            'user_id' => $usuario->id,
-            'nombre' => $usuario->name,
-            'participa' => $informe ? $informe->participa : 0,
-            'servicio_nombre' => $informe ? $informe->servicio_nombre : '-',
-            'cantidad_estudios' => $informe ? $informe->cantidad_estudios : 0,
-            'horas' => $informe ? $informe->horas : 0,
-            'comentario' => ($informe && $informe->comentario) ? $informe->comentario : '-'
+                'user_id' => $usuario->id,
+                'nombre' => $usuario->name,
+                'participa' => $informe ? $informe->participa : 0,
+                'servicio_nombre' => $informe ? $informe->servicio_nombre : '-',
+                'cantidad_estudios' => $informe ? $informe->cantidad_estudios : 0,
+                'horas' => $informe ? $informe->horas : 0,
+                'comentario' => ($informe && $informe->comentario) ? $informe->comentario : '-'
             ];
         });
 
@@ -838,8 +872,18 @@ class InformeController extends Controller
         // Definir rango de meses: septiembre año anterior a agosto año actual
         $mesesData = [];
         $mesesNombres = [
-            'Septiembre', 'Octubre', 'Noviembre', 'Diciembre',
-            'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto'
+            'Septiembre',
+            'Octubre',
+            'Noviembre',
+            'Diciembre',
+            'Enero',
+            'Febrero',
+            'Marzo',
+            'Abril',
+            'Mayo',
+            'Junio',
+            'Julio',
+            'Agosto'
         ];
 
         // Crear array de meses desde septiembre del año anterior hasta agosto del año actual
@@ -848,8 +892,7 @@ class InformeController extends Controller
                 // Septiembre a Diciembre del año anterior
                 $mes = 9 + $i;
                 $anioMes = $anio - 1;
-            }
-            else {
+            } else {
                 // Enero a Agosto del año actual
                 $mes = $i - 3;
                 $anioMes = $anio;
@@ -867,22 +910,24 @@ class InformeController extends Controller
             ->where('user_id', $userId)
             ->where('estado', 1)
             ->where(function ($query) use ($anio) {
-            $query->where(function ($q) use ($anio) {
-                    // Septiembre a Diciembre del año anterior
-                    $q->where('anio', $anio - 1)
-                        ->whereBetween('mes', [9, 12]);
-                }
-                )->orWhere(function ($q) use ($anio) {
-                    // Enero a Agosto del año actual
-                    $q->where('anio', $anio)
-                        ->whereBetween('mes', [1, 8]);
-                }
-                );
+                $query->where(
+                    function ($q) use ($anio) {
+                        // Septiembre a Diciembre del año anterior
+                        $q->where('anio', $anio - 1)
+                            ->whereBetween('mes', [9, 12]);
+                    }
+                )->orWhere(
+                        function ($q) use ($anio) {
+                            // Enero a Agosto del año actual
+                            $q->where('anio', $anio)
+                                ->whereBetween('mes', [1, 8]);
+                        }
+                    );
             })
             ->get()
             ->keyBy(function ($item) {
-            return $item->anio . '-' . $item->mes;
-        });
+                return $item->anio . '-' . $item->mes;
+            });
 
         // Construir resultado con todos los meses
         $registro = [];
@@ -943,6 +988,11 @@ class InformeController extends Controller
             abort(400, 'Debe especificar un año');
         }
 
+        // Supervisores son solo lectura: no pueden exportar PDFs con datos sensibles
+        if ($currentUser->isSupervisor()) {
+            abort(403, 'Los supervisores no tienen permisos para exportar registros PDF.');
+        }
+
         // Determinar los usuarios a exportar
         $usuarios = [];
 
@@ -953,24 +1003,23 @@ class InformeController extends Controller
                 abort(404, 'Usuario no encontrado');
             }
 
-            // Verificar permisos
-            if (!$currentUser->isAdmin() && !$currentUser->isSupervisor()) {
+            // Verificar que el usuario pertenece a la congregación del solicitante (si no es Admin)
+            if (!$currentUser->isAdmin()) {
                 if ($currentUser->congregacion != $usuario->congregacion) {
                     abort(403, 'No tiene permisos para exportar este registro');
                 }
             }
 
             $usuarios = [$usuario];
-        }
-        elseif ($grupoId) {
+        } elseif ($grupoId) {
             // Exportar todos los usuarios del grupo
             $grupo = Grupo::find($grupoId);
             if (!$grupo) {
                 abort(404, 'Grupo no encontrado');
             }
 
-            // Verificar permisos
-            if (!$currentUser->isAdmin() && !$currentUser->isSupervisor()) {
+            // Verificar que el grupo pertenece a la congregación del solicitante (si no es Admin)
+            if (!$currentUser->isAdmin()) {
                 if ($currentUser->congregacion != $grupo->congregacion_id) {
                     abort(403, 'No tiene permisos para exportar este grupo');
                 }
@@ -980,12 +1029,19 @@ class InformeController extends Controller
                 ->where('estado_espiritual', 1)
                 ->orderBy('name')
                 ->get();
-        }
-        else {
+        } else {
             // Exportar todos los usuarios de la congregación
-            $congregacionId = $currentUser->isAdmin() || $currentUser->isSupervisor()
-                ? $request->input('congregacion_id', $currentUser->congregacion)
-                : $currentUser->congregacion;
+            if ($currentUser->isAdmin()) {
+                // Admin puede especificar cualquier congregación, pero debe ser válida
+                $congregacionId = $request->input('congregacion_id', $currentUser->congregacion);
+                if (!Congregacion::where('id', $congregacionId)->exists()) {
+                    abort(400, 'La congregación especificada no es válida');
+                }
+            } else {
+                // Todos los demás roles solo pueden exportar su propia congregación
+                // (el isSupervisor ya fue bloqueado arriba)
+                $congregacionId = $currentUser->congregacion;
+            }
 
             $usuarios = User::where('congregacion', $congregacionId)
                 ->where('estado_espiritual', 1)
@@ -1057,8 +1113,18 @@ class InformeController extends Controller
     private function obtenerRegistroPorAnio($userId, $anio)
     {
         $mesesNombres = [
-            'Septiembre', 'Octubre', 'Noviembre', 'Diciembre',
-            'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto'
+            'Septiembre',
+            'Octubre',
+            'Noviembre',
+            'Diciembre',
+            'Enero',
+            'Febrero',
+            'Marzo',
+            'Abril',
+            'Mayo',
+            'Junio',
+            'Julio',
+            'Agosto'
         ];
 
         $mesesData = [];
@@ -1067,8 +1133,7 @@ class InformeController extends Controller
             if ($i < 4) {
                 $mes = 9 + $i;
                 $anioMes = $anio - 1;
-            }
-            else {
+            } else {
                 $mes = $i - 3;
                 $anioMes = $anio;
             }

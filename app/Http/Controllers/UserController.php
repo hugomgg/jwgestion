@@ -28,16 +28,27 @@ class UserController extends Controller
     public function index()
     {
         $currentUser = auth()->user();
-        $condicionCongregacion = "";
-        $condicionPerfil = "";
-        // Si es coordinador, subcoordinador, secretario, subsecretario, organizador o suborganizador (perfil 3, 4, 5, 6, 7 u 8), solo mostrar usuarios de su congregación
+
+        // Construir condiciones WHERE de forma segura con parámetros enlazados
+        $whereConditions = [];
+        $queryParams = [];
+
+        // Si es coordinador, subcoordinador, secretario, subsecretario, organizador o suborganizador,
+        // solo mostrar usuarios de su congregación
         if ($currentUser->isCoordinator() || $currentUser->isSubcoordinator() || $currentUser->isSecretary() || $currentUser->isSubsecretary() || $currentUser->isOrganizer() || $currentUser->isSuborganizer()) {
-            $condicionCongregacion = "WHERE u.congregacion = $currentUser->congregacion";
+            $whereConditions[] = "u.congregacion = ?";
+            $queryParams[] = $currentUser->congregacion;
         }
+
+        // Administradores y supervisores ven todos los usuarios pero filtrados por perfil
         if ($currentUser->isAdmin() || $currentUser->isSupervisor()) {
-            // Administradores y supervisores ven todos los usuarios
-            $condicionPerfil = "WHERE u.perfil IN (1, 2, 3)";
+            $whereConditions[] = "u.perfil IN (1, 2, 3)";
         }
+
+        // Construir cláusula WHERE unificada (evita múltiples WHERE y es SQL válido)
+        $whereClause = !empty($whereConditions)
+            ? "WHERE " . implode(" AND ", $whereConditions)
+            : "";
 
         // Consulta base con JOIN explícito para obtener el nombre del perfil, congregación, nombramiento, servicio, grupo, estado espiritual y datos de auditoría
         $users = DB::select("WITH
@@ -80,9 +91,9 @@ class UserController extends Controller
                                 LEFT JOIN users as creador ON u.creador_id = creador.id
                                 LEFT JOIN users as modificador ON u.modificador_id = modificador.id
                                 LEFT JOIN asignaciones_usuarios aus ON u.id=aus.user_id
-                                $condicionCongregacion
-                                $condicionPerfil
-                            ");
+                                $whereClause
+                            ", $queryParams);
+
 
         // Filtrar perfiles para el filtro del listado
         if ($currentUser->isSecretary() || $currentUser->isSubsecretary() || $currentUser->isOrganizer() || $currentUser->isSuborganizer()) {
@@ -266,7 +277,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'nombre_completo' => 'nullable|string|max:255',
             'email' => 'nullable|string|email|max:255|unique:users',
-            'password' => 'nullable|string|min:8|confirmed',
+            'password' => ['nullable', 'string', 'min:8', 'confirmed', 'regex:/^(?=.*[a-zA-Z])(?=.*[0-9]).+$/'],
             'perfil' => 'required|integer|exists:perfiles,id',
             'estado' => 'required|integer|in:0,1',
             'congregacion' => 'required|integer|exists:congregaciones,id',
@@ -291,6 +302,7 @@ class UserController extends Controller
             'email.email' => 'El email debe tener un formato válido.',
             'email.unique' => 'Este email ya está registrado.',
             'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
+            'password.regex' => 'La contraseña debe contener al menos una letra y un número.',
             'password.confirmed' => 'La confirmación de contraseña no coincide.',
             'perfil.required' => 'El perfil es obligatorio.',
             'perfil.exists' => 'El perfil seleccionado no es válido.',
@@ -318,6 +330,7 @@ class UserController extends Controller
             'asignaciones.*.integer' => 'Cada asignación debe ser un número válido.',
             'asignaciones.*.exists' => 'Una o más asignaciones seleccionadas no son válidas.'
         ]);
+
 
         if ($validator->fails()) {
             return response()->json([
@@ -415,13 +428,22 @@ class UserController extends Controller
             $currentUser = auth()->user();
             $user = User::with(['creador', 'modificador', 'asignaciones', 'grupo'])->findOrFail($id);
 
-            // Si es coordinador, verificar que el usuario pertenezca a la misma congregación
-            if ($currentUser->isCoordinator() && $user->congregacion != $currentUser->congregacion) {
+            // Roles con visión restringida a su propia congregación:
+            // Coordinador, Subcoordinador, Secretario, Subsecretario, Organizador, Suborganizador
+            $esRolPorCongregacion = $currentUser->isCoordinator()
+                || $currentUser->isSubcoordinator()
+                || $currentUser->isSecretary()
+                || $currentUser->isSubsecretary()
+                || $currentUser->isOrganizer()
+                || $currentUser->isSuborganizer();
+
+            if ($esRolPorCongregacion && $user->congregacion != $currentUser->congregacion) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'No tiene permisos para editar este usuario.'
+                    'message' => 'No tiene permisos para ver este usuario.'
                 ], 403);
             }
+
 
             // Formatear la información de auditoría
             $userData = $user->toArray();
@@ -483,6 +505,14 @@ class UserController extends Controller
             $currentUser = auth()->user();
             $user = User::findOrFail($id);
 
+            // Supervisores son solo lectura: no pueden modificar usuarios
+            if ($currentUser->isSupervisor()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Los supervisores no tienen permisos para modificar usuarios.'
+                ], 403);
+            }
+
             // Si es coordinador,secretario o organizador verificar que el usuario pertenezca a la misma congregación
             if (($currentUser->isCoordinator() || $currentUser->isSecretary() || $currentUser->isOrganizer()) && $user->congregacion != $currentUser->congregacion) {
                 return response()->json([
@@ -509,7 +539,7 @@ class UserController extends Controller
                 'name' => 'required|string|max:255',
                 'nombre_completo' => 'nullable|string|max:255',
                 'email' => 'nullable|string|email|max:255|unique:users,email,' . $id,
-                'password' => 'nullable|string|min:8|confirmed',
+                'password' => ['nullable', 'string', 'min:8', 'confirmed', 'regex:/^(?=.*[a-zA-Z])(?=.*[0-9]).+$/'],
                 'perfil' => 'required|integer|exists:perfiles,id',
                 'estado' => 'required|integer|in:0,1',
                 'congregacion' => 'required|integer|exists:congregaciones,id',
@@ -534,6 +564,7 @@ class UserController extends Controller
                 'email.email' => 'El email debe tener un formato válido.',
                 'email.unique' => 'Este email ya está registrado.',
                 'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
+                'password.regex' => 'La contraseña debe contener al menos una letra y un número.',
                 'password.confirmed' => 'La confirmación de contraseña no coincide.',
                 'perfil.required' => 'El perfil es obligatorio.',
                 'perfil.exists' => 'El perfil seleccionado no es válido.',
@@ -653,6 +684,14 @@ class UserController extends Controller
             $currentUser = auth()->user();
             $user = User::findOrFail($id);
 
+            // Supervisores son solo lectura: no pueden eliminar usuarios
+            if ($currentUser->isSupervisor()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Los supervisores no tienen permisos para eliminar usuarios.'
+                ], 403);
+            }
+
             // Si es coordinador, verificar que el usuario pertenezca a la misma congregación
             if ($currentUser->isCoordinator() && $user->congregacion != $currentUser->congregacion) {
                 return response()->json([
@@ -687,7 +726,7 @@ class UserController extends Controller
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:255',
                 'email' => 'nullable|string|email|max:255|unique:users,email,' . $user->id,
-                'password' => 'nullable|string|min:8|confirmed',
+                'password' => ['nullable', 'string', 'min:8', 'confirmed', 'regex:/^(?=.*[a-zA-Z])(?=.*[0-9]).+$/'],
             ], [
                 'name.required' => 'El nombre es obligatorio.',
                 'name.max' => 'El nombre no puede exceder 255 caracteres.',
@@ -695,6 +734,7 @@ class UserController extends Controller
                 'email.max' => 'El email no puede exceder 255 caracteres.',
                 'email.unique' => 'Ya existe un usuario con este email.',
                 'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
+                'password.regex' => 'La contraseña debe contener al menos una letra y un número.',
                 'password.confirmed' => 'La confirmación de contraseña no coincide.',
             ]);
 

@@ -13,7 +13,7 @@ Route::get('/', function () {
 
 // Rutas de autenticación con reCAPTCHA en login
 Route::get('login', [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('login');
-Route::post('login', [App\Http\Controllers\Auth\LoginController::class, 'login'])->middleware('recaptcha');
+Route::post('login', [App\Http\Controllers\Auth\LoginController::class, 'login'])->middleware(['recaptcha', 'throttle:3,5']);
 Route::post('logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
 
 // Registro deshabilitado - los usuarios solo se crean desde el panel de administración
