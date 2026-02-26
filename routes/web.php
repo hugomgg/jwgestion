@@ -16,9 +16,7 @@ Route::get('login', [App\Http\Controllers\Auth\LoginController::class, 'showLogi
 Route::post('login', [App\Http\Controllers\Auth\LoginController::class, 'login'])->middleware('recaptcha');
 Route::post('logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
 
-// Otras rutas de autenticación (registro, recuperación de contraseña, etc.)
-Route::get('register', [App\Http\Controllers\Auth\RegisterController::class, 'showRegistrationForm'])->name('register');
-Route::post('register', [App\Http\Controllers\Auth\RegisterController::class, 'register']);
+// Registro deshabilitado - los usuarios solo se crean desde el panel de administración
 Route::get('password/reset', [App\Http\Controllers\Auth\ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
 Route::post('password/email', [App\Http\Controllers\Auth\ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
 Route::get('password/reset/{token}', [App\Http\Controllers\Auth\ResetPasswordController::class, 'showResetForm'])->name('password.reset');
@@ -255,7 +253,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/grupos', [App\Http\Controllers\GrupoController::class, 'index'])->name('grupos.index');
         Route::get('/grupos/data', [App\Http\Controllers\GrupoController::class, 'getData'])->name('grupos.data');
         Route::get('/grupos/{id}', [App\Http\Controllers\GrupoController::class, 'show'])->name('grupos.show');
-        
+
         // Escritura de grupos (Admin, Coordinator, Secretary, Organizer)
         Route::post('/grupos', [App\Http\Controllers\GrupoController::class, 'store'])->name('grupos.store');
         Route::put('/grupos/{id}', [App\Http\Controllers\GrupoController::class, 'update'])->name('grupos.update');

@@ -34,7 +34,7 @@ class UserController extends Controller
         if ($currentUser->isCoordinator() || $currentUser->isSubcoordinator() || $currentUser->isSecretary() || $currentUser->isSubsecretary() || $currentUser->isOrganizer() || $currentUser->isSuborganizer()) {
             $condicionCongregacion = "WHERE u.congregacion = $currentUser->congregacion";
         }
-        if($currentUser->isAdmin() || $currentUser->isSupervisor()){
+        if ($currentUser->isAdmin() || $currentUser->isSupervisor()) {
             // Administradores y supervisores ven todos los usuarios
             $condicionPerfil = "WHERE u.perfil IN (1, 2, 3)";
         }
@@ -103,20 +103,23 @@ class UserController extends Controller
         } elseif ($currentUser->isAdmin()) {
             // Administradores y supervisores ven todos los perfiles activos
             $perfilesModal = Perfil::where('estado', 1)->get();
-        }else{
+        } else {
             // Subsecretarios y suborganizadores tienen acceso de solo lectura, no necesitan perfiles para modales
-            $perfilesModal = Perfil::whereNotIn('id', [1, 2, 3, 4, 5, 6,7,8,9,10])->get();
+            $perfilesModal = Perfil::whereNotIn('id', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])->get();
         }
 
         // Filtrar perfiles para el modal EDITAR (perfiles activos e inactivos)
         //Administradores, Secretarios y organizadores ven todos los perfiles
         if ($currentUser->isAdmin()) {
             $perfilesModalEdit = Perfil::all();
-        }elseif($currentUser->isSecretary() || $currentUser->isCoordinator() || $currentUser->isOrganizer()){
+        } elseif ($currentUser->isSecretary() || $currentUser->isCoordinator() || $currentUser->isOrganizer()) {
             $perfilesModalEdit = Perfil::whereNotIn('id', [1, 2])->get();
         } elseif ($currentUser->isSubsecretary() || $currentUser->isSuborganizer() || $currentUser->isSubcoordinator()) {
             // Subsecretarios y suborganizadores tienen acceso de solo lectura, no necesitan perfiles para modales
             $perfilesModalEdit = Perfil::whereNotIn('id', [1, 2, 3, 4, 5, 6])->get();
+        } else {
+            // Supervisor u otros perfiles: ven todos los perfiles (igual que Admin)
+            $perfilesModalEdit = Perfil::all();
         }
         $sexos = Sexo::where('estado', 1)->get();
         $servicios = Servicio::where('estado', 1)->get();
@@ -135,11 +138,11 @@ class UserController extends Controller
         // Para el filtro de la vista principal, coordinadores, subcoordinadores, secretarios, subsecretarios, organizadores y suborganizadores solo ven grupos asignados a usuarios de su congregación
         if ($currentUser->isCoordinator() || $currentUser->isSubcoordinator() || $currentUser->isSecretary() || $currentUser->isSubsecretary() || $currentUser->isOrganizer() || $currentUser->isSuborganizer()) {
             // Obtener solo los grupos que están asignados a usuarios de la congregación del coordinador/subcoordinador/secretario/subsecretario/organizador/suborganizador
-            $gruposParaFiltro = Grupo::whereIn('id', function($query) use ($currentUser) {
+            $gruposParaFiltro = Grupo::whereIn('id', function ($query) use ($currentUser) {
                 $query->select('grupo')
-                      ->from('users')
-                      ->where('congregacion', $currentUser->congregacion)
-                      ->distinct();
+                    ->from('users')
+                    ->where('congregacion', $currentUser->congregacion)
+                    ->distinct();
             })->where('estado', 1)->get();
         } else {
             $gruposParaFiltro = Grupo::where('estado', 1)->get();
@@ -152,8 +155,8 @@ class UserController extends Controller
         } else {
             // Otros usuarios solo ven grupos de su congregación
             $grupos = Grupo::where('congregacion_id', $currentUser->congregacion)
-                           ->where('estado', 1)
-                           ->get();
+                ->where('estado', 1)
+                ->get();
         }
 
         return view('users.index', compact('users', 'perfiles', 'perfilesModal', 'perfilesModalEdit', 'congregaciones', 'sexos', 'servicios', 'nombramientos', 'esperanzas', 'grupos', 'gruposParaFiltro', 'asignaciones', 'estadosEspirituales'));
@@ -171,7 +174,7 @@ class UserController extends Controller
         if ($currentUser->isSecretary() || $currentUser->isCoordinator() || $currentUser->isOrganizer()) {
             // Secretarios no pueden ver perfiles 1, 2, 3, 4, 7, 8
             $perfiles = Perfil::whereNotIn('id', [1, 2])->get();
-        } elseif($currentUser->Admin()) {
+        } elseif ($currentUser->Admin()) {
             // Administradores ven todos los perfiles
             $perfiles = Perfil::all();
         }
@@ -188,11 +191,11 @@ class UserController extends Controller
         // Para el filtro de la vista principal, coordinadores, subcoordinadores y secretarios solo ven grupos asignados a usuarios de su congregación
         if ($currentUser->isCoordinator() || $currentUser->isSubcoordinator() || $currentUser->isSecretary()) {
             // Obtener solo los grupos que están asignados a usuarios de la congregación del coordinador/subcoordinador/secretario
-            $gruposParaFiltro = Grupo::whereIn('id', function($query) use ($currentUser) {
+            $gruposParaFiltro = Grupo::whereIn('id', function ($query) use ($currentUser) {
                 $query->select('grupo')
-                      ->from('users')
-                      ->where('congregacion', $currentUser->congregacion)
-                      ->distinct();
+                    ->from('users')
+                    ->where('congregacion', $currentUser->congregacion)
+                    ->distinct();
             })->where('estado', 1)->get();
         } else {
             $gruposParaFiltro = Grupo::where('estado', 1)->get();
@@ -205,8 +208,8 @@ class UserController extends Controller
         } else {
             // Otros usuarios solo ven grupos de su congregación
             $grupos = Grupo::where('congregacion_id', $currentUser->congregacion)
-                           ->where('estado', 1)
-                           ->get();
+                ->where('estado', 1)
+                ->get();
         }
 
         return view('users.create', compact('perfiles', 'congregaciones', 'sexos', 'servicios', 'nombramientos', 'esperanzas', 'grupos', 'gruposParaFiltro', 'asignaciones', 'estadosEspirituales'));
@@ -251,7 +254,7 @@ class UserController extends Controller
                     'message' => 'No tiene permisos para asignar este perfil.'
                 ], 403);
             }
-        }elseif(!$currentUser->isAdmin()){
+        } elseif (!$currentUser->isAdmin()) {
             //Solo administradores pueden crear usuarios
             return response()->json([
                 'success' => false,
@@ -451,8 +454,8 @@ class UserController extends Controller
                 $userData['congregaciones_disponibles'] = Congregacion::where('id', $currentUser->congregacion)->where('estado', 1)->get();
                 // Filtrar grupos solo de la congregación del usuario autenticado
                 $userData['grupos_disponibles'] = Grupo::where('congregacion_id', $currentUser->congregacion)
-                                                       ->where('estado', 1)
-                                                       ->get();
+                    ->where('estado', 1)
+                    ->get();
             } elseif ($currentUser->isAdmin() || $currentUser->isSupervisor()) {
                 // Administradores y supervisores ven todas las congregaciones y todos los grupos
                 $userData['congregaciones_disponibles'] = Congregacion::where('estado', 1)->get();
@@ -800,7 +803,7 @@ class UserController extends Controller
             $users = $query->orderBy('users.name')->get();
 
             // Para usuarios con asignaciones, cargar las asignaciones
-            $users = $users->map(function($user) use ($request) {
+            $users = $users->map(function ($user) use ($request) {
                 $userModel = User::with('asignaciones')->find($user->id);
                 $user->asignaciones = $userModel ? $userModel->asignaciones : collect();
 
@@ -883,7 +886,7 @@ class UserController extends Controller
     /**
      * Obtener historial de participaciones de un usuario en la segunda sección.
      */
-    public function getHistorialSegundaSeccion($encargadoId,$parteId)
+    public function getHistorialSegundaSeccion($encargadoId, $parteId)
     {
         //Historial de participaciones del usuario en partes de la segunda sección como estudiante o ayudante
         try {
@@ -899,9 +902,9 @@ class UserController extends Controller
                 ->leftJoin('users as encargado', 'pp.encargado_id', '=', 'encargado.id')
                 ->leftJoin('users as ayudante', 'pp.ayudante_id', '=', 'ayudante.id')
                 ->where('ps.asignacion_id', $partesSeccion->asignacion_id) // Segunda sección
-                ->where(function($query) use ($encargadoId) {
+                ->where(function ($query) use ($encargadoId) {
                     $query->where('pp.encargado_id', $encargadoId)
-                          ->orWhere('pp.ayudante_id', $encargadoId);
+                        ->orWhere('pp.ayudante_id', $encargadoId);
                 })
                 ->select(
                     'prog.fecha',
@@ -915,7 +918,7 @@ class UserController extends Controller
                 ->get();
 
             // Formatear las fechas y nombres con padding
-            $historial = $historial->map(function($item) {
+            $historial = $historial->map(function ($item) {
                 $item->fecha_formateada = date('d/m/Y', strtotime($item->fecha));
 
                 // Aplicar str_pad con puntos para los nombres (25 caracteres)
