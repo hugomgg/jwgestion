@@ -13,7 +13,7 @@
     --card-bg: #ffffff;
     --input-bg: #ffffff;
     --input-border: #ced4da;
-    --navbar-bg: #ffffff;
+    --navbar-bg: #0d6efd;
     --sidebar-bg: #f8f9fa;
     --modal-bg: #ffffff;
     --table-bg: #ffffff;
@@ -31,7 +31,7 @@
     --card-bg: #2d2d2d;
     --input-bg: #3a3a3a;
     --input-border: #505050;
-    --navbar-bg: #1f1f1f;
+    --navbar-bg: #1a3a6d;
     --sidebar-bg: #252525;
     --modal-bg: #2d2d2d;
     --table-bg: #2d2d2d;
@@ -56,12 +56,24 @@
     color: var(--text-primary) !important;
 }
 
+/* .text-muted en el navbar: #b0b0b0 en ambos modos */
+.navbar .text-muted {
+    color: #b0b0b0 !important;
+}
+
 [data-theme="dark"] .navbar .text-muted {
-    color: var(--text-secondary) !important;
+    color: #b0b0b0 !important;
+}
+
+/* Badge navbar: bg-secondary en modo claro */
+.navbar .badge {
+    background-color: #6c757d !important;
+    color: #ffffff !important;
 }
 
 [data-theme="dark"] .navbar .badge {
-    background-color: #4a6fa5 !important;
+    background-color: #6c757d !important;
+    color: #ffffff !important;
 }
 
 /* Sidebar */
@@ -70,7 +82,12 @@
     border-right: 1px solid var(--border-color);
 }
 
-/* Botón toggle sidebar */
+/* Botón toggle sidebar - blanco en ambos temas porque fondo es azul */
+#sidebarToggle,
+#sidebarToggle i {
+    color: #ffffff !important;
+}
+
 [data-theme="dark"] #sidebarToggle {
     color: #ffffff !important;
 }
@@ -230,15 +247,15 @@
     color: #ffffff;
 }
 
-[data-theme="dark"] .table-striped > tbody > tr:nth-of-type(odd) > * {
+[data-theme="dark"] .table-striped>tbody>tr:nth-of-type(odd)>* {
     background-color: #343a40;
 }
 
-[data-theme="dark"] .table-striped > tbody > tr:nth-of-type(even) > * {
+[data-theme="dark"] .table-striped>tbody>tr:nth-of-type(even)>* {
     background-color: #000000;
 }
 
-[data-theme="dark"] .table-hover > tbody > tr:hover > * {
+[data-theme="dark"] .table-hover>tbody>tr:hover>* {
     background-color: #495057;
 }
 
@@ -246,6 +263,7 @@
 #registroPublicadorTableAnterior tbody td {
     color: #000000 !important;
 }
+
 /* DataTables */
 [data-theme="dark"] .dataTables_wrapper .dataTables_length,
 [data-theme="dark"] .dataTables_wrapper .dataTables_filter,
@@ -508,9 +526,13 @@
     color: var(--text-primary);
 }
 
-/* Text colors */
+/* Text colors: .text-muted #b0b0b0 en ambos modos */
+.text-muted {
+    color: #b0b0b0 !important;
+}
+
 [data-theme="dark"] .text-muted {
-    color: var(--text-secondary) !important;
+    color: #b0b0b0 !important;
 }
 
 [data-theme="dark"] .text-dark {
@@ -535,7 +557,7 @@
 .theme-toggle-btn {
     background: none;
     border: none;
-    color: var(--text-primary);
+    color: #ffffff;
     font-size: 1.2rem;
     cursor: pointer;
     padding: 0.5rem;
@@ -578,8 +600,8 @@
 
 [data-theme="dark"] #asignacion-card-container h4,
 [data-theme="dark"] #asignacion-card-container .info-intervencion,
-[data-theme="dark"] #asignacion-card-container .sala-section > div:first-child,
-[data-theme="dark"] #asignacion-card-container .checkbox-row > span:last-child,
+[data-theme="dark"] #asignacion-card-container .sala-section>div:first-child,
+[data-theme="dark"] #asignacion-card-container .checkbox-row>span:last-child,
 [data-theme="dark"] #asignacion-card-container .nota-title,
 [data-theme="dark"] #asignacion-card-container .nota-text {
     color: #000000 !important;
