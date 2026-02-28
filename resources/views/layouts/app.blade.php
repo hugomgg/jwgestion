@@ -42,9 +42,10 @@
     <link rel="stylesheet" href="{{ asset('css/datatables/dataTables.bootstrap5.min.css') }}">
     <link rel="stylesheet" href="{{ asset('css/datatables/responsive.bootstrap5.min.css') }}">
 
-    <!-- Select2 CSS -->
-    <link href="{{ asset('css/select2.min.css') }}" rel="stylesheet" />
-    <link href="{{ asset('css/select2-bootstrap-5-theme.min.css') }}" rel="stylesheet" />
+    <!-- Select2 CSS from CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css"
+        rel="stylesheet" />
 
     <!-- Scripts -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js', 'resources/css/dark-mode.css', 'resources/js/dark-mode.js'])
@@ -718,8 +719,9 @@
     <script src="{{ asset('js/datatables/dataTables.responsive.min.js') }}"></script>
     <script src="{{ asset('js/datatables/responsive.bootstrap5.min.js') }}"></script>
 
-    <!-- Select2 JS -->
-    <script src="{{ asset('js/select2.min.js') }}"></script>
+    <!-- Select2 JS from CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
     <!-- Configuración global de Select2 en español -->
     <script>
         $(document).ready(function () {
