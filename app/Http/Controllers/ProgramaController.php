@@ -143,7 +143,7 @@ class ProgramaController extends Controller
     public function getProgramasPorAnio(Request $request)
     {
         $currentUser = auth()->user();
-        
+
         // Validar que el usuario tenga permisos
         if (!($currentUser->isCoordinator() || $currentUser->isSubcoordinator() || $currentUser->isOrganizer() || $currentUser->isSubsecretary() || $currentUser->isSuborganizer())) {
             return response()->json([
@@ -400,18 +400,18 @@ class ProgramaController extends Controller
         try {
             // Obtener todas las participaciones del usuario como orador inicial u orador final
             $participaciones = DB::table('programas')
-                ->join('users', function($join) use ($usuarioId) {
-                    $join->where(function($query) use ($usuarioId) {
+                ->join('users', function ($join) use ($usuarioId) {
+                    $join->where(function ($query) use ($usuarioId) {
                         $query->on('programas.orador_inicial', '=', 'users.id')
-                              ->where('users.id', $usuarioId);
-                    })->orWhere(function($query) use ($usuarioId) {
+                            ->where('users.id', $usuarioId);
+                    })->orWhere(function ($query) use ($usuarioId) {
                         $query->on('programas.orador_final', '=', 'users.id')
-                              ->where('users.id', $usuarioId);
+                            ->where('users.id', $usuarioId);
                     });
                 })
-                ->where(function($query) use ($usuarioId) {
+                ->where(function ($query) use ($usuarioId) {
                     $query->where('programas.orador_inicial', $usuarioId)
-                          ->orWhere('programas.orador_final', $usuarioId);
+                        ->orWhere('programas.orador_final', $usuarioId);
                 })
                 ->select(
                     'programas.id as programa_id',
@@ -578,7 +578,7 @@ class ProgramaController extends Controller
 
                     return $grupo->values()->map(function ($parte, $index) use ($total) {
                         $parte->es_primero = $index === 0;
-                        $parte->es_ultimo  = $index === ($total - 1);
+                        $parte->es_ultimo = $index === ($total - 1);
                         return $parte;
                     });
                 });
@@ -606,7 +606,7 @@ class ProgramaController extends Controller
             // Obtener TODAS las partes de la segunda sección activas
             $query = DB::table('partes_seccion')
                 ->where('seccion_id', 2)
-                ->where(function($q) use ($includeSelected) {
+                ->where(function ($q) use ($includeSelected) {
                     $q->where('estado', 1);
                     // Si se especifica include_selected, incluir también esa parte específica aunque no esté activa
                     if ($includeSelected) {
@@ -883,7 +883,7 @@ class ProgramaController extends Controller
 
                 // Si hay meses específicos seleccionados, filtrar por ellos
                 if ($meses && is_array($meses) && !empty($meses)) {
-                    $query->where(function($q) use ($meses) {
+                    $query->where(function ($q) use ($meses) {
                         foreach ($meses as $mes) {
                             // Cambiar whereMonth (SQLite) por whereRaw con MONTH (MySQL)
                             $q->orWhereRaw('MONTH(p.fecha) = ?', [$mes]);
@@ -893,16 +893,16 @@ class ProgramaController extends Controller
             }
 
             $programas = $query->select(
-                    'p.id',
-                    'p.fecha',
-                    'presidente.name as nombre_presidencia',
-                    'orador_inicial.name as nombre_orador_inicial',
-                    'orador_final.name as nombre_orador_final',
-                    'c.nombre as congregacion_nombre',
-                    'p.cancion_pre',
-                    'p.cancion_en',
-                    'p.cancion_post'
-                )
+                'p.id',
+                'p.fecha',
+                'presidente.name as nombre_presidencia',
+                'orador_inicial.name as nombre_orador_inicial',
+                'orador_final.name as nombre_orador_final',
+                'c.nombre as congregacion_nombre',
+                'p.cancion_pre',
+                'p.cancion_en',
+                'p.cancion_post'
+            )
                 ->orderBy('p.fecha', 'asc') // Orden ascendente para mostrar programas cronológicamente
                 ->get();
 
@@ -1004,7 +1004,7 @@ class ProgramaController extends Controller
                 $query->whereRaw('YEAR(p.fecha) = ?', [$anio]);
 
                 if ($meses && is_array($meses) && !empty($meses)) {
-                    $query->where(function($q) use ($meses) {
+                    $query->where(function ($q) use ($meses) {
                         foreach ($meses as $mes) {
                             $q->orWhereRaw('MONTH(p.fecha) = ?', [$mes]);
                         }
@@ -1013,16 +1013,16 @@ class ProgramaController extends Controller
             }
 
             $programas = $query->select(
-                    'p.id',
-                    'p.fecha',
-                    'presidente.name as nombre_presidencia',
-                    'orador_inicial.name as nombre_orador_inicial',
-                    'orador_final.name as nombre_orador_final',
-                    'c.nombre as congregacion_nombre',
-                    'p.cancion_pre',
-                    'p.cancion_en',
-                    'p.cancion_post'
-                )
+                'p.id',
+                'p.fecha',
+                'presidente.name as nombre_presidencia',
+                'orador_inicial.name as nombre_orador_inicial',
+                'orador_final.name as nombre_orador_final',
+                'c.nombre as congregacion_nombre',
+                'p.cancion_pre',
+                'p.cancion_en',
+                'p.cancion_post'
+            )
                 ->orderBy('p.fecha', 'asc')
                 ->get();
 
@@ -1103,20 +1103,20 @@ class ProgramaController extends Controller
             // Si meses es un string, convertirlo a array para consistencia
             if (is_string($meses)) {
                 $meses = [$meses];
-            }else {
+            } else {
                 $mesesSQL = implode(',', $meses);
             }
 
             // Usar la misma consulta SQL que resumenVista()
             $query = "WITH
                     asignados_presidentes AS (
-                        SELECT presidencia AS usuario,p.id AS programa_id,ps.abreviacion,'Presidente' AS rol,0 AS seccion_id,1 AS sala_id,0 AS orden,NULL as reemplazado
+                        SELECT presidencia AS usuario,p.id AS programa_id,ps.abreviacion,'Presidente' AS rol,0 AS seccion_id,1 AS sala_id,0 AS orden,NULL as reemplazado,1 AS tipo_rol
                         FROM programas p INNER JOIN partes_seccion ps ON ps.id=27 WHERE presidencia IS NOT NULL
                             UNION 
-                        SELECT encargado_id AS usuario,programa_id,ps.abreviacion,CASE WHEN seccion_id=2 THEN 'Estudiante' ELSE 'Encargado' END AS rol,ps.seccion_id,pp.sala_id,pp.orden,pp.encargado_reemplazado_id AS reemplazado
+                        SELECT encargado_id AS usuario,programa_id,ps.abreviacion,CASE WHEN seccion_id=2 THEN 'Estudiante' ELSE 'Encargado' END AS rol,ps.seccion_id,pp.sala_id,pp.orden,pp.encargado_reemplazado_id AS reemplazado,1 AS tipo_rol
                         FROM partes_programa pp INNER JOIN partes_seccion ps ON ps.id=pp.parte_id WHERE encargado_id IS NOT NULL 
                             UNION 
-                        SELECT ayudante_id AS usuario,programa_id,ps.abreviacion,'Ayudante' AS rol,ps.seccion_id,pp.sala_id,pp.orden,pp.ayudante_reemplazado_id AS reemplazado
+                        SELECT ayudante_id AS usuario,programa_id,ps.abreviacion,'Ayudante' AS rol,ps.seccion_id,pp.sala_id,pp.orden,pp.ayudante_reemplazado_id AS reemplazado,2 AS tipo_rol
                         FROM partes_programa pp INNER JOIN partes_seccion ps ON ps.id=pp.parte_id WHERE ayudante_id IS NOT NULL 
                     ),
                     programas_seleccionados AS (
@@ -1137,8 +1137,8 @@ class ProgramaController extends Controller
                     INNER JOIN users u ON u.id=up.usuario
                     INNER JOIN usuarios_agrupados ua ON ua.usuario=u.id
                     LEFT JOIN users ur ON ur.id=up.reemplazado 
-                    ORDER BY programa_id,seccion_id,sala_id,orden";
-            
+                    ORDER BY programa_id,seccion_id,sala_id,orden,tipo_rol";
+
             $data = DB::select($query);
 
             // Verificar si hay datos para exportar
@@ -1163,7 +1163,8 @@ class ProgramaController extends Controller
             }
 
             // Crear Excel usando Laravel Excel con los mismos datos que resumenVista()
-            return Excel::download(new class($data) implements \Maatwebsite\Excel\Concerns\FromCollection, \Maatwebsite\Excel\Concerns\WithHeadings, \Maatwebsite\Excel\Concerns\WithStyles {
+            return Excel::download(
+                new class ($data) implements \Maatwebsite\Excel\Concerns\FromCollection, \Maatwebsite\Excel\Concerns\WithHeadings, \Maatwebsite\Excel\Concerns\WithStyles {
                 private $data;
                 private $rowStyles = [];
 
@@ -1194,9 +1195,9 @@ class ProgramaController extends Controller
 
                         // Aplicar estilo a la fila
                         $this->rowStyles[$rowIndex] = [
-                            'fill' => [
-                                'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
-                                'startColor' => ['rgb' => $backgroundColor]
+                        'fill' => [
+                            'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                            'startColor' => ['rgb' => $backgroundColor]
                             ]
                         ];
                         $rowIndex++;
@@ -1208,13 +1209,13 @@ class ProgramaController extends Controller
                 public function headings(): array
                 {
                     return [
-                        'Fecha',
-                        'Parte',
-                        'Nombre',
-                        'Participa',
-                        'Rol',
-                        'Sala',
-                        'Reemplazado',
+                    'Fecha',
+                    'Parte',
+                    'Nombre',
+                    'Participa',
+                    'Rol',
+                    'Sala',
+                    'Reemplazado',
                     ];
                 }
 
@@ -1224,7 +1225,7 @@ class ProgramaController extends Controller
                     foreach ($this->rowStyles as $row => $style) {
                         $sheet->getStyle('A' . $row . ':G' . $row)->applyFromArray($style);
                     }
-                    
+
                     // Columna G (Reemplazado) con texto tachado cuando tenga contenido
                     if ($sheet->getHighestRow() > 1) {
                         $sheet->getStyle('G2:G' . $sheet->getHighestRow())->applyFromArray([
@@ -1233,7 +1234,7 @@ class ProgramaController extends Controller
                             ],
                         ]);
                     }
-                    
+
                     // Estilo para el header
                     $sheet->getStyle('A1:G1')->applyFromArray([
                         'font' => [
@@ -1256,24 +1257,26 @@ class ProgramaController extends Controller
                 {
                     // Colores alternados basados en color_index (0-9)
                     $colors = [
-                        'E8F5E8', // 0 - Verde muy claro
-                        'F3E5F5', // 1 - Púrpura muy claro
-                        'E3F2FD', // 2 - Azul muy claro
-                        'FFF3E0', // 3 - Naranja muy claro
-                        'FCE4EC', // 4 - Rosa muy claro
-                        'E8F5E8', // 5 - Verde muy claro
-                        'F3E5F5', // 6 - Púrpura muy claro
-                        'E3F2FD', // 7 - Azul muy claro
-                        'FFF3E0', // 8 - Naranja muy claro
-                        'FCE4EC', // 9 - Rosa muy claro
+                    'E8F5E8', // 0 - Verde muy claro
+                    'F3E5F5', // 1 - Púrpura muy claro
+                    'E3F2FD', // 2 - Azul muy claro
+                    'FFF3E0', // 3 - Naranja muy claro
+                    'FCE4EC', // 4 - Rosa muy claro
+                    'E8F5E8', // 5 - Verde muy claro
+                    'F3E5F5', // 6 - Púrpura muy claro
+                    'E3F2FD', // 7 - Azul muy claro
+                    'FFF3E0', // 8 - Naranja muy claro
+                    'FCE4EC', // 9 - Rosa muy claro
                     ];
 
                     return $colors[$colorIndex % 10];
                 }
-            }, $fileName . '.xlsx');
+                },
+                $fileName . '.xlsx'
+            );
 
         } catch (\Exception $e) {
-             \Log::error('❌ Error en exportación XLS:', [
+            \Log::error('❌ Error en exportación XLS:', [
                 'error' => $e->getMessage(),
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
@@ -1306,13 +1309,13 @@ class ProgramaController extends Controller
             // Consulta para obtener los programas con sus partes
             $query = "WITH
                     asignados_presidentes AS (
-                        SELECT presidencia AS usuario,p.id AS programa_id,ps.abreviacion,'Presidente' AS rol,0 AS seccion_id,1 AS sala_id,0 AS orden,NULL as reemplazado
+                        SELECT presidencia AS usuario,p.id AS programa_id,ps.abreviacion,'Presidente' AS rol,0 AS seccion_id,1 AS sala_id,0 AS orden,NULL as reemplazado,1 AS tipo_rol
                         FROM programas p INNER JOIN partes_seccion ps ON ps.id=27 WHERE presidencia IS NOT NULL
                             UNION 
-                        SELECT encargado_id AS usuario,programa_id,ps.abreviacion,CASE WHEN seccion_id=2 THEN 'Estudiante' ELSE 'Encargado' END AS rol,ps.seccion_id,pp.sala_id,pp.orden,pp.encargado_reemplazado_id AS reemplazado
+                        SELECT encargado_id AS usuario,programa_id,ps.abreviacion,CASE WHEN seccion_id=2 THEN 'Estudiante' ELSE 'Encargado' END AS rol,ps.seccion_id,pp.sala_id,pp.orden,pp.encargado_reemplazado_id AS reemplazado,1 AS tipo_rol
                         FROM partes_programa pp INNER JOIN partes_seccion ps ON ps.id=pp.parte_id WHERE encargado_id IS NOT NULL 
                             UNION 
-                        SELECT ayudante_id AS usuario,programa_id,ps.abreviacion,'Ayudante' AS rol,ps.seccion_id,pp.sala_id,pp.orden,pp.ayudante_reemplazado_id AS reemplazado
+                        SELECT ayudante_id AS usuario,programa_id,ps.abreviacion,'Ayudante' AS rol,ps.seccion_id,pp.sala_id,pp.orden,pp.ayudante_reemplazado_id AS reemplazado,2 AS tipo_rol
                         FROM partes_programa pp INNER JOIN partes_seccion ps ON ps.id=pp.parte_id WHERE ayudante_id IS NOT NULL 
                     ),
                     programas_seleccionados AS (
@@ -1333,8 +1336,8 @@ class ProgramaController extends Controller
                     INNER JOIN users u ON u.id=up.usuario
                     INNER JOIN usuarios_agrupados ua ON ua.usuario=u.id
                     LEFT JOIN users ur ON ur.id=up.reemplazado 
-                    ORDER BY programa_id,seccion_id,sala_id,orden";
-                $data = DB::select($query);
+                    ORDER BY programa_id,seccion_id,sala_id,orden,tipo_rol";
+            $data = DB::select($query);
 
             return view('programas.resumen-vista', [
                 'data' => $data,
@@ -1380,7 +1383,7 @@ class ProgramaController extends Controller
                 ->leftJoin('users as ayudante', 'pp.ayudante_id', '=', 'ayudante.id')
                 ->leftJoin('users as creador', 'p.creador', '=', 'creador.id')
                 ->leftJoin('congregaciones as c', 'creador.congregacion', '=', 'c.id')
-                ->whereIn('ps.seccion_id', [1,2]) // Filtrar "Tesoros de la Biblia y Seamos Mejores Maestros"
+                ->whereIn('ps.seccion_id', [1, 2]) // Filtrar "Tesoros de la Biblia y Seamos Mejores Maestros"
                 ->where('creador.congregacion', $currentUser->congregacion)
                 ->whereNotIn('ps.id', [1, 2]) // Excluir TB, BPE (dejando solo la Lectura de la Biblia)
                 ->whereNotNull('p.fecha')
@@ -1393,7 +1396,7 @@ class ProgramaController extends Controller
 
                 // Si hay meses específicos seleccionados, filtrar por ellos
                 if ($meses && is_array($meses) && !empty($meses)) {
-                    $query->where(function($q) use ($meses) {
+                    $query->where(function ($q) use ($meses) {
                         foreach ($meses as $mes) {
                             // Cambiar whereMonth (SQLite) por whereRaw con MONTH (MySQL)
                             $q->orWhereRaw('MONTH(p.fecha) = ?', [$mes]);
@@ -1403,16 +1406,16 @@ class ProgramaController extends Controller
             }
 
             $asignaciones = $query->select(
-                    'p.fecha',
-                    'pp.leccion',
-                    'ps.nombre as parte_nombre',
-                    'ps.tipo as parte_tipo',
-                    'encargado.name as nombre_encargado',
-                    'ayudante.name as nombre_ayudante',
-                    'pp.sala_id',
-                    'pp.orden',
-                    'pp.parte_id'
-                )
+                'p.fecha',
+                'pp.leccion',
+                'ps.nombre as parte_nombre',
+                'ps.tipo as parte_tipo',
+                'encargado.name as nombre_encargado',
+                'ayudante.name as nombre_ayudante',
+                'pp.sala_id',
+                'pp.orden',
+                'pp.parte_id'
+            )
                 ->orderBy('p.fecha', 'asc')
                 ->orderBy('pp.sala_id', 'asc')
                 ->orderBy('pp.orden', 'asc')
@@ -1437,7 +1440,7 @@ class ProgramaController extends Controller
             // Si no hay asignaciones, crear datos de ejemplo para mostrar el formato
             if ($asignaciones->isEmpty()) {
                 $asignaciones = collect([
-                    (object)[
+                    (object) [
                         'fecha' => '2025-10-15',
                         'leccion' => 'th lección 10',
                         'parte_nombre' => 'Lectura de la Biblia',
@@ -1447,7 +1450,7 @@ class ProgramaController extends Controller
                         'nombre_ayudante' => null,
                         'numero_intervencion' => 3
                     ],
-                    (object)[
+                    (object) [
                         'fecha' => '2025-10-15',
                         'leccion' => 'lmd lección 2 punto 4',
                         'parte_nombre' => 'Empiece conversaciones',
@@ -1457,7 +1460,7 @@ class ProgramaController extends Controller
                         'nombre_ayudante' => 'ALBA GIL',
                         'numero_intervencion' => 4
                     ],
-                    (object)[
+                    (object) [
                         'fecha' => '2025-10-15',
                         'leccion' => 'lmd lección 2 punto 3',
                         'parte_nombre' => 'Empiece conversaciones',
@@ -1467,7 +1470,7 @@ class ProgramaController extends Controller
                         'nombre_ayudante' => 'CLAUDIA MATURANA',
                         'numero_intervencion' => 5
                     ],
-                    (object)[
+                    (object) [
                         'fecha' => '2025-10-15',
                         'leccion' => 'lmd lección 9 punto 4',
                         'parte_nombre' => 'Haga revisitas',
@@ -1559,7 +1562,7 @@ class ProgramaController extends Controller
                 ->where('pp.programa_id', DB::table('partes_programa')
                     ->where('id', $parteProgramaId)
                     ->value('programa_id'))
-                ->whereIn('ps.seccion_id', [1,2]) //Tesoros de la Biblia y Seamos Mejores Maestros
+                ->whereIn('ps.seccion_id', [1, 2]) //Tesoros de la Biblia y Seamos Mejores Maestros
                 //ordenar por sala_id,seccion_id y orden
                 ->orderBy('pp.sala_id', 'asc')
                 ->orderBy('ps.seccion_id', 'asc')
@@ -1575,7 +1578,7 @@ class ProgramaController extends Controller
                         $numeroIntervencion = 3;
                         break;
                     }
-                } elseif($item->seccion_id == 2) {
+                } elseif ($item->seccion_id == 2) {
                     if ($item->id == $parteProgramaId) {
                         break;
                     }
