@@ -20,6 +20,9 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
 # Instalar Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# Ocultar versión de PHP en headers HTTP (X-Powered-By)
+RUN echo "expose_php = Off" > /usr/local/etc/php/conf.d/security.ini
+
 WORKDIR /var/www
 
 CMD ["php-fpm"]

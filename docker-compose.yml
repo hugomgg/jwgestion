@@ -13,7 +13,9 @@ services:
       - laravel
 
   webserver:
-    image: nginx:latest
+    build:
+      context: .
+      dockerfile: docker/nginx/Dockerfile
     container_name: jwgestion_nginx
     ports:
       - "8000:80"
