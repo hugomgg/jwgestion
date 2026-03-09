@@ -626,6 +626,65 @@ class InformeController extends Controller
     }
 
     /**
+     * Obtener años disponibles para el modal
+     */
+    public function getAniosModal()
+    {
+        $currentUser = auth()->user();
+
+        $query = DB::table('informes')
+            ->select('anio')
+            ->distinct()
+            ->where('estado', 1);
+
+        // Aplicar filtro de congregación según el rol
+        if (!($currentUser->isAdmin() || $currentUser->isSupervisor())) {
+            $query->where('congregacion_id', $currentUser->congregacion);
+        }
+
+        $anios = $query->orderBy('anio', 'desc')->pluck('anio');
+
+        return response()->json([
+            'success' => true,
+            'anios' => $anios
+        ]);
+    }
+
+    /**
+     * Obtener meses disponibles para un año específico
+     */
+    public function getMesesPorAnio(Request $request)
+    {
+        $currentUser = auth()->user();
+        $anio = $request->anio;
+
+        if (!$anio) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Año no proporcionado'
+            ], 400);
+        }
+
+        $query = DB::table('informes')
+            ->select('mes')
+            ->distinct()
+            ->where('anio', $anio)
+            ->where('estado', 1);
+
+        // Aplicar filtro de congregación según el rol
+        if (!($currentUser->isAdmin() || $currentUser->isSupervisor())) {
+            $query->where('congregacion_id', $currentUser->congregacion);
+        }
+
+        $meses = $query->orderBy('mes', 'asc')->pluck('mes');
+
+        return response()->json([
+            'success' => true,
+            'meses' => $meses
+        ]);
+    }
+
+    /**
      * Obtener informes por grupo y periodo
      */
     public function getInformesPorGrupo(Request $request)

@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(document).ready(function () {
     // Inicializar DataTable
     let informesTable = $('#informesTable').DataTable({
         responsive: true,
@@ -10,14 +10,14 @@ $(document).ready(function() {
         pageLength: 25,
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "Todos"]],
         dom: '<"d-flex justify-content-between align-items-center mb-3"<"d-flex align-items-center"l><"d-flex align-items-center"f>>rtip',
-        drawCallback: function() {
+        drawCallback: function () {
             // Reinicializar tooltips después de cada redibujado
             $('[data-bs-toggle="tooltip"]').tooltip('dispose').tooltip();
         }
     });
 
     // Aplicar filtros de búsqueda avanzada
-    $('#anioFilter, #mesFilter, #grupoFilter, #servicioFilter').on('change', function() {
+    $('#anioFilter, #mesFilter, #grupoFilter, #servicioFilter').on('change', function () {
         applyAdvancedFilters();
     });
 
@@ -31,7 +31,7 @@ $(document).ready(function() {
         // Aplicar filtros a la tabla
         informesTable
             .columns(1).search(anio) // Año (columna 1)
-            .columns(2).search(mes ? (['','Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'][parseInt(mes)] || '') : '') // Mes (columna 2)
+            .columns(2).search(mes ? (['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'][parseInt(mes)] || '') : '') // Mes (columna 2)
             .columns(3).search(grupo) // Grupo (columna 3)
             .columns(6).search(servicio) // Servicio (columna 6)
             .draw();
@@ -56,7 +56,7 @@ $(document).ready(function() {
         let errorList = [];
         let hasFieldErrors = false;
 
-        $.each(errors, function(field, messages) {
+        $.each(errors, function (field, messages) {
             let fieldId = prefix ? `${prefix}_${field}` : field;
             let $field = $(`#${fieldId}`);
 
@@ -67,7 +67,7 @@ $(document).ready(function() {
             }
 
             // Agregar a la lista de errores general
-            $.each(messages, function(index, message) {
+            $.each(messages, function (index, message) {
                 errorList.push(`<li>${message}</li>`);
             });
         });
@@ -95,7 +95,7 @@ $(document).ready(function() {
         $('#alert-container').html(alert);
 
         // Auto-ocultar después de 5 segundos
-        setTimeout(function() {
+        setTimeout(function () {
             $('.alert').alert('close');
         }, 5000);
     }
@@ -143,12 +143,12 @@ $(document).ready(function() {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
                 'Accept': 'application/json'
             },
-            success: function(response) {
+            success: function (response) {
                 // Limpiar opciones de carga
                 $userSelect.find('option:not(:first)').remove();
 
                 if (response.success && response.usuarios) {
-                    response.usuarios.forEach(function(usuario) {
+                    response.usuarios.forEach(function (usuario) {
                         const selected = usuario.id == currentUserId ? 'selected' : '';
                         $userSelect.append(`<option value="${usuario.id}" ${selected}>${usuario.name}</option>`);
                     });
@@ -162,13 +162,13 @@ $(document).ready(function() {
                     showAlert(response.message || 'Error al cargar usuarios del grupo', 'error');
                 }
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 // Limpiar opciones de carga
                 $userSelect.find('option:not(:first)').remove();
                 $userSelect.append('<option value="" disabled>Error al cargar publicadores</option>');
                 showAlert('Error al cargar usuarios del grupo', 'error');
             },
-            complete: function() {
+            complete: function () {
                 // Rehabilitar el select
                 $userSelect.prop('disabled', false);
             }
@@ -176,13 +176,13 @@ $(document).ready(function() {
     }
 
     // Evento para filtrar usuarios cuando cambia el grupo (modal agregar)
-    $('#grupo_id').on('change', function() {
+    $('#grupo_id').on('change', function () {
         const grupoId = $(this).val();
         filterUsersByGroup(grupoId, 'user_id');
     });
 
     // Evento al abrir modal de agregar
-    $('#addInformeModal').on('shown.bs.modal', function() {
+    $('#addInformeModal').on('shown.bs.modal', function () {
         clearForm('addInformeForm');
         // Preseleccionar el año actual
         $('#anio').val(new Date().getFullYear());
@@ -191,7 +191,7 @@ $(document).ready(function() {
     });
 
     // Evento al abrir modal de editar
-    $('#editInformeModal').on('shown.bs.modal', function() {
+    $('#editInformeModal').on('shown.bs.modal', function () {
         // No limpiar el formulario en el modal de editar porque los datos
         // ya se cargan desde el AJAX del botón editar
         // Solo enfocar el primer campo editable
@@ -199,7 +199,7 @@ $(document).ready(function() {
     });
 
     // Manejar formulario de agregar informe
-    $('#addInformeForm').on('submit', function(e) {
+    $('#addInformeForm').on('submit', function (e) {
         e.preventDefault();
 
         // Validar formulario antes de enviar
@@ -234,7 +234,7 @@ $(document).ready(function() {
                 'X-CSRF-TOKEN': csrfToken,
                 'Accept': 'application/json'
             },
-            success: function(response) {
+            success: function (response) {
                 if (response.success) {
                     $('#addInformeModal').modal('hide');
                     showAlert(response.message, 'success');
@@ -243,7 +243,7 @@ $(document).ready(function() {
                     showAlert(response.message || 'Error al crear el informe', 'error');
                 }
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 if (xhr.status === 422) {
                     let errors = xhr.responseJSON.errors;
                     showValidationErrors(errors, '');
@@ -254,7 +254,7 @@ $(document).ready(function() {
                     showAlert(message, 'error');
                 }
             },
-            complete: function() {
+            complete: function () {
                 // Ocultar spinner
                 $spinner.addClass('d-none');
                 $submitBtn.prop('disabled', false);
@@ -263,13 +263,13 @@ $(document).ready(function() {
     });
 
     // Manejar clic en ver informe
-    $(document).on('click', '.view-informe', function() {
+    $(document).on('click', '.view-informe', function () {
         let informeId = $(this).data('informe-id');
 
         $.ajax({
             url: window.informesIndexConfig.showRoute.replace(':id', informeId),
             type: 'GET',
-            success: function(response) {
+            success: function (response) {
                 if (response.success) {
                     let informe = response.informe;
 
@@ -294,7 +294,7 @@ $(document).ready(function() {
                     showAlert(response.message || 'Error al cargar el informe', 'error');
                 }
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 let message = xhr.responseJSON?.message || 'Error al cargar el informe';
                 showAlert(message, 'error');
             }
@@ -302,19 +302,19 @@ $(document).ready(function() {
     });
 
     // Manejar clic en editar informe
-    $(document).on('click', '.edit-informe', function() {
+    $(document).on('click', '.edit-informe', function () {
         let informeId = $(this).data('informe-id');
 
         $.ajax({
             url: window.informesIndexConfig.editRoute.replace(':id', informeId),
             type: 'GET',
-            success: function(response) {
+            success: function (response) {
                 if (response.success) {
                     let informe = response.informe;
 
                     // Array de nombres de meses
                     const meses = ['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-                                  'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+                        'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
 
                     // Llenar los campos del formulario de edición
                     $('#edit_informe_id').val(informe.id);
@@ -345,7 +345,7 @@ $(document).ready(function() {
                     showAlert(response.message || 'Error al cargar el informe', 'error');
                 }
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 let message = xhr.responseJSON?.message || 'Error al cargar el informe';
                 showAlert(message, 'error');
             }
@@ -353,7 +353,7 @@ $(document).ready(function() {
     });
 
     // Manejar formulario de editar informe
-    $('#editInformeForm').on('submit', function(e) {
+    $('#editInformeForm').on('submit', function (e) {
         e.preventDefault();
 
         // Validar formulario antes de enviar
@@ -381,11 +381,11 @@ $(document).ready(function() {
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
-            success: function(response) {
+            success: function (response) {
                 if (response.success) {
                     $('#editInformeModal').modal('hide');
                     showAlert(response.message, 'success');
-                    
+
                     // Actualizar la fila en DataTable sin recargar la página
                     if (response.data && informesTable) {
                         updateTableRow(response.data);
@@ -394,7 +394,7 @@ $(document).ready(function() {
                     showAlert(response.message || 'Error al actualizar el informe', 'error');
                 }
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 if (xhr.status === 422) {
                     let errors = xhr.responseJSON.errors;
                     showValidationErrors(errors, 'edit');
@@ -403,7 +403,7 @@ $(document).ready(function() {
                     showAlert(message, 'error');
                 }
             },
-            complete: function() {
+            complete: function () {
                 // Ocultar spinner
                 $spinner.addClass('d-none');
                 $submitBtn.prop('disabled', false);
@@ -412,7 +412,7 @@ $(document).ready(function() {
     });
 
     // Manejar clic en eliminar informe
-    $(document).on('click', '.delete-informe', function() {
+    $(document).on('click', '.delete-informe', function () {
         let informeId = $(this).data('informe-id');
         let informeName = $(this).data('informe-name');
 
@@ -424,7 +424,7 @@ $(document).ready(function() {
     });
 
     // Confirmar eliminación de informe
-    $('#confirmDeleteInformeBtn').on('click', function() {
+    $('#confirmDeleteInformeBtn').on('click', function () {
         let informeId = $(this).data('informe-id');
         let $deleteBtn = $(this);
         let $spinner = $deleteBtn.find('.spinner-border');
@@ -439,24 +439,24 @@ $(document).ready(function() {
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
-            success: function(response) {
+            success: function (response) {
                 if (response.success) {
                     $('#deleteInformeModal').modal('hide');
                     showAlert(response.message, 'success');
 
                     // Remover la fila de la tabla
-                    $(`tr[data-informe-id="${informeId}"]`).fadeOut(300, function() {
+                    $(`tr[data-informe-id="${informeId}"]`).fadeOut(300, function () {
                         informesTable.row($(this)).remove().draw();
                     });
                 } else {
                     showAlert(response.message || 'Error al eliminar el informe', 'error');
                 }
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 let message = xhr.responseJSON?.message || 'Error al eliminar el informe';
                 showAlert(message, 'error');
             },
-            complete: function() {
+            complete: function () {
                 // Ocultar spinner
                 $spinner.addClass('d-none');
                 $deleteBtn.prop('disabled', false);
@@ -468,14 +468,14 @@ $(document).ready(function() {
     $('[data-bs-toggle="tooltip"]').tooltip();
 
     // Limpiar formularios al cerrar modales
-    $('#addInformeModal, #editInformeModal').on('hidden.bs.modal', function() {
+    $('#addInformeModal, #editInformeModal').on('hidden.bs.modal', function () {
         let modalId = $(this).attr('id');
         let formId = modalId.replace('Modal', 'Form');
         clearForm(formId);
     });
 
     // Manejar validación en tiempo real
-    $('#addInformeForm input, #addInformeForm select, #editInformeForm input, #editInformeForm select').on('change blur', function() {
+    $('#addInformeForm input, #addInformeForm select, #editInformeForm input, #editInformeForm select').on('change blur', function () {
         if ($(this).hasClass('is-invalid')) {
             $(this).removeClass('is-invalid');
             $(this).siblings('.invalid-feedback').empty();
@@ -483,7 +483,7 @@ $(document).ready(function() {
     });
 
     // Funcionalidad de búsqueda rápida personalizada
-    $('#informesTable_filter input').on('keyup', function() {
+    $('#informesTable_filter input').on('keyup', function () {
         let searchTerm = this.value.toLowerCase();
 
         // Si hay término de búsqueda, limpiar filtros avanzados
@@ -493,7 +493,7 @@ $(document).ready(function() {
     });
 
     // Resetear filtros avanzados al limpiar búsqueda
-    $('#informesTable_filter input').on('keyup', function() {
+    $('#informesTable_filter input').on('keyup', function () {
         if (this.value === '') {
             $('#anioFilter, #mesFilter, #usuarioFilter, #grupoFilter, #servicioFilter, #participaFilter, #congregacionFilter').val('');
             informesTable.search('').columns().search('').draw();
@@ -506,7 +506,7 @@ $(document).ready(function() {
         let $form = $(`#${formId}`);
 
         // Validar campos requeridos
-        $form.find('[required]').each(function() {
+        $form.find('[required]').each(function () {
             if (!$(this).val()) {
                 $(this).addClass('is-invalid');
                 $(this).siblings('.invalid-feedback').text('Este campo es requerido.');
@@ -515,7 +515,7 @@ $(document).ready(function() {
         });
 
         // Validación específica para números
-        $form.find('input[type="number"]').each(function() {
+        $form.find('input[type="number"]').each(function () {
             let value = $(this).val();
             let min = $(this).attr('min');
 
@@ -530,7 +530,7 @@ $(document).ready(function() {
     }
 
     // Función para exportar datos (para uso futuro)
-    window.exportInformes = function(format) {
+    window.exportInformes = function (format) {
         // Esta función puede ser implementada más tarde para exportar datos
         // TODO: Implementar exportación de informes
     };
@@ -538,47 +538,47 @@ $(document).ready(function() {
     // Función para actualizar una fila de la tabla sin recargar
     function updateTableRow(data) {
         // Obtener meses
-        const meses = ['','Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-        
+        const meses = ['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+
         // Buscar la fila en DataTable
-        let rowNode = informesTable.rows().nodes().toArray().find(function(node) {
+        let rowNode = informesTable.rows().nodes().toArray().find(function (node) {
             return $(node).find('.edit-informe').data('informe-id') == data.id;
         });
 
         if (rowNode) {
             let $row = $(rowNode);
             let columns = [];
-            
+
             // ID
             columns.push(data.id);
-            
+
             // Año
             columns.push(data.anio);
-            
+
             // Mes
             columns.push(meses[data.mes] || data.mes);
-            
+
             // Grupo
             columns.push(`<span class="badge bg-dark">${data.grupo_nombre || ''}</span>`);
-            
+
             // Usuario
             columns.push(data.usuario_nombre || '');
-            
+
             // Participa
             if (data.participa) {
                 columns.push('<span class="badge bg-success">Sí</span>');
             } else {
                 columns.push('<span class="badge bg-danger">No</span>');
             }
-            
+
             // Servicio
             columns.push(`<span class="badge bg-warning text-dark">${data.servicio_nombre || ''}</span>`);
-            
+
             // Congregación (solo para admin/supervisor)
             if (window.informesIndexConfig.isAdmin || window.informesIndexConfig.isSupervisor) {
                 columns.push(`<span class="badge bg-secondary">${data.congregacion_nombre || ''}</span>`);
             }
-            
+
             // Acciones (mantener los botones existentes)
             let actionsHtml = `
                 <div class="btn-group" role="group">
@@ -588,7 +588,7 @@ $(document).ready(function() {
                             title="Ver informe">
                         <i class="fas fa-eye"></i>
                     </button>`;
-            
+
             if (window.informesIndexConfig.canModify) {
                 actionsHtml += `
                     <button type="button" class="btn btn-sm btn-warning edit-informe"
@@ -605,13 +605,13 @@ $(document).ready(function() {
                         <i class="fas fa-trash"></i>
                     </button>`;
             }
-            
+
             actionsHtml += `</div>`;
             columns.push(actionsHtml);
-            
+
             // Actualizar la fila
             informesTable.row($row).data(columns).draw(false);
-            
+
             // Reinicializar tooltips
             $('[data-bs-toggle="tooltip"]').tooltip('dispose').tooltip();
         }
@@ -622,74 +622,108 @@ $(document).ready(function() {
 // ============================================
 
 // Cargar periodos al abrir el modal
-$('#verInformesModal').on('show.bs.modal', function() {
+$('#verInformesModal').on('show.bs.modal', function () {
     // Limpiar select de grupo
     $('#grupoFilterModal').val('');
-    
+    $('#mesFilterModal').val('').prop('disabled', true);
+
     // Limpiar tabla
     $('#informesGrupoTableBody').empty();
-    
+
     // Ocultar tabla y mostrar mensaje inicial
     $('#informesGrupoContainer').addClass('d-none');
     $('#noDataMessage').removeClass('d-none').html(
-        '<i class="fas fa-info-circle me-2"></i>Seleccione un periodo y grupo para ver los informes.'
+        '<i class="fas fa-info-circle me-2"></i>Seleccione un año, mes y grupo para ver los informes.'
     );
-    
-    // Cargar periodos
-    cargarPeriodos();
+
+    // Cargar anios
+    cargarAniosModal();
 });
 
-// Función para cargar periodos disponibles
-function cargarPeriodos() {
+// Función para cargar años disponibles
+function cargarAniosModal() {
     $.ajax({
-        url: window.informesIndexConfig.periodosRoute,
+        url: window.informesIndexConfig.aniosModalRoute,
         type: 'GET',
-        success: function(response) {
+        success: function (response) {
             if (response.success) {
-                let $select = $('#periodoFilterModal');
+                let $select = $('#anioFilterModal');
                 $select.empty();
-                $select.append('<option value="">Seleccione un periodo</option>');
-                
-                const meses = ['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
-                              'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-                
-                response.periodos.forEach(function(periodo) {
-                    let mesNombre = meses[periodo.mes] || periodo.mes;
-                    let texto = `${mesNombre} ${periodo.anio}`;
-                    $select.append(`<option value="${periodo.anio}-${periodo.mes}">${texto}</option>`);
+                $select.append('<option value="">Seleccione un año</option>');
+
+                response.anios.forEach(function (anio) {
+                    $select.append(`<option value="${anio}">${anio}</option>`);
                 });
-                
-                // Seleccionar el periodo más reciente (primer elemento después de "Seleccione...")
-                if (response.periodos.length > 0) {
-                    $select.val(`${response.periodos[0].anio}-${response.periodos[0].mes}`);
+
+                // Seleccionar el año más reciente
+                if (response.anios.length > 0) {
+                    $select.val(response.anios[0]).trigger('change');
                 }
             }
         },
-        error: function(xhr) {
-            console.error('Error al cargar periodos:', xhr);
+        error: function (xhr) {
+            console.error('Error al cargar años:', xhr);
         }
     });
 }
 
 // Cambios en los filtros del modal
-$('#periodoFilterModal, #grupoFilterModal').on('change', function() {
+$('#anioFilterModal').on('change', function () {
+    let anio = $(this).val();
+    let $mesSelect = $('#mesFilterModal');
+
+    $mesSelect.val('').prop('disabled', true).empty().append('<option value="">Seleccione un mes</option>');
+
+    if (anio) {
+        $.ajax({
+            url: window.informesIndexConfig.mesesPorAnioRoute,
+            type: 'GET',
+            data: { anio: anio },
+            success: function (response) {
+                if (response.success) {
+                    const meses = ['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                        'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+
+                    response.meses.forEach(function (mes) {
+                        let mesNombre = meses[mes] || mes;
+                        $mesSelect.append(`<option value="${mes}">${mesNombre}</option>`);
+                    });
+
+                    $mesSelect.prop('disabled', false);
+
+                    if (response.meses.length > 0) {
+                        $mesSelect.val(response.meses[response.meses.length - 1]);
+                    }
+                    cargarInformesGrupo();
+                }
+            },
+            error: function (xhr) {
+                console.error('Error al cargar meses:', xhr);
+            }
+        });
+    } else {
+        cargarInformesGrupo();
+    }
+});
+
+$('#mesFilterModal, #grupoFilterModal').on('change', function () {
     cargarInformesGrupo();
 });
 
 // Función para cargar informes por grupo
 function cargarInformesGrupo() {
-    let periodo = $('#periodoFilterModal').val();
+    let anio = $('#anioFilterModal').val();
+    let mes = $('#mesFilterModal').val();
     let grupoId = $('#grupoFilterModal').val();
-    
-    if (!periodo || !grupoId) {
+
+    if (!anio || !mes || !grupoId) {
         $('#informesGrupoContainer').addClass('d-none');
-        $('#noDataMessage').removeClass('d-none');
+        $('#noDataMessage').removeClass('d-none').html(
+            '<i class="fas fa-info-circle me-2"></i>Seleccione un año, mes y grupo para ver los informes.'
+        );
         return;
     }
-    
-    // Separar año y mes del periodo
-    let [anio, mes] = periodo.split('-');
-    
+
     $.ajax({
         url: window.informesIndexConfig.informesPorGrupoRoute,
         type: 'GET',
@@ -698,12 +732,12 @@ function cargarInformesGrupo() {
             anio: anio,
             mes: mes
         },
-        success: function(response) {
+        success: function (response) {
             if (response.success) {
                 mostrarInformesGrupo(response.data);
             }
         },
-        error: function(xhr) {
+        error: function (xhr) {
             console.error('Error al cargar informes:', xhr);
             showAlert('Error al cargar los informes', 'danger');
         }
@@ -719,18 +753,18 @@ function mostrarInformesGrupo(data) {
         );
         return;
     }
-    
+
     $('#noDataMessage').addClass('d-none');
     $('#informesGrupoContainer').removeClass('d-none');
-    
+
     let tbody = $('#informesGrupoTableBody');
     tbody.empty();
-    
-    data.forEach(function(item) {
-        let participaIcon = item.participa == 1 
-            ? '<i class="fas fa-check-square text-success" title="Participa"></i>' 
+
+    data.forEach(function (item) {
+        let participaIcon = item.participa == 1
+            ? '<i class="fas fa-check-square text-success" title="Participa"></i>'
             : '<i class="fas fa-times text-danger" title="No participa"></i>';
-        
+
         let row = `
             <tr>
                 <td>${item.nombre}</td>
@@ -748,68 +782,103 @@ function mostrarInformesGrupo(data) {
 // ===== INFORME CONGREGACIÓN =====
 
 // Cargar periodos para el modal de Informe Congregación
-$('#informeCongregacionModal').on('show.bs.modal', function() {
-    cargarPeriodosCongregacion();
+$('#informeCongregacionModal').on('show.bs.modal', function () {
+    $('#mesFilterCongregacion').val('').prop('disabled', true);
+    $('#congregacionStatsContainer').addClass('d-none');
+    $('#noDataCongregacionMessage').removeClass('d-none');
+    $('#loadingCongregacionStats').addClass('d-none');
+
+    cargarAniosCongregacion();
 });
 
-// Función para cargar periodos en el selector
-function cargarPeriodosCongregacion() {
+// Función para cargar años en el selector
+function cargarAniosCongregacion() {
     $.ajax({
-        url: window.informesIndexConfig.periodosRoute,
+        url: window.informesIndexConfig.aniosModalRoute,
         method: 'GET',
-        success: function(response) {
+        success: function (response) {
             if (response.success) {
-                let select = $('#periodoFilterCongregacion');
-                select.empty();
-                select.append('<option value="">Seleccione un periodo</option>');
-                
-                const meses = ['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
-                              'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-                
-                response.periodos.forEach(function(periodo) {
-                    let mesNombre = meses[periodo.mes] || periodo.mes;
-                    let valor = `${periodo.anio}-${periodo.mes}`;
-                    let texto = `${mesNombre} ${periodo.anio}`;
-                    select.append(`<option value="${valor}">${texto}</option>`);
+                let $select = $('#anioFilterCongregacion');
+                $select.empty();
+                $select.append('<option value="">Seleccione un año</option>');
+
+                response.anios.forEach(function (anio) {
+                    $select.append(`<option value="${anio}">${anio}</option>`);
                 });
-                
-                // Seleccionar el periodo más reciente (primera opción después de "Seleccione...")
-                if (response.periodos.length > 0) {
-                    select.val(`${response.periodos[0].anio}-${response.periodos[0].mes}`);
-                    cargarEstadisticasCongregacion();
+
+                // Seleccionar el año más reciente
+                if (response.anios.length > 0) {
+                    $select.val(response.anios[0]).trigger('change');
                 }
             }
         },
-        error: function() {
-            console.error('Error al cargar periodos');
+        error: function () {
+            console.error('Error al cargar años para congregación');
         }
     });
 }
 
-// Evento change para el selector de periodo
-$('#periodoFilterCongregacion').on('change', function() {
+// Evento change para el selector de año
+$('#anioFilterCongregacion').on('change', function () {
+    let anio = $(this).val();
+    let $mesSelect = $('#mesFilterCongregacion');
+
+    $mesSelect.val('').prop('disabled', true).empty().append('<option value="">Seleccione un mes</option>');
+
+    if (anio) {
+        $.ajax({
+            url: window.informesIndexConfig.mesesPorAnioRoute,
+            type: 'GET',
+            data: { anio: anio },
+            success: function (response) {
+                if (response.success) {
+                    const meses = ['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                        'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+
+                    response.meses.forEach(function (mes) {
+                        let mesNombre = meses[mes] || mes;
+                        $mesSelect.append(`<option value="${mes}">${mesNombre}</option>`);
+                    });
+
+                    $mesSelect.prop('disabled', false);
+
+                    if (response.meses.length > 0) {
+                        $mesSelect.val(response.meses[response.meses.length - 1]);
+                    }
+                    cargarEstadisticasCongregacion();
+                }
+            },
+            error: function (xhr) {
+                console.error('Error al cargar meses para congregación:', xhr);
+            }
+        });
+    } else {
+        cargarEstadisticasCongregacion();
+    }
+});
+
+// Evento change para el selector de mes
+$('#mesFilterCongregacion').on('change', function () {
     cargarEstadisticasCongregacion();
 });
 
 // Función para cargar estadísticas de congregación
 function cargarEstadisticasCongregacion() {
-    let periodo = $('#periodoFilterCongregacion').val();
-    
-    if (!periodo) {
+    let anio = $('#anioFilterCongregacion').val();
+    let mes = $('#mesFilterCongregacion').val();
+
+    if (!anio || !mes) {
         $('#congregacionStatsContainer').addClass('d-none');
         $('#noDataCongregacionMessage').removeClass('d-none');
         $('#loadingCongregacionStats').addClass('d-none');
         return;
     }
-    
-    // Dividir periodo en año y mes
-    let [anio, mes] = periodo.split('-');
-    
+
     // Mostrar indicador de carga
     $('#loadingCongregacionStats').removeClass('d-none');
     $('#congregacionStatsContainer').addClass('d-none');
     $('#noDataCongregacionMessage').addClass('d-none');
-    
+
     // Realizar petición AJAX
     $.ajax({
         url: window.informesIndexConfig.informeCongregacionRoute,
@@ -818,9 +887,9 @@ function cargarEstadisticasCongregacion() {
             anio: anio,
             mes: mes
         },
-        success: function(response) {
+        success: function (response) {
             $('#loadingCongregacionStats').addClass('d-none');
-            
+
             if (response.success) {
                 // Actualizar las estadísticas
                 $('#stat_usuarios_activos').text(response.data.usuarios_activos);
@@ -831,7 +900,7 @@ function cargarEstadisticasCongregacion() {
                 $('#stat_estudios_precursores_auxiliares').text(response.data.estudios_precursores_auxiliares);
                 $('#stat_precursores_regulares').text(response.data.precursores_regulares);
                 $('#stat_estudios_precursores_regulares').text(response.data.estudios_precursores_regulares);
-                
+
                 // Mostrar contenedor de estadísticas
                 $('#congregacionStatsContainer').removeClass('d-none');
                 $('#noDataCongregacionMessage').addClass('d-none');
@@ -841,7 +910,7 @@ function cargarEstadisticasCongregacion() {
                 );
             }
         },
-        error: function(xhr) {
+        error: function (xhr) {
             $('#loadingCongregacionStats').addClass('d-none');
             $('#noDataCongregacionMessage').removeClass('d-none').html(
                 '<i class="fas fa-exclamation-triangle me-2"></i>Error al cargar las estadísticas.'
@@ -855,7 +924,7 @@ function cargarEstadisticasCongregacion() {
 // Cargar años al abrir el modal (usando evento de Bootstrap 5)
 const registroPublicadorModalElement = document.getElementById('registroPublicadorModal');
 if (registroPublicadorModalElement) {
-    registroPublicadorModalElement.addEventListener('show.bs.modal', function() {
+    registroPublicadorModalElement.addEventListener('show.bs.modal', function () {
         cargarAniosRegistro();
         $('#registroGrupoFilter').val('');
         $('#registroPublicadorFilter').empty().append('<option value="">Seleccione un publicador</option>');
@@ -868,56 +937,56 @@ if (registroPublicadorModalElement) {
 // Función para cargar años disponibles
 function cargarAniosRegistro() {
     let select = $('#registroAnioFilter');
-    
+
     if (select.length === 0) {
         console.error('El select registroAnioFilter no existe en el DOM');
         return;
     }
-    
+
     select.empty();
     select.append('<option value="">Seleccione un año</option>');
-    
+
     // Determinar el año por defecto según el mes actual
     let fechaActual = new Date();
     let mesActual = fechaActual.getMonth() + 1; // getMonth() devuelve 0-11
     let anioActual = fechaActual.getFullYear();
     let anioDefecto;
-    
+
     // Si el mes actual es >= septiembre (9), seleccionar año actual + 1
     if (mesActual >= 9) {
         anioDefecto = anioActual + 1;
     } else {
         anioDefecto = anioActual;
     }
-    
+
     // Obtener años desde el backend
     $.ajax({
         url: window.informesIndexConfig.aniosRegistroRoute,
         method: 'GET',
-        success: function(response) {
+        success: function (response) {
             let aniosDisponibles = [];
-            
+
             if (response.success && response.anios && response.anios.length > 0) {
                 aniosDisponibles = response.anios;
             }
-            
+
             // Asegurar que el año calculado esté en la lista
             if (!aniosDisponibles.includes(anioDefecto)) {
                 aniosDisponibles.unshift(anioDefecto);
                 aniosDisponibles.sort((a, b) => b - a); // Ordenar descendente
             }
-            
+
             // Agregar todos los años al select
-            aniosDisponibles.forEach(function(anio) {
+            aniosDisponibles.forEach(function (anio) {
                 select.append(`<option value="${anio}">${anio}</option>`);
             });
-            
+
             // Seleccionar el año calculado por defecto
             select.val(anioDefecto);
-            
+
             console.log('Años cargados correctamente, año seleccionado:', anioDefecto);
         },
-        error: function() {
+        error: function () {
             console.error('Error al cargar años de informes');
             // En caso de error, al menos agregar el año calculado
             select.append(`<option value="${anioDefecto}">${anioDefecto}</option>`);
@@ -927,45 +996,45 @@ function cargarAniosRegistro() {
 }
 
 // Evento change para el selector de grupo
-$('#registroGrupoFilter').on('change', function() {
+$('#registroGrupoFilter').on('change', function () {
     let grupoId = $(this).val();
     let select = $('#registroPublicadorFilter');
-    
+
     select.empty().append('<option value="">Seleccione un publicador</option>');
     $('#registroPublicadorInfo').addClass('d-none');
     $('#registroPublicadorContainer').addClass('d-none');
     $('#noDataRegistroMessage').removeClass('d-none');
-    
+
     if (!grupoId) {
         $('#btnExportarPDF').prop('disabled', true);
         return;
     }
-    
+
     // Habilitar botón si hay grupo seleccionado
     $('#btnExportarPDF').prop('disabled', false);
-    
+
     // Cargar usuarios del grupo
     $.ajax({
         url: window.informesIndexConfig.usuariosPorGrupoRoute,
         method: 'GET',
         data: { grupo_id: grupoId },
-        success: function(response) {
+        success: function (response) {
             if (response.success && response.usuarios) {
-                response.usuarios.forEach(function(usuario) {
+                response.usuarios.forEach(function (usuario) {
                     select.append(`<option value="${usuario.id}">${usuario.name}</option>`);
                 });
             }
         },
-        error: function() {
+        error: function () {
             console.error('Error al cargar usuarios');
         }
     });
 });
 
 // Evento change para el selector de publicador
-$('#registroPublicadorFilter').on('change', function() {
+$('#registroPublicadorFilter').on('change', function () {
     let userId = $(this).val();
-    
+
     // Habilitar/deshabilitar botón según selección
     if (userId) {
         $('#btnExportarPDF').prop('disabled', false);
@@ -974,12 +1043,12 @@ $('#registroPublicadorFilter').on('change', function() {
         // Solo deshabilitar si tampoco hay grupo seleccionado
         $('#btnExportarPDF').prop('disabled', !grupoId);
     }
-    
+
     cargarRegistroPublicador();
 });
 
 // Evento change para el año
-$('#registroAnioFilter').on('change', function() {
+$('#registroAnioFilter').on('change', function () {
     let userId = $('#registroPublicadorFilter').val();
     if (userId) {
         cargarRegistroPublicador();
@@ -987,25 +1056,25 @@ $('#registroAnioFilter').on('change', function() {
 });
 
 // Evento para exportar PDF
-$('#btnExportarPDF').on('click', function() {
+$('#btnExportarPDF').on('click', function () {
     let anio = $('#registroAnioFilter').val();
     let grupoId = $('#registroGrupoFilter').val();
     let userId = $('#registroPublicadorFilter').val();
-    
+
     if (!anio) {
         alert('Debe seleccionar un año');
         return;
     }
-    
+
     // Construir URL con parámetros
     let url = window.informesIndexConfig.exportarRegistroPDFRoute + '?anio=' + anio;
-    
+
     if (userId) {
         url += '&user_id=' + userId;
     } else if (grupoId) {
         url += '&grupo_id=' + grupoId;
     }
-    
+
     // Abrir en nueva ventana para descargar PDF
     window.open(url, '_blank');
 });
@@ -1014,7 +1083,7 @@ $('#btnExportarPDF').on('click', function() {
 function cargarRegistroPublicador() {
     let anio = $('#registroAnioFilter').val();
     let userId = $('#registroPublicadorFilter').val();
-    
+
     if (!anio || !userId) {
         $('#registroPublicadorInfo').addClass('d-none');
         $('#registroPublicadorContainer').addClass('d-none');
@@ -1022,13 +1091,13 @@ function cargarRegistroPublicador() {
         $('#loadingRegistroPublicador').addClass('d-none');
         return;
     }
-    
+
     // Mostrar indicador de carga
     $('#loadingRegistroPublicador').removeClass('d-none');
     $('#registroPublicadorInfo').addClass('d-none');
     $('#registroPublicadorContainer').addClass('d-none');
     $('#noDataRegistroMessage').addClass('d-none');
-    
+
     // Realizar petición AJAX
     $.ajax({
         url: window.informesIndexConfig.registroPublicadorRoute,
@@ -1037,55 +1106,55 @@ function cargarRegistroPublicador() {
             anio: anio,
             user_id: userId
         },
-        success: function(response) {
+        success: function (response) {
             $('#loadingRegistroPublicador').addClass('d-none');
-            
+
             if (response.success) {
                 // Actualizar encabezado de la tabla con el año
                 $('#registroPublicadorTable thead th:first-child').text(`Año de servicio ${anio}`);
-                
+
                 // Actualizar título del tab con el año actual
                 $('#tab-anio-actual-text').text(anio);
-                
+
                 // Actualizar título del tab con el año anterior
                 let anioAnterior = parseInt(anio) - 1;
                 $('#tab-anio-anterior-text').text(anioAnterior);
-                
+
                 // Mostrar información del usuario
                 let userInfo = response.user_info;
                 $('#info_nombre').text(userInfo.nombre);
                 $('#info_fecha_nacimiento').text(userInfo.fecha_nacimiento);
                 $('#info_fecha_bautismo').text(userInfo.fecha_bautismo);
-                
+
                 // Sexo: 1=Hombre, 2=Mujer
                 $('#info_hombre').prop('checked', userInfo.sexo == 1);
                 $('#info_mujer').prop('checked', userInfo.sexo == 2);
-                
+
                 // Esperanza: 1=Ungido, 2=Otras ovejas
                 $('#info_ungido').prop('checked', userInfo.esperanza == 1);
                 $('#info_otras_ovejas').prop('checked', userInfo.esperanza == 2);
-                
+
                 $('#info_anciano').prop('checked', userInfo.es_anciano);
                 $('#info_siervo').prop('checked', userInfo.es_siervo);
                 $('#info_precursor_regular').prop('checked', userInfo.es_precursor_regular);
                 $('#info_precursor_especial').prop('checked', userInfo.es_precursor_especial);
                 $('#info_misionero').prop('checked', userInfo.es_misionero);
                 $('#registroPublicadorInfo').removeClass('d-none');
-                
+
                 // Construir tabla
                 let tbody = $('#registroPublicadorTableBody');
                 tbody.empty();
-                
-                response.registro.forEach(function(item) {
+
+                response.registro.forEach(function (item) {
                     let row = '<tr';
                     if (item.mes_nombre === 'Total') {
                         row += ' class="table-secondary fw-bold"';
                     }
                     row += '>';
-                    
+
                     // Año de servicio
                     row += `<td>${item.mes_nombre}</td>`;
-                    
+
                     // Participación en el ministerio
                     if (item.mes_nombre === 'Total') {
                         row += '<td></td>';
@@ -1098,10 +1167,10 @@ function cargarRegistroPublicador() {
                         }
                         row += '</td>';
                     }
-                    
+
                     // Cursos bíblicos
                     row += `<td class="text-center">${item.cantidad_estudios > 0 ? item.cantidad_estudios : ''}</td>`;
-                    
+
                     // Precursor auxiliar
                     if (item.mes_nombre === 'Total') {
                         row += '<td></td>';
@@ -1114,23 +1183,23 @@ function cargarRegistroPublicador() {
                         }
                         row += '</td>';
                     }
-                    
+
                     // Horas
                     row += `<td class="text-center">${item.horas !== null && item.horas > 0 ? item.horas : ''}</td>`;
-                    
+
                     // Notas
                     row += `<td>${item.nota || ''}</td>`;
-                    
+
                     row += '</tr>';
                     tbody.append(row);
                 });
-                
+
                 // Activar la primera pestaña
                 $('#tab-anio-actual').tab('show');
-                
+
                 $('#registroPublicadorContainer').removeClass('d-none');
                 $('#noDataRegistroMessage').addClass('d-none');
-                
+
                 // Cargar datos del año anterior
                 cargarRegistroPublicadorAnterior(anio, userId);
             } else {
@@ -1139,7 +1208,7 @@ function cargarRegistroPublicador() {
                 );
             }
         },
-        error: function(xhr) {
+        error: function (xhr) {
             $('#loadingRegistroPublicador').addClass('d-none');
             $('#noDataRegistroMessage').removeClass('d-none').html(
                 '<i class="fas fa-exclamation-triangle me-2"></i>Error al cargar el registro.'
@@ -1151,10 +1220,10 @@ function cargarRegistroPublicador() {
 // Función para cargar el registro del año anterior
 function cargarRegistroPublicadorAnterior(anioActual, userId) {
     let anioAnterior = parseInt(anioActual) - 1;
-    
+
     // Actualizar encabezado de la tabla del año anterior
     $('#registroPublicadorTableAnterior thead th:first-child').text(`Año de servicio ${anioAnterior}`);
-    
+
     // Realizar petición AJAX
     $.ajax({
         url: window.informesIndexConfig.registroPublicadorRoute,
@@ -1163,22 +1232,22 @@ function cargarRegistroPublicadorAnterior(anioActual, userId) {
             anio: anioAnterior,
             user_id: userId
         },
-        success: function(response) {
+        success: function (response) {
             if (response.success) {
                 // Construir tabla del año anterior
                 let tbody = $('#registroPublicadorTableAnteriorBody');
                 tbody.empty();
-                
-                response.registro.forEach(function(item) {
+
+                response.registro.forEach(function (item) {
                     let row = '<tr';
                     if (item.mes_nombre === 'Total') {
                         row += ' class="table-secondary fw-bold"';
                     }
                     row += '>';
-                    
+
                     // Año de servicio
                     row += `<td>${item.mes_nombre}</td>`;
-                    
+
                     // Participación en el ministerio
                     if (item.mes_nombre === 'Total') {
                         row += '<td></td>';
@@ -1191,10 +1260,10 @@ function cargarRegistroPublicadorAnterior(anioActual, userId) {
                         }
                         row += '</td>';
                     }
-                    
+
                     // Cursos bíblicos
                     row += `<td class="text-center">${item.cantidad_estudios > 0 ? item.cantidad_estudios : ''}</td>`;
-                    
+
                     // Precursor auxiliar
                     if (item.mes_nombre === 'Total') {
                         row += '<td></td>';
@@ -1207,13 +1276,13 @@ function cargarRegistroPublicadorAnterior(anioActual, userId) {
                         }
                         row += '</td>';
                     }
-                    
+
                     // Horas
                     row += `<td class="text-center">${item.horas !== null && item.horas > 0 ? item.horas : ''}</td>`;
-                    
+
                     // Notas
                     row += `<td>${item.nota || ''}</td>`;
-                    
+
                     row += '</tr>';
                     tbody.append(row);
                 });
@@ -1224,7 +1293,7 @@ function cargarRegistroPublicadorAnterior(anioActual, userId) {
                 tbody.append('<tr><td colspan="6" class="text-center text-muted">No hay datos disponibles para el año ' + anioAnterior + '</td></tr>');
             }
         },
-        error: function(xhr) {
+        error: function (xhr) {
             // En caso de error, mostrar mensaje en la tabla
             let tbody = $('#registroPublicadorTableAnteriorBody');
             tbody.empty();

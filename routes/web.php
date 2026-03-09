@@ -95,6 +95,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/informes', [App\Http\Controllers\InformeController::class, 'index'])->name('informes.index');
         Route::get('/informes/usuarios-por-grupo', [App\Http\Controllers\InformeController::class, 'getUsersByGroup'])->name('informes.usuarios-por-grupo');
         Route::get('/informes/periodos', [App\Http\Controllers\InformeController::class, 'getPeriodos'])->name('informes.periodos');
+        Route::get('/informes/anios-modal', [App\Http\Controllers\InformeController::class, 'getAniosModal'])->name('informes.anios-modal');
+        Route::get('/informes/meses-por-anio', [App\Http\Controllers\InformeController::class, 'getMesesPorAnio'])->name('informes.meses-por-anio');
         Route::get('/informes/informes-por-grupo', [App\Http\Controllers\InformeController::class, 'getInformesPorGrupo'])->name('informes.informes-por-grupo');
         Route::get('/informes/informe-congregacion', [App\Http\Controllers\InformeController::class, 'getInformeCongregacion'])->name('informes.informe-congregacion');
         Route::get('/informes/anios-registro', [App\Http\Controllers\InformeController::class, 'getAniosRegistro'])->name('informes.anios-registro');

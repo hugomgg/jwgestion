@@ -612,13 +612,19 @@
                 <div class="modal-body">
                     <!-- Filtros -->
                     <div class="row g-3 mb-4">
-                        <div class="col-md-6">
-                            <label for="periodoFilterModal" class="form-label">Periodo:</label>
-                            <select class="form-select" id="periodoFilterModal">
-                                <option value="">Seleccione un periodo</option>
+                        <div class="col-md-4">
+                            <label for="anioFilterModal" class="form-label">Año:</label>
+                            <select class="form-select" id="anioFilterModal">
+                                <option value="">Seleccione un año</option>
                             </select>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="mesFilterModal" class="form-label">Mes:</label>
+                            <select class="form-select" id="mesFilterModal" disabled>
+                                <option value="">Seleccione un mes</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
                             <label for="grupoFilterModal" class="form-label">Grupo:</label>
                             <select class="form-select" id="grupoFilterModal">
                                 <option value="">Seleccione un grupo</option>
@@ -653,7 +659,7 @@
                     <!-- Mensaje cuando no hay datos -->
                     <div id="noDataMessage" class="alert alert-info d-none" role="alert">
                         <i class="fas fa-info-circle me-2"></i>
-                        Seleccione un periodo y grupo para ver los informes.
+                        Seleccione un año, mes y grupo para ver los informes.
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -675,12 +681,18 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <!-- Filtro de Periodo -->
+                    <!-- Filtro de Año y Mes -->
                     <div class="row mb-4">
                         <div class="col-md-6">
-                            <label for="periodoFilterCongregacion" class="form-label fw-bold">Periodo:</label>
-                            <select class="form-select" id="periodoFilterCongregacion">
-                                <option value="">Seleccione un periodo</option>
+                            <label for="anioFilterCongregacion" class="form-label fw-bold">Año:</label>
+                            <select class="form-select" id="anioFilterCongregacion">
+                                <option value="">Seleccione un año</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="mesFilterCongregacion" class="form-label fw-bold">Mes:</label>
+                            <select class="form-select" id="mesFilterCongregacion" disabled>
+                                <option value="">Seleccione un mes</option>
                             </select>
                         </div>
                     </div>
@@ -1034,6 +1046,8 @@
             informesPorGrupoRoute: '{{ route("informes.informes-por-grupo") }}',
             exportarRegistroPDFRoute: '{{ route("informes.exportar-registro-pdf") }}',
             periodosRoute: '{{ route("informes.periodos") }}',
+            aniosModalRoute: '{{ route("informes.anios-modal") }}',
+            mesesPorAnioRoute: '{{ route("informes.meses-por-anio") }}',
 
             // Configuración de permisos y UI
             canModify: @json(Auth::user()->canModify() && !Auth::user()->isSubsecretary() && !Auth::user()->isSuborganizer()),
@@ -1043,32 +1057,36 @@
             // Configuración de DataTables
             datatablesColumnDefs: [
                 @if(Auth::user()->isAdmin() || Auth::user()->isSupervisor())
-                    // Para administradores/supervisores (con columna Congregación)
-                    { responsivePriority: 1, targets: [1, 2, 3] }, // Año, Mes, Usuario
+                            // Para administradores/supervisores (con columna Congregación)
+                            { responsivePriority: 1, targets: [1, 2, 3] }, // Año, Mes, Usuario
                     { responsivePriority: 2, targets: [0, 4, 5, 6, 7] }, // ID, Grupo, Servicio, Participa, Congregación
                     { orderable: false, targets: [8] } // Deshabilitar ordenamiento en columna Acciones
                 @else
-                // Para otros usuarios (sin columna Congregación)
-                { responsivePriority: 1, targets: [1, 2, 3] }, // Año, Mes, Usuario
-                { responsivePriority: 2, targets: [0, 4, 5, 6] }, // ID, Grupo, Servicio, Participa
-                { orderable: false, targets: [7] } // Deshabilitar ordenamiento en columna Acciones
-            @endif
-        ],
+                        // Para otros usuarios (sin columna Congregación)
+                        { responsivePriority: 1, targets: [1, 2, 3] }, // Año, Mes, Usuario
+                        { responsivePriority: 2, targets: [0, 4, 5, 6] }, // ID, Grupo, Servicio, Participa
+                        { orderable: false, targets: [7] } // Deshabilitar ordenamiento en columna Acciones
+                    @endif
+            ],
 
             // Datos para lookups
             usuarios: @json($usuarios->map(function ($u) {
-            return ['id' => $u->id, 'name' => $u->name]; })),
+                return ['id' => $u->id, 'name' => $u->name];
+            })),
             grupos: @json($grupos->map(function ($g) {
-            return ['id' => $g->id, 'nombre' => $g->nombre]; })),
+                return ['id' => $g->id, 'nombre' => $g->nombre];
+            })),
             servicios: @json($servicios->map(function ($s) {
-            return ['id' => $s->id, 'nombre' => $s->nombre]; })),
+                return ['id' => $s->id, 'nombre' => $s->nombre];
+            })),
             @if(isset($congregaciones))
                 congregaciones: @json($congregaciones->map(function ($c) {
-                return ['id' => $c->id, 'nombre' => $c->nombre]; }))
+                    return ['id' => $c->id, 'nombre' => $c->nombre];
+                }))
             @else
-            congregaciones: []
-        @endif
-    };
+                    congregaciones: []
+                @endif
+        };
     </script>
     @vite(['resources/js/informes-index.js'])
 @endsection
