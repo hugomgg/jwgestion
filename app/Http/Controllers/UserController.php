@@ -112,8 +112,8 @@ class UserController extends Controller
         if ($currentUser->isSecretary() || $currentUser->isCoordinator() || $currentUser->isOrganizer()) {
             $perfilesModal = Perfil::where('estado', 1)->whereNotIn('id', [1, 2])->get();
         } elseif ($currentUser->isAdmin()) {
-            // Administradores y supervisores ven todos los perfiles activos
-            $perfilesModal = Perfil::where('estado', 1)->get();
+            // Administradores solo pueden asignar perfiles 1, 2 y 3 (Admin, Supervisor, Coordinador)
+            $perfilesModal = Perfil::where('estado', 1)->whereIn('id', [1, 2, 3])->get();
         } else {
             // Subsecretarios y suborganizadores tienen acceso de solo lectura, no necesitan perfiles para modales
             $perfilesModal = Perfil::whereNotIn('id', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])->get();
@@ -122,7 +122,8 @@ class UserController extends Controller
         // Filtrar perfiles para el modal EDITAR (perfiles activos e inactivos)
         //Administradores, Secretarios y organizadores ven todos los perfiles
         if ($currentUser->isAdmin()) {
-            $perfilesModalEdit = Perfil::all();
+            // Administradores solo pueden asignar perfiles 1, 2 y 3 (Admin, Supervisor, Coordinador)
+            $perfilesModalEdit = Perfil::whereIn('id', [1, 2, 3])->get();
         } elseif ($currentUser->isSecretary() || $currentUser->isCoordinator() || $currentUser->isOrganizer()) {
             $perfilesModalEdit = Perfil::whereNotIn('id', [1, 2])->get();
         } elseif ($currentUser->isSubsecretary() || $currentUser->isSuborganizer() || $currentUser->isSubcoordinator()) {
