@@ -61,6 +61,7 @@
                                             </select>
                                         </div>
                                         @endif
+                                        @if(!Auth::user()->isAdmin())
                                         <div class="col-md-4">
                                             <label for="grupoFilter" class="form-label">Grupo:</label>
                                             <select class="form-select" id="grupoFilter">
@@ -76,6 +77,7 @@
                                                 @endif
                                             </select>
                                         </div>
+                                        @endif
                                         <div class="col-md-4">
                                             <label for="nombramientoFilter" class="form-label">Nombramiento:</label>
                                             <select class="form-select" id="nombramientoFilter">
@@ -336,6 +338,7 @@
                             </div>
 
                             <div class="row">
+                                @if(!Auth::user()->isAdmin())
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="grupo" class="form-label">Grupo *</label>
@@ -348,6 +351,7 @@
                                         <div class="invalid-feedback"></div>
                                     </div>
                                 </div>
+                                @endif
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="estado_espiritual" class="form-label">Estado Espiritual *</label>
@@ -631,6 +635,7 @@
                             </div>
 
                             <div class="row">
+                                @if(!Auth::user()->isAdmin())
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="edit_grupo" class="form-label">Grupo *</label>
@@ -643,6 +648,7 @@
                                         <div class="invalid-feedback"></div>
                                     </div>
                                 </div>
+                                @endif
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="edit_estado_espiritual" class="form-label">Estado Espiritual *</label>
@@ -918,12 +924,14 @@
                         </div>
 
                         <div class="row">
+                            @if(!Auth::user()->isAdmin())
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label class="form-label fw-bold">Grupo:</label>
                                     <p class="form-control-plaintext" id="view_grupo">-</p>
                                 </div>
                             </div>
+                            @endif
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label class="form-label fw-bold">Estado Espiritual:</label>

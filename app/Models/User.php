@@ -55,7 +55,6 @@ class User extends Authenticatable
         'creador_id' => 1, // Por defecto usuario con ID 1
         'modificador_id' => 1, // Por defecto usuario con ID 1
         'congregacion' => 1, // Por defecto congregación con ID 1
-        'grupo' => 1, // Por defecto grupo con ID 1
         'sexo' => 1, // Por defecto sexo con ID 1
         'esperanza' => 2, // Por defecto esperanza con ID 2
         'estado_espiritual' => 1 // Por defecto estado espiritual "Activo"

@@ -68,7 +68,7 @@ class UserController extends Controller
                                     p.id as perfil_id,
                                     c.nombre as nombre_congregacion,
                                     c.id as congregacion_id,
-                                    g.nombre as nombre_grupo,
+                                    COALESCE(g.nombre, 'Sin asignar') as nombre_grupo,
                                     g.id as grupo_id,
                                     n.nombre as nombre_nombramiento,
                                     n.id as nombramiento_id,
@@ -84,7 +84,7 @@ class UserController extends Controller
                                 FROM users u
                                 INNER JOIN perfiles p ON u.perfil=p.id
                                 INNER JOIN congregaciones c ON u.congregacion = c.id
-                                INNER JOIN grupos g ON u.grupo = g.id
+                                LEFT JOIN grupos g ON u.grupo = g.id
                                 INNER JOIN estado_espiritual ee ON u.estado_espiritual = ee.id
                                 LEFT JOIN nombramiento n ON u.nombramiento = n.id
                                 LEFT JOIN servicios s ON u.servicio = s.id
@@ -291,7 +291,7 @@ class UserController extends Controller
             'servicio' => 'nullable|integer|exists:servicios,id',
             'nombramiento' => 'nullable|integer|exists:nombramiento,id',
             'esperanza' => 'required|integer|exists:esperanzas,id',
-            'grupo' => 'required|integer|exists:grupos,id',
+            'grupo' => $currentUser->isAdmin() ? 'nullable|integer|exists:grupos,id' : 'required|integer|exists:grupos,id',
             'estado_espiritual' => 'required|integer|exists:estado_espiritual,id',
             'observacion' => 'nullable|string|max:1000',
             'asignaciones' => 'nullable|array',
@@ -553,7 +553,7 @@ class UserController extends Controller
                 'servicio' => 'nullable|integer|exists:servicios,id',
                 'nombramiento' => 'nullable|integer|exists:nombramiento,id',
                 'esperanza' => 'required|integer|exists:esperanzas,id',
-                'grupo' => 'required|integer|exists:grupos,id',
+                'grupo' => $currentUser->isAdmin() ? 'nullable|integer|exists:grupos,id' : 'required|integer|exists:grupos,id',
                 'estado_espiritual' => 'required|integer|exists:estado_espiritual,id',
                 'observacion' => 'nullable|string|max:1000',
                 'asignaciones' => 'nullable|array',
