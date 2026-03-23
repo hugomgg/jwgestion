@@ -1048,8 +1048,6 @@ $(document).ready(function() {
         $('#btn-encargado-reemplazado-segunda').show();
         $('#btn-ayudante-reemplazado-segunda').show();
 
-        // Cargar datos necesarios de la asignación
-        loadPartesSeccionesForEditSegundaSeccion(id);
         // Variable para controlar si estamos en modo edición para evitar eventos conflictivos
         window.editingParteTwoData = true;
 
@@ -1064,6 +1062,8 @@ $(document).ready(function() {
                     $('#parteProgramaSegundaSeccionModalLabel').text('Editar Asignación Seamos Mejores Maestros');
                     $('#sala_id_segunda_seccion').val(parte.sala_id);
 
+                    // Cargar las partes disponibles incluyendo la parte seleccionada aunque esté inactiva
+                    loadPartesSeccionesForEditSegundaSeccion(parte.parte_id);
                     $('#parte_id_segunda_seccion').val(parte.parte_id);
                     $('#tiempo_segunda_seccion').val(parte.tiempo);
                     $('#leccion_segunda_seccion').val(parte.leccion);
