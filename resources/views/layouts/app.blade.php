@@ -164,6 +164,14 @@
 
         .main-content {
             transition: margin-left 0.3s ease;
+            padding-top: 56px; /* Altura aproximada de la navbar fija */
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1020;
         }
 
         .navbar-toggler-sidebar {
