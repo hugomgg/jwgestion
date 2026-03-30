@@ -267,16 +267,18 @@ $(document).ready(function() {
     });
 
     // Filtro por grupo
-    $('#grupoFilter').on('change', function() {
-        const selectedGrupo = $(this).val();
-        const grupoColumnIndex = window.usersIndexConfig.isLimitedUser ? 4 : 3;
+    if ($('#grupoFilter').length) {
+        $('#grupoFilter').on('change', function() {
+            const selectedGrupo = $(this).val();
+            const grupoColumnIndex = window.usersIndexConfig.isLimitedUser ? 4 : 3;
 
-        if (selectedGrupo === '') {
-            table.column(grupoColumnIndex).search('').draw();
-        } else {
-            table.column(grupoColumnIndex).search(selectedGrupo).draw();
-        }
-    });
+            if (selectedGrupo === '') {
+                table.column(grupoColumnIndex).search('').draw();
+            } else {
+                table.column(grupoColumnIndex).search(selectedGrupo).draw();
+            }
+        });
+    }
 
     // Filtro por nombramiento
     $('#nombramientoFilter').on('change', function() {
@@ -526,7 +528,9 @@ $(document).ready(function() {
         if (window.usersIndexConfig.grupos) {
             window.usersIndexConfig.grupos.forEach(function(grupo) {
                 if (grupo.id == user.grupo_id) {
-                    $('#view_grupo').text(grupo.nombre);
+                    if ($('#view_grupo').length) {
+                        $('#view_grupo').text(grupo.nombre);
+                    }
                 }
             });
         }
@@ -788,7 +792,9 @@ $(document).ready(function() {
                     $('#edit_servicio').val(user.servicio);
                     $('#edit_nombramiento').val(user.nombramiento);
                     $('#edit_esperanza').val(user.esperanza);
-                    $('#edit_grupo').val(user.grupo_id);
+                    if ($('#edit_grupo').length) {
+                        $('#edit_grupo').val(user.grupo_id);
+                    }
                     $('#edit_estado_espiritual').val(user.estado_espiritual);
                     $('#edit_observacion').val(user.observacion);
 
@@ -911,7 +917,7 @@ $(document).ready(function() {
         // Obtener los filtros actuales
         const filters = {
             congregacion: $('#congregacionFilter').val(),
-            grupo: $('#grupoFilter').val(),
+            grupo: $('#grupoFilter').length ? $('#grupoFilter').val() : '',
             nombramiento: $('#nombramientoFilter').val(),
             servicio: $('#servicioFilter').val(),
             estadoEspiritual: $('#estadoEspiritualFilter').val(),

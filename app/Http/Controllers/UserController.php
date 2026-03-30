@@ -68,7 +68,7 @@ class UserController extends Controller
                                     p.id as perfil_id,
                                     c.nombre as nombre_congregacion,
                                     c.id as congregacion_id,
-                                    g.nombre as nombre_grupo,
+                                    COALESCE(g.nombre, 'Sin asignar') as nombre_grupo,
                                     g.id as grupo_id,
                                     n.nombre as nombre_nombramiento,
                                     n.id as nombramiento_id,
@@ -84,7 +84,7 @@ class UserController extends Controller
                                 FROM users u
                                 INNER JOIN perfiles p ON u.perfil=p.id
                                 INNER JOIN congregaciones c ON u.congregacion = c.id
-                                INNER JOIN grupos g ON u.grupo = g.id
+                                LEFT JOIN grupos g ON u.grupo = g.id
                                 INNER JOIN estado_espiritual ee ON u.estado_espiritual = ee.id
                                 LEFT JOIN nombramiento n ON u.nombramiento = n.id
                                 LEFT JOIN servicios s ON u.servicio = s.id
@@ -112,8 +112,8 @@ class UserController extends Controller
         if ($currentUser->isSecretary() || $currentUser->isCoordinator() || $currentUser->isOrganizer()) {
             $perfilesModal = Perfil::where('estado', 1)->whereNotIn('id', [1, 2])->get();
         } elseif ($currentUser->isAdmin()) {
-            // Administradores y supervisores ven todos los perfiles activos
-            $perfilesModal = Perfil::where('estado', 1)->get();
+            // Administradores solo pueden asignar perfiles 1, 2 y 3 (Admin, Supervisor, Coordinador)
+            $perfilesModal = Perfil::where('estado', 1)->whereIn('id', [1, 2, 3])->get();
         } else {
             // Subsecretarios y suborganizadores tienen acceso de solo lectura, no necesitan perfiles para modales
             $perfilesModal = Perfil::whereNotIn('id', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])->get();
@@ -122,7 +122,8 @@ class UserController extends Controller
         // Filtrar perfiles para el modal EDITAR (perfiles activos e inactivos)
         //Administradores, Secretarios y organizadores ven todos los perfiles
         if ($currentUser->isAdmin()) {
-            $perfilesModalEdit = Perfil::all();
+            // Administradores solo pueden asignar perfiles 1, 2 y 3 (Admin, Supervisor, Coordinador)
+            $perfilesModalEdit = Perfil::whereIn('id', [1, 2, 3])->get();
         } elseif ($currentUser->isSecretary() || $currentUser->isCoordinator() || $currentUser->isOrganizer()) {
             $perfilesModalEdit = Perfil::whereNotIn('id', [1, 2])->get();
         } elseif ($currentUser->isSubsecretary() || $currentUser->isSuborganizer() || $currentUser->isSubcoordinator()) {
@@ -290,7 +291,7 @@ class UserController extends Controller
             'servicio' => 'nullable|integer|exists:servicios,id',
             'nombramiento' => 'nullable|integer|exists:nombramiento,id',
             'esperanza' => 'required|integer|exists:esperanzas,id',
-            'grupo' => 'required|integer|exists:grupos,id',
+            'grupo' => $currentUser->isAdmin() ? 'nullable|integer|exists:grupos,id' : 'required|integer|exists:grupos,id',
             'estado_espiritual' => 'required|integer|exists:estado_espiritual,id',
             'observacion' => 'nullable|string|max:1000',
             'asignaciones' => 'nullable|array',
@@ -552,7 +553,7 @@ class UserController extends Controller
                 'servicio' => 'nullable|integer|exists:servicios,id',
                 'nombramiento' => 'nullable|integer|exists:nombramiento,id',
                 'esperanza' => 'required|integer|exists:esperanzas,id',
-                'grupo' => 'required|integer|exists:grupos,id',
+                'grupo' => $currentUser->isAdmin() ? 'nullable|integer|exists:grupos,id' : 'required|integer|exists:grupos,id',
                 'estado_espiritual' => 'required|integer|exists:estado_espiritual,id',
                 'observacion' => 'nullable|string|max:1000',
                 'asignaciones' => 'nullable|array',
