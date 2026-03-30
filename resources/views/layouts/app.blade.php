@@ -197,6 +197,10 @@
                 margin-left: 0 !important;
                 margin-top: 0.25rem;
             }
+
+            .main-content {
+                padding-top: 120px; /* Adjust padding for taller navbar with stacked items */
+            }
         }
 
         @media (max-width: 768px) {
