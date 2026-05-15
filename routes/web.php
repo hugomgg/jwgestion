@@ -41,20 +41,21 @@ Route::middleware('auth')->group(function () {
     // Ruta para obtener programas por año (AJAX)
     Route::get('/programas/buscar-por-anio', [App\Http\Controllers\ProgramaController::class, 'getProgramasPorAnio'])->name('programas.buscar-por-anio');
 
+
     // Exportar PDF de programas (para coordinadores)
-    Route::get('/programas/exportar-pdf', [App\Http\Controllers\ProgramaController::class, 'exportPdf'])->name('programas.export.pdf');
+    Route::post('/programas/exportar-pdf', [App\Http\Controllers\ProgramaController::class, 'exportPdf'])->name('programas.export.pdf');
 
     // Exportar Programa XLS de programas (para coordinadores)
-    Route::get('/programas/exportar-programa-xls', [App\Http\Controllers\ProgramaController::class, 'exportProgramaXls'])->name('programas.export.programa-xls');
+    Route::post('/programas/exportar-programa-xls', [App\Http\Controllers\ProgramaController::class, 'exportProgramaXls'])->name('programas.export.programa-xls');
 
     // Exportar XLS de programas (para coordinadores)
-    Route::get('/programas/exportar-xls', [App\Http\Controllers\ProgramaController::class, 'exportXls'])->name('programas.export.xls');
+    Route::post('/programas/exportar-xls', [App\Http\Controllers\ProgramaController::class, 'exportXls'])->name('programas.export.xls');
 
     // Resumen Vista de programas (para coordinadores)
-    Route::get('/programas/resumen-vista', [App\Http\Controllers\ProgramaController::class, 'resumenVista'])->name('programas.export.resumen-vista');
+    Route::post('/programas/resumen-vista', [App\Http\Controllers\ProgramaController::class, 'resumenVista'])->name('programas.export.resumen-vista');
 
     // Exportar Asignaciones de programas (para coordinadores)
-    Route::get('/programas/exportar-asignaciones', [App\Http\Controllers\ProgramaController::class, 'exportAsignaciones'])->name('programas.export.asignaciones');
+    Route::post('/programas/exportar-asignaciones', [App\Http\Controllers\ProgramaController::class, 'exportAsignaciones'])->name('programas.export.asignaciones');
 
     // Obtener asignación específica por partes_programa.id
     Route::get('/programas/asignacion-por-id/{id}', [App\Http\Controllers\ProgramaController::class, 'getAsignacionPorId'])->name('programas.asignacion-por-id');
