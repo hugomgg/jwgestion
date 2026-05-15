@@ -5,7 +5,7 @@
 // window.editingParteTwoData = false; - Declarado en Blade template
 // let programmaticChange = false; - Declarado en Blade template
 
-$(document).ready(function() {
+$(document).ready(function () {
     // Inicializar DataTable para partes del programa
     initPartesDataTable();
 
@@ -22,19 +22,19 @@ $(document).ready(function() {
     loadPartesNV();
 
     // Manejar envío del formulario de partes del programa
-    $('#parteProgramaForm').submit(function(e) {
+    $('#parteProgramaForm').submit(function (e) {
         e.preventDefault();
         submitPartePrograma();
     });
 
     // Manejar envío del formulario de partes de NVC
-    $('#parteProgramaNVForm').submit(function(e) {
+    $('#parteProgramaNVForm').submit(function (e) {
         e.preventDefault();
         submitParteProgramaNV();
     });
 
     // Manejar cambio en el select de parte_id para autocompletar el tiempo y filtrar encargados
-    $(document).on('change', '#parte_id', function() {
+    $(document).on('change', '#parte_id', function () {
         const selectedOption = $(this).find('option:selected');
         const tiempo = selectedOption.data('tiempo');
         const parteId = $(this).val();
@@ -60,7 +60,7 @@ $(document).ready(function() {
     });
 
     // Manejar cambio en el select de parte_id_nv para autocompletar el tiempo y filtrar encargados
-    $(document).on('change', '#parte_id_nv', function() {
+    $(document).on('change', '#parte_id_nv', function () {
         const selectedOption = $(this).find('option:selected');
         const tiempo = selectedOption.data('tiempo');
         const parteId = $(this).val();
@@ -85,7 +85,7 @@ $(document).ready(function() {
     });
 
     // Manejar cambio en el campo fecha para guardar automáticamente
-    $('#fecha').on('change', function() {
+    $('#fecha').on('change', function () {
         const nuevaFecha = $(this).val();
         const programaId = $('#programa_id').val();
 
@@ -118,20 +118,20 @@ $(document).ready(function() {
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
-            success: function(response) {
+            success: function (response) {
                 if (response.success) {
                     // Mostrar modal de éxito
                     $('#successModal').modal('show');
 
                     // Ocultar el modal automáticamente después de 3 segundos con fade out
-                    setTimeout(function() {
+                    setTimeout(function () {
                         $('#successModal').modal('hide');
                     }, 2000);
                 } else {
                     alert('Error al guardar la fecha: ' + (response.message || 'Error desconocido'));
                 }
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 let errorMessage = 'Error al guardar la fecha';
                 if (xhr.responseJSON && xhr.responseJSON.errors) {
                     const errors = Object.values(xhr.responseJSON.errors).flat();
@@ -145,7 +145,7 @@ $(document).ready(function() {
     });
 
     // Manejar envío del formulario de editar programa
-    $('#editProgramaForm').submit(function(e) {
+    $('#editProgramaForm').submit(function (e) {
         e.preventDefault();
 
         const programaId = $('#programa_id').val();
@@ -165,18 +165,18 @@ $(document).ready(function() {
             url: `/programas/${programaId}`,
             method: 'PUT',
             data: $(this).serialize(),
-            success: function(response) {
+            success: function (response) {
                 if (response.success) {
                     // Mostrar mensaje de éxito y recargar la página para mantener la vista de edición
                     showAlert('alert-container', 'success', 'Programa actualizado exitosamente');
-                    setTimeout(function() {
+                    setTimeout(function () {
                         window.location.reload();
                     }, 1500);
                 } else {
                     showAlert('alert-container', 'danger', response.message || 'Error al actualizar el programa');
                 }
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 if (xhr.status === 422) {
                     const errors = xhr.responseJSON.errors;
                     for (const field in errors) {
@@ -187,7 +187,7 @@ $(document).ready(function() {
                     showAlert('alert-container', 'danger', 'Error al actualizar el programa');
                 }
             },
-            complete: function() {
+            complete: function () {
                 submitBtn.prop('disabled', false);
                 spinner.addClass('d-none');
             }
@@ -249,11 +249,11 @@ $(document).ready(function() {
         $.ajax({
             url: `/programas/${programaId}/partes-smm`,
             method: 'GET',
-            success: function(response) {
+            success: function (response) {
                 if (response.success) {
                     partesSegundaSeccionTable.clear();
 
-                    response.data.forEach(function(parte, index) {
+                    response.data.forEach(function (parte, index) {
                         const numero = parte.numero; // Número incremental empezando desde 1
                         const upDisabled = parte.es_primero ? 'disabled' : '';
                         const downDisabled = parte.es_ultimo ? 'disabled' : '';
@@ -308,7 +308,7 @@ $(document).ready(function() {
                     console.error('Error al cargar las partes de la segunda sección:', response.message);
                 }
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 console.error('Error al cargar las partes de la segunda sección:', xhr.responseText);
             }
         });
@@ -320,11 +320,11 @@ $(document).ready(function() {
         $.ajax({
             url: `/programas/${programaId}/partes`,
             method: 'GET',
-            success: function(response) {
+            success: function (response) {
                 if (response.success) {
                     partesTable.clear();
 
-                    response.data.forEach(function(parte, index) {
+                    response.data.forEach(function (parte, index) {
                         const numero = index + 1; // Número incremental empezando desde 1
                         const upDisabled = parte.es_primero ? 'disabled' : '';
                         const downDisabled = parte.es_ultimo ? 'disabled' : '';
@@ -362,7 +362,7 @@ $(document).ready(function() {
                     partesTable.draw();
                 }
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 showAlert('alert-container', 'danger', 'Error al cargar las partes del programa');
             }
         });
@@ -436,7 +436,7 @@ $(document).ready(function() {
         $.ajax({
             url: `/partes-programa/${id}`,
             method: 'GET',
-            success: function(response) {
+            success: function (response) {
                 if (response.success) {
                     const parte = response.data;
                     $('#parte_programa_id').val(parte.id);
@@ -444,7 +444,7 @@ $(document).ready(function() {
                     $('#tema_parte').val(parte.tema);
 
                     // Cargar solo la parte correspondiente en modo edición
-                    loadPartesSeccionesForEdit(parte.parte_id, function() {
+                    loadPartesSeccionesForEdit(parte.parte_id, function () {
                         // Manejar el campo encargado según el perfil del usuario
                         $('#encargado_id').val(parte.encargado_id);
                         $('#encargado_display').val(parte.encargado ? parte.encargado.name : '');
@@ -479,7 +479,7 @@ $(document).ready(function() {
                     });
                 }
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 showAlert('alert-container', 'danger', 'Error al cargar los datos de la parte');
             }
         });
@@ -574,19 +574,19 @@ $(document).ready(function() {
             url: url,
             method: 'POST', // Laravel maneja PUT a través de POST con _method
             data: formDataObj,
-            success: function(response) {
+            success: function (response) {
                 if (response.success) {
                     $('#parteProgramaModal').modal('hide');
                     loadPartesPrograma();
                     // Mostrar modal de éxito
                     $('#successModal').modal('show');
                     // Ocultar el modal automáticamente después de 3 segundos con fade out
-                    setTimeout(function() {
+                    setTimeout(function () {
                         $('#successModal').modal('hide');
                     }, 2000);
                 }
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 if (xhr.status === 422) {
                     const errors = xhr.responseJSON.errors;
                     for (const field in errors) {
@@ -603,7 +603,7 @@ $(document).ready(function() {
                     showAlert('alert-container', 'danger', errorMessage);
                 }
             },
-            complete: function() {
+            complete: function () {
                 submitBtn.prop('disabled', false);
                 spinner.addClass('d-none');
             }
@@ -666,7 +666,7 @@ $(document).ready(function() {
             url: url,
             method: 'POST', // Laravel maneja PUT a través de POST con _method
             data: formDataObj,
-            success: function(response) {
+            success: function (response) {
                 if (response.success) {
                     $('#parteProgramaNVModal').modal('hide');
                     loadPartesNV();
@@ -675,12 +675,12 @@ $(document).ready(function() {
                     $('#successModal').modal('show');
 
                     // Ocultar el modal automáticamente después de 3 segundos con fade out
-                    setTimeout(function() {
+                    setTimeout(function () {
                         $('#successModal').modal('hide');
                     }, 2000);
                 }
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 if (xhr.status === 422) {
                     const errors = xhr.responseJSON.errors;
                     for (const field in errors) {
@@ -697,7 +697,7 @@ $(document).ready(function() {
                     showAlert('alert-container', 'danger', errorMessage);
                 }
             },
-            complete: function() {
+            complete: function () {
                 submitBtn.prop('disabled', false);
                 spinner.addClass('d-none');
             }
@@ -709,7 +709,7 @@ $(document).ready(function() {
         $('#confirmDeleteModal').modal('show');
 
         // Manejar la confirmación de eliminación
-        $('#confirmDeleteBtn').off('click').on('click', function() {
+        $('#confirmDeleteBtn').off('click').on('click', function () {
             const deleteBtn = $(this);
             const originalText = deleteBtn.html();
 
@@ -722,7 +722,7 @@ $(document).ready(function() {
                 data: {
                     _token: $('meta[name="csrf-token"]').attr('content')
                 },
-                success: function(response) {
+                success: function (response) {
                     if (response.success) {
                         $('#confirmDeleteModal').modal('hide');
                         // Usar el callback proporcionado o loadPartesPrograma por defecto
@@ -737,16 +737,16 @@ $(document).ready(function() {
                         $('#successModal').modal('show');
 
                         // Ocultar el modal automáticamente después de 2 segundos
-                        setTimeout(function() {
+                        setTimeout(function () {
                             $('#successModal').modal('hide');
                         }, 2000);
                     }
                 },
-                error: function(xhr) {
+                error: function (xhr) {
                     $('#confirmDeleteModal').modal('hide');
                     showAlert('alert-container', 'danger', xhr.responseJSON?.message || 'Error al eliminar la parte');
                 },
-                complete: function() {
+                complete: function () {
                     // Restaurar el botón
                     deleteBtn.prop('disabled', false).html(originalText);
                 }
@@ -766,11 +766,11 @@ $(document).ready(function() {
                 programa_id: programaId,
                 parte_id: 1
             },
-            success: function(response) {
+            success: function (response) {
                 if (response.success) {
                     $('#parte_id').empty().append('<option value="">Seleccionar...</option>');
 
-                    response.data.forEach(function(parte) {
+                    response.data.forEach(function (parte) {
                         $('#parte_id').append(
                             `<option value="${parte.id}" data-tiempo="${parte.tiempo || ''}">${parte.nombre} (${parte.abreviacion})</option>`
                         );
@@ -779,7 +779,7 @@ $(document).ready(function() {
                     $('#parte_id').empty().append('<option value="">No hay partes disponibles</option>');
                 }
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 console.error('Error al cargar partes de sección:', xhr);
                 $('#parte_id').empty().append('<option value="">Error al cargar</option>');
             }
@@ -792,7 +792,7 @@ $(document).ready(function() {
         $.ajax({
             url: `/partes-seccion/${parteId}`,
             method: 'GET',
-            success: function(response) {
+            success: function (response) {
                 if (response.success) {
                     const parte = response.data;
                     $('#parte_id').empty();
@@ -822,7 +822,7 @@ $(document).ready(function() {
                     }
                 }
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 console.error('Error al cargar parte de sección:', xhr);
                 $('#parte_id').empty().append('<option value="">Error al cargar</option>');
 
@@ -836,13 +836,13 @@ $(document).ready(function() {
 
 
     // Manejar envío del formulario de segunda sección
-    $('#parteProgramaSegundaSeccionForm').submit(function(e) {
+    $('#parteProgramaSegundaSeccionForm').submit(function (e) {
         e.preventDefault();
         submitParteSegundaSeccion();
     });
 
     // Habilitar los botones Buscar Encargado y Buscar Ayudante al seleccionar una parte en la segunda sección
-    $(document).on('change', '#parte_id_segunda_seccion', function() {
+    $(document).on('change', '#parte_id_segunda_seccion', function () {
         const parteId = $(this).val();
         const btnBuscarEncargado = $('#btn-buscar-encargado-segunda');
         const btnBuscarAyudante = $('#btn-buscar-ayudante-segunda');
@@ -880,7 +880,7 @@ $(document).ready(function() {
     });
 
     // Manejar cambio en el select de sala en la segunda sección
-    $(document).on('change', '#sala_id_segunda_seccion', function() {
+    $(document).on('change', '#sala_id_segunda_seccion', function () {
         const salaId = $(this).val();
         const selectedOption = $(this).find('option:selected');
         const salaNombre = selectedOption.text();
@@ -924,7 +924,7 @@ $(document).ready(function() {
                 encargado_id: encargadoId,
                 ayudante_id: ayudanteId
             },
-            success: function(response) {
+            success: function (response) {
                 if (response.success) {
                     const encargadoSexo = response.encargado_sexo;
                     const ayudanteSexo = response.ayudante_sexo;
@@ -942,7 +942,7 @@ $(document).ready(function() {
                     loadAyudantesByEncargadoAndParte(encargadoId, parteId);
                 }
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 console.error('Error al verificar sexos:', xhr.responseText);
                 // En caso de error, cargar normalmente
                 loadAyudantesByEncargadoAndParte(encargadoId, parteId);
@@ -1054,7 +1054,7 @@ $(document).ready(function() {
         $.ajax({
             url: `/partes-programa/${id}`,
             method: 'GET',
-            success: function(response) {
+            success: function (response) {
                 if (response.success) {
                     const parte = response.data;
 
@@ -1100,7 +1100,7 @@ $(document).ready(function() {
                     updateButtonStatesSegundaSeccion();
                 }
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 console.error('Error al cargar la parte:', xhr.responseText);
                 window.editingParteTwoData = false;
             }
@@ -1108,14 +1108,14 @@ $(document).ready(function() {
     }
 
     function deleteParteSegundaSeccion(id) {
-        $('#confirmDeleteBtn').off('click').on('click', function() {
+        $('#confirmDeleteBtn').off('click').on('click', function () {
             $.ajax({
                 url: `/partes-programa/${id}`,
                 method: 'DELETE',
                 data: {
                     _token: $('meta[name="csrf-token"]').attr('content')
                 },
-                success: function(response) {
+                success: function (response) {
                     if (response.success) {
                         // Determinar qué datatable actualizar según el sala_id de la parte eliminada
                         // Como estamos eliminando desde la tabla de segunda sección, pero puede ser sala auxiliar,
@@ -1129,12 +1129,12 @@ $(document).ready(function() {
                         $('#successModal').modal('show');
 
                         // Ocultar el modal automáticamente después de 2 segundos
-                        setTimeout(function() {
+                        setTimeout(function () {
                             $('#successModal').modal('hide');
                         }, 2000);
                     }
                 },
-                error: function(xhr) {
+                error: function (xhr) {
                     console.error('Error al eliminar la parte:', xhr.responseText);
                 }
             });
@@ -1172,11 +1172,11 @@ $(document).ready(function() {
             const selectedOption = $('#parte_id_segunda_seccion').find('option:selected');
             const tipo = selectedOption.data('tipo');
 
-                if (!encargadoId || encargadoId === '') {
-                    showAlert('modal-alert-container-segunda-seccion', 'warning', 'Para esta Asignación es obligatorio seleccionar un Estudiante.');
-                    $('#encargado_display_segunda_seccion').addClass('is-invalid');
-                    return;
-                }
+            if (!encargadoId || encargadoId === '') {
+                showAlert('modal-alert-container-segunda-seccion', 'warning', 'Para esta Asignación es obligatorio seleccionar un Estudiante.');
+                $('#encargado_display_segunda_seccion').addClass('is-invalid');
+                return;
+            }
             if (tipo == 2 || tipo == 3) {
                 if (!ayudanteId || ayudanteId === '') {
                     showAlert('modal-alert-container-segunda-seccion', 'warning', 'Para esta Asignación es obligatorio seleccionar un Ayudante.');
@@ -1218,7 +1218,7 @@ $(document).ready(function() {
             url: url,
             method: method,
             data: formData,
-            success: function(response) {
+            success: function (response) {
                 if (response.success) {
                     $('#parteProgramaSegundaSeccionModal').modal('hide');
 
@@ -1229,12 +1229,12 @@ $(document).ready(function() {
                     $('#successModal').modal('show');
 
                     // Ocultar el modal automáticamente después de 3 segundos con fade out
-                    setTimeout(function() {
+                    setTimeout(function () {
                         $('#successModal').modal('hide');
                     }, 2000);
                 }
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 if (xhr.status === 422) {
                     const errors = xhr.responseJSON.errors;
                     for (const field in errors) {
@@ -1253,7 +1253,7 @@ $(document).ready(function() {
                     showAlert('alert-container', 'danger', errorMessage);
                 }
             },
-            complete: function() {
+            complete: function () {
                 submitBtn.prop('disabled', false);
                 spinner.addClass('d-none');
             }
@@ -1266,18 +1266,18 @@ $(document).ready(function() {
         $.ajax({
             url: `/programas/${programaId}/partes-segunda-seccion-disponibles`,
             method: 'GET',
-            success: function(response) {
+            success: function (response) {
                 if (response.success) {
                     const select = $('#parte_id_segunda_seccion');
                     select.empty().append('<option value="">Seleccionar...</option>');
 
                     // Las partes ya vienen filtradas desde el backend
-                    response.data.forEach(function(parte) {
+                    response.data.forEach(function (parte) {
                         select.append(`<option value="${parte.id}" data-tiempo="${parte.tiempo}" data-tipo="${parte.tipo}" data-abreviacion="${parte.abreviacion}">${parte.abreviacion} - ${parte.nombre}</option>`);
                     });
                 }
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 console.error('Error al cargar las partes disponibles:', xhr.responseText);
             }
         });
@@ -1293,19 +1293,19 @@ $(document).ready(function() {
                 include_selected: parteIdSeleccionada  // Incluir la parte seleccionada aunque no esté activa
             },
             async: false,
-            success: function(response) {
+            success: function (response) {
                 if (response.success) {
                     const select = $('#parte_id_segunda_seccion');
                     select.empty().append('<option value="">Seleccionar...</option>');
 
                     // Cargar todas las partes activas y la parte seleccionada
-                    response.data.forEach(function(parte) {
+                    response.data.forEach(function (parte) {
                         const selected = parte.id == parteIdSeleccionada ? 'selected' : '';
                         select.append(`<option value="${parte.id}"  data-tiempo="${parte.tiempo}" data-tipo="${parte.tipo}" data-abreviacion="${parte.abreviacion}" ${selected}>${parte.abreviacion} - ${parte.nombre}</option>`);
                     });
                 }
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 console.error('Error al cargar las partes disponibles:', xhr.responseText);
             }
         });
@@ -1319,13 +1319,13 @@ $(document).ready(function() {
         $.ajax({
             url: url,
             method: 'GET',
-            success: function(response) {
+            success: function (response) {
                 if (response.success) {
                     const select = $('#ayudante_id_segunda_seccion');
                     select.empty().append('<option value="">Seleccionar...</option>');
 
                     if (response.data && response.data.length > 0) {
-                        response.data.forEach(function(usuario) {
+                        response.data.forEach(function (usuario) {
                             if (usuario.is_section) {
                                 // Agregar encabezado de sección (deshabilitado para selección)
                                 select.append(`<option value="" disabled style="font-weight: bold; background-color: #f8f9fa;">${usuario.name}</option>`);
@@ -1343,7 +1343,7 @@ $(document).ready(function() {
                     select.empty().append('<option value="">No hay ayudantes disponibles</option>').trigger('change');
                 }
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 console.error('Error al cargar ayudantes:', xhr.responseText);
                 const select = $('#ayudante_id_segunda_seccion');
                 select.empty().append('<option value="">Error al cargar ayudantes</option>').trigger('change');
@@ -1475,7 +1475,7 @@ $(document).ready(function() {
                 method: 'GET',
                 data: { encargado_id: encargadoId },
                 async: false,
-                success: function(response) {
+                success: function (response) {
                     if (response.success && response.encargado_sexo) {
                         sexoPorDefecto = response.encargado_sexo;
                     }
@@ -1483,7 +1483,7 @@ $(document).ready(function() {
             });
         }
         // Listener para cambios en los radio buttons de filtro por sexo
-        $(document).off('change.filtro_sexo_encargado_segunda').on('change.filtro_sexo_encargado_segunda', 'input[name="filtro_sexo_encargado_segunda"]', function() {
+        $(document).off('change.filtro_sexo_encargado_segunda').on('change.filtro_sexo_encargado_segunda', 'input[name="filtro_sexo_encargado_segunda"]', function () {
             cargarEncargadosSegundaSeccionPorSexo(parteId);
         });
 
@@ -1501,7 +1501,7 @@ $(document).ready(function() {
             method: 'GET',
             data: { sexo: sexoPorDefecto },
             async: false,
-            success: function(response) {
+            success: function (response) {
                 if (response.success) {
                     const select = $('#select_encargado_segunda_seccion');
                     select.empty();
@@ -1520,7 +1520,7 @@ $(document).ready(function() {
                     select.append('<option value="">Seleccionar encargado...</option>');
 
                     // Agregar opciones con el formato: fecha|abreviacion|nombre
-                    response.data.forEach(function(usuario) {
+                    response.data.forEach(function (usuario) {
                         select.append(`<option value="${usuario.id}">${usuario.display_text}</option>`);
                     });
 
@@ -1541,18 +1541,18 @@ $(document).ready(function() {
                     // Preseleccionar el encargado actual si existe (ya declarado arriba)
                     if (encargadoActual) {
                         select.val(encargadoActual);
-                        loadHistorialEncargadoSegundaSeccion(encargadoActual,parteId,abreviacionParte);
+                        loadHistorialEncargadoSegundaSeccion(encargadoActual, parteId, abreviacionParte);
                     }
 
                     // Cuando se seleccione un encargado, habilitar el botón Seleccionar y cargar historial
-                    select.off('change.select_encargado_segunda_seccion').on('change.select_encargado_segunda_seccion', function() {
+                    select.off('change.select_encargado_segunda_seccion').on('change.select_encargado_segunda_seccion', function () {
                         const encargadoSeleccionado = $(this).val();
                         const parteId = $('#parte_id_segunda_seccion').val();
                         //Vaciamos el select de historial
                         $('#confirmarEncargadoSegundaSeccion').prop('disabled', !encargadoSeleccionado);
                         // Cargar historial del encargado seleccionado
                         if (encargadoSeleccionado) {
-                            loadHistorialEncargadoSegundaSeccion(encargadoSeleccionado,parteId,abreviacionParte);
+                            loadHistorialEncargadoSegundaSeccion(encargadoSeleccionado, parteId, abreviacionParte);
                         } else {
                             clearHistorialEncargadoSegundaSeccion();
                         }
@@ -1561,7 +1561,7 @@ $(document).ready(function() {
                     alert('Error al cargar los usuarios: ' + response.message);
                 }
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 alert('Error al cargar los usuarios participantes');
                 console.error(xhr);
             }
@@ -1577,7 +1577,7 @@ $(document).ready(function() {
             url: `/encargados-por-parte-programa-smm/${parteId}`,
             method: 'GET',
             data: { sexo: sexoSeleccionado },
-            success: function(response) {
+            success: function (response) {
                 if (response.success) {
                     const select = $('#select_encargado_segunda_seccion');
 
@@ -1588,7 +1588,7 @@ $(document).ready(function() {
                     select.append('<option value="">Seleccionar encargado...</option>');
 
                     // Agregar opciones con el formato: fecha|abreviacion|nombre
-                    response.data.forEach(function(usuario) {
+                    response.data.forEach(function (usuario) {
                         select.append(`<option value="${usuario.id}">${usuario.display_text}</option>`);
                     });
 
@@ -1603,7 +1603,7 @@ $(document).ready(function() {
                     alert('Error al cargar los usuarios: ' + response.message);
                 }
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 alert('Error al cargar los usuarios participantes');
                 console.error(xhr);
             }
@@ -1639,26 +1639,26 @@ $(document).ready(function() {
             contenedorFiltroSexo.show();
             // Obtener el sexo del encargado
             if (ayudanteId) {
-                 // Se buscan ayudantes según el sexo del seleccionado
+                // Se buscan ayudantes según el sexo del seleccionado
                 $.ajax({
                     url: `/verificar-sexos-usuarios`,
                     method: 'GET',
                     data: { encargado_id: encargadoId, ayudante_id: ayudanteId },
                     async: false,
-                    success: function(response) {
+                    success: function (response) {
                         if (response.success && response.ayudante_sexo) {
                             sexoForzado = response.ayudante_sexo;
                         }
                     }
                 });
-            }else{
+            } else {
                 // Se buscan ayudantes según el sexo del encargado
                 $.ajax({
                     url: `/verificar-sexo-encargado`,
                     method: 'GET',
                     data: { encargado_id: encargadoId },
                     async: false,
-                    success: function(response) {
+                    success: function (response) {
                         if (response.success && response.encargado_sexo) {
                             sexoForzado = response.encargado_sexo;
                         }
@@ -1688,7 +1688,7 @@ $(document).ready(function() {
         $('#confirmarAyudanteSegundaSeccion').prop('disabled', true);
 
         // Cuando se seleccione un ayudante, habilitar el botón Seleccionar y cargar historial
-        $(document).off('change.select_ayudante_segunda_seccion').on('change.select_ayudante_segunda_seccion', '#select_ayudante_segunda_seccion', function() {
+        $(document).off('change.select_ayudante_segunda_seccion').on('change.select_ayudante_segunda_seccion', '#select_ayudante_segunda_seccion', function () {
             const val = $(this).val();
             $('#confirmarAyudanteSegundaSeccion').prop('disabled', !val);
 
@@ -1702,8 +1702,8 @@ $(document).ready(function() {
 
         // Listener para cambios en los radio buttons de filtro por sexo (solo si tipo=3)
         if (tipo == 3) {
-            $(document).off('change.filtro_sexo_ayudante_segunda').on('change.filtro_sexo_ayudante_segunda', 'input[name="filtro_sexo_ayudante_segunda"]', function() {
-                cargarAyudantesSegundaSeccionPorSexo(parteId, encargadoId,tipo);
+            $(document).off('change.filtro_sexo_ayudante_segunda').on('change.filtro_sexo_ayudante_segunda', 'input[name="filtro_sexo_ayudante_segunda"]', function () {
+                cargarAyudantesSegundaSeccionPorSexo(parteId, encargadoId, tipo);
             });
         }
 
@@ -1725,7 +1725,7 @@ $(document).ready(function() {
             method: 'GET',
             data: params,
             async: false,
-            success: function(response) {
+            success: function (response) {
                 if (response.success) {
                     const select = $('#select_ayudante_segunda_seccion');
                     select.empty();
@@ -1746,7 +1746,7 @@ $(document).ready(function() {
                     // Verificar si hay secciones de género
                     if (response.has_gender_sections) {
                         // Agregar opciones con secciones de género
-                        response.data.forEach(function(usuario) {
+                        response.data.forEach(function (usuario) {
                             if (usuario.is_section) {
                                 // Es una sección (Hombres o Mujeres)
                                 select.append(`<option disabled style="font-weight: bold;">${usuario.display_text}</option>`);
@@ -1757,7 +1757,7 @@ $(document).ready(function() {
                         });
                     } else {
                         // Sin secciones de género, agregar normalmente
-                        response.data.forEach(function(usuario) {
+                        response.data.forEach(function (usuario) {
                             select.append(`<option value="${usuario.id}">${usuario.display_text}</option>`);
                         });
                     }
@@ -1783,15 +1783,15 @@ $(document).ready(function() {
                     alert('Error al cargar los usuarios: ' + response.message);
                 }
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 alert('Error al cargar los usuarios ayudantes');
                 console.error(xhr);
             }
         });
     }
 
-     // Función para cargar ayudantes filtrados por sexo
-    function cargarAyudantesSegundaSeccionPorSexo(parteId,encargadoId,tipo) {
+    // Función para cargar ayudantes filtrados por sexo
+    function cargarAyudantesSegundaSeccionPorSexo(parteId, encargadoId, tipo) {
         const sexoSeleccionado = $('input[name="filtro_sexo_ayudante_segunda"]:checked').val();
         //deshabilitar el select mientras carga
         $('#select_ayudante_segunda_seccion').prop('disabled', true);
@@ -1812,7 +1812,7 @@ $(document).ready(function() {
             url: url,
             method: 'GET',
             data: params,
-            success: function(response) {
+            success: function (response) {
                 if (response.success) {
                     const select = $('#select_ayudante_segunda_seccion');
 
@@ -1825,7 +1825,7 @@ $(document).ready(function() {
                     // Verificar si hay secciones de género
                     if (response.has_gender_sections) {
                         // Agregar opciones con secciones de género
-                        response.data.forEach(function(usuario) {
+                        response.data.forEach(function (usuario) {
                             if (usuario.is_section) {
                                 select.append(`<option disabled style="font-weight: bold;">${usuario.display_text}</option>`);
                             } else {
@@ -1834,7 +1834,7 @@ $(document).ready(function() {
                         });
                     } else {
                         // Sin secciones de género, agregar normalmente
-                        response.data.forEach(function(usuario) {
+                        response.data.forEach(function (usuario) {
                             select.append(`<option value="${usuario.id}">${usuario.display_text}</option>`);
                         });
                     }
@@ -1850,7 +1850,7 @@ $(document).ready(function() {
                     alert('Error al cargar los usuarios: ' + response.message);
                 }
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 alert('Error al cargar los usuarios ayudantes');
                 console.error(xhr);
             }
@@ -1991,7 +1991,7 @@ $(document).ready(function() {
             data: {
                 _token: $('meta[name="csrf-token"]').attr('content')
             },
-            success: function(response) {
+            success: function (response) {
                 if (response.success) {
                     // Si se proporciona un callback específico, úsalo
                     if (callback && typeof callback === 'function') {
@@ -2006,7 +2006,7 @@ $(document).ready(function() {
                     showAlert('alert-container', 'warning', response.message);
                 }
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 console.error('AJAX error:', xhr);
                 const errorMessage = xhr.responseJSON?.message || 'Error al mover la parte';
                 showAlert('alert-container', 'danger', errorMessage);
@@ -2023,7 +2023,7 @@ $(document).ready(function() {
         $.ajax({
             url: '/usuarios-orador-inicial',
             method: 'GET',
-            success: function(response) {
+            success: function (response) {
                 if (response.success) {
                     const select = $('#select_orador_inicial');
                     select.empty();
@@ -2042,7 +2042,7 @@ $(document).ready(function() {
                     select.append('<option value="">Seleccionar orador inicial...</option>');
 
                     // Agregar opciones con el formato: fecha - nombre
-                    response.data.forEach(function(usuario) {
+                    response.data.forEach(function (usuario) {
                         let fechaTexto = 'Primera vez';
                         if (usuario.ultima_fecha) {
                             const fecha = new Date(usuario.ultima_fecha);
@@ -2075,7 +2075,7 @@ $(document).ready(function() {
                     alert('Error al cargar los usuarios: ' + response.message);
                 }
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 alert('Error al cargar los usuarios para orador inicial');
                 console.error(xhr);
             }
@@ -2096,7 +2096,7 @@ $(document).ready(function() {
         $.ajax({
             url: `/usuarios/${oradorId}/historial-orador`,
             method: 'GET',
-            success: function(response) {
+            success: function (response) {
                 if (response.success) {
                     const select = $('#select_historial_orador');
                     select.empty();
@@ -2115,7 +2115,7 @@ $(document).ready(function() {
                         select.append('<option value="">Seleccionar participación...</option>');
 
                         // Agregar opciones con el formato: fecha - nombre - tipo
-                        response.data.forEach(function(participacion) {
+                        response.data.forEach(function (participacion) {
                             const fecha = new Date(participacion.fecha);
                             const dia = String(fecha.getDate()).padStart(2, '0');
                             const mes = String(fecha.getMonth() + 1).padStart(2, '0');
@@ -2144,7 +2144,7 @@ $(document).ready(function() {
                     alert('Error al cargar el historial: ' + response.message);
                 }
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 alert('Error al cargar el historial del orador inicial');
                 console.error(xhr);
             }
@@ -2153,7 +2153,7 @@ $(document).ready(function() {
 
     // Evento para confirmar la selección del orador inicial
     // Evento para confirmar la selección del orador inicial
-    $('#confirmarOradorInicial').on('click', function() {
+    $('#confirmarOradorInicial').on('click', function () {
         const oradorSeleccionado = $('#select_orador_inicial').val();
         const textoSeleccionado = $('#select_orador_inicial option:selected').text();
 
@@ -2199,7 +2199,7 @@ $(document).ready(function() {
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
-            success: function(response) {
+            success: function (response) {
                 if (response.success) {
                     // Actualizar los campos del formulario
                     $('#orador_inicial').val(oradorSeleccionado);
@@ -2212,14 +2212,14 @@ $(document).ready(function() {
                     $('#successModal').modal('show');
 
                     // Ocultar el modal automáticamente después de 2 segundos con fade out
-                    setTimeout(function() {
+                    setTimeout(function () {
                         $('#successModal').modal('hide');
                     }, 2000);
                 } else {
                     alert('Error al guardar el orador inicial: ' + (response.message || 'Error desconocido'));
                 }
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 let errorMessage = 'Error al guardar el orador inicial';
                 if (xhr.responseJSON && xhr.responseJSON.errors) {
                     const errors = Object.values(xhr.responseJSON.errors).flat();
@@ -2229,7 +2229,7 @@ $(document).ready(function() {
                 }
                 alert(errorMessage);
             },
-            complete: function() {
+            complete: function () {
                 // Restaurar el botón original
                 button.html(originalText).prop('disabled', false);
             }
@@ -2237,7 +2237,7 @@ $(document).ready(function() {
     });
 
     // Limpiar Select2 cuando se cierre el modal
-    $('#buscarOradorInicialModal').on('hidden.bs.modal', function() {
+    $('#buscarOradorInicialModal').on('hidden.bs.modal', function () {
         const select = $('#select_orador_inicial');
         if (select.hasClass('select2-hidden-accessible')) {
             select.select2('destroy');
@@ -2257,7 +2257,7 @@ $(document).ready(function() {
     });
 
     // Evento para cargar historial automáticamente cuando se selecciona un orador
-    $('#select_orador_inicial').on('change', function() {
+    $('#select_orador_inicial').on('change', function () {
         const oradorId = $(this).val();
         if (!oradorId) {
             // Limpiar el historial si no hay orador seleccionado
@@ -2271,7 +2271,7 @@ $(document).ready(function() {
         $.ajax({
             url: `/usuarios/${oradorId}/historial-orador`,
             method: 'GET',
-            success: function(response) {
+            success: function (response) {
                 if (response.success) {
                     const select = $('#select_historial_orador');
                     select.empty();
@@ -2280,7 +2280,7 @@ $(document).ready(function() {
                         select.append('<option value="">Seleccionar participación...</option>');
 
                         // Agregar opciones con el formato: fecha - nombre - tipo
-                        response.data.forEach(function(participacion) {
+                        response.data.forEach(function (participacion) {
                             const fecha = new Date(participacion.fecha);
                             const dia = String(fecha.getDate()).padStart(2, '0');
                             const mes = String(fecha.getMonth() + 1).padStart(2, '0');
@@ -2306,14 +2306,14 @@ $(document).ready(function() {
                     console.error('Error al cargar el historial:', response.message);
                 }
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 console.error('Error al cargar el historial del orador inicial:', xhr);
             }
         });
     });
 
     // Evento para confirmar la selección del orador final
-    $('#confirmarOradorFinal').on('click', function() {
+    $('#confirmarOradorFinal').on('click', function () {
         const oradorSeleccionado = $('#select_orador_final').val();
         const textoSeleccionado = $('#select_orador_final option:selected').text();
 
@@ -2359,7 +2359,7 @@ $(document).ready(function() {
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
-            success: function(response) {
+            success: function (response) {
                 if (response.success) {
                     // Actualizar los campos del formulario
                     $('#orador_final').val(oradorSeleccionado);
@@ -2372,14 +2372,14 @@ $(document).ready(function() {
                     $('#successModal').modal('show');
 
                     // Ocultar el modal automáticamente después de 2 segundos con fade out
-                    setTimeout(function() {
+                    setTimeout(function () {
                         $('#successModal').modal('hide');
                     }, 2000);
                 } else {
                     alert('Error al guardar el orador final: ' + (response.message || 'Error desconocido'));
                 }
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 let errorMessage = 'Error al guardar el orador final';
                 if (xhr.responseJSON && xhr.responseJSON.errors) {
                     const errors = Object.values(xhr.responseJSON.errors).flat();
@@ -2389,7 +2389,7 @@ $(document).ready(function() {
                 }
                 alert(errorMessage);
             },
-            complete: function() {
+            complete: function () {
                 // Restaurar el botón original
                 button.html(originalText).prop('disabled', false);
             }
@@ -2397,7 +2397,7 @@ $(document).ready(function() {
     });
 
     // Limpiar Select2 cuando se cierre el modal
-    $('#buscarOradorFinalModal').on('hidden.bs.modal', function() {
+    $('#buscarOradorFinalModal').on('hidden.bs.modal', function () {
         const select = $('#select_orador_final');
         if (select.hasClass('select2-hidden-accessible')) {
             select.select2('destroy');
@@ -2417,14 +2417,14 @@ $(document).ready(function() {
     });
 
     // Evento para cargar historial automáticamente cuando se selecciona un orador final
-    $('#select_orador_final').on('change', function() {
+    $('#select_orador_final').on('change', function () {
         const oradorId = $(this).val();
         if (oradorId) {
             // Cargar historial del orador seleccionado
             $.ajax({
                 url: `/usuarios/${oradorId}/historial-orador`,
                 method: 'GET',
-                success: function(response) {
+                success: function (response) {
                     if (response.success) {
                         const select = $('#select_historial_orador_final');
                         select.empty();
@@ -2433,7 +2433,7 @@ $(document).ready(function() {
                             select.append('<option value="">Seleccionar participación...</option>');
 
                             // Agregar opciones con el formato: fecha - nombre - tipo
-                            response.data.forEach(function(participacion) {
+                            response.data.forEach(function (participacion) {
                                 const fecha = new Date(participacion.fecha);
                                 const dia = String(fecha.getDate()).padStart(2, '0');
                                 const mes = String(fecha.getMonth() + 1).padStart(2, '0');
@@ -2459,7 +2459,7 @@ $(document).ready(function() {
                         console.error('Error al cargar el historial: ' + response.message);
                     }
                 },
-                error: function(xhr) {
+                error: function (xhr) {
                     console.error('Error al cargar el historial de orador final', xhr);
                 }
             });
@@ -2472,7 +2472,7 @@ $(document).ready(function() {
     });
 
     // Evento para confirmar la selección de presidencia
-    $('#confirmarPresidencia').on('click', function() {
+    $('#confirmarPresidencia').on('click', function () {
         const presidenteSeleccionado = $('#select_presidencia').val();
         const textoSeleccionado = $('#select_presidencia option:selected').text();
 
@@ -2518,7 +2518,7 @@ $(document).ready(function() {
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
-            success: function(response) {
+            success: function (response) {
                 if (response.success) {
                     // Actualizar los campos del formulario
                     $('#presidencia').val(presidenteSeleccionado);
@@ -2531,14 +2531,14 @@ $(document).ready(function() {
                     $('#successModal').modal('show');
 
                     // Ocultar el modal automáticamente después de 3 segundos con fade out
-                    setTimeout(function() {
+                    setTimeout(function () {
                         $('#successModal').modal('hide');
                     }, 2000);
                 } else {
                     alert('Error al guardar el presidente: ' + (response.message || 'Error desconocido'));
                 }
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 let errorMessage = 'Error al guardar el presidente';
                 if (xhr.responseJSON && xhr.responseJSON.errors) {
                     const errors = Object.values(xhr.responseJSON.errors).flat();
@@ -2548,7 +2548,7 @@ $(document).ready(function() {
                 }
                 alert(errorMessage);
             },
-            complete: function() {
+            complete: function () {
                 // Restaurar el botón original
                 button.html(originalText).prop('disabled', false);
             }
@@ -2556,7 +2556,7 @@ $(document).ready(function() {
     });
 
     // Limpiar Select2 cuando se cierre el modal
-    $('#buscarPresidenciaModal').on('hidden.bs.modal', function() {
+    $('#buscarPresidenciaModal').on('hidden.bs.modal', function () {
         const select = $('#select_presidencia');
         if (select.hasClass('select2-hidden-accessible')) {
             select.select2('destroy');
@@ -2576,14 +2576,14 @@ $(document).ready(function() {
     });
 
     // Evento para cargar historial automáticamente cuando se selecciona un presidente
-    $('#select_presidencia').on('change', function() {
+    $('#select_presidencia').on('change', function () {
         const presidenteId = $(this).val();
         if (presidenteId) {
             // Cargar historial del presidente seleccionado
             $.ajax({
                 url: `/usuarios/${presidenteId}/historial-presidencia`,
                 method: 'GET',
-                success: function(response) {
+                success: function (response) {
                     if (response.success) {
                         const select = $('#select_historial_presidencia');
                         select.empty();
@@ -2592,7 +2592,7 @@ $(document).ready(function() {
                             select.append('<option value="">Seleccionar participación...</option>');
 
                             // Agregar opciones con el formato: fecha - nombre
-                            response.data.forEach(function(participacion) {
+                            response.data.forEach(function (participacion) {
                                 const fecha = new Date(participacion.fecha);
                                 const dia = String(fecha.getDate()).padStart(2, '0');
                                 const mes = String(fecha.getMonth() + 1).padStart(2, '0');
@@ -2617,7 +2617,7 @@ $(document).ready(function() {
                         console.error('Error al cargar el historial: ' + response.message);
                     }
                 },
-                error: function(xhr) {
+                error: function (xhr) {
                     console.error('Error al cargar el historial de presidencia', xhr);
                 }
             });
@@ -2630,7 +2630,7 @@ $(document).ready(function() {
     });
 
     // Eventos para confirmar selección de canciones
-    $('#confirmarCancionInicial').on('click', function() {
+    $('#confirmarCancionInicial').on('click', function () {
         const cancionSeleccionada = $('#select_cancion_inicial').val();
         const textoSeleccionado = $('#select_cancion_inicial option:selected').text();
 
@@ -2670,7 +2670,7 @@ $(document).ready(function() {
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
-            success: function(response) {
+            success: function (response) {
                 if (response.success) {
                     // Actualizar los campos del formulario
                     $('#cancion_pre').val(cancionSeleccionada);
@@ -2683,14 +2683,14 @@ $(document).ready(function() {
                     $('#successModal').modal('show');
 
                     // Ocultar el modal automáticamente después de 3 segundos con fade out
-                    setTimeout(function() {
+                    setTimeout(function () {
                         $('#successModal').modal('hide');
                     }, 2000);
                 } else {
                     alert('Error al guardar la canción inicial: ' + (response.message || 'Error desconocido'));
                 }
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 let errorMessage = 'Error al guardar la canción inicial';
                 if (xhr.responseJSON && xhr.responseJSON.errors) {
                     const errors = Object.values(xhr.responseJSON.errors).flat();
@@ -2700,14 +2700,14 @@ $(document).ready(function() {
                 }
                 alert(errorMessage);
             },
-            complete: function() {
+            complete: function () {
                 // Restaurar el botón original
                 button.html(originalText).prop('disabled', false);
             }
         });
     });
 
-    $('#confirmarCancionIntermedia').on('click', function() {
+    $('#confirmarCancionIntermedia').on('click', function () {
         const cancionSeleccionada = $('#select_cancion_intermedia').val();
         const textoSeleccionado = $('#select_cancion_intermedia option:selected').text();
 
@@ -2747,7 +2747,7 @@ $(document).ready(function() {
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
-            success: function(response) {
+            success: function (response) {
                 if (response.success) {
                     // Actualizar los campos del formulario
                     $('#cancion_en').val(cancionSeleccionada);
@@ -2760,14 +2760,14 @@ $(document).ready(function() {
                     $('#successModal').modal('show');
 
                     // Ocultar el modal automáticamente después de 2 segundos con fade out
-                    setTimeout(function() {
+                    setTimeout(function () {
                         $('#successModal').modal('hide');
                     }, 2000);
                 } else {
                     alert('Error al guardar la canción intermedia: ' + (response.message || 'Error desconocido'));
                 }
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 let errorMessage = 'Error al guardar la canción intermedia';
                 if (xhr.responseJSON && xhr.responseJSON.errors) {
                     const errors = Object.values(xhr.responseJSON.errors).flat();
@@ -2777,14 +2777,14 @@ $(document).ready(function() {
                 }
                 alert(errorMessage);
             },
-            complete: function() {
+            complete: function () {
                 // Restaurar el botón original
                 button.html(originalText).prop('disabled', false);
             }
         });
     });
 
-    $('#confirmarCancionFinal').on('click', function() {
+    $('#confirmarCancionFinal').on('click', function () {
         const cancionSeleccionada = $('#select_cancion_final').val();
         const textoSeleccionado = $('#select_cancion_final option:selected').text();
 
@@ -2824,7 +2824,7 @@ $(document).ready(function() {
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
-            success: function(response) {
+            success: function (response) {
                 if (response.success) {
                     // Actualizar los campos del formulario
                     $('#cancion_post').val(cancionSeleccionada);
@@ -2837,14 +2837,14 @@ $(document).ready(function() {
                     $('#successModal').modal('show');
 
                     // Ocultar el modal automáticamente después de 2 segundos con fade out
-                    setTimeout(function() {
+                    setTimeout(function () {
                         $('#successModal').modal('hide');
                     }, 2000);
                 } else {
                     alert('Error al guardar la canción final: ' + (response.message || 'Error desconocido'));
                 }
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 let errorMessage = 'Error al guardar la canción final';
                 if (xhr.responseJSON && xhr.responseJSON.errors) {
                     const errors = Object.values(xhr.responseJSON.errors).flat();
@@ -2854,7 +2854,7 @@ $(document).ready(function() {
                 }
                 alert(errorMessage);
             },
-            complete: function() {
+            complete: function () {
                 // Restaurar el botón original
                 button.html(originalText).prop('disabled', false);
             }
@@ -2862,7 +2862,7 @@ $(document).ready(function() {
     });
 
     // Limpiar Select2 cuando se cierren los modales de canciones
-    $('#buscarCancionInicialModal').on('hidden.bs.modal', function() {
+    $('#buscarCancionInicialModal').on('hidden.bs.modal', function () {
         const select = $('#select_cancion_inicial');
         if (select.hasClass('select2-hidden-accessible')) {
             select.select2('destroy');
@@ -2870,7 +2870,7 @@ $(document).ready(function() {
         select.empty().append('<option value="">Cargando canciones...</option>');
     });
 
-    $('#buscarCancionIntermediaModal').on('hidden.bs.modal', function() {
+    $('#buscarCancionIntermediaModal').on('hidden.bs.modal', function () {
         const select = $('#select_cancion_intermedia');
         if (select.hasClass('select2-hidden-accessible')) {
             select.select2('destroy');
@@ -2878,7 +2878,7 @@ $(document).ready(function() {
         select.empty().append('<option value="">Cargando canciones...</option>');
     });
 
-    $('#buscarCancionFinalModal').on('hidden.bs.modal', function() {
+    $('#buscarCancionFinalModal').on('hidden.bs.modal', function () {
         const select = $('#select_cancion_final');
         if (select.hasClass('select2-hidden-accessible')) {
             select.select2('destroy');
@@ -2895,7 +2895,7 @@ $(document).ready(function() {
         $.ajax({
             url: '/usuarios-orador-inicial',
             method: 'GET',
-            success: function(response) {
+            success: function (response) {
                 if (response.success) {
                     const select = $('#select_orador_final');
                     select.empty();
@@ -2914,7 +2914,7 @@ $(document).ready(function() {
                     select.append('<option value="">Seleccionar orador final...</option>');
 
                     // Agregar opciones con el formato: fecha - nombre
-                    response.data.forEach(function(usuario) {
+                    response.data.forEach(function (usuario) {
                         let fechaTexto = 'Primera vez';
                         if (usuario.ultima_fecha) {
                             const fecha = new Date(usuario.ultima_fecha);
@@ -2947,7 +2947,7 @@ $(document).ready(function() {
                     alert('Error al cargar los usuarios: ' + response.message);
                 }
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 alert('Error al cargar los usuarios para orador final');
                 console.error(xhr);
             }
@@ -2968,7 +2968,7 @@ $(document).ready(function() {
         $.ajax({
             url: `/usuarios/${oradorId}/historial-orador`,
             method: 'GET',
-            success: function(response) {
+            success: function (response) {
                 if (response.success) {
                     const select = $('#select_historial_orador_final');
                     select.empty();
@@ -2987,7 +2987,7 @@ $(document).ready(function() {
                         select.append('<option value="">Seleccionar participación...</option>');
 
                         // Agregar opciones con el formato: fecha - nombre - tipo
-                        response.data.forEach(function(participacion) {
+                        response.data.forEach(function (participacion) {
                             const fecha = new Date(participacion.fecha);
                             const dia = String(fecha.getDate()).padStart(2, '0');
                             const mes = String(fecha.getMonth() + 1).padStart(2, '0');
@@ -3016,7 +3016,7 @@ $(document).ready(function() {
                     alert('Error al cargar el historial: ' + response.message);
                 }
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 alert('Error al cargar el historial del orador final');
                 console.error(xhr);
             }
@@ -3032,7 +3032,7 @@ $(document).ready(function() {
         $.ajax({
             url: '/usuarios-presidencia',
             method: 'GET',
-            success: function(response) {
+            success: function (response) {
                 if (response.success) {
                     const select = $('#select_presidencia');
                     select.empty();
@@ -3051,7 +3051,7 @@ $(document).ready(function() {
                     select.append('<option value="">Seleccionar presidente...</option>');
 
                     // Agregar opciones con el formato: fecha - nombre
-                    response.data.forEach(function(usuario) {
+                    response.data.forEach(function (usuario) {
                         let fechaTexto = 'Primera vez';
                         if (usuario.ultima_fecha) {
                             const fecha = new Date(usuario.ultima_fecha);
@@ -3084,7 +3084,7 @@ $(document).ready(function() {
                     alert('Error al cargar los usuarios: ' + response.message);
                 }
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 alert('Error al cargar los usuarios para presidencia');
                 console.error(xhr);
             }
@@ -3105,7 +3105,7 @@ $(document).ready(function() {
         $.ajax({
             url: `/usuarios/${presidenteId}/historial-presidencia`,
             method: 'GET',
-            success: function(response) {
+            success: function (response) {
                 if (response.success) {
                     const select = $('#select_historial_presidencia');
                     select.empty();
@@ -3124,7 +3124,7 @@ $(document).ready(function() {
                         select.append('<option value="">Seleccionar participación...</option>');
 
                         // Agregar opciones con el formato: fecha - nombre
-                        response.data.forEach(function(participacion) {
+                        response.data.forEach(function (participacion) {
                             const fecha = new Date(participacion.fecha);
                             const dia = String(fecha.getDate()).padStart(2, '0');
                             const mes = String(fecha.getMonth() + 1).padStart(2, '0');
@@ -3152,7 +3152,7 @@ $(document).ready(function() {
                     alert('Error al cargar el historial: ' + response.message);
                 }
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 alert('Error al cargar el historial de presidencia');
                 console.error(xhr);
             }
@@ -3179,7 +3179,7 @@ $(document).ready(function() {
         $.ajax({
             url: '/canciones-disponibles',
             method: 'GET',
-            success: function(response) {
+            success: function (response) {
                 if (response.success) {
                     const select = $('#' + selectId);
                     select.empty();
@@ -3187,8 +3187,8 @@ $(document).ready(function() {
                     // Inicializar Select2 si no está ya inicializado
                     if (!select.hasClass('select2-hidden-accessible')) {
                         const modalId = selectId.includes('inicial') ? '#buscarCancionInicialModal' :
-                                       selectId.includes('intermedia') ? '#buscarCancionIntermediaModal' :
-                                       '#buscarCancionFinalModal';
+                            selectId.includes('intermedia') ? '#buscarCancionIntermediaModal' :
+                                '#buscarCancionFinalModal';
 
                         select.select2({
                             theme: 'bootstrap-5',
@@ -3202,7 +3202,7 @@ $(document).ready(function() {
                     select.append('<option value="">Seleccionar canción...</option>');
 
                     // Agregar opciones con el formato: número - nombre
-                    response.data.forEach(function(cancion) {
+                    response.data.forEach(function (cancion) {
                         const textoOpcion = cancion.numero ? `${cancion.numero} - ${cancion.nombre}` : cancion.nombre;
                         select.append(`<option value="${cancion.id}">${textoOpcion}</option>`);
                     });
@@ -3216,13 +3216,13 @@ $(document).ready(function() {
                     alert('Error al cargar las canciones: ' + response.message);
                 }
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 alert('Error al cargar las canciones');
                 console.error(xhr);
             }
         });
     }
-// Funciones para los botones del campo Encargado del datatable 1 (solo para coordinadores)
+    // Funciones para los botones del campo Encargado del datatable 1 (solo para coordinadores)
     function buscarEncargadoParte() {
         const parteId = $('#parte_id').val();
         if (!parteId) {
@@ -3241,7 +3241,7 @@ $(document).ready(function() {
         $.ajax({
             url: `/encargados-por-parte-programa/${parteId}`,
             method: 'GET',
-            success: function(response) {
+            success: function (response) {
                 if (response.success) {
                     const select = $('#select_encargado_parte');
                     select.empty();
@@ -3260,7 +3260,7 @@ $(document).ready(function() {
                     select.append('<option value="">Seleccionar encargado...</option>');
 
                     // Agregar opciones con el formato: fecha (dd/mm/AAAA) - Nombre del usuario
-                    response.data.forEach(function(usuario) {
+                    response.data.forEach(function (usuario) {
                         select.append(`<option value="${usuario.id}">${usuario.display_text}</option>`);
                     });
 
@@ -3283,7 +3283,7 @@ $(document).ready(function() {
                     }
 
                     // Agregar event listener para cargar historial cuando se selecciona un encargado
-                    select.off('change.historial').on('change.historial', function() {
+                    select.off('change.historial').on('change.historial', function () {
                         const encargadoSeleccionado = $(this).val();
                         const parteId = $('#parte_id').val();
                         $('#confirmarEncargadoParte').prop('disabled', !encargadoSeleccionado);
@@ -3301,7 +3301,7 @@ $(document).ready(function() {
                     alert('Error al cargar los usuarios: ' + response.message);
                 }
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 alert('Error al cargar los usuarios para encargado');
                 console.error(xhr);
             }
@@ -3322,7 +3322,7 @@ $(document).ready(function() {
                 parte_id: parteId,
                 tipo: 'encargado'
             },
-            success: function(response) {
+            success: function (response) {
                 if (response.success) {
                     historialSelect.empty();
 
@@ -3330,7 +3330,7 @@ $(document).ready(function() {
                         historialSelect.append('<option value="">Seleccionar participación...</option>');
 
                         // Agregar opciones con el formato: fecha - parte - tipo
-                        response.data.forEach(function(participacion) {
+                        response.data.forEach(function (participacion) {
                             const fecha = new Date(participacion.fecha);
                             const dia = String(fecha.getDate()).padStart(2, '0');
                             const mes = String(fecha.getMonth() + 1).padStart(2, '0');
@@ -3356,7 +3356,7 @@ $(document).ready(function() {
                     historialSelect.prop('disabled', true);
                 }
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 historialSelect.empty();
                 historialSelect.append('<option value="">Error al cargar historial</option>');
                 historialSelect.prop('disabled', true);
@@ -3366,7 +3366,7 @@ $(document).ready(function() {
     }
 
     // Evento para confirmar la selección del encargado NVC
-    $('#confirmarEncargadoParteNV').on('click', function() {
+    $('#confirmarEncargadoParteNV').on('click', function () {
         const encargadoSeleccionado = $('#select_encargado_parte_nv').val();
         const textoSeleccionado = $('#select_encargado_parte_nv option:selected').text();
 
@@ -3393,7 +3393,7 @@ $(document).ready(function() {
     });
 
     // Limpiar Select2 cuando se cierre el modal de buscar encargado NVC
-    $('#buscarEncargadoParteNVModal').on('hidden.bs.modal', function() {
+    $('#buscarEncargadoParteNVModal').on('hidden.bs.modal', function () {
         const select = $('#select_encargado_parte_nv');
         if (select.hasClass('select2-hidden-accessible')) {
             select.select2('destroy');
@@ -3431,14 +3431,14 @@ $(document).ready(function() {
 
         // Si hay un encargado seleccionado, cargar su historial
         if (encargadoId) {
-            setTimeout(function() {
+            setTimeout(function () {
                 cargarHistorialEncargado(encargadoId, parteId);
             }, 500); // Pequeño delay para asegurar que el modal esté abierto
         }
     }
 
     // Evento para confirmar la selección del encargado
-    $('#confirmarEncargadoParte').on('click', function() {
+    $('#confirmarEncargadoParte').on('click', function () {
         const encargadoSeleccionado = $('#select_encargado_parte').val();
         const textoSeleccionado = $('#select_encargado_parte option:selected').text();
 
@@ -3468,7 +3468,7 @@ $(document).ready(function() {
     });
 
     // Limpiar Select2 cuando se cierre el modal de buscar encargado
-    $('#buscarEncargadoParteModal').on('hidden.bs.modal', function() {
+    $('#buscarEncargadoParteModal').on('hidden.bs.modal', function () {
         const select = $('#select_encargado_parte');
         if (select.hasClass('select2-hidden-accessible')) {
             select.select2('destroy');
@@ -3477,7 +3477,7 @@ $(document).ready(function() {
     });
 
     // Limpiar Select2 cuando se cierre el modal de búsqueda de encargado
-    $('#buscarEncargadoParteModal').on('hidden.bs.modal', function() {
+    $('#buscarEncargadoParteModal').on('hidden.bs.modal', function () {
         const select = $('#select_encargado_parte');
         if (select.hasClass('select2-hidden-accessible')) {
             select.select2('destroy');
@@ -3540,7 +3540,7 @@ $(document).ready(function() {
     }
 
     // Event listeners para los modales de confirmación
-    $('#confirmarAgregarReemplazado').on('click', function() {
+    $('#confirmarAgregarReemplazado').on('click', function () {
         const encargadoId = $('#encargado_id').val();
         const encargadoNombre = $('#encargado_display').val();
 
@@ -3557,7 +3557,7 @@ $(document).ready(function() {
 
     });
 
-    $('#confirmarEliminarReemplazado').on('click', function() {
+    $('#confirmarEliminarReemplazado').on('click', function () {
         // Limpiar los campos
         $('#encargado_reemplazado_id').val('');
         $('#encargado_reemplazado_display').val('');
@@ -3605,7 +3605,7 @@ $(document).ready(function() {
     window.clearHistorialEncargadoSegundaSeccion = clearHistorialEncargadoSegundaSeccion;
 
     // Evento para confirmar la selección del encargado de segunda sección
-    $('#confirmarEncargadoSegundaSeccion').on('click', function() {
+    $('#confirmarEncargadoSegundaSeccion').on('click', function () {
         const encargadoSeleccionado = $('#select_encargado_segunda_seccion').val();
         const textoSeleccionado = $('#select_encargado_segunda_seccion option:selected').text();
 
@@ -3648,7 +3648,7 @@ $(document).ready(function() {
                         encargado_id: encargadoSeleccionado,
                         ayudante_id: ayudanteActual
                     },
-                    success: function(response) {
+                    success: function (response) {
                         if (response.success) {
                             const encargadoSexo = response.encargado_sexo;
                             const ayudanteSexo = response.ayudante_sexo;
@@ -3681,7 +3681,7 @@ $(document).ready(function() {
                             $('#buscarEncargadoSegundaSeccionModal').modal('hide');
                         }
                     },
-                    error: function(xhr) {
+                    error: function (xhr) {
                         // Limpiar filtros de sexo antes de cerrar
                         limpiarFiltroSexoEncargadoSegunda();
 
@@ -3720,7 +3720,7 @@ $(document).ready(function() {
     }
 
     // Limpiar Select2 cuando se cierre el modal de buscar encargado segunda sección
-    $('#buscarEncargadoSegundaSeccionModal').on('hidden.bs.modal', function() {
+    $('#buscarEncargadoSegundaSeccionModal').on('hidden.bs.modal', function () {
         const select = $('#select_encargado_segunda_seccion');
         if (select.hasClass('select2-hidden-accessible')) {
             select.select2('destroy');
@@ -3737,7 +3737,29 @@ $(document).ready(function() {
     });
 
     // Función para cargar el historial del encargado en la segunda sección
-    function loadHistorialEncargadoSegundaSeccion(encargadoId,parteId,abreviacionParte) {
+    function formatearFechaLocal(fechaRaw) {
+        if (!fechaRaw) return '';
+
+        // Evita desfases por zona horaria cuando el backend envía YYYY-MM-DD.
+        if (typeof fechaRaw === 'string') {
+            const soloFecha = fechaRaw.split('T')[0];
+            const partes = soloFecha.split('-');
+            if (partes.length === 3) {
+                const [anio, mes, dia] = partes;
+                return `${dia.padStart(2, '0')}/${mes.padStart(2, '0')}/${anio}`;
+            }
+        }
+
+        const fecha = new Date(fechaRaw);
+        if (Number.isNaN(fecha.getTime())) return '';
+
+        const dia = String(fecha.getDate()).padStart(2, '0');
+        const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+        const anio = fecha.getFullYear();
+        return `${dia}/${mes}/${anio}`;
+    }
+
+    function loadHistorialEncargadoSegundaSeccion(encargadoId, parteId, abreviacionParte) {
         const selectHistorial = $('#select_historial_encargado_segunda_seccion');
 
         // Limpiar el select y mostrar "Cargando..."
@@ -3747,7 +3769,7 @@ $(document).ready(function() {
         $.ajax({
             url: `/usuarios/${encargadoId}/${parteId}/historial-segunda-seccion`,
             method: 'GET',
-            success: function(response) {
+            success: function (response) {
                 if (response.success) {
                     selectHistorial.empty();
 
@@ -3755,12 +3777,8 @@ $(document).ready(function() {
                         selectHistorial.append('<option value="">Seleccionar participación...</option>');
 
                         // Agregar opciones con el formato requerido: fecha | sala | parte | ES | encargado(20chars) | AY | ayudante
-                        response.historial.forEach(function(participacion) {
-                            const fecha = new Date(participacion.fecha);
-                            const dia = String(fecha.getDate()).padStart(2, '0');
-                            const mes = String(fecha.getMonth() + 1).padStart(2, '0');
-                            const año = fecha.getFullYear();
-                            const fechaTexto = `${dia}/${mes}/${año}`;
+                        response.historial.forEach(function (participacion) {
+                            const fechaTexto = formatearFechaLocal(participacion.fecha);
 
                             // Usar nombres formateados desde el backend con str_pad
                             const encargadoNombre = participacion.encargado_nombre_formateado || '';
@@ -3790,7 +3808,7 @@ $(document).ready(function() {
                     selectHistorial.prop('disabled', true);
                 }
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 console.error('Error al cargar historial:', xhr.responseText);
                 selectHistorial.empty().append('<option value="">Error al cargar historial</option>');
                 selectHistorial.prop('disabled', true);
@@ -3806,7 +3824,7 @@ $(document).ready(function() {
     }
 
     // Función para cargar el historial del ayudante en la segunda sección
-    function loadHistorialAyudanteSegundaSeccion(ayudanteId,parteId) {
+    function loadHistorialAyudanteSegundaSeccion(ayudanteId, parteId) {
         const selectHistorial = $('#select_historial_ayudante_segunda_seccion');
 
         // Limpiar el select y mostrar "Cargando..."
@@ -3816,7 +3834,7 @@ $(document).ready(function() {
         $.ajax({
             url: `/usuarios/${ayudanteId}/${parteId}/historial-segunda-seccion`,
             method: 'GET',
-            success: function(response) {
+            success: function (response) {
                 if (response.success) {
                     selectHistorial.empty();
 
@@ -3824,12 +3842,8 @@ $(document).ready(function() {
                         selectHistorial.append('<option value="">Seleccionar participación...</option>');
 
                         // Agregar opciones con el formato requerido: fecha | sala | parte | ES | encargado(25chars) | AY | ayudante
-                        response.historial.forEach(function(participacion) {
-                            const fecha = new Date(participacion.fecha);
-                            const dia = String(fecha.getDate()).padStart(2, '0');
-                            const mes = String(fecha.getMonth() + 1).padStart(2, '0');
-                            const año = fecha.getFullYear();
-                            const fechaTexto = `${dia}/${mes}/${año}`;
+                        response.historial.forEach(function (participacion) {
+                            const fechaTexto = formatearFechaLocal(participacion.fecha);
 
                             // Usar nombres formateados desde el backend con str_pad
                             const encargadoNombre = participacion.encargado_nombre_formateado || '';
@@ -3856,7 +3870,7 @@ $(document).ready(function() {
                     selectHistorial.prop('disabled', true);
                 }
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 console.error('Error al cargar historial:', xhr.responseText);
                 selectHistorial.empty().append('<option value="">Error al cargar historial</option>');
                 selectHistorial.prop('disabled', true);
@@ -3888,7 +3902,7 @@ $(document).ready(function() {
         $('#filtro_sexo_ayudante_segunda_container').hide();
     }
 
-    $('#confirmarAyudanteSegundaSeccion').on('click', function() {
+    $('#confirmarAyudanteSegundaSeccion').on('click', function () {
         const ayudanteSeleccionado = $('#select_ayudante_segunda_seccion').val();
         const textoSeleccionado = $('#select_ayudante_segunda_seccion option:selected').text();
 
@@ -3922,7 +3936,7 @@ $(document).ready(function() {
     });
 
     // Limpiar Select2 cuando se cierre el modal de buscar ayudante segunda sección
-    $('#buscarAyudanteSegundaSeccionModal').on('hidden.bs.modal', function() {
+    $('#buscarAyudanteSegundaSeccionModal').on('hidden.bs.modal', function () {
         const select = $('#select_ayudante_segunda_seccion');
         if (select.hasClass('select2-hidden-accessible')) {
             select.select2('destroy');
@@ -3962,12 +3976,12 @@ $(document).ready(function() {
         $.ajax({
             url: `/programas/${programaId}/partes-nvc`,
             method: 'GET',
-            success: function(response) {
+            success: function (response) {
                 if (response.success) {
                     // Limpiar la tabla
                     partesNVTable.clear();
 
-                    response.data.forEach(function(parte, index) {
+                    response.data.forEach(function (parte, index) {
                         const numero = parte.numero; // Número incremental empezando desde 1
                         const upDisabled = parte.es_primero ? 'disabled' : '';
                         const downDisabled = parte.es_ultimo ? 'disabled' : '';
@@ -4007,7 +4021,7 @@ $(document).ready(function() {
                     console.error('Error en la respuesta:', response);
                 }
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 console.error('Error al cargar las partes de Nuestra Vida Cristiana:', xhr.responseText);
                 showAlert('alert-container', 'danger', 'Error al cargar las partes de Nuestra Vida Cristiana');
             }
@@ -4099,7 +4113,7 @@ $(document).ready(function() {
         $.ajax({
             url: `/partes-programa/${id}`,
             method: 'GET',
-            success: function(response) {
+            success: function (response) {
                 if (response.success) {
                     const parte = response.data;
 
@@ -4110,7 +4124,7 @@ $(document).ready(function() {
 
                     // Seleccionar la parte sin disparar change para evitar sobrescribir el tiempo
                     $('#parte_id_nv').val(parte.parte_id);
-                    
+
                     // Establecer el tiempo DESPUÉS de seleccionar la parte para que no se sobrescriba
                     $('#tiempo_parte_nv').val(parte.tiempo);
 
@@ -4133,7 +4147,7 @@ $(document).ready(function() {
                     showAlert('alert-container', 'danger', response.message || 'Error al cargar los datos de la parte');
                 }
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 console.error('Error al cargar la parte:', xhr.responseText);
                 showAlert('alert-container', 'danger', 'Error al cargar los datos de la parte');
             }
@@ -4149,63 +4163,63 @@ $(document).ready(function() {
             url: '/partes-secciones',
             method: 'GET',
             data: {
-                    programa_id: programaId,
-                    parte_id: 3
-                },
-                success: function(response) {
+                programa_id: programaId,
+                parte_id: 3
+            },
+            success: function (response) {
                 if (response.success) {
                     const select = $('#parte_id_nv');
                     select.empty();
                     select.append('<option value="">Seleccionar...</option>');
 
-                    response.data.forEach(function(parte) {
-                            $('#parte_id_nv').append(
-                                `<option value="${parte.id}" data-tiempo="${parte.tiempo || ''}">${parte.nombre} (${parte.abreviacion})</option>`
-                            );
-                        });
+                    response.data.forEach(function (parte) {
+                        $('#parte_id_nv').append(
+                            `<option value="${parte.id}" data-tiempo="${parte.tiempo || ''}">${parte.nombre} (${parte.abreviacion})</option>`
+                        );
+                    });
                 } else {
                     console.error('Error al cargar las partes de sección:', response.message);
                 }
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 console.error('Error al cargar las partes de sección:', xhr.responseText);
             }
         });
     }
 
     function loadPartesSeccionesNVForEdit(parteId) {
-            $('#parte_id').empty().append('<option value="">Cargando...</option>');
+        $('#parte_id').empty().append('<option value="">Cargando...</option>');
 
-            $.ajax({
-                url: `/partes-seccion/${parteId}`,
-                method: 'GET',
-                success: function(response) {
-                    if (response.success) {
-                        const parte = response.data;
-                        $('#parte_id_nv').empty();
+        $.ajax({
+            url: `/partes-seccion/${parteId}`,
+            method: 'GET',
+            success: function (response) {
+                if (response.success) {
+                    const parte = response.data;
+                    $('#parte_id_nv').empty();
 
-                        // Solo agregar la parte que corresponde al registro que se está editando
-                        $('#parte_id_nv').append(
-                            `<option value="${parte.id}" data-tiempo="${parte.tiempo || ''}" selected>${parte.nombre} (${parte.abreviacion})</option>`
-                        );
+                    // Solo agregar la parte que corresponde al registro que se está editando
+                    $('#parte_id_nv').append(
+                        `<option value="${parte.id}" data-tiempo="${parte.tiempo || ''}" selected>${parte.nombre} (${parte.abreviacion})</option>`
+                    );
 
-                        // Llenar el campo de texto deshabilitado para el modo editar
-                        $('#parte_display_nv').val(parte.nombre);
-                        $('#parte_id_hidden_nv').val(parte.id);
+                    // Llenar el campo de texto deshabilitado para el modo editar
+                    $('#parte_display_nv').val(parte.nombre);
+                    $('#parte_id_hidden_nv').val(parte.id);
 
-                        // NO sobrescribir el tiempo en modo edición, ya que se estableció desde parte_programa
-                        // El tiempo de la parte_seccion es solo referencial para nuevas asignaciones
+                    // NO sobrescribir el tiempo en modo edición, ya que se estableció desde parte_programa
+                    // El tiempo de la parte_seccion es solo referencial para nuevas asignaciones
 
-                    } else {
-                        $('#parte_id_nv').empty().append('<option value="">Error al cargar la parte</option>');
-                    }
-                },
-                error: function(xhr) {
-                    console.error('Error al cargar parte de sección:', xhr);
-                    $('#parte_id_nv').empty().append('<option value="">Error al cargar</option>');
+                } else {
+                    $('#parte_id_nv').empty().append('<option value="">Error al cargar la parte</option>');
                 }
-            });
-        }
+            },
+            error: function (xhr) {
+                console.error('Error al cargar parte de sección:', xhr);
+                $('#parte_id_nv').empty().append('<option value="">Error al cargar</option>');
+            }
+        });
+    }
     // Función para buscar encargado en NVC
     function buscarEncargadoParteNV() {
         const parteId = $('#parte_id_nv').val();
@@ -4226,7 +4240,7 @@ $(document).ready(function() {
         $.ajax({
             url: `/encargados-por-parte-programa/${parteId}`,
             method: 'GET',
-            success: function(response) {
+            success: function (response) {
                 if (response.success) {
                     const select = $('#select_encargado_parte_nv');
                     select.empty();
@@ -4245,7 +4259,7 @@ $(document).ready(function() {
                     select.append('<option value="">Seleccionar encargado...</option>');
 
                     // Agregar opciones con el formato: fecha (dd/mm/AAAA) - Nombre del usuario
-                    response.data.forEach(function(usuario) {
+                    response.data.forEach(function (usuario) {
                         select.append(`<option value="${usuario.id}">${usuario.display_text}</option>`);
                     });
 
@@ -4268,7 +4282,7 @@ $(document).ready(function() {
                     }
 
                     // Agregar event listener para cargar historial cuando se selecciona un encargado
-                    select.off('change.historial_nv').on('change.historial_nv', function() {
+                    select.off('change.historial_nv').on('change.historial_nv', function () {
                         const encargadoSeleccionado = $(this).val();
                         const parteId = $('#parte_id_nv').val();
                         $('#confirmarEncargadoParteNV').prop('disabled', !encargadoSeleccionado);
@@ -4286,7 +4300,7 @@ $(document).ready(function() {
                     alert('Error al cargar los usuarios: ' + response.message);
                 }
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 alert('Error al cargar los usuarios para encargado NVC');
                 console.error(xhr);
             }
@@ -4294,7 +4308,7 @@ $(document).ready(function() {
     }
 
     // Event handler para restaurar la visibilidad del campo Encargado Reemplazado y el botón cuando se cierra el modal
-    $('#parteProgramaNVModal').on('hidden.bs.modal', function() {
+    $('#parteProgramaNVModal').on('hidden.bs.modal', function () {
         // Mostrar el campo Encargado Reemplazado y el botón Agregar Reemplazado por defecto cuando se cierra el modal
         $('#encargado_reemplazado_display_nv').closest('.col-md-6').show();
         $('#btn-agregar-reemplazado-nv').show();
@@ -4314,7 +4328,7 @@ $(document).ready(function() {
                 parte_id: parteId,
                 tipo: 'encargado'
             },
-            success: function(response) {
+            success: function (response) {
                 if (response.success) {
                     historialSelect.empty();
 
@@ -4322,7 +4336,7 @@ $(document).ready(function() {
                         historialSelect.append('<option value="">Seleccionar participación...</option>');
 
                         // Agregar opciones con el formato: fecha - parte - tipo
-                        response.data.forEach(function(participacion) {
+                        response.data.forEach(function (participacion) {
                             const fecha = new Date(participacion.fecha);
                             const dia = String(fecha.getDate()).padStart(2, '0');
                             const mes = String(fecha.getMonth() + 1).padStart(2, '0');
@@ -4348,7 +4362,7 @@ $(document).ready(function() {
                     historialSelect.prop('disabled', true);
                 }
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 historialSelect.empty();
                 historialSelect.append('<option value="">Error al cargar historial</option>');
                 historialSelect.prop('disabled', true);
@@ -4416,10 +4430,10 @@ function verAsignacionDesdeTabla(parteProgramaId) {
         showAlert('alert-container', 'warning', 'No se pudo obtener el ID de la asignación.');
         return;
     }
-    
+
     // Mostrar el modal
     $('#verAsignacionModal').modal('show');
-    
+
     // Cargar la asignación por parte_programa_id
     cargarAsignacionPorId(parteProgramaId);
 }
@@ -4429,7 +4443,7 @@ function verAsignacionDesdeTabla(parteProgramaId) {
  */
 function cargarAsignacionPorId(parteProgramaId) {
     const container = $('#asignacion-card-container');
-    
+
     // Mostrar spinner de carga
     container.html(`
         <div class="text-center">
@@ -4438,12 +4452,12 @@ function cargarAsignacionPorId(parteProgramaId) {
             </div>
         </div>
     `);
-    
+
     // Realizar petición AJAX
     $.ajax({
         url: `/programas/asignacion-por-id/${parteProgramaId}`,
         method: 'GET',
-        success: function(response) {
+        success: function (response) {
             if (response.success) {
                 mostrarAsignacion(response.data);
             } else {
@@ -4455,7 +4469,7 @@ function cargarAsignacionPorId(parteProgramaId) {
                 `);
             }
         },
-        error: function(xhr) {
+        error: function (xhr) {
             const message = xhr.responseJSON?.message || 'Error al cargar la asignación.';
             showModalAlert('ver-asignacion-alert-container', 'danger', message);
             container.html(`
@@ -4472,7 +4486,7 @@ function cargarAsignacionPorId(parteProgramaId) {
  */
 function mostrarAsignacion(asignacion) {
     const container = $('#asignacion-card-container');
-    
+
     if (!asignacion) {
         container.html(`
             <div class="alert alert-info text-center">
@@ -4483,19 +4497,19 @@ function mostrarAsignacion(asignacion) {
     }
 
     const fechaFormateada = asignacion.fecha_formateada;
-    
+
     // Obtener el nombre del encargado (estudiante)
     const nombreUsuario = asignacion.nombre_encargado || '';
-    
+
     // Determinar el nombre del ayudante si existe
     let nombreAyudante = asignacion.nombre_ayudante || '';
-    
+
     // Determinar en qué sala se presenta (basado en sala_id)
     const salaId = parseInt(asignacion.sala_id) || 1;
     const salaPrincipal = salaId === 1;
     const salaAuxiliar1 = salaId === 2;
     const salaAuxiliar2 = salaId === 3;
-    
+
     // Generar HTML de la tarjeta de asignación
     let html = `
         <div class="asignacion-card" id="asignacion-para-imprimir">
@@ -4550,7 +4564,7 @@ function mostrarAsignacion(asignacion) {
             </div>
         </div>
     `;
-    
+
     container.html(html);
 }
 
@@ -4566,7 +4580,7 @@ function showModalAlert(containerId, type, message) {
         </div>
     `;
     alertContainer.html(alert);
-    
+
     // Auto-cerrar después de 5 segundos para alertas de éxito
     if (type === 'success') {
         setTimeout(() => {
