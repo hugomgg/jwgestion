@@ -855,19 +855,15 @@ class ProgramaController extends Controller
      */
     public function exportPdf(Request $request)
     {
+
         try {
             $currentUser = Auth::user();
-
-            // Obtener parámetros de filtro
+            $programaIds = $request->input('programa_ids');
             $anio = $request->get('anio');
-            $meses = $request->get('mes'); // Ahora puede ser un array
-
-            // Si meses es un string, convertirlo a array para consistencia
+            $meses = $request->get('mes');
             if (is_string($meses)) {
                 $meses = [$meses];
             }
-
-            // Consulta base de programas
             $query = DB::table('programas as p')
                 ->Join('users as creador', 'p.creador', '=', 'creador.id')
                 ->leftjoin('users as presidente', 'p.presidencia', '=', 'presidente.id')
@@ -875,17 +871,13 @@ class ProgramaController extends Controller
                 ->leftJoin('users as orador_final', 'p.orador_final', '=', 'orador_final.id')
                 ->leftJoin('congregaciones as c', 'presidente.congregacion', '=', 'c.id')
                 ->where('creador.congregacion', $currentUser->congregacion);
-
-            // Aplicar filtros de fecha si se proporcionan
-            if ($anio) {
-                // Cambiar whereYear (SQLite) por whereRaw con YEAR (MySQL)
+            if ($programaIds && is_array($programaIds) && count($programaIds) > 0) {
+                $query->whereIn('p.id', $programaIds);
+            } else if ($anio) {
                 $query->whereRaw('YEAR(p.fecha) = ?', [$anio]);
-
-                // Si hay meses específicos seleccionados, filtrar por ellos
                 if ($meses && is_array($meses) && !empty($meses)) {
                     $query->where(function ($q) use ($meses) {
                         foreach ($meses as $mes) {
-                            // Cambiar whereMonth (SQLite) por whereRaw con MONTH (MySQL)
                             $q->orWhereRaw('MONTH(p.fecha) = ?', [$mes]);
                         }
                     });
@@ -980,17 +972,12 @@ class ProgramaController extends Controller
     {
         try {
             $currentUser = Auth::user();
-
-            // Obtener parámetros de filtro
+            $programaIds = $request->input('programa_ids');
             $anio = $request->get('anio');
-            $meses = $request->get('mes'); // Ahora puede ser un array
-
-            // Si meses es un string, convertirlo a array para consistencia
+            $meses = $request->get('mes');
             if (is_string($meses)) {
                 $meses = [$meses];
             }
-
-            // Consulta base de programas
             $query = DB::table('programas as p')
                 ->Join('users as creador', 'p.creador', '=', 'creador.id')
                 ->leftjoin('users as presidente', 'p.presidencia', '=', 'presidente.id')
@@ -998,11 +985,10 @@ class ProgramaController extends Controller
                 ->leftJoin('users as orador_final', 'p.orador_final', '=', 'orador_final.id')
                 ->leftJoin('congregaciones as c', 'presidente.congregacion', '=', 'c.id')
                 ->where('creador.congregacion', $currentUser->congregacion);
-
-            // Aplicar filtros de fecha si se proporcionan
-            if ($anio) {
+            if ($programaIds && is_array($programaIds) && count($programaIds) > 0) {
+                $query->whereIn('p.id', $programaIds);
+            } else if ($anio) {
                 $query->whereRaw('YEAR(p.fecha) = ?', [$anio]);
-
                 if ($meses && is_array($meses) && !empty($meses)) {
                     $query->where(function ($q) use ($meses) {
                         foreach ($meses as $mes) {
@@ -1094,52 +1080,82 @@ class ProgramaController extends Controller
     public function exportXls(Request $request)
     {
         try {
+
             $currentUser = Auth::user();
-
-            // Obtener parámetros de filtro
+            $programaIds = $request->input('programa_ids');
             $anio = $request->get('anio');
-            $meses = $request->get('mes'); // Ahora puede ser un array
-
-            // Si meses es un string, convertirlo a array para consistencia
+            $meses = $request->get('mes');
             if (is_string($meses)) {
                 $meses = [$meses];
-            } else {
-                $mesesSQL = implode(',', $meses);
             }
-
-            // Usar la misma consulta SQL que resumenVista()
-            $query = "WITH
-                    asignados_presidentes AS (
-                        SELECT presidencia AS usuario,p.id AS programa_id,ps.abreviacion,'Presidente' AS rol,0 AS seccion_id,1 AS sala_id,0 AS orden,NULL as reemplazado,1 AS tipo_rol
-                        FROM programas p INNER JOIN partes_seccion ps ON ps.id=27 WHERE presidencia IS NOT NULL
-                            UNION 
-                        SELECT encargado_id AS usuario,programa_id,ps.abreviacion,CASE WHEN seccion_id=2 THEN 'Estudiante' ELSE 'Encargado' END AS rol,ps.seccion_id,pp.sala_id,pp.orden,pp.encargado_reemplazado_id AS reemplazado,1 AS tipo_rol
-                        FROM partes_programa pp INNER JOIN partes_seccion ps ON ps.id=pp.parte_id WHERE encargado_id IS NOT NULL 
-                            UNION 
-                        SELECT ayudante_id AS usuario,programa_id,ps.abreviacion,'Ayudante' AS rol,ps.seccion_id,pp.sala_id,pp.orden,pp.ayudante_reemplazado_id AS reemplazado,2 AS tipo_rol
-                        FROM partes_programa pp INNER JOIN partes_seccion ps ON ps.id=pp.parte_id WHERE ayudante_id IS NOT NULL 
-                    ),
-                    programas_seleccionados AS (
-                        SELECT p.id,p.fecha,ROW_NUMBER() OVER () AS correlativo
-                        FROM programas p 
-                        INNER JOIN users u ON u.id=p.creador
-                        WHERE YEAR(p.fecha) = {$anio} AND MONTH(p.fecha) IN ({$mesesSQL}) AND u.congregacion = {$currentUser->congregacion} 
-                    ),
-                    usuarios_agrupados AS (
-                        SELECT usuario,count(*) AS contador
+            $data = [];
+            if ($programaIds && is_array($programaIds) && count($programaIds) > 0) {
+                $idsSQL = implode(',', array_map('intval', $programaIds));
+                $query = "WITH
+                        asignados_presidentes AS (
+                            SELECT presidencia AS usuario,p.id AS programa_id,ps.abreviacion,'Presidente' AS rol,0 AS seccion_id,1 AS sala_id,0 AS orden,NULL as reemplazado,1 AS tipo_rol
+                            FROM programas p INNER JOIN partes_seccion ps ON ps.id=27 WHERE presidencia IS NOT NULL
+                                UNION 
+                            SELECT encargado_id AS usuario,programa_id,ps.abreviacion,CASE WHEN seccion_id=2 THEN 'Estudiante' ELSE 'Encargado' END AS rol,ps.seccion_id,pp.sala_id,pp.orden,pp.encargado_reemplazado_id AS reemplazado,1 AS tipo_rol
+                            FROM partes_programa pp INNER JOIN partes_seccion ps ON ps.id=pp.parte_id WHERE encargado_id IS NOT NULL 
+                                UNION 
+                            SELECT ayudante_id AS usuario,programa_id,ps.abreviacion,'Ayudante' AS rol,ps.seccion_id,pp.sala_id,pp.orden,pp.ayudante_reemplazado_id AS reemplazado,2 AS tipo_rol
+                            FROM partes_programa pp INNER JOIN partes_seccion ps ON ps.id=pp.parte_id WHERE ayudante_id IS NOT NULL 
+                        ),
+                        programas_seleccionados AS (
+                            SELECT p.id,p.fecha,ROW_NUMBER() OVER () AS correlativo
+                            FROM programas p 
+                            INNER JOIN users u ON u.id=p.creador
+                            WHERE p.id IN ({$idsSQL}) AND u.congregacion = {$currentUser->congregacion} 
+                        ),
+                        usuarios_agrupados AS (
+                            SELECT usuario,count(*) AS contador
+                            FROM asignados_presidentes up
+                            INNER JOIN programas_seleccionados ps ON ps.id=up.programa_id
+                            GROUP BY usuario
+                        )
+                        SELECT up.programa_id,DATE_FORMAT(ps.fecha, '%d/%m/%Y') AS fecha, u.name AS nombre ,up.abreviacion AS parte,ua.contador AS participaciones,up.rol,up.sala_id AS sala,ur.name AS reemplazado,MOD(ps.correlativo-1,10) AS color_index 
                         FROM asignados_presidentes up
                         INNER JOIN programas_seleccionados ps ON ps.id=up.programa_id
-                        GROUP BY usuario
-                    )
-                    SELECT up.programa_id,DATE_FORMAT(ps.fecha, '%d/%m/%Y') AS fecha, u.name AS nombre ,up.abreviacion AS parte,ua.contador AS participaciones,up.rol,up.sala_id AS sala,ur.name AS reemplazado,MOD(ps.correlativo-1,10) AS color_index 
-                    FROM asignados_presidentes up
-                    INNER JOIN programas_seleccionados ps ON ps.id=up.programa_id
-                    INNER JOIN users u ON u.id=up.usuario
-                    INNER JOIN usuarios_agrupados ua ON ua.usuario=u.id
-                    LEFT JOIN users ur ON ur.id=up.reemplazado 
-                    ORDER BY programa_id,seccion_id,sala_id,orden,tipo_rol";
-
-            $data = DB::select($query);
+                        INNER JOIN users u ON u.id=up.usuario
+                        INNER JOIN usuarios_agrupados ua ON ua.usuario=u.id
+                        LEFT JOIN users ur ON ur.id=up.reemplazado 
+                        ORDER BY programa_id,seccion_id,sala_id,orden,tipo_rol";
+                $data = DB::select($query);
+            } else if ($anio && $meses && is_array($meses) && !empty($meses)) {
+                $mesesSQL = implode(',', $meses);
+                $query = "WITH
+                        asignados_presidentes AS (
+                            SELECT presidencia AS usuario,p.id AS programa_id,ps.abreviacion,'Presidente' AS rol,0 AS seccion_id,1 AS sala_id,0 AS orden,NULL as reemplazado,1 AS tipo_rol
+                            FROM programas p INNER JOIN partes_seccion ps ON ps.id=27 WHERE presidencia IS NOT NULL
+                                UNION 
+                            SELECT encargado_id AS usuario,programa_id,ps.abreviacion,CASE WHEN seccion_id=2 THEN 'Estudiante' ELSE 'Encargado' END AS rol,ps.seccion_id,pp.sala_id,pp.orden,pp.encargado_reemplazado_id AS reemplazado,1 AS tipo_rol
+                            FROM partes_programa pp INNER JOIN partes_seccion ps ON ps.id=pp.parte_id WHERE encargado_id IS NOT NULL 
+                                UNION 
+                            SELECT ayudante_id AS usuario,programa_id,ps.abreviacion,'Ayudante' AS rol,ps.seccion_id,pp.sala_id,pp.orden,pp.ayudante_reemplazado_id AS reemplazado,2 AS tipo_rol
+                            FROM partes_programa pp INNER JOIN partes_seccion ps ON ps.id=pp.parte_id WHERE ayudante_id IS NOT NULL 
+                        ),
+                        programas_seleccionados AS (
+                            SELECT p.id,p.fecha,ROW_NUMBER() OVER () AS correlativo
+                            FROM programas p 
+                            INNER JOIN users u ON u.id=p.creador
+                            WHERE YEAR(p.fecha) = {$anio} AND MONTH(p.fecha) IN ({$mesesSQL}) AND u.congregacion = {$currentUser->congregacion} 
+                        ),
+                        usuarios_agrupados AS (
+                            SELECT usuario,count(*) AS contador
+                            FROM asignados_presidentes up
+                            INNER JOIN programas_seleccionados ps ON ps.id=up.programa_id
+                            GROUP BY usuario
+                        )
+                        SELECT up.programa_id,DATE_FORMAT(ps.fecha, '%d/%m/%Y') AS fecha, u.name AS nombre ,up.abreviacion AS parte,ua.contador AS participaciones,up.rol,up.sala_id AS sala,ur.name AS reemplazado,MOD(ps.correlativo-1,10) AS color_index 
+                        FROM asignados_presidentes up
+                        INNER JOIN programas_seleccionados ps ON ps.id=up.programa_id
+                        INNER JOIN users u ON u.id=up.usuario
+                        INNER JOIN usuarios_agrupados ua ON ua.usuario=u.id
+                        LEFT JOIN users ur ON ur.id=up.reemplazado 
+                        ORDER BY programa_id,seccion_id,sala_id,orden,tipo_rol";
+                $data = DB::select($query);
+            }
 
             // Verificar si hay datos para exportar
             if (empty($data)) {
@@ -1295,18 +1311,24 @@ class ProgramaController extends Controller
         try {
             $currentUser = Auth::user();
 
-            // Obtener parámetros de filtro
+            $programaIds = $request->input('programa_ids');
             $anio = $request->get('anio');
-            $meses = $request->get('mes'); // Ahora puede ser un array
-
-            // Si meses es un string, convertirlo a array para consistencia
+            $meses = $request->get('mes');
             if (is_string($meses)) {
                 $meses = [$meses];
-            } else {
-                $mesesSQL = implode(',', $meses);
             }
 
-            // Consulta para obtener los programas con sus partes
+            if ($programaIds && is_array($programaIds) && count($programaIds) > 0) {
+                $idsSQL = implode(',', array_map('intval', $programaIds));
+                $whereClause = "p.id IN ({$idsSQL}) AND u.congregacion = {$currentUser->congregacion}";
+            } elseif ($anio && $meses && is_array($meses) && count($meses) > 0) {
+                $mesesSQL = implode(',', $meses);
+                $whereClause = "YEAR(p.fecha) = '{$anio}' AND MONTH(p.fecha) IN ({$mesesSQL}) AND u.congregacion = {$currentUser->congregacion}";
+            } else {
+                return redirect()->route('programas.index')
+                    ->with('error', 'Seleccione al menos un programa para ver el resumen.');
+            }
+
             $query = "WITH
                     asignados_presidentes AS (
                         SELECT presidencia AS usuario,p.id AS programa_id,ps.abreviacion,'Presidente' AS rol,0 AS seccion_id,1 AS sala_id,0 AS orden,NULL as reemplazado,1 AS tipo_rol
@@ -1322,7 +1344,7 @@ class ProgramaController extends Controller
                         SELECT p.id,p.fecha,ROW_NUMBER() OVER () AS correlativo
                         FROM programas p 
                         INNER JOIN users u ON u.id=p.creador
-                        WHERE YEAR(p.fecha) = '{$anio}' AND MONTH(p.fecha) IN ({$mesesSQL}) AND u.congregacion = {$currentUser->congregacion} 
+                        WHERE {$whereClause}
                     ),
                     usuarios_agrupados AS (
                         SELECT usuario,count(*) AS contador
@@ -1367,6 +1389,7 @@ class ProgramaController extends Controller
             $currentUser = Auth::user();
 
             // Obtener parámetros de filtro
+            $programaIds = $request->input('programa_ids');
             $anio = $request->get('anio');
             $meses = $request->get('mes'); // Ahora puede ser un array
 
@@ -1389,8 +1412,11 @@ class ProgramaController extends Controller
                 ->whereNotNull('p.fecha')
                 ->whereNotNull('pp.encargado_id'); // Solo partes con encargado asignado
 
-            // Aplicar filtros de fecha si se proporcionan
-            if ($anio) {
+            // Aplicar filtros: por IDs seleccionados o por año/mes
+            if ($programaIds && is_array($programaIds) && count($programaIds) > 0) {
+                $sanitizedIds = array_map('intval', $programaIds);
+                $query->whereIn('p.id', $sanitizedIds);
+            } elseif ($anio) {
                 // Cambiar whereYear (SQLite) por whereRaw con YEAR (MySQL)
                 $query->whereRaw('YEAR(p.fecha) = ?', [$anio]);
 
@@ -1435,7 +1461,7 @@ class ProgramaController extends Controller
                     }
                     return $asignacion;
                 });
-            })->flatten();
+            })->flatten()->sortBy([['fecha', 'asc'], ['numero_intervencion', 'asc']])->values();
 
             // Si no hay asignaciones, crear datos de ejemplo para mostrar el formato
             if ($asignaciones->isEmpty()) {

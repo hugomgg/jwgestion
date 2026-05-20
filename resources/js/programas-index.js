@@ -6,15 +6,17 @@ $(document).ready(function() {
         return;
     }
 
-    // Inicializar DataTable
+
+    // Inicializar DataTable (ajustado para columna de checkboxes y acciones)
     const programasTable = $('#programasTable').DataTable({
         language: {
             url: '/js/datatables-es-ES.json'
         },
         responsive: true,
-        order: [[0, 'desc']], // Ordenar por fecha descendente
+        order: [[1, 'desc']], // Ordenar por fecha descendente (columna 1)
         columnDefs: [
-            { targets: [7], orderable: false } // Columna de acciones no ordenable
+            { targets: [0], orderable: false }, // Checkbox no ordenable
+            { targets: [8], orderable: false }  // Acciones no ordenable
         ]
     });
 
@@ -410,15 +412,6 @@ $(document).ready(function() {
     // Hacer la función disponible globalmente
     window.actualizarBotonesExportacion = actualizarBotonesExportacion;
 
-    // Manejar clic en botones de exportación
-    $('#exportPdfBtn, #exportProgramaXlsBtn, #exportXlsBtn, #exportResumenVistaBtn, #exportAsignacionesBtn').on('click', function(e) {
-        e.preventDefault();
-        const url = $(this).data('export-url');
-        if (url && !$(this).prop('disabled')) {
-            window.open(url, '_blank');
-        }
-    });
-
     // Escuchar cambios en los filtros para actualizar los botones
     $('#filtro_anio').on('change', function() {
         actualizarBotonesExportacion();
@@ -431,6 +424,53 @@ $(document).ready(function() {
 
     // Inicializar estado de los botones
     actualizarBotonesExportacion();
+
+    // --- Selección de programas para exportar ---
+    function actualizarBotonesExportacionPorSeleccion() {
+        const seleccionados = $('.programa-checkbox:checked').length;
+        if (seleccionados > 0) {
+            $('#exportPdfBtn, #exportProgramaXlsBtn, #exportXlsBtn, #exportResumenVistaBtn, #exportAsignacionesBtn')
+                .removeClass('disabled').prop('disabled', false);
+        } else {
+            $('#exportPdfBtn, #exportProgramaXlsBtn, #exportXlsBtn, #exportResumenVistaBtn, #exportAsignacionesBtn')
+                .addClass('disabled').prop('disabled', true);
+        }
+    }
+
+    function exportarConSeleccion(url) {
+        const ids = $('.programa-checkbox:checked').map(function() { return $(this).val(); }).get();
+        if (ids.length === 0) return;
+        const form = $('<form>', { method: 'POST', action: url, target: '_blank' });
+        form.append($('<input>', { type: 'hidden', name: '_token', value: $('meta[name="csrf-token"]').attr('content') }));
+        ids.forEach(id => form.append($('<input>', { type: 'hidden', name: 'programa_ids[]', value: id })));
+        $('body').append(form);
+        form.submit();
+        form.remove();
+    }
+
+    // Checkbox general
+    $(document).on('change', '#selectAllProgramas', function() {
+        $('.programa-checkbox').prop('checked', this.checked);
+        actualizarBotonesExportacionPorSeleccion();
+    });
+
+    // Checkbox individual
+    $(document).on('change', '.programa-checkbox', function() {
+        const total = $('.programa-checkbox').length;
+        const checked = $('.programa-checkbox:checked').length;
+        $('#selectAllProgramas').prop('checked', total === checked);
+        actualizarBotonesExportacionPorSeleccion();
+    });
+
+    // Botones de exportación usan selección por checkbox
+    $('#exportPdfBtn').on('click', function(e) { e.preventDefault(); exportarConSeleccion(window.exportRoutes.pdf); });
+    $('#exportProgramaXlsBtn').on('click', function(e) { e.preventDefault(); exportarConSeleccion(window.exportRoutes.programaXls); });
+    $('#exportXlsBtn').on('click', function(e) { e.preventDefault(); exportarConSeleccion(window.exportRoutes.xls); });
+    $('#exportResumenVistaBtn').on('click', function(e) { e.preventDefault(); exportarConSeleccion(window.exportRoutes.resumenVista); });
+    $('#exportAsignacionesBtn').on('click', function(e) { e.preventDefault(); exportarConSeleccion(window.exportRoutes.asignaciones); });
+
+    // Estado inicial de botones
+    actualizarBotonesExportacionPorSeleccion();
 });
 
 // Función para inicializar los filtros de año y mes
@@ -694,7 +734,7 @@ function aplicarFiltroTabla() {
         if (anioSeleccionado) {
             // Agregar nuevo filtro
             $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
-                const fechaPrograma = data[0]; // Primera columna es la fecha
+                const fechaPrograma = data[1]; // Columna 1 es la fecha (columna 0 es el checkbox)
                 const fechaParts = fechaPrograma.split('/');
 
                 if (fechaParts.length === 3) {
@@ -863,6 +903,7 @@ function buscarProgramasPorAnio(anio) {
                         // Agregar fila usando HTML directo para evitar problemas de serialización
                         table.row.add($(`
                             <tr class="${esSemanaActual ? 'semana-actual-row' : ''}">
+                                <td><input type="checkbox" class="programa-checkbox" value="${programa.id}" /></td>
                                 <td data-order="${programa.fecha}">${fechaFormateada}</td>
                                 <td>${programa.nombre_presidencia || '-'}</td>
                                 <td>${programa.nombre_orador_inicial || '-'}</td>

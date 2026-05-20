@@ -125,6 +125,9 @@
                                 <table class="table table-striped table-hover" id="programasTable">
                                     <thead class="table-dark">
                                         <tr>
+                                            <th style="width: 3%;">
+                                                <input type="checkbox" id="selectAllProgramas" />
+                                            </th>
                                             <th style="width: 10%;">Fecha</th>
                                             <th style="width: 25%;">Presidente</th>
                                             <th style="width: 20%;">Orador Inicial</th>
@@ -146,6 +149,9 @@
                                                 }
                                             @endphp
                                             <tr class="@if($esSemanaActual) semana-actual-row @endif">
+                                                <td>
+                                                    <input type="checkbox" class="programa-checkbox" value="{{ $programa->id }}" />
+                                                </td>
                                                 <td data-order="{{ $programa->fecha }}">
                                                     {{ \Carbon\Carbon::parse($programa->fecha)->format('d/m/Y') }}</td>
                                                 <td>{{ $programa->nombre_presidencia ?? '-' }}</td>
