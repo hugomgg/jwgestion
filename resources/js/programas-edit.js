@@ -123,10 +123,10 @@ $(document).ready(function () {
                     // Mostrar modal de éxito
                     $('#successModal').modal('show');
 
-                    // Ocultar el modal automáticamente después de 3 segundos con fade out
+                    // Ocultar el modal automáticamente después de 1 segundo con fade out
                     setTimeout(function () {
                         $('#successModal').modal('hide');
-                    }, 2000);
+                    }, 1000);
                 } else {
                     alert('Error al guardar la fecha: ' + (response.message || 'Error desconocido'));
                 }
@@ -580,10 +580,10 @@ $(document).ready(function () {
                     loadPartesPrograma();
                     // Mostrar modal de éxito
                     $('#successModal').modal('show');
-                    // Ocultar el modal automáticamente después de 3 segundos con fade out
+                    // Ocultar el modal automáticamente después de 1 segundo con fade out
                     setTimeout(function () {
                         $('#successModal').modal('hide');
-                    }, 2000);
+                    }, 1000);
                 }
             },
             error: function (xhr) {
@@ -674,10 +674,10 @@ $(document).ready(function () {
                     // Mostrar modal de éxito
                     $('#successModal').modal('show');
 
-                    // Ocultar el modal automáticamente después de 3 segundos con fade out
+                    // Ocultar el modal automáticamente después de 1 segundo con fade out
                     setTimeout(function () {
                         $('#successModal').modal('hide');
-                    }, 2000);
+                    }, 1000);
                 }
             },
             error: function (xhr) {
@@ -736,10 +736,10 @@ $(document).ready(function () {
                         $('#successModalMessage').text('Asignación eliminada exitosamente');
                         $('#successModal').modal('show');
 
-                        // Ocultar el modal automáticamente después de 2 segundos
+                        // Ocultar el modal automáticamente después de 1 segundo
                         setTimeout(function () {
                             $('#successModal').modal('hide');
-                        }, 2000);
+                        }, 1000);
                     }
                 },
                 error: function (xhr) {
@@ -1128,10 +1128,10 @@ $(document).ready(function () {
                         $('#successModalMessage').text('Asignación eliminada exitosamente');
                         $('#successModal').modal('show');
 
-                        // Ocultar el modal automáticamente después de 2 segundos
+                        // Ocultar el modal automáticamente después de 1 segundo
                         setTimeout(function () {
                             $('#successModal').modal('hide');
-                        }, 2000);
+                        }, 1000);
                     }
                 },
                 error: function (xhr) {
@@ -1228,10 +1228,10 @@ $(document).ready(function () {
                     // Mostrar modal de éxito
                     $('#successModal').modal('show');
 
-                    // Ocultar el modal automáticamente después de 3 segundos con fade out
+                    // Ocultar el modal automáticamente después de 1 segundo con fade out
                     setTimeout(function () {
                         $('#successModal').modal('hide');
-                    }, 2000);
+                    }, 1000);
                 }
             },
             error: function (xhr) {
@@ -2211,10 +2211,10 @@ $(document).ready(function () {
                     // Mostrar modal de éxito
                     $('#successModal').modal('show');
 
-                    // Ocultar el modal automáticamente después de 2 segundos con fade out
+                    // Ocultar el modal automáticamente después de 1 segundo con fade out
                     setTimeout(function () {
                         $('#successModal').modal('hide');
-                    }, 2000);
+                    }, 1000);
                 } else {
                     alert('Error al guardar el orador inicial: ' + (response.message || 'Error desconocido'));
                 }
@@ -2371,10 +2371,10 @@ $(document).ready(function () {
                     // Mostrar modal de éxito
                     $('#successModal').modal('show');
 
-                    // Ocultar el modal automáticamente después de 2 segundos con fade out
+                    // Ocultar el modal automáticamente después de 1 segundo con fade out
                     setTimeout(function () {
                         $('#successModal').modal('hide');
-                    }, 2000);
+                    }, 1000);
                 } else {
                     alert('Error al guardar el orador final: ' + (response.message || 'Error desconocido'));
                 }
@@ -2530,10 +2530,10 @@ $(document).ready(function () {
                     // Mostrar modal de éxito
                     $('#successModal').modal('show');
 
-                    // Ocultar el modal automáticamente después de 3 segundos con fade out
+                    // Ocultar el modal automáticamente después de 1 segundo con fade out
                     setTimeout(function () {
                         $('#successModal').modal('hide');
-                    }, 2000);
+                    }, 1000);
                 } else {
                     alert('Error al guardar el presidente: ' + (response.message || 'Error desconocido'));
                 }
@@ -2682,10 +2682,10 @@ $(document).ready(function () {
                     // Mostrar modal de éxito
                     $('#successModal').modal('show');
 
-                    // Ocultar el modal automáticamente después de 3 segundos con fade out
+                    // Ocultar el modal automáticamente después de 1 segundo con fade out
                     setTimeout(function () {
                         $('#successModal').modal('hide');
-                    }, 2000);
+                    }, 1000);
                 } else {
                     alert('Error al guardar la canción inicial: ' + (response.message || 'Error desconocido'));
                 }
@@ -2759,10 +2759,10 @@ $(document).ready(function () {
                     // Mostrar modal de éxito
                     $('#successModal').modal('show');
 
-                    // Ocultar el modal automáticamente después de 2 segundos con fade out
+                    // Ocultar el modal automáticamente después de 1 segundo con fade out
                     setTimeout(function () {
                         $('#successModal').modal('hide');
-                    }, 2000);
+                    }, 1000);
                 } else {
                     alert('Error al guardar la canción intermedia: ' + (response.message || 'Error desconocido'));
                 }
@@ -2836,10 +2836,10 @@ $(document).ready(function () {
                     // Mostrar modal de éxito
                     $('#successModal').modal('show');
 
-                    // Ocultar el modal automáticamente después de 2 segundos con fade out
+                    // Ocultar el modal automáticamente después de 1 segundo con fade out
                     setTimeout(function () {
                         $('#successModal').modal('hide');
-                    }, 2000);
+                    }, 1000);
                 } else {
                     alert('Error al guardar la canción final: ' + (response.message || 'Error desconocido'));
                 }
