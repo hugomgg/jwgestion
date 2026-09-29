@@ -202,8 +202,8 @@ $(document).ready(function() {
     // Variable para almacenar el ID del programa a eliminar
     let programaIdToDelete = null;
 
-    // Manejar eliminación - abrir modal de confirmación
-    $('.delete-programa').click(function() {
+    // Guardar el programa seleccionado, incluyendo filas cargadas dinámicamente.
+    $(document).on('click', '.delete-programa', function() {
         programaIdToDelete = $(this).data('id');
     });
 
@@ -247,10 +247,7 @@ $(document).ready(function() {
         programaIdToDelete = null;
     });
 
-    // Limpiar el ID cuando se abre el modal
-    $('#confirmDeleteModal').on('show.bs.modal', function() {
-        programaIdToDelete = null;
-    });    // Función para mostrar alertas
+    // Función para mostrar alertas
     function showAlert(containerId, type, message) {
         const alertHtml = `
             <div class="alert alert-${type} alert-dismissible fade show" role="alert">
@@ -926,11 +923,6 @@ function buscarProgramasPorAnio(anio) {
                             return new bootstrap.Tooltip(tooltipTriggerEl);
                         });
                     }
-
-                    // Reasignar eventos de eliminación
-                    $('.delete-programa').off('click').on('click', function() {
-                        window.programaIdToDelete = $(this).data('id');
-                    });
 
                     //mostrarAlerta(`Se encontraron ${response.programas.length} programas para el año ${anio}.`, 'success');
                 } else {
