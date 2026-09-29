@@ -1636,6 +1636,7 @@ class ParteProgramaController extends Controller
      */
     public function getEncargadosByPartePrograma($parteId, Request $request)
     {
+        //Encargados de partes de Tesoros de la Biblia y Nuestra Vida y Ministerio Cristianos, y de otras partes de la sección seleccionada
         try {
             $user = Auth::user();
 
@@ -1673,27 +1674,23 @@ class ParteProgramaController extends Controller
                 s.abreviacion as sala_abreviacion,
                 latest_participation.fecha as fecha_raw
                 FROM users u
+                INNER JOIN asignaciones_users au ON au.user_id =u.id 
                 INNER JOIN (
                     SELECT
-                        CASE
-                            WHEN pp.encargado_id IS NOT NULL THEN pp.encargado_id
-                            ELSE pp.ayudante_id
-                        END as user_id,
+                        pp.encargado_id as user_id,
                         MAX(p.fecha) as fecha,
                         MAX(pp.parte_id) as parte_id,
                         MAX(pp.sala_id) as sala_id
                     FROM partes_programa pp
                     INNER JOIN programas p ON p.id = pp.programa_id
                     WHERE pp.parte_id = ?
-                    GROUP BY CASE
-                        WHEN pp.encargado_id IS NOT NULL THEN pp.encargado_id
-                        ELSE pp.ayudante_id
-                    END
+                    GROUP BY pp.encargado_id 
                 ) latest_participation ON u.id = latest_participation.user_id
                 INNER JOIN partes_seccion ps ON ps.id = latest_participation.parte_id
                 INNER JOIN salas s ON s.id = latest_participation.sala_id
                 WHERE u.congregacion = ?
                     AND u.estado = 1
+                    AND au.asignacion_id = ps.asignacion_id 
                 ORDER BY latest_participation.fecha ASC
             ", [$parteId, $user->congregacion]);
 
